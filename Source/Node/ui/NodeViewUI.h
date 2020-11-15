@@ -19,3 +19,15 @@ public:
     NodeViewUI(Node* node);
     virtual ~NodeViewUI();
 };
+
+template<class T>
+class GenericAudioNodeViewUI :
+    public NodeViewUI
+{
+public:
+    GenericAudioNodeViewUI(GenericAudioNode<T>* audioNode) : NodeViewUI(audioNode) {}
+    ~GenericAudioNodeViewUI() {}
+
+    GenericAudioNode<T> audioNode;
+    T* processor;
+};

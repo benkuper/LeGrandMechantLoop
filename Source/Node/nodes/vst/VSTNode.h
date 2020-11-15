@@ -9,17 +9,17 @@
 */
 
 #pragma once
-#include "../../Node.h"
+#include "../../NodeAudioProcessor.h"
 
-class VSTNode :
-    public Node
+class VSTProcessor :
+	public GenericNodeAudioProcessor
 {
 public:
-    VSTNode(var params = var());
-    ~VSTNode();
+	VSTProcessor(Node* node);
+	~VSTProcessor() {}
 
-    String getTypeString() const override { return getTypeStringStatic(); }
-    static const String getTypeStringStatic() { return "VST"; }
+	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	static const String getTypeStringStatic() { return "VST"; }
 
-    static VSTNode* create(var params) { return new VSTNode(params); }
+	NodeViewUI* createNodeViewUI() override;
 };

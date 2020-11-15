@@ -1,20 +1,20 @@
 /*
   ==============================================================================
 
-    LooperNodeViewUI.cpp
-    Created: 15 Nov 2020 8:43:15am
+    SpatNodeViewUI.cpp
+    Created: 15 Nov 2020 11:41:00pm
     Author:  bkupe
 
   ==============================================================================
 */
 
-#include "LooperNodeViewUI.h"
+#include "SpatNodeViewUI.h"
 
-LooperNodeViewUI::LooperNodeViewUI(GenericAudioNode<LooperProcessor>* n) :
+SpatNodeViewUI::SpatNodeViewUI(GenericAudioNode<SpatProcessor>* n) :
     GenericAudioNodeViewUI(n)
 {
 }
 
-LooperNodeViewUI::~LooperNodeViewUI()
+SpatNodeViewUI::~SpatNodeViewUI()
 {
 }

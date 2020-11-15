@@ -1,76 +1,49 @@
 /*
   ==============================================================================
 
-    IONode.h
-    Created: 15 Nov 2020 8:42:54am
-    Author:  bkupe
+	IONode.h
+	Created: 15 Nov 2020 8:42:54am
+	Author:  bkupe
 
   ==============================================================================
 */
 
 #pragma once
 
-#include "../../Node.h"
+#include "../../NodeAudioProcessor.h"
 
-class IONode :
-    public Node
+class IOProcessor :
+	public GenericNodeAudioProcessor
 {
 public:
-    IONode(StringRef name = "IO", Type type = CUSTOM, NodeAudioProcessor * processor = nullptr, var params = var());
-    virtual ~IONode();
+	IOProcessor(Node* n) : GenericNodeAudioProcessor(n) {}
+	virtual ~IOProcessor() {}
 };
 
 
-class AudioInputNode :
-    public IONode
+class AudioInputProcessor :
+	public IOProcessor
 {
 public:
-    AudioInputNode(var params = var());
-    ~AudioInputNode();
+	AudioInputProcessor(Node* node);
+	~AudioInputProcessor() {}
 
-    String getTypeString() const override { return getTypeStringStatic(); }
-    static const String getTypeStringStatic() { return "Audio Input"; }
+	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	static const String getTypeStringStatic() { return "Audio Input"; }
 
-    class InputProcessor :
-        public NodeAudioProcessor
-    {
-    public:
-        InputProcessor(AudioInputNode * node);
-        ~InputProcessor();
-
-        AudioInputNode* inputNode;
-
-        void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
-    };
-
-    InputProcessor * inputProcessor;
-
-    static AudioInputNode* create(var params) { return new AudioInputNode(params); }
+	NodeViewUI* createNodeViewUI() override;
 };
 
-class AudioOutputNode :
-    public IONode
+
+class AudioOutputProcessor :
+	public IOProcessor
 {
 public:
-    AudioOutputNode(var params = var());
-    ~AudioOutputNode();
+	AudioOutputProcessor(Node* node);
+	~AudioOutputProcessor() {}
 
-    class OutputProcessor :
-        public NodeAudioProcessor
-    {
-    public:
-        OutputProcessor(AudioOutputNode * node);
-        ~OutputProcessor();
+	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	static const String getTypeStringStatic() { return "Audio Output"; }
 
-        AudioOutputNode* outputNode;
-
-        void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
-    };
-
-    OutputProcessor* outputProcessor;
-
-    String getTypeString() const override { return getTypeStringStatic(); }
-    static const String getTypeStringStatic() { return "Audio Output"; }
-
-    static AudioOutputNode* create(var params) { return new AudioOutputNode(params); }
+	NodeViewUI* createNodeViewUI() override;
 };

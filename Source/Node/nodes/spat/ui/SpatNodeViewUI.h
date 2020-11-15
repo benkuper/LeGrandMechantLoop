@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    LooperNodeViewUI.h
-    Created: 15 Nov 2020 8:43:15am
+    SpatNodeViewUI.h
+    Created: 15 Nov 2020 11:41:00pm
     Author:  bkupe
 
   ==============================================================================
@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include "../LooperNode.h"
+#include "../SpatNode.h"
 #include "../../../ui/NodeViewUI.h"
 
-class LooperNodeViewUI :
-    public GenericAudioNodeViewUI<LooperProcessor>
+class SpatNodeViewUI :
+    public GenericAudioNodeViewUI<SpatProcessor>
 {
 public:
-    LooperNodeViewUI(GenericAudioNode<LooperProcessor>* n);
-    ~LooperNodeViewUI();
+    SpatNodeViewUI(GenericAudioNode<SpatProcessor>* n);
+    ~SpatNodeViewUI();
 
 };

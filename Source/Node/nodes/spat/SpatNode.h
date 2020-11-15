@@ -9,17 +9,17 @@
 */
 
 #pragma once
-#include "../../Node.h"
+#include "../../NodeAudioProcessor.h"
 
-class SpatNode :
-    public Node
+class SpatProcessor :
+	public GenericNodeAudioProcessor
 {
 public:
-    SpatNode(var params = var());
-    ~SpatNode();
+	SpatProcessor(Node* node);
+	~SpatProcessor() {}
 
-    String getTypeString() const override { return getTypeStringStatic(); }
-    static const String getTypeStringStatic() { return "Spat"; }
+	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	static const String getTypeStringStatic() { return "Spat"; }
 
-    static SpatNode* create(var params) { return new SpatNode(params); }
+	NodeViewUI* createNodeViewUI() override;
 };

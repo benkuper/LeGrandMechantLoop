@@ -1,8 +1,8 @@
 /*
   ==============================================================================
 
-    LooperNodeViewUI.h
-    Created: 15 Nov 2020 8:43:15am
+    VSTNodeViewUI.h
+    Created: 15 Nov 2020 11:41:16pm
     Author:  bkupe
 
   ==============================================================================
@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include "../LooperNode.h"
+#include "../VSTNode.h"
 #include "../../../ui/NodeViewUI.h"
 
-class LooperNodeViewUI :
-    public GenericAudioNodeViewUI<LooperProcessor>
+class VSTNodeViewUI :
+    public GenericAudioNodeViewUI<VSTProcessor>
 {
 public:
-    LooperNodeViewUI(GenericAudioNode<LooperProcessor>* n);
-    ~LooperNodeViewUI();
+    VSTNodeViewUI(GenericAudioNode<VSTProcessor>* n);
+    ~VSTNodeViewUI();
 
 };

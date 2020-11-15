@@ -19,5 +19,8 @@ public:
     NodeManagerViewUI(StringRef name);
     ~NodeManagerViewUI();
 
+
+    NodeViewUI* createUIForItem(Node * n) override;
+
     static NodeManagerViewUI* create(const String& name) { return new NodeManagerViewUI(name); }
 };

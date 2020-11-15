@@ -17,14 +17,26 @@
     <Filter Include="LGML\Source\Node\ui">
       <UniqueIdentifier>{3B1D1023-6B9A-7940-0DE2-650FF8A525A4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Node\nodes\vst\ui">
+      <UniqueIdentifier>{082EC81F-591F-1A96-B637-450A9541B692}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Node\nodes\vst">
       <UniqueIdentifier>{08B17A0B-E5FC-009F-50D8-8D38E18FF919}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Node\nodes\spat\ui">
+      <UniqueIdentifier>{655F6F6A-633C-3BE2-78CE-9007B842C243}</UniqueIdentifier>
     </Filter>
     <Filter Include="LGML\Source\Node\nodes\spat">
       <UniqueIdentifier>{347CA5DE-44F9-D819-B89E-D1F7BAE8FC0B}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Node\nodes\mixer\ui">
+      <UniqueIdentifier>{7EF72DE1-E94E-5146-46D5-287A17F11716}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Node\nodes\mixer">
       <UniqueIdentifier>{FC377885-88D3-A73C-19D4-E712D261C09D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Node\nodes\io\ui">
+      <UniqueIdentifier>{A4EBF5B5-F3E2-6CAB-902E-45EA410BF408}</UniqueIdentifier>
     </Filter>
     <Filter Include="LGML\Source\Node\nodes\io">
       <UniqueIdentifier>{3AC291DA-9E95-C677-EB30-9B883A9DF818}</UniqueIdentifier>
@@ -817,14 +829,26 @@
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <Filter>LGML\Source\Node\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\vst\ui\VSTNodeViewUI.cpp">
+      <Filter>LGML\Source\Node\nodes\vst\ui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\vst\VSTNode.cpp">
       <Filter>LGML\Source\Node\nodes\vst</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\spat\ui\SpatNodeViewUI.cpp">
+      <Filter>LGML\Source\Node\nodes\spat\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\spat\SpatNode.cpp">
       <Filter>LGML\Source\Node\nodes\spat</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\mixer\ui\MixerNodeViewUI.cpp">
+      <Filter>LGML\Source\Node\nodes\mixer\ui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\mixer\MixerNode.cpp">
       <Filter>LGML\Source\Node\nodes\mixer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\io\ui\IONodeViewUI.cpp">
+      <Filter>LGML\Source\Node\nodes\io\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\io\IONode.cpp">
       <Filter>LGML\Source\Node\nodes\io</Filter>
@@ -836,6 +860,9 @@
       <Filter>LGML\Source\Node\nodes\looper</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\Node.cpp">
+      <Filter>LGML\Source\Node</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\NodeAudioProcessor.cpp">
       <Filter>LGML\Source\Node</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\NodeManager.cpp">
@@ -3693,14 +3720,26 @@
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h">
       <Filter>LGML\Source\Node\ui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\vst\ui\VSTNodeViewUI.h">
+      <Filter>LGML\Source\Node\nodes\vst\ui</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\vst\VSTNode.h">
       <Filter>LGML\Source\Node\nodes\vst</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\spat\ui\SpatNodeViewUI.h">
+      <Filter>LGML\Source\Node\nodes\spat\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\spat\SpatNode.h">
       <Filter>LGML\Source\Node\nodes\spat</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\mixer\ui\MixerNodeViewUI.h">
+      <Filter>LGML\Source\Node\nodes\mixer\ui</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\mixer\MixerNode.h">
       <Filter>LGML\Source\Node\nodes\mixer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\io\ui\IONodeViewUI.h">
+      <Filter>LGML\Source\Node\nodes\io\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\io\IONode.h">
       <Filter>LGML\Source\Node\nodes\io</Filter>
@@ -3712,6 +3751,9 @@
       <Filter>LGML\Source\Node\nodes\looper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\Node.h">
+      <Filter>LGML\Source\Node</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\NodeAudioProcessor.h">
       <Filter>LGML\Source\Node</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\NodeManager.h">

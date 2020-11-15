@@ -9,59 +9,34 @@
 */
 
 #include "IONode.h"
+#include "ui/IONodeViewUI.h"
 
-IONode::IONode(StringRef name, Type type, NodeAudioProcessor * processor, var params) :
-    Node(name, INPUT, processor, params)
+// INPUT
+AudioInputProcessor::AudioInputProcessor(Node* node) :
+    IOProcessor(node)
 {
 }
 
-IONode::~IONode()
+void AudioInputProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 }
 
-AudioInputNode::AudioInputNode(var params) :
-    IONode(getTypeString(), INPUT, new InputProcessor(this), params)
+NodeViewUI* AudioInputProcessor::createNodeViewUI()
 {
-
+    return new InputNodeViewUI((GenericAudioNode<AudioInputProcessor> *)nodeRef.get());
 }
 
-AudioInputNode::~AudioInputNode()
-{
-}
-
-AudioOutputNode::AudioOutputNode(var params) :
-    IONode(getTypeString(), OUTPUT, new OutputProcessor(this), params)
+//OUTPUT
+AudioOutputProcessor::AudioOutputProcessor(Node* node) :
+    IOProcessor(node)
 {
 }
 
-AudioOutputNode::~AudioOutputNode()
+void AudioOutputProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 }
 
-AudioInputNode::InputProcessor::InputProcessor(AudioInputNode* node) :
-    NodeAudioProcessor(node),
-    inputNode(node)
+NodeViewUI* AudioOutputProcessor::createNodeViewUI()
 {
-}
-
-AudioInputNode::InputProcessor::~InputProcessor()
-{
-}
-
-void AudioInputNode::InputProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
-{
-}
-
-AudioOutputNode::OutputProcessor::OutputProcessor(AudioOutputNode* node) :
-    NodeAudioProcessor(node),
-    outputNode(node)
-{
-}
-
-AudioOutputNode::OutputProcessor::~OutputProcessor()
-{
-}
-
-void AudioOutputNode::OutputProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
-{
+    return new OutputNodeViewUI((GenericAudioNode<AudioOutputProcessor>*)nodeRef.get());
 }

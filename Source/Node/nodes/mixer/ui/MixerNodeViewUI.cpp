@@ -1,20 +1,21 @@
 /*
   ==============================================================================
 
-    LooperNodeViewUI.cpp
-    Created: 15 Nov 2020 8:43:15am
+    MixerNodeViewUI.cpp
+    Created: 15 Nov 2020 11:40:42pm
     Author:  bkupe
 
   ==============================================================================
 */
 
-#include "LooperNodeViewUI.h"
+#include "MixerNodeViewUI.h"
 
-LooperNodeViewUI::LooperNodeViewUI(GenericAudioNode<LooperProcessor>* n) :
+MixerNodeViewUI::MixerNodeViewUI(GenericAudioNode<MixerProcessor>* n) :
     GenericAudioNodeViewUI(n)
 {
+    LOG("Mixer node view !");
 }
 
-LooperNodeViewUI::~LooperNodeViewUI()
+MixerNodeViewUI::~MixerNodeViewUI()
 {
 }

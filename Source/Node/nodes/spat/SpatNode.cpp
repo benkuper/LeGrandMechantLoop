@@ -9,13 +9,18 @@
 */
 
 #include "SpatNode.h"
+#include "ui/SpatNodeViewUI.h"
 
-SpatNode::SpatNode(var params) :
-    Node(getTypeString(), SPAT, new NodeAudioProcessor(this), params)
-
+SpatProcessor::SpatProcessor(Node* node) :
+    GenericNodeAudioProcessor(node)
 {
 }
 
-SpatNode::~SpatNode()
+void SpatProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+}
+
+NodeViewUI* SpatProcessor::createNodeViewUI()
+{
+    return new SpatNodeViewUI((GenericAudioNode<SpatProcessor>*)nodeRef.get());
 }

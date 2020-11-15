@@ -1,20 +1,20 @@
 /*
   ==============================================================================
 
-    LooperNodeViewUI.cpp
-    Created: 15 Nov 2020 8:43:15am
+    VSTNodeViewUI.cpp
+    Created: 15 Nov 2020 11:41:16pm
     Author:  bkupe
 
   ==============================================================================
 */
 
-#include "LooperNodeViewUI.h"
+#include "VSTNodeViewUI.h"
 
-LooperNodeViewUI::LooperNodeViewUI(GenericAudioNode<LooperProcessor>* n) :
+VSTNodeViewUI::VSTNodeViewUI(GenericAudioNode<VSTProcessor>* n) :
     GenericAudioNodeViewUI(n)
 {
 }
 
-LooperNodeViewUI::~LooperNodeViewUI()
+VSTNodeViewUI::~VSTNodeViewUI()
 {
 }

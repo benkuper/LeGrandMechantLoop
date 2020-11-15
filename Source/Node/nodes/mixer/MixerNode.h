@@ -1,25 +1,25 @@
 /*
   ==============================================================================
 
-    MixerNode.h
-    Created: 15 Nov 2020 8:42:42am
-    Author:  bkupe
+	MixerNode.h
+	Created: 15 Nov 2020 8:42:42am
+	Author:  bkupe
 
   ==============================================================================
 */
 
 #pragma once
-#include "../../Node.h"
+#include "../../NodeAudioProcessor.h"
 
-class MixerNode :
-    public Node
+class MixerProcessor :
+	public GenericNodeAudioProcessor
 {
 public:
-    MixerNode(var params = var());
-    ~MixerNode();
+	MixerProcessor(Node * node);
+	~MixerProcessor() {}
 
-    String getTypeString() const override { return getTypeStringStatic(); }
-    static const String getTypeStringStatic() { return "Mixer"; }
+	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	static const String getTypeStringStatic() { return "Mixer"; }
 
-    static MixerNode* create(var params) { return new MixerNode(params); }
+	NodeViewUI* createNodeViewUI() override;
 };

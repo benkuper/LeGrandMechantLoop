@@ -20,3 +20,8 @@ NodeManagerViewUI::NodeManagerViewUI(StringRef name) :
 NodeManagerViewUI::~NodeManagerViewUI()
 {
 }
+
+NodeViewUI* NodeManagerViewUI::createUIForItem(Node* n)
+{
+    return n->createViewUI();
+}

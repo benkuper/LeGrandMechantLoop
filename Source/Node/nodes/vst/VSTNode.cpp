@@ -9,12 +9,18 @@
 */
 
 #include "VSTNode.h"
+#include "ui/VSTNodeViewUI.h"
 
-VSTNode::VSTNode(var params) :
-    Node(getTypeString(), VST, new NodeAudioProcessor(this), params)
+VSTProcessor::VSTProcessor(Node* node) :
+    GenericNodeAudioProcessor(node)
 {
 }
 
-VSTNode::~VSTNode()
+void VSTProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+}
+
+NodeViewUI* VSTProcessor::createNodeViewUI()
+{
+    return new VSTNodeViewUI((GenericAudioNode<VSTProcessor>*)nodeRef.get());
 }

@@ -10,17 +10,17 @@
 
 #pragma once
 
-#include "../../Node.h"
+#include "../../NodeAudioProcessor.h"
 
-class LooperNode :
-    public Node
+class LooperProcessor :
+        public GenericNodeAudioProcessor
 {
 public:
-    LooperNode(var params = var());
-    ~LooperNode();
+    LooperProcessor(Node * node);
+    ~LooperProcessor() {}
 
-    String getTypeString() const override { return getTypeStringStatic(); }
-    static const String getTypeStringStatic() { return "Looper"; }
-
-    static LooperNode* create(var params) { return new LooperNode(params); }
+    void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    static String getTypeStringStatic() { return "Looper"; }
+  
+    NodeViewUI* createNodeViewUI() override;
 };

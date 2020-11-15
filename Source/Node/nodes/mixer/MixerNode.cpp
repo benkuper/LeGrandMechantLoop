@@ -9,12 +9,19 @@
 */
 
 #include "MixerNode.h"
+#include "ui/MixerNodeViewUI.h"
 
-MixerNode::MixerNode(var params) :
-    Node(getTypeString(), MIXER, new NodeAudioProcessor(this), params)
+MixerProcessor::MixerProcessor(Node* node) :
+    GenericNodeAudioProcessor(node)
 {
 }
 
-MixerNode::~MixerNode()
+
+void MixerProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+}
+
+NodeViewUI* MixerProcessor::createNodeViewUI()
+{
+    return new MixerNodeViewUI((GenericAudioNode<MixerProcessor>*)nodeRef.get());
 }

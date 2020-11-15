@@ -1,23 +1,22 @@
 /*
   ==============================================================================
 
-    LooperNodeViewUI.h
-    Created: 15 Nov 2020 8:43:15am
+    MixerNodeViewUI.h
+    Created: 15 Nov 2020 11:40:42pm
     Author:  bkupe
 
   ==============================================================================
 */
 
 #pragma once
-
-#include "../LooperNode.h"
+#include "../MixerNode.h"
 #include "../../../ui/NodeViewUI.h"
 
-class LooperNodeViewUI :
-    public GenericAudioNodeViewUI<LooperProcessor>
+class MixerNodeViewUI :
+    public GenericAudioNodeViewUI<MixerProcessor>
 {
 public:
-    LooperNodeViewUI(GenericAudioNode<LooperProcessor>* n);
-    ~LooperNodeViewUI();
+    MixerNodeViewUI(GenericAudioNode<MixerProcessor>* n);
+    ~MixerNodeViewUI();
 
 };

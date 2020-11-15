@@ -9,12 +9,18 @@
 */
 
 #include "LooperNode.h"
+#include "ui/LooperNodeViewUI.h"
 
-LooperNode::LooperNode(var params) :
-    Node(getTypeString(), LOOPER, new NodeAudioProcessor(this), params)
+LooperProcessor::LooperProcessor(Node* node) :
+    GenericNodeAudioProcessor(node)
 {
 }
 
-LooperNode::~LooperNode()
+void LooperProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+}
+
+NodeViewUI* LooperProcessor::createNodeViewUI()
+{
+    return new LooperNodeViewUI((GenericAudioNode<LooperProcessor>*)nodeRef.get());
 }
