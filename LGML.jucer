@@ -1,20 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{644794F3-EEA3-18B3-8950-FB0E90CE6C1E}" name="Source">
-      <GROUP id="{6C239390-C9E1-1E07-B84F-09F2B750F52B}" name="Interfaces"/>
-      <GROUP id="{9B75D4BB-9C4F-ADB5-FC5D-824BE2B8FC85}" name="Node"/>
+      <GROUP id="{547E2B2F-2054-CDCA-AD1D-F31535731863}" name="Engine">
+        <GROUP id="{91A11254-5AA5-4E03-34F2-115AAAF6C8EB}" name="ui">
+          <FILE id="EbuWKi" name="AudioManagerEditor.cpp" compile="1" resource="0"
+                file="Source/Engine/ui/AudioManagerEditor.cpp"/>
+          <FILE id="tvWd4t" name="AudioManagerEditor.h" compile="0" resource="0"
+                file="Source/Engine/ui/AudioManagerEditor.h"/>
+        </GROUP>
+        <FILE id="OYf71G" name="AudioManager.cpp" compile="1" resource="0"
+              file="Source/Engine/AudioManager.cpp"/>
+        <FILE id="jb1mns" name="AudioManager.h" compile="0" resource="0" file="Source/Engine/AudioManager.h"/>
+        <FILE id="Rx4Fcc" name="LGMLEngine.cpp" compile="1" resource="0" file="Source/Engine/LGMLEngine.cpp"/>
+        <FILE id="DvRVkX" name="LGMLEngine.h" compile="0" resource="0" file="Source/Engine/LGMLEngine.h"/>
+        <FILE id="zlls78" name="LGMLSettings.cpp" compile="1" resource="0"
+              file="Source/Engine/LGMLSettings.cpp"/>
+        <FILE id="o9KN1k" name="LGMLSettings.h" compile="0" resource="0" file="Source/Engine/LGMLSettings.h"/>
+      </GROUP>
+      <GROUP id="{6C239390-C9E1-1E07-B84F-09F2B750F52B}" name="Interface">
+        <GROUP id="{CE2F1281-172B-FC62-91EF-F50D7B79D742}" name="ui">
+          <FILE id="Evlv7x" name="InterfaceManagerUI.cpp" compile="1" resource="0"
+                file="Source/Interface/ui/InterfaceManagerUI.cpp"/>
+          <FILE id="Ni49bm" name="InterfaceManagerUI.h" compile="0" resource="0"
+                file="Source/Interface/ui/InterfaceManagerUI.h"/>
+          <FILE id="W8Ngez" name="InterfaceUI.cpp" compile="1" resource="0" file="Source/Interface/ui/InterfaceUI.cpp"/>
+          <FILE id="ET3PXs" name="InterfaceUI.h" compile="0" resource="0" file="Source/Interface/ui/InterfaceUI.h"/>
+        </GROUP>
+        <FILE id="zc5wen" name="Interface.cpp" compile="1" resource="0" file="Source/Interface/Interface.cpp"/>
+        <FILE id="Ync0lQ" name="Interface.h" compile="0" resource="0" file="Source/Interface/Interface.h"/>
+        <FILE id="RodVnT" name="InterfaceManager.cpp" compile="1" resource="0"
+              file="Source/Interface/InterfaceManager.cpp"/>
+        <FILE id="ehqmv2" name="InterfaceManager.h" compile="0" resource="0"
+              file="Source/Interface/InterfaceManager.h"/>
+      </GROUP>
+      <GROUP id="{9B75D4BB-9C4F-ADB5-FC5D-824BE2B8FC85}" name="Node">
+        <GROUP id="{DB856208-BADE-CF87-CC8F-7A9B348E2675}" name="ui">
+          <FILE id="ODUsMW" name="NodeManagerUI.cpp" compile="1" resource="0"
+                file="Source/Node/ui/NodeManagerUI.cpp"/>
+          <FILE id="zBdLn3" name="NodeManagerUI.h" compile="0" resource="0" file="Source/Node/ui/NodeManagerUI.h"/>
+          <FILE id="TjJD7q" name="NodeManagerViewUI.cpp" compile="1" resource="0"
+                file="Source/Node/ui/NodeManagerViewUI.cpp"/>
+          <FILE id="YWmqoA" name="NodeManagerViewUI.h" compile="0" resource="0"
+                file="Source/Node/ui/NodeManagerViewUI.h"/>
+          <FILE id="xvUFmm" name="NodeUI.cpp" compile="1" resource="0" file="Source/Node/ui/NodeUI.cpp"/>
+          <FILE id="maodP5" name="NodeUI.h" compile="0" resource="0" file="Source/Node/ui/NodeUI.h"/>
+          <FILE id="pMwVDF" name="NodeViewUI.cpp" compile="1" resource="0" file="Source/Node/ui/NodeViewUI.cpp"/>
+          <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
+        </GROUP>
+        <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
+          <GROUP id="{AC321AE6-FB6A-AD04-F5D5-FC5C94A342F7}" name="vst">
+            <FILE id="EQgTho" name="VSTNode.cpp" compile="1" resource="0" file="Source/Node/nodes/vst/VSTNode.cpp"/>
+            <FILE id="EvuefA" name="VSTNode.h" compile="0" resource="0" file="Source/Node/nodes/vst/VSTNode.h"/>
+          </GROUP>
+          <GROUP id="{0581DE71-D9D5-B444-9014-51F1CF249FDF}" name="spat">
+            <FILE id="GJLVTB" name="SpatNode.cpp" compile="1" resource="0" file="Source/Node/nodes/spat/SpatNode.cpp"/>
+            <FILE id="WYOBmX" name="SpatNode.h" compile="0" resource="0" file="Source/Node/nodes/spat/SpatNode.h"/>
+          </GROUP>
+          <GROUP id="{2D31F0DA-C2F2-08CC-367A-B5883FBFC8AF}" name="mixer">
+            <FILE id="guTpjf" name="MixerNode.cpp" compile="1" resource="0" file="Source/Node/nodes/mixer/MixerNode.cpp"/>
+            <FILE id="OApgv4" name="MixerNode.h" compile="0" resource="0" file="Source/Node/nodes/mixer/MixerNode.h"/>
+          </GROUP>
+          <GROUP id="{8E064CC2-80BD-F968-71CB-1AA11CAF0F1A}" name="io">
+            <FILE id="dghFwr" name="IONode.cpp" compile="1" resource="0" file="Source/Node/nodes/io/IONode.cpp"/>
+            <FILE id="TVvzsq" name="IONode.h" compile="0" resource="0" file="Source/Node/nodes/io/IONode.h"/>
+          </GROUP>
+          <GROUP id="{E64011D1-E57A-B4BF-FEA2-987CB75B9AD0}" name="looper">
+            <GROUP id="{D0916EDF-EA50-67D7-5292-E5B4E8C929BE}" name="ui">
+              <FILE id="L5Hqiu" name="LooperNodeViewUI.cpp" compile="1" resource="0"
+                    file="Source/Node/nodes/looper/ui/LooperNodeViewUI.cpp"/>
+              <FILE id="sYfJne" name="LooperNodeViewUI.h" compile="0" resource="0"
+                    file="Source/Node/nodes/looper/ui/LooperNodeViewUI.h"/>
+            </GROUP>
+            <FILE id="SBqo06" name="LooperNode.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperNode.cpp"/>
+            <FILE id="MI1IfJ" name="LooperNode.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperNode.h"/>
+          </GROUP>
+        </GROUP>
+        <FILE id="YMfktw" name="Node.cpp" compile="1" resource="0" file="Source/Node/Node.cpp"/>
+        <FILE id="TfcTHt" name="Node.h" compile="0" resource="0" file="Source/Node/Node.h"/>
+        <FILE id="PkUUJk" name="NodeManager.cpp" compile="1" resource="0" file="Source/Node/NodeManager.cpp"/>
+        <FILE id="Tonclt" name="NodeManager.h" compile="0" resource="0" file="Source/Node/NodeManager.h"/>
+        <FILE id="gA65mU" name="NodeFactory.cpp" compile="1" resource="0" file="Source/Node/NodeFactory.cpp"/>
+        <FILE id="ZkDJBy" name="NodeFactory.h" compile="0" resource="0" file="Source/Node/NodeFactory.h"/>
+      </GROUP>
       <GROUP id="{11FA575D-C131-1AC4-2204-E3ECCAA445DC}" name="Timeline"/>
-      <GROUP id="{6FBA09ED-E5A2-3335-EDAC-250C2634A0CA}" name="Transport"/>
+      <GROUP id="{6FBA09ED-E5A2-3335-EDAC-250C2634A0CA}" name="Transport">
+        <GROUP id="{1D23A54C-E33B-5C86-5FE2-AD7BB985ED08}" name="ui">
+          <FILE id="snvSrt" name="TransportUI.cpp" compile="1" resource="0" file="Source/Transport/ui/TransportUI.cpp"/>
+          <FILE id="qmarDL" name="TransportUI.h" compile="0" resource="0" file="Source/Transport/ui/TransportUI.h"/>
+        </GROUP>
+        <FILE id="VxY9pN" name="Transport.cpp" compile="1" resource="0" file="Source/Transport/Transport.cpp"/>
+        <FILE id="DncovQ" name="Transport.h" compile="0" resource="0" file="Source/Transport/Transport.h"/>
+      </GROUP>
+      <FILE id="Gpnu5Y" name="Main.h" compile="0" resource="0" file="Source/Main.h"/>
       <FILE id="oco5nY" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="rizybe" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
       <FILE id="N785JP" name="MainComponent.cpp" compile="1" resource="0"
             file="Source/MainComponent.cpp"/>
+      <FILE id="JhOEgl" name="MainComponentCommands.cpp" compile="1" resource="0"
+            file="Source/MainComponentCommands.cpp"/>
     </GROUP>
   </MAINGROUP>
-  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" ORGANICUI_USE_WEBSERVER="1"/>
   <EXPORTFORMATS>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
       <CONFIGURATIONS>
@@ -36,6 +125,8 @@
         <MODULEPATH id="juce_gui_extra" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_osc" path="../../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_organicui" path="Modules"/>
+        <MODULEPATH id="juce_simpleweb" path="Modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2019 targetFolder="Builds/VisualStudio2019">
@@ -58,6 +149,8 @@
         <MODULEPATH id="juce_gui_extra" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_osc" path="../../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_organicui" path="Modules"/>
+        <MODULEPATH id="juce_simpleweb" path="Modules"/>
       </MODULEPATHS>
     </VS2019>
     <XCODE_MAC targetFolder="Builds/MacOSX">
@@ -80,6 +173,8 @@
         <MODULEPATH id="juce_gui_extra" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../../../../Softwares/JUCE/modules"/>
         <MODULEPATH id="juce_osc" path="../../../../../Softwares/JUCE/modules"/>
+        <MODULEPATH id="juce_organicui" path="Modules"/>
+        <MODULEPATH id="juce_simpleweb" path="Modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
@@ -97,7 +192,9 @@
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_organicui" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_osc" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_simpleweb" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
   <LIVE_SETTINGS>
     <WINDOWS/>

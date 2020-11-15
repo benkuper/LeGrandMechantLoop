@@ -1,3 +1,6 @@
 [submodule "Modules/juce_organicui"]
 	path = Modules/juce_organicui
 	url = https://github.com/benkuper/juce_organicui
+[submodule "Modules/juce_simpleweb"]
+	path = Modules/juce_simpleweb
+	url = https://github.com/benkuper/juce_simpleweb

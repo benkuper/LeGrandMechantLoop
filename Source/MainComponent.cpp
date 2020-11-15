@@ -1,29 +1,41 @@
 #include "MainComponent.h"
 
+#include  "Node/ui/NodeManagerUI.h"
+#include  "Node/ui/NodeManagerViewUI.h"
+#include "Interface/ui/InterfaceManagerUI.h"
+#include "Transport/ui/TransportUI.h"
+
 //==============================================================================
+String getAppVersion();
+ApplicationProperties& getAppProperties();
+ApplicationCommandManager& getCommandManager();
+
 MainComponent::MainComponent()
 {
-    setSize (600, 400);
+	setSize(800, 600);
+	getCommandManager().registerAllCommandsForTarget(this);
 }
 
 MainComponent::~MainComponent()
 {
 }
 
-//==============================================================================
-void MainComponent::paint (juce::Graphics& g)
+void MainComponent::init()
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Nodes (List View)", &NodeManagerUI::create));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Nodes (2D View)", &NodeManagerViewUI::create));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Interfaces", &InterfaceManagerUI::create));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Transport", &TransportUI::create));
+	//ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Timeline", &TimelineU::create));
 
-    g.setFont (juce::Font (16.0f));
-    g.setColour (juce::Colours::white);
-    g.drawText ("Hello World!", getLocalBounds(), juce::Justification::centred, true);
-}
 
-void MainComponent::resized()
-{
-    // This is called when the MainComponent is resized.
-    // If you add any child components, this is where you should
-    // update their positions.
+	OrganicMainContentComponent::init();
+
+	String lastVersion = getAppProperties().getUserSettings()->getValue("lastVersion", "");
+
+	if (lastVersion != getAppVersion())
+	{
+		//WelcomeScreen w;
+		//DialogWindow::showModalDialog("Welcome", &w, getTopLevelComponent(), Colours::black, true);
+	}
 }
