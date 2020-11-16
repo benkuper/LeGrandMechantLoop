@@ -19,6 +19,13 @@ public:
     LooperProcessor(Node * node);
     ~LooperProcessor() {}
 
+    IntParameter* numTracks;
+    IntParameter* numChannelsPerTrack;
+
+    void updateAudioOutputs();
+
+    void onContainerParameterChanged(Parameter* p) override;
+
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
     static String getTypeStringStatic() { return "Looper"; }
   

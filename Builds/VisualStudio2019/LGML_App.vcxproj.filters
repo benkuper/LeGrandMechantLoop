@@ -14,6 +14,12 @@
     <Filter Include="LGML\Source\Interface">
       <UniqueIdentifier>{F75005E5-39A0-F07D-73A2-B7008F4A8E12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Node\Connection\ui">
+      <UniqueIdentifier>{97BAB5DD-629A-C198-66D4-E930B7BC05CB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Node\Connection">
+      <UniqueIdentifier>{BA8F360E-02AF-56E1-844E-5EB31FE159C9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Node\ui">
       <UniqueIdentifier>{3B1D1023-6B9A-7940-0DE2-650FF8A525A4}</UniqueIdentifier>
     </Filter>
@@ -816,6 +822,24 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Interface\InterfaceManager.cpp">
       <Filter>LGML\Source\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionEditor.cpp">
+      <Filter>LGML\Source\Node\Connection\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionManagerViewUI.cpp">
+      <Filter>LGML\Source\Node\Connection\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionViewUI.cpp">
+      <Filter>LGML\Source\Node\Connection\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnector.cpp">
+      <Filter>LGML\Source\Node\Connection\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\NodeConnection.cpp">
+      <Filter>LGML\Source\Node\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\NodeConnectionManager.cpp">
+      <Filter>LGML\Source\Node\Connection</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\ui\NodeManagerUI.cpp">
       <Filter>LGML\Source\Node\ui</Filter>
@@ -3707,6 +3731,24 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Interface\InterfaceManager.h">
       <Filter>LGML\Source\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnectionEditor.h">
+      <Filter>LGML\Source\Node\Connection\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnectionManagerViewUI.h">
+      <Filter>LGML\Source\Node\Connection\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnectionViewUI.h">
+      <Filter>LGML\Source\Node\Connection\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnector.h">
+      <Filter>LGML\Source\Node\Connection\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\Connection\NodeConnection.h">
+      <Filter>LGML\Source\Node\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\Connection\NodeConnectionManager.h">
+      <Filter>LGML\Source\Node\Connection</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\ui\NodeManagerUI.h">
       <Filter>LGML\Source\Node\ui</Filter>

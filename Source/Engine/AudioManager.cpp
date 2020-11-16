@@ -19,7 +19,9 @@ AudioManager::AudioManager() :
 {
     am.addAudioCallback(this);
     am.addChangeListener(this);
-    am.initialiseWithDefaultDevices(1, 2);
+    am.initialiseWithDefaultDevices(2, 2);
+
+    am.addAudioCallback(&player);
 
     graph.reset();
 
@@ -29,16 +31,24 @@ AudioManager::AudioManager() :
 
     graph.setPlayConfigDetails(1, 2, currentSampleRate, currentBufferSize);
     graph.prepareToPlay(currentSampleRate, currentBufferSize);
+    
 
     std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procIn(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioInputNode));
     std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procOut(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode));
     graph.addNode(std::move(procIn), AudioProcessorGraph::NodeID(AUDIO_GRAPH_INPUT_ID));
     graph.addNode(std::move(procOut), AudioProcessorGraph::NodeID(AUDIO_GRAPH_OUTPUT_ID));
+
+    player.setProcessor(&graph);
+
+    numAudioInputs = setup.inputChannels.countNumberOfSetBits();
+    numAudioOutputs = setup.outputChannels.countNumberOfSetBits();
 }
 
 AudioManager::~AudioManager()
 {
+    am.removeAudioCallback(&player);
     graph.clear();
+    player.setProcessor(nullptr);
     am.removeAudioCallback(this);
     am.removeChangeListener(this);
 }
@@ -50,7 +60,7 @@ int AudioManager::getNewGraphID()
 
 void AudioManager::audioDeviceIOCallback(const float** inputChannelData, int numInputChannels, float** outputChannelData, int numOutputChannels, int numSamples)
 {
-	for (int i = 0; i < numOutputChannels; ++i) FloatVectorOperations::clear(outputChannelData[i], numSamples);
+    for (int i = 0; i < numOutputChannels; ++i) FloatVectorOperations::clear(outputChannelData[i], numSamples);
 }
 
 void AudioManager::audioDeviceAboutToStart(AudioIODevice* device)
@@ -67,11 +77,38 @@ void AudioManager::changeListenerCallback(ChangeBroadcaster* source)
     currentSampleRate = setup.sampleRate;
     currentBufferSize = setup.bufferSize;
 
-    int numSelectedInputChannelsInSetup = setup.inputChannels.countNumberOfSetBits();
-    int numSelectedOutputChannelsInSetup = setup.outputChannels.countNumberOfSetBits();
 
-    graph.setPlayConfigDetails(numSelectedInputChannelsInSetup, numSelectedOutputChannelsInSetup, currentSampleRate, currentBufferSize);
+    numAudioInputs = setup.inputChannels.countNumberOfSetBits();
+    numAudioOutputs= setup.outputChannels.countNumberOfSetBits();
+
+    graph.setPlayConfigDetails(numAudioInputs, numAudioOutputs, currentSampleRate, currentBufferSize);
     graph.prepareToPlay(currentSampleRate, currentBufferSize);
+
+    LOG("Graph num inputs " << graph.getNumInputChannels());
+    audioManagerListeners.call(&AudioManagerListener::audioSetupChanged);
+}
+
+StringArray AudioManager::getInputChannelNames() const
+{
+    if (am.getCurrentAudioDevice() == nullptr) return StringArray();
+
+    StringArray allInputs = am.getCurrentAudioDevice()->getInputChannelNames();
+    BigInteger actives = am.getCurrentAudioDevice()->getActiveInputChannels();
+
+    StringArray result;
+    for (int i = 0; i < allInputs.size(); i++)  if (actives[i]) result.add(allInputs[i]);
+    return result;
+}
+
+StringArray AudioManager::getOutputChannelNames() const
+{
+    if (am.getCurrentAudioDevice() == nullptr) return StringArray();
+
+    StringArray allOutputs = am.getCurrentAudioDevice()->getOutputChannelNames();
+    BigInteger actives = am.getCurrentAudioDevice()->getActiveOutputChannels();
+    StringArray result;
+    for (int i = 0; i < allOutputs.size(); i++)  if (actives[i]) result.add(allOutputs[i]);
+    return result;
 }
 
 var AudioManager::getJSONData()

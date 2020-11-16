@@ -93,6 +93,30 @@
 			isa = PBXBuildFile;
 			fileRef = 7DB2AC6358846EAA873A9436;
 		};
+		82882B6EAF553922853A3DBE = {
+			isa = PBXBuildFile;
+			fileRef = EF8A084EAE63305FD16CD2D0;
+		};
+		2A7937C8EFFC4848B82D9B7F = {
+			isa = PBXBuildFile;
+			fileRef = EB3D0AB52B22A175720CB98A;
+		};
+		1C791EFC33DC6BEE67A3ECE5 = {
+			isa = PBXBuildFile;
+			fileRef = CEF85D1DE39EFB3132381DB5;
+		};
+		1DBD0AA207331F130974F166 = {
+			isa = PBXBuildFile;
+			fileRef = 78D14554A5AB9F38E531B5BB;
+		};
+		97B40DB33DF68D5E11A7B8BA = {
+			isa = PBXBuildFile;
+			fileRef = 82617B1F023E813F6B61DB55;
+		};
+		9E31C1B4EDB3FB4F28816AC1 = {
+			isa = PBXBuildFile;
+			fileRef = 4F1A28AA9EE3359DCD52B0BC;
+		};
 		25D8BC0C2329D31E47DE628A = {
 			isa = PBXBuildFile;
 			fileRef = 2C20037FB72504C4BD9A339D;
@@ -299,12 +323,26 @@
 			path = "~/JUCE/modules/juce_audio_basics";
 			sourceTree = "<absolute>";
 		};
+		07DF8431BFEA9C4D0AAC785F = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = NodeConnector.h;
+			path = ../../Source/Node/Connection/ui/NodeConnector.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		0AD4985B9DDF78CE286438BB = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
 			name = "juce_audio_processors";
 			path = "~/JUCE/modules/juce_audio_processors";
 			sourceTree = "<absolute>";
+		};
+		0D55825E638DFCD338C1E581 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = NodeConnectionEditor.h;
+			path = ../../Source/Node/Connection/ui/NodeConnectionEditor.h;
+			sourceTree = "SOURCE_ROOT";
 		};
 		0DA31F87CFF887F48593D7E6 = {
 			isa = PBXFileReference;
@@ -348,6 +386,13 @@
 			path = ../../Source/Node/nodes/looper/ui/LooperNodeViewUI.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		1A294BBC28883F10E2499A5A = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = NodeConnectionManager.h;
+			path = ../../Source/Node/Connection/NodeConnectionManager.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		1A9393E4E7FDBAE138BE8483 = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
@@ -360,6 +405,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = "include_juce_osc.cpp";
 			path = "../../JuceLibraryCode/include_juce_osc.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
+		2042839E264FD8B0357DD1DF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = NodeConnectionManagerViewUI.h;
+			path = ../../Source/Node/Connection/ui/NodeConnectionManagerViewUI.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		2086E6110187DEB98D435420 = {
@@ -446,6 +498,13 @@
 			path = ../../Source/Node/nodes/vst/VSTNode.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		3A7117A8F37403142F89CA73 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = NodeConnectionViewUI.h;
+			path = ../../Source/Node/Connection/ui/NodeConnectionViewUI.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		3CDD5D2E812DBD7836CF59C1 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -530,6 +589,13 @@
 			path = "../../JuceLibraryCode/include_juce_core.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		4F1A28AA9EE3359DCD52B0BC = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = NodeConnectionManager.cpp;
+			path = ../../Source/Node/Connection/NodeConnectionManager.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		4F3BE5BAD3E28FA7BB28F95B = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
@@ -563,6 +629,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MainComponentCommands.cpp;
 			path = ../../Source/MainComponentCommands.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		5E1F18975A1E63FEFC5FE61C = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = NodeConnection.h;
+			path = ../../Source/Node/Connection/NodeConnection.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		5E55B89A27AC99BF159D09D9 = {
@@ -628,6 +701,13 @@
 			path = ../../Source/Engine/AudioManager.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		78D14554A5AB9F38E531B5BB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = NodeConnector.cpp;
+			path = ../../Source/Node/Connection/ui/NodeConnector.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		7DB2AC6358846EAA873A9436 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -654,6 +734,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = Transport.h;
 			path = ../../Source/Transport/Transport.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		82617B1F023E813F6B61DB55 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = NodeConnection.cpp;
+			path = ../../Source/Node/Connection/NodeConnection.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		83E4529A3C40661418A94D18 = {
@@ -880,6 +967,13 @@
 			path = ../../Source/Transport/ui/TransportUI.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		CEF85D1DE39EFB3132381DB5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = NodeConnectionViewUI.cpp;
+			path = ../../Source/Node/Connection/ui/NodeConnectionViewUI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		D185190C2BB3B6311FBE3F77 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -969,6 +1063,20 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = NodeViewUI.h;
 			path = ../../Source/Node/ui/NodeViewUI.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		EB3D0AB52B22A175720CB98A = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = NodeConnectionManagerViewUI.cpp;
+			path = ../../Source/Node/Connection/ui/NodeConnectionManagerViewUI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		EF8A084EAE63305FD16CD2D0 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = NodeConnectionEditor.cpp;
+			path = ../../Source/Node/Connection/ui/NodeConnectionEditor.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		F11E5C9F411D5F4CAA0045B4 = {
@@ -1078,6 +1186,33 @@
 				3507D76DD6E7B7A6CEA14CD2,
 			);
 			name = Interface;
+			sourceTree = "<group>";
+		};
+		2799F26C8A7309D214CD5310 = {
+			isa = PBXGroup;
+			children = (
+				EF8A084EAE63305FD16CD2D0,
+				0D55825E638DFCD338C1E581,
+				EB3D0AB52B22A175720CB98A,
+				2042839E264FD8B0357DD1DF,
+				CEF85D1DE39EFB3132381DB5,
+				3A7117A8F37403142F89CA73,
+				78D14554A5AB9F38E531B5BB,
+				07DF8431BFEA9C4D0AAC785F,
+			);
+			name = ui;
+			sourceTree = "<group>";
+		};
+		B50A8C41E2A3E13891A04750 = {
+			isa = PBXGroup;
+			children = (
+				2799F26C8A7309D214CD5310,
+				82617B1F023E813F6B61DB55,
+				5E1F18975A1E63FEFC5FE61C,
+				4F1A28AA9EE3359DCD52B0BC,
+				1A294BBC28883F10E2499A5A,
+			);
+			name = Connection;
 			sourceTree = "<group>";
 		};
 		0C3379ACA803E5942B464F8C = {
@@ -1205,6 +1340,7 @@
 		3BB4CE6C12326AB495656F12 = {
 			isa = PBXGroup;
 			children = (
+				B50A8C41E2A3E13891A04750,
 				0C3379ACA803E5942B464F8C,
 				9BBA54FAAB2B58725091A8EB,
 				4647F2C3AE98B4565DA5939F,
@@ -1646,6 +1782,12 @@
 				463B977C5D27873BF4673B92,
 				2E2A85A0EB295561A4BFE630,
 				416A0B87D04FEBDA81C03556,
+				82882B6EAF553922853A3DBE,
+				2A7937C8EFFC4848B82D9B7F,
+				1C791EFC33DC6BEE67A3ECE5,
+				1DBD0AA207331F130974F166,
+				97B40DB33DF68D5E11A7B8BA,
+				9E31C1B4EDB3FB4F28816AC1,
 				25D8BC0C2329D31E47DE628A,
 				00D76851A8B9D465B2A2842E,
 				1E158326F5F572CC0DEE0550,

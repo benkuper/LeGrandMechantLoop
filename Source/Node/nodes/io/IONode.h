@@ -28,6 +28,10 @@ public:
 	AudioInputProcessor(Node* node);
 	~AudioInputProcessor() {}
 
+	Array<FloatParameter*> inputRMS;
+
+	void updateOutputsFromNode();
+
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	static const String getTypeStringStatic() { return "Audio Input"; }
 
@@ -41,6 +45,10 @@ class AudioOutputProcessor :
 public:
 	AudioOutputProcessor(Node* node);
 	~AudioOutputProcessor() {}
+
+	Array<FloatParameter*> outputRMS;
+
+	void updateInputsFromNode() override;
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	static const String getTypeStringStatic() { return "Audio Output"; }

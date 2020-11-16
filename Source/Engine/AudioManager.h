@@ -28,10 +28,14 @@ public:
 
 	AudioDeviceManager am;
 	AudioProcessorGraph graph;
+	AudioProcessorPlayer player;
 	int graphIDIncrement; //This will be incremented and assign to each node that is created, in the node constructor
 
 	double currentSampleRate;
 	int currentBufferSize;
+
+	int numAudioInputs;
+	int numAudioOutputs;
 
 
 	int getNewGraphID();
@@ -41,6 +45,20 @@ public:
 	virtual void audioDeviceStopped() override;
 
 	virtual void changeListenerCallback(ChangeBroadcaster* source) override;
+
+	StringArray getInputChannelNames() const;
+	StringArray getOutputChannelNames() const;
+
+	class AudioManagerListener
+	{
+	public:
+		virtual ~AudioManagerListener() {}
+		virtual void audioSetupChanged() {}
+	};
+
+	ListenerList<AudioManagerListener> audioManagerListeners;
+	void addAudioManagerListener(AudioManagerListener* newListener) { audioManagerListeners.add(newListener); }
+	void removeAudioManagerListener(AudioManagerListener* listener) { audioManagerListeners.remove(listener); }
 
 	var getJSONData() override;
 	void loadJSONDataInternal(var data) override;

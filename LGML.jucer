@@ -37,6 +37,33 @@
               file="Source/Interface/InterfaceManager.h"/>
       </GROUP>
       <GROUP id="{9B75D4BB-9C4F-ADB5-FC5D-824BE2B8FC85}" name="Node">
+        <GROUP id="{4AA5F20B-83CE-7D3B-F394-E0D299D8952F}" name="Connection">
+          <GROUP id="{060F13A9-D934-2E45-F469-74F428771491}" name="ui">
+            <FILE id="BhTZWm" name="NodeConnectionEditor.cpp" compile="1" resource="0"
+                  file="Source/Node/Connection/ui/NodeConnectionEditor.cpp"/>
+            <FILE id="jWEz6r" name="NodeConnectionEditor.h" compile="0" resource="0"
+                  file="Source/Node/Connection/ui/NodeConnectionEditor.h"/>
+            <FILE id="oMxCsq" name="NodeConnectionManagerViewUI.cpp" compile="1"
+                  resource="0" file="Source/Node/Connection/ui/NodeConnectionManagerViewUI.cpp"/>
+            <FILE id="Rw4OTM" name="NodeConnectionManagerViewUI.h" compile="0"
+                  resource="0" file="Source/Node/Connection/ui/NodeConnectionManagerViewUI.h"/>
+            <FILE id="MjSDOq" name="NodeConnectionViewUI.cpp" compile="1" resource="0"
+                  file="Source/Node/Connection/ui/NodeConnectionViewUI.cpp"/>
+            <FILE id="YjwbUR" name="NodeConnectionViewUI.h" compile="0" resource="0"
+                  file="Source/Node/Connection/ui/NodeConnectionViewUI.h"/>
+            <FILE id="tfDurb" name="NodeConnector.cpp" compile="1" resource="0"
+                  file="Source/Node/Connection/ui/NodeConnector.cpp"/>
+            <FILE id="xjnISq" name="NodeConnector.h" compile="0" resource="0" file="Source/Node/Connection/ui/NodeConnector.h"/>
+          </GROUP>
+          <FILE id="Mk1aGJ" name="NodeConnection.cpp" compile="1" resource="0"
+                file="Source/Node/Connection/NodeConnection.cpp"/>
+          <FILE id="djAYUc" name="NodeConnection.h" compile="0" resource="0"
+                file="Source/Node/Connection/NodeConnection.h"/>
+          <FILE id="ziZEoN" name="NodeConnectionManager.cpp" compile="1" resource="0"
+                file="Source/Node/Connection/NodeConnectionManager.cpp"/>
+          <FILE id="DJHYYX" name="NodeConnectionManager.h" compile="0" resource="0"
+                file="Source/Node/Connection/NodeConnectionManager.h"/>
+        </GROUP>
         <GROUP id="{DB856208-BADE-CF87-CC8F-7A9B348E2675}" name="ui">
           <FILE id="ODUsMW" name="NodeManagerUI.cpp" compile="1" resource="0"
                 file="Source/Node/ui/NodeManagerUI.cpp"/>

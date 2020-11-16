@@ -25,6 +25,10 @@ public:
 
 	WeakReference<Node> nodeRef;
 
+	FloatParameter* outRMS;
+
+	virtual void updateInputsFromNode() {}
+	virtual void updateOutputsFromNode() {}
 
 	virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {}
 

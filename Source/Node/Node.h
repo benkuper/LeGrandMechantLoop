@@ -12,6 +12,7 @@
 
 #include "NodeAudioProcessor.h"
 
+class NodeConnection;
 class NodeViewUI;
 
 class Node :
@@ -23,26 +24,38 @@ public:
 
     virtual void clearItem() override;
 
-    AudioProcessorGraph::NodeID graphNodeID;
+    AudioProcessorGraph::NodeID nodeGraphID;
     NodeAudioProcessor * baseProcessor;
     AudioProcessorGraph::Node::Ptr nodeGraphPtr;
 
     StringArray audioInputNames;
     StringArray audioOutputNames;
 
+    int numInputs;
+    int numOutputs;
+
+    Array<NodeConnection*> inConnections;
+    Array<NodeConnection*> outConnections;
+
     FloatParameter* outGain;
 
     void setProcessor(NodeAudioProcessor * processor); //needs to be called from
 
+    void setAudioInputs(const int& numInputs); //auto naming
     void setAudioInputs(const StringArray & inputNames);
+    void setAudioOutputs(const int& numOutputs); //auto naming
     void setAudioOutputs(const StringArray& outputNames);
 
     // Helpers
     bool hasAudioInput() { return !audioInputNames.isEmpty(); }
     bool hasAudioOutput() { return !audioOutputNames.isEmpty(); }
 
-    virtual NodeViewUI* createViewUI();
+    template<class T>
+    T* getProcessor() { return dynamic_cast<T*>(baseProcessor); }
 
+    DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED))
+
+    virtual NodeViewUI* createViewUI();
     WeakReference<Node>::Master masterReference;
 };
 

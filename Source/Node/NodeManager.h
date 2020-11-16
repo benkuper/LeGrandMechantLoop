@@ -10,44 +10,58 @@
 
 #pragma once
 #include "Node.h"
+#include "Engine/AudioManager.h"
 
+class NodeConnectionManager;
 class NodeManagerAudioProcessor;
 
 class NodeManager :
     public BaseManager<Node>
 {
 public:
-    NodeManager(AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID, int numInputs, int numOutputs);
+    NodeManager(AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID);
     ~NodeManager();
-
-    AudioProcessorGraph::NodeID nodeGraphID;
-    NodeManagerAudioProcessor* audioProcessor;
-    AudioProcessorGraph::Node::Ptr nodeGraphPtr;
 
     AudioProcessorGraph::NodeID inputNodeID;
     AudioProcessorGraph::NodeID outputNodeID;
 
-    int numAudioInputs;
-    int numAudioOutputs;
+    StringArray audioInputNames;
+    StringArray audioOutputNames;
 
-    void setNumInputChannels(int num);
-    void setNumOutputChannels(int num);
+    Array<Node*> audioInputNodes;
+    Array<Node*> audioOutputNodes;
+
+    std::unique_ptr<NodeConnectionManager> connectionManager;
+
+    void setAudioInputs(const int& numInputs); //auto naming
+    void setAudioInputs(const StringArray& inputNames);
+    void setAudioOutputs(const int& numOutputs); //auto naming
+    void setAudioOutputs(const StringArray& outputNames);
+
+    void updateAudioInputNode(Node * n);
+    void updateAudioOutputNode(Node *n);
 
     virtual void addItemInternal(Node* n, var data) override;
     virtual void removeItemInternal(Node* n) override;
+
+    var getJSONData() override;
+    void loadJSONDataManagerInternal(var data) override;
 };
 
 
 class RootNodeManager :
-    public NodeManager
+    public NodeManager,
+    public AudioManager::AudioManagerListener
 {
 public:
     juce_DeclareSingleton(RootNodeManager, true);
     RootNodeManager();
     ~RootNodeManager();
+
+    void audioSetupChanged() override;
 };
 
-
+/*
 class NodeManagerAudioProcessor :
     public AudioProcessor
 {
@@ -58,7 +72,6 @@ public:
     NodeManager* nodeManager;
     WeakReference<Inspectable> nodeManagerRef;
 
-    /* AudioProcessor */
     virtual const String getName() const override { return nodeManager == nullptr ? "[Deleted]" : nodeManager->niceName; }
     virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) {}
     virtual void releaseResources() override {}
@@ -77,3 +90,4 @@ public:
     virtual void getStateInformation(juce::MemoryBlock& destData) override {}
     virtual void setStateInformation(const void* data, int sizeInBytes) override {}
 };
+*/

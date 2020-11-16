@@ -76,6 +76,12 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/InterfaceUI_c1d18c91.o \
   $(JUCE_OBJDIR)/Interface_5815e0a4.o \
   $(JUCE_OBJDIR)/InterfaceManager_c58b52f3.o \
+  $(JUCE_OBJDIR)/NodeConnectionEditor_84163a45.o \
+  $(JUCE_OBJDIR)/NodeConnectionManagerViewUI_adf9d3b8.o \
+  $(JUCE_OBJDIR)/NodeConnectionViewUI_72db22d1.o \
+  $(JUCE_OBJDIR)/NodeConnector_8513b0fd.o \
+  $(JUCE_OBJDIR)/NodeConnection_6099998d.o \
+  $(JUCE_OBJDIR)/NodeConnectionManager_17da71ea.o \
   $(JUCE_OBJDIR)/NodeManagerUI_b8fab212.o \
   $(JUCE_OBJDIR)/NodeManagerViewUI_3961ec97.o \
   $(JUCE_OBJDIR)/NodeUI_7a7ad1cd.o \
@@ -169,6 +175,36 @@ $(JUCE_OBJDIR)/Interface_5815e0a4.o: ../../Source/Interface/Interface.cpp
 $(JUCE_OBJDIR)/InterfaceManager_c58b52f3.o: ../../Source/Interface/InterfaceManager.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling InterfaceManager.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/NodeConnectionEditor_84163a45.o: ../../Source/Node/Connection/ui/NodeConnectionEditor.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling NodeConnectionEditor.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/NodeConnectionManagerViewUI_adf9d3b8.o: ../../Source/Node/Connection/ui/NodeConnectionManagerViewUI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling NodeConnectionManagerViewUI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/NodeConnectionViewUI_72db22d1.o: ../../Source/Node/Connection/ui/NodeConnectionViewUI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling NodeConnectionViewUI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/NodeConnector_8513b0fd.o: ../../Source/Node/Connection/ui/NodeConnector.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling NodeConnector.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/NodeConnection_6099998d.o: ../../Source/Node/Connection/NodeConnection.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling NodeConnection.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/NodeConnectionManager_17da71ea.o: ../../Source/Node/Connection/NodeConnectionManager.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling NodeConnectionManager.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/NodeManagerUI_b8fab212.o: ../../Source/Node/ui/NodeManagerUI.cpp

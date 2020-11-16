@@ -147,6 +147,12 @@
     <ClCompile Include="..\..\Source\Interface\ui\InterfaceUI.cpp"/>
     <ClCompile Include="..\..\Source\Interface\Interface.cpp"/>
     <ClCompile Include="..\..\Source\Interface\InterfaceManager.cpp"/>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionEditor.cpp"/>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionManagerViewUI.cpp"/>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionViewUI.cpp"/>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnector.cpp"/>
+    <ClCompile Include="..\..\Source\Node\Connection\NodeConnection.cpp"/>
+    <ClCompile Include="..\..\Source\Node\Connection\NodeConnectionManager.cpp"/>
     <ClCompile Include="..\..\Source\Node\ui\NodeManagerUI.cpp"/>
     <ClCompile Include="..\..\Source\Node\ui\NodeManagerViewUI.cpp"/>
     <ClCompile Include="..\..\Source\Node\ui\NodeUI.cpp"/>
@@ -2784,6 +2790,12 @@
     <ClInclude Include="..\..\Source\Interface\ui\InterfaceUI.h"/>
     <ClInclude Include="..\..\Source\Interface\Interface.h"/>
     <ClInclude Include="..\..\Source\Interface\InterfaceManager.h"/>
+    <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnectionEditor.h"/>
+    <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnectionManagerViewUI.h"/>
+    <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnectionViewUI.h"/>
+    <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnector.h"/>
+    <ClInclude Include="..\..\Source\Node\Connection\NodeConnection.h"/>
+    <ClInclude Include="..\..\Source\Node\Connection\NodeConnectionManager.h"/>
     <ClInclude Include="..\..\Source\Node\ui\NodeManagerUI.h"/>
     <ClInclude Include="..\..\Source\Node\ui\NodeManagerViewUI.h"/>
     <ClInclude Include="..\..\Source\Node\ui\NodeUI.h"/>

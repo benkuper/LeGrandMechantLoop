@@ -19,6 +19,14 @@ public:
     InputNodeViewUI(GenericAudioNode<AudioInputProcessor> * n);
     ~InputNodeViewUI();
 
+    OwnedArray<FloatSliderUI> inputRMSUI;
+    
+    void nodeOutputsChanged() override;
+
+    void updateRMSUI();
+
+    void resizedInternalContent(Rectangle<int> &r) override;
+
 };
 
 class OutputNodeViewUI :

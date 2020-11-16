@@ -22,7 +22,7 @@ NodeAudioProcessor::NodeAudioProcessor(Node* n) :
 
 /* AudioProcessor */
 
-const String NodeAudioProcessor::getName() const { 
+const String NodeAudioProcessor::getName() const {
     return nodeRef.wasObjectDeleted() ? "[Deleted]" : nodeRef->niceName; 
 }
 
