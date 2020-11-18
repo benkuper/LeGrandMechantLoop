@@ -25,12 +25,14 @@ NodeConnection::NodeConnection(Node* sourceNode, Node* destNode) :
 
 NodeConnection::~NodeConnection()
 {
+    clearItem();
     setSourceNode(nullptr);
     setDestNode(nullptr);
 }
 
 void NodeConnection::clearItem()
 {
+    clearConnections();
 }
 
 void NodeConnection::setSourceNode(Node* node)

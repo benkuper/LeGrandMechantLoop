@@ -17,6 +17,8 @@ NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConne
 	sourceConnector(nullptr),
 	destConnector(nullptr)
 {
+	setOpaque(false);
+
 	setSourceConnector(_sourceConnector);
 	setDestConnector(_destConnector);
 
@@ -36,9 +38,6 @@ void NodeConnectionViewUI::paint(Graphics& g)
 	if (isMouseOverOrDragging()) c = c.brighter();
 	g.setColour(c);
 	g.strokePath(path, PathStrokeType(isMouseOverOrDragging()?3:1));
-
-	
-
 }
 
 void NodeConnectionViewUI::updateBounds()

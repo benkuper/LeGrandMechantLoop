@@ -28,7 +28,7 @@ NodeManager::NodeManager(AudioProcessorGraph::NodeID inputNodeID, AudioProcessor
 
 	connectionManager.reset(new NodeConnectionManager());
 	addChildControllableContainer(connectionManager.get());
-	
+
 }
 
 NodeManager::~NodeManager()
@@ -135,6 +135,24 @@ void NodeManager::removeItemInternal(Node* n)
 {
 	if (AudioInputProcessor* p = n->getProcessor<AudioInputProcessor>())  audioInputNodes.removeAllInstancesOf(n);
 	else if (AudioOutputProcessor* p = n->getProcessor<AudioOutputProcessor>()) audioOutputNodes.removeAllInstancesOf(n);
+}
+
+Array<UndoableAction*> NodeManager::getRemoveItemUndoableAction(Node* item)
+{
+	Array<UndoableAction*> result;
+	Array<Node*> itemsToRemove;
+	itemsToRemove.add(item);
+	result.addArray(connectionManager->getRemoveAllLinkedConnectionsActions(itemsToRemove));
+	result.addArray(BaseManager::getRemoveItemUndoableAction(item));
+	return result;
+}
+
+Array<UndoableAction*> NodeManager::getRemoveItemsUndoableAction(Array<Node*> itemsToRemove)
+{
+	Array<UndoableAction*> result;
+	result.addArray(connectionManager->getRemoveAllLinkedConnectionsActions(itemsToRemove));
+	result.addArray(BaseManager::getRemoveItemsUndoableAction(itemsToRemove));
+	return result;
 }
 
 var NodeManager::getJSONData()

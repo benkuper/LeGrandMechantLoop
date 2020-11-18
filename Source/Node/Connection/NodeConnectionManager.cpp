@@ -19,13 +19,34 @@ NodeConnectionManager::~NodeConnectionManager()
 {
 }
 
-void NodeConnectionManager::removeItemInternal(NodeConnection* c)
-{
-    c->clearConnections();
-}
-
 void NodeConnectionManager::addConnection(Node* sourceNode, Node* destNode)
 {
+    if (getConnectionForSourceAndDest(sourceNode, destNode))
+    {
+        LOGWARNING("Connection already exists !");
+        return;
+    }
+
     NodeConnection* connection = new NodeConnection(sourceNode, destNode);
     addItem(connection);
+}
+
+NodeConnection* NodeConnectionManager::getConnectionForSourceAndDest(Node* sourceNode, Node* destNode)
+{
+    for (auto& c : items) if (c->sourceNode == sourceNode && c->destNode == destNode) return c;
+    return nullptr;
+}
+
+Array<UndoableAction*> NodeConnectionManager::getRemoveAllLinkedConnectionsActions(Array<Node*> itemsToRemove)
+{
+    Array<NodeConnection*> connectionsToRemove;
+
+    for (auto& c : items)
+    {
+        if (itemsToRemove.contains(c->sourceNode) || itemsToRemove.contains(c->destNode)) connectionsToRemove.addIfNotAlreadyThere(c);
+    }
+    
+    Array<UndoableAction*> actions;
+    actions.addArray(getRemoveItemsUndoableAction(connectionsToRemove));
+    return actions;
 }

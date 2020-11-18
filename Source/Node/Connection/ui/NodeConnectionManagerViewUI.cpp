@@ -13,12 +13,15 @@
 #include "NodeConnector.h"
 
 NodeConnectionManagerViewUI::NodeConnectionManagerViewUI(NodeManagerViewUI* nodeManagerUI, NodeConnectionManager* manager) :
-	BaseManagerUI(manager->niceName, manager),
+	BaseManagerUI(manager->niceName, manager, false),
 	nodeManagerUI(nodeManagerUI)
 {
-	autoFilterHitTestOnItems = false;
+	bringToFrontOnSelect = false; 
+	autoFilterHitTestOnItems = true;
 	validateHitTestOnNoItem = false; 
-	
+
+	setRepaintsOnMouseActivity(true);
+
 	transparentBG = true;
 	animateItemOnAdd = false;
 	setInterceptsMouseClicks(false, true);
@@ -42,7 +45,6 @@ NodeConnectionManagerViewUI::~NodeConnectionManagerViewUI()
 void NodeConnectionManagerViewUI::placeItems(Rectangle<int> &r)
 {
 	for (auto& ui : itemsUI) ui->updateBounds();
-
 }
 
 void NodeConnectionManagerViewUI::addItemUIInternal(NodeConnectionViewUI* ui)
@@ -50,14 +52,8 @@ void NodeConnectionManagerViewUI::addItemUIInternal(NodeConnectionViewUI* ui)
 	ui->updateBounds();
 }
 
-void NodeConnectionManagerViewUI::paint(Graphics& g)
-{
-	//g.fillAll((isMouseOver() ? Colours::orange : Colours::purple).withAlpha(.1f));
-}
-
 void NodeConnectionManagerViewUI::resized()
 {
-	BaseManagerUI::resized();
 }
 
 void NodeConnectionManagerViewUI::startCreateConnection(NodeConnector* connector)

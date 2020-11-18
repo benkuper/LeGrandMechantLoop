@@ -19,7 +19,9 @@ public:
     NodeConnectionManager();
     ~NodeConnectionManager();
 
-    void removeItemInternal(NodeConnection* c) override;
-
     void addConnection(Node * sourceNode, Node * destNode);
+
+    virtual NodeConnection* getConnectionForSourceAndDest(Node* sourceNode, Node* destNode);
+
+    Array<UndoableAction*> getRemoveAllLinkedConnectionsActions(Array<Node*> itemsToRemove);
 };

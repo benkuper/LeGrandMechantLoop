@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    IONode.cpp
-    Created: 15 Nov 2020 8:42:54am
-    Author:  bkupe
+	IONode.cpp
+	Created: 15 Nov 2020 8:42:54am
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -12,81 +12,102 @@
 #include "ui/IONodeViewUI.h"
 
 IOProcessor::IOProcessor(Node* n, bool isInput) :
-    GenericNodeAudioProcessor(n),
-    rmsCC("RMS"),
-    gainCC("Gain"),
-    isInput(isInput)
+	GenericNodeAudioProcessor(n),
+	rmsCC("RMS"),
+	gainCC("Gain"),
+	isInput(isInput)
 {
-    addChildControllableContainer(&rmsCC);
-    addChildControllableContainer(&gainCC);
 
-    rmsCC.editorIsCollapsed = true;
+	addChildControllableContainer(&rmsCC);
+	addChildControllableContainer(&gainCC);
 
-    updateIOFromNode();
+	rmsCC.editorIsCollapsed = true;
+
+	updateIOFromNode();
 }
 
 void IOProcessor::updateInputsFromNode()
 {
-    if (!isInput) updateIOFromNode();
+	if (!isInput) updateIOFromNode();
 }
 
 void IOProcessor::updateOutputsFromNode()
 {
-    if (isInput) updateIOFromNode();
+	if (isInput) updateIOFromNode();
 }
 
 void IOProcessor::updateIOFromNode()
 {
-    int numChannels = isInput ? nodeRef->numOutputs : nodeRef->numInputs;
-    StringArray names = isInput ? nodeRef->audioOutputNames : nodeRef->audioInputNames;
+	int numChannels = isInput ? nodeRef->numOutputs : nodeRef->numInputs;
+	StringArray names = isInput ? nodeRef->audioOutputNames : nodeRef->audioInputNames;
 
-    //remove surplus
-    while (rmsCC.controllables.size() > numChannels)
-    {
-        rmsCC.removeControllable(rmsCC.controllables[rmsCC.controllables.size() - 1]);
-        gainCC.removeControllable(gainCC.controllables[gainCC.controllables.size() - 1]);
-    }
 
-    //rename existing
-    for (int i = 0; i < gainCC.controllables.size(); i++)
-    {
-        String s = names[i];
-        gainCC.controllables[i]->setNiceName(s);
-    }
 
-    //add more
-    while (rmsCC.controllables.size() < numChannels)
-    {
-        String s = names[gainCC.controllables.size()];
+	//remove surplus
+	while (rmsCC.controllables.size() > numChannels)
+	{
+		rmsCC.removeControllable(rmsCC.controllables[rmsCC.controllables.size() - 1]);
+		gainCC.removeControllable(gainCC.controllables[gainCC.controllables.size() - 1]);
+	}
 
-        FloatParameter* p = rmsCC.addFloatParameter(s, "RMS for this input", 0, 0, 1);
-        p->setControllableFeedbackOnly(true);
+	//rename existing
+	for (int i = 0; i < gainCC.controllables.size(); i++)
+	{
+		String s = names[i];
+		gainCC.controllables[i]->setNiceName(s);
+	}
 
-        gainCC.addFloatParameter(s, "Gain for this input", 1, 0, 2);
-    }
+	//add more
+	while (rmsCC.controllables.size() < numChannels)
+	{
+		int index = gainCC.controllables.size();
+		String s = names[index];
 
-    setPlayConfigDetails(numChannels, numChannels, getSampleRate(), getBlockSize());
+		FloatParameter* p = rmsCC.addFloatParameter(s, "RMS for this input", 0, 0, 1);
+		p->setControllableFeedbackOnly(true);
+
+		FloatParameter * gp = gainCC.addFloatParameter(s, "Gain for this input", 1, 0, 2);
+		if (index < gainGhostData.size()) gp->setValue(gainGhostData[index]);
+
+	}
+
+	setPlayConfigDetails(numChannels, numChannels, getSampleRate(), getBlockSize());
 }
 
 void IOProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    for (int i = 0; i < rmsCC.controllables.size() && i < buffer.getNumChannels(); i++)
-    {
-        FloatParameter* rmsP = (FloatParameter*)rmsCC.controllables[i];
-        FloatParameter* gainP = (FloatParameter*)gainCC.controllables[i];
+	for (int i = 0; i < rmsCC.controllables.size() && i < buffer.getNumChannels(); i++)
+	{
+		FloatParameter* rmsP = (FloatParameter*)rmsCC.controllables[i];
+		FloatParameter* gainP = (FloatParameter*)gainCC.controllables[i];
 
-        if (rmsP == nullptr || gainP == nullptr) return;
+		if (rmsP == nullptr || gainP == nullptr) return;
 
-        buffer.applyGain(i, 0, buffer.getNumSamples(), gainP->floatValue());
+		buffer.applyGain(i, 0, buffer.getNumSamples(), gainP->floatValue());
 
-        float rms = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
-        float curVal = rmsP->floatValue();
-        float targetVal = rmsP->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
-        rmsP->setValue(targetVal);
-    }
+		float rms = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
+		float curVal = rmsP->floatValue();
+		float targetVal = rmsP->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
+		rmsP->setValue(targetVal);
+	}
+}
+
+var IOProcessor::getJSONData()
+{
+	var data = GenericNodeAudioProcessor::getJSONData();
+	var gainData;
+	for (auto& c : gainCC.controllables) gainData.append(((FloatParameter*)c)->floatValue());
+	data.getDynamicObject()->setProperty("gains", gainData);
+	return data;
+}
+
+void IOProcessor::loadJSONDataInternal(var data)
+{
+	GenericNodeAudioProcessor::loadJSONDataInternal(data);
+	gainGhostData = data.getProperty("gains", var());
 }
 
 NodeViewUI* IOProcessor::createNodeViewUI()
 {
-    return new IONodeViewUI((GenericAudioNode<IOProcessor>*)nodeRef.get());
+	return new IONodeViewUI((GenericAudioNode<IOProcessor>*)nodeRef.get());
 }

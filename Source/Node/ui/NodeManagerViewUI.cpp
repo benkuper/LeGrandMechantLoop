@@ -18,9 +18,9 @@ NodeManagerViewUI::NodeManagerViewUI(StringRef name) :
     addExistingItems(false);
 
     connectionManagerUI.reset(new NodeConnectionManagerViewUI(this, manager->connectionManager.get()));
-    addAndMakeVisible(connectionManagerUI.get(),0);
+    addAndMakeVisible(connectionManagerUI.get(), 0);
 
-    enableSnapping = true;
+    //enableSnapping = true;
 
     updatePositionOnDragMove = true;
 
@@ -42,6 +42,7 @@ void NodeManagerViewUI::resized()
 {
     BaseManagerShapeShifterViewUI::resized();
     connectionManagerUI->setBounds(getLocalBounds());
+    connectionManagerUI->resized();
 }
 
 void NodeManagerViewUI::mouseDown(const MouseEvent& e)

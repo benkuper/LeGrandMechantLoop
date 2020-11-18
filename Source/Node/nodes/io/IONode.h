@@ -19,9 +19,11 @@ public:
 	IOProcessor(Node* n, bool isInput);
 	virtual ~IOProcessor() {}
 
+
 	bool isInput;
 	ControllableContainer rmsCC;
 	ControllableContainer gainCC;
+	var gainGhostData;
 
 	void updateInputsFromNode() override;
 	void updateOutputsFromNode() override;
@@ -30,6 +32,9 @@ public:
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
 	static const String getTypeStringStatic() { return "Audio IO"; }
+
+	var getJSONData() override;
+	void loadJSONDataInternal(var data) override;
 
 	NodeViewUI* createNodeViewUI() override;
 };
