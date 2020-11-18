@@ -16,42 +16,36 @@ class IOProcessor :
 	public GenericNodeAudioProcessor
 {
 public:
-	IOProcessor(Node* n) : GenericNodeAudioProcessor(n) {}
+	IOProcessor(Node* n, bool isInput);
 	virtual ~IOProcessor() {}
-};
 
+	bool isInput;
+	ControllableContainer rmsCC;
+	ControllableContainer gainCC;
+
+	void updateInputsFromNode() override;
+	void updateOutputsFromNode() override;
+	void updateIOFromNode();
+
+	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+
+	static const String getTypeStringStatic() { return "Audio IO"; }
+
+	NodeViewUI* createNodeViewUI() override;
+};
 
 class AudioInputProcessor :
 	public IOProcessor
 {
 public:
-	AudioInputProcessor(Node* node);
-	~AudioInputProcessor() {}
-
-	Array<FloatParameter*> inputRMS;
-
-	void updateOutputsFromNode();
-
-	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	AudioInputProcessor(Node* node) : IOProcessor(node, true) {}
 	static const String getTypeStringStatic() { return "Audio Input"; }
-
-	NodeViewUI* createNodeViewUI() override;
 };
-
 
 class AudioOutputProcessor :
 	public IOProcessor
 {
 public:
-	AudioOutputProcessor(Node* node);
-	~AudioOutputProcessor() {}
-
-	Array<FloatParameter*> outputRMS;
-
-	void updateInputsFromNode() override;
-
-	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	AudioOutputProcessor(Node* node) : IOProcessor(node, false) {}
 	static const String getTypeStringStatic() { return "Audio Output"; }
-
-	NodeViewUI* createNodeViewUI() override;
 };

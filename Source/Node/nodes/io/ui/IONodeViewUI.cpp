@@ -10,56 +10,65 @@
 
 #include "IONodeViewUI.h"
 
-InputNodeViewUI::InputNodeViewUI(GenericAudioNode<AudioInputProcessor>* n) :
+IONodeViewUI::IONodeViewUI(GenericAudioNode<IOProcessor>* n) :
     GenericAudioNodeViewUI(n)
 {
-    updateRMSUI();
+    updateUI();
 }
 
-InputNodeViewUI::~InputNodeViewUI()
+IONodeViewUI::~IONodeViewUI()
 {
 }
 
-void InputNodeViewUI::nodeOutputsChanged()
+void IONodeViewUI::nodeInputsChanged()
 {
     NodeViewUI::nodeOutputsChanged();
-    updateRMSUI();
+    if (!audioNode->processor->isInput) updateUI();
 }
 
-void InputNodeViewUI::updateRMSUI()
+void IONodeViewUI::nodeOutputsChanged()
 {
-    while (inputRMSUI.size() > item->audioOutputNames.size())
-    {
-        FloatSliderUI* s = inputRMSUI[inputRMSUI.size() - 1];
-        removeChildComponent(s);
-        inputRMSUI.removeObject(s);
-    }
+    NodeViewUI::nodeOutputsChanged();
+    if(audioNode->processor->isInput) updateUI();
+}
 
-    while (inputRMSUI.size() < item->audioOutputNames.size())
+void IONodeViewUI::updateUI()
+{
+    for (auto& i : rmsUI) removeChildComponent(i);
+    for (auto& i : gainUI) removeChildComponent(i);
+    rmsUI.clear();
+    gainUI.clear();
+
+    int numChannels = audioNode->processor->isInput ? audioNode->numOutputs : audioNode->numInputs;
+
+    for (int i = 0; i < numChannels; i++)
     {
-        FloatSliderUI* s = processor->inputRMS[inputRMSUI.size()]->createSlider();
+        FloatSliderUI* s = ((FloatParameter *)processor->rmsCC.controllables[i])->createSlider();
         s->orientation = s->VERTICAL;
         s->showLabel = false;
+        s->showValue = false;
         addAndMakeVisible(s);
-        inputRMSUI.add(s);
+        rmsUI.add(s);
+
+        FloatSliderUI* gs = ((FloatParameter*)processor->gainCC.controllables[i])->createSlider();
+        gs->orientation = gs->VERTICAL;
+        addAndMakeVisible(gs);
+        gainUI.add(gs);
     }
 
     resized();
 }
 
-void InputNodeViewUI::resizedInternalContent(Rectangle<int>& r)
+void IONodeViewUI::resizedInternalContent(Rectangle<int>& r)
 {
-    for (auto& rmsUI : inputRMSUI)
+    for (int i=0;i<rmsUI.size();i++)
     {
-        rmsUI->setBounds(r.removeFromLeft(20).reduced(2));
+        Rectangle<int> trackR = r.removeFromLeft(40).reduced(6);
+        Rectangle<int> btR = trackR.removeFromBottom(20);
+        trackR.removeFromBottom(2);
+
+        rmsUI[i]->setBounds(trackR.removeFromRight(8));
+        trackR.removeFromRight(2);
+        gainUI[i]->setBounds(trackR);
     }
-}
-
-OutputNodeViewUI::OutputNodeViewUI(GenericAudioNode<AudioOutputProcessor>* n) :
-    GenericAudioNodeViewUI(n)
-{
-}
-
-OutputNodeViewUI::~OutputNodeViewUI()
-{
 }

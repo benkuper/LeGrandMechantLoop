@@ -29,10 +29,7 @@ AudioManager::AudioManager() :
     currentSampleRate = setup.sampleRate;
     currentBufferSize = setup.bufferSize;
 
-    graph.setPlayConfigDetails(1, 2, currentSampleRate, currentBufferSize);
-    graph.prepareToPlay(currentSampleRate, currentBufferSize);
     
-
     std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procIn(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioInputNode));
     std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procOut(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode));
     graph.addNode(std::move(procIn), AudioProcessorGraph::NodeID(AUDIO_GRAPH_INPUT_ID));
@@ -42,6 +39,10 @@ AudioManager::AudioManager() :
 
     numAudioInputs = setup.inputChannels.countNumberOfSetBits();
     numAudioOutputs = setup.outputChannels.countNumberOfSetBits();
+
+    graph.setPlayConfigDetails(numAudioInputs, numAudioOutputs, currentSampleRate, currentBufferSize);
+    graph.prepareToPlay(currentSampleRate, currentBufferSize);
+
 }
 
 AudioManager::~AudioManager()
@@ -84,7 +85,6 @@ void AudioManager::changeListenerCallback(ChangeBroadcaster* source)
     graph.setPlayConfigDetails(numAudioInputs, numAudioOutputs, currentSampleRate, currentBufferSize);
     graph.prepareToPlay(currentSampleRate, currentBufferSize);
 
-    LOG("Graph num inputs " << graph.getNumInputChannels());
     audioManagerListeners.call(&AudioManagerListener::audioSetupChanged);
 }
 

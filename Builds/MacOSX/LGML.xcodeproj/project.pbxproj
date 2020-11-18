@@ -61,6 +61,10 @@
 			isa = PBXBuildFile;
 			fileRef = 9E775318D3325A8F050B1C20;
 		};
+		8E0542A2F682BF40C9A0E4EF = {
+			isa = PBXBuildFile;
+			fileRef = 4512B8F41500EB4419C62669;
+		};
 		996D4E28B6274DB5B3FF3B63 = {
 			isa = PBXBuildFile;
 			fileRef = 40B6E0978832E28C7C37F16E;
@@ -554,6 +558,13 @@
 			path = "~/JUCE/modules/juce_audio_utils";
 			sourceTree = "<absolute>";
 		};
+		4512B8F41500EB4419C62669 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = ConnectionUIHelper.cpp;
+			path = ../../Source/Common/ConnectionUIHelper.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		452D3088C341ED00EF57AE29 = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
@@ -960,6 +971,13 @@
 			path = ../../Source/Interface/Interface.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		CE2F73FF261289B9C99F6D48 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = ConnectionUIHelper.h;
+			path = ../../Source/Common/ConnectionUIHelper.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		CED99BEB7E233872AF13A4C4 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -1141,6 +1159,15 @@
 			name = LGMLEngine.cpp;
 			path = ../../Source/Engine/LGMLEngine.cpp;
 			sourceTree = "SOURCE_ROOT";
+		};
+		4AF796141BEF50DFEDDDB512 = {
+			isa = PBXGroup;
+			children = (
+				4512B8F41500EB4419C62669,
+				CE2F73FF261289B9C99F6D48,
+			);
+			name = Common;
+			sourceTree = "<group>";
 		};
 		CFA2ABC1B8D7FC4244FC5DB9 = {
 			isa = PBXGroup;
@@ -1377,6 +1404,7 @@
 		873614FF407C0F9BFEB97260 = {
 			isa = PBXGroup;
 			children = (
+				4AF796141BEF50DFEDDDB512,
 				23A797ADED3B52E6EDFC29E5,
 				1834F26161841A46090DCB6A,
 				3BB4CE6C12326AB495656F12,
@@ -1774,6 +1802,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E0542A2F682BF40C9A0E4EF,
 				996D4E28B6274DB5B3FF3B63,
 				12BC2A74CA935F08EAA472EC,
 				DA6F1AEB0B56278EA4E53746,

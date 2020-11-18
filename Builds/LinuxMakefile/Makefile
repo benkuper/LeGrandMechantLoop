@@ -68,6 +68,7 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/ConnectionUIHelper_6e07d265.o \
   $(JUCE_OBJDIR)/AudioManagerEditor_a51b563b.o \
   $(JUCE_OBJDIR)/AudioManager_1a0fa225.o \
   $(JUCE_OBJDIR)/LGMLEngine_1866020a.o \
@@ -136,6 +137,11 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_APP) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OBJDIR)/ConnectionUIHelper_6e07d265.o: ../../Source/Common/ConnectionUIHelper.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling ConnectionUIHelper.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/AudioManagerEditor_a51b563b.o: ../../Source/Engine/ui/AudioManagerEditor.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)

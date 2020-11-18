@@ -102,7 +102,7 @@ void NodeManager::updateAudioInputNode(Node* n)
 	if (AudioInputProcessor* p = n->getProcessor<AudioInputProcessor>())
 	{
 		for (int i = 0; i < n->audioInputNames.size(); i++) AudioManager::getInstance()->graph.removeConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight channel 
-		n->setAudioOutputs(audioInputNames);
+		n->setAudioOutputs(audioInputNames); //inverse to get good connector names
 		for (int i = 0; i < audioInputNames.size(); i++) AudioManager::getInstance()->graph.addConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight 
 	}
 }
@@ -112,7 +112,7 @@ void NodeManager::updateAudioOutputNode(Node* n)
 	if (AudioOutputProcessor* p = n->getProcessor<AudioOutputProcessor>())
 	{
 		for (int i = 0; i < n->audioOutputNames.size(); i++) AudioManager::getInstance()->graph.removeConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight channel 
-		n->setAudioInputs(audioOutputNames);
+		n->setAudioInputs(audioOutputNames); //inverse to get good connector names
 		for (int i = 0; i < audioOutputNames.size(); i++) AudioManager::getInstance()->graph.addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight 
 	}
 }

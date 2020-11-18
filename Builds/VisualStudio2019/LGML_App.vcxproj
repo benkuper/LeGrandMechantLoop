@@ -139,6 +139,7 @@
     <Lib/>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Common\ConnectionUIHelper.cpp"/>
     <ClCompile Include="..\..\Source\Engine\ui\AudioManagerEditor.cpp"/>
     <ClCompile Include="..\..\Source\Engine\AudioManager.cpp"/>
     <ClCompile Include="..\..\Source\Engine\LGMLEngine.cpp"/>
@@ -2782,6 +2783,7 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_simpleweb.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Common\ConnectionUIHelper.h"/>
     <ClInclude Include="..\..\Source\Engine\ui\AudioManagerEditor.h"/>
     <ClInclude Include="..\..\Source\Engine\AudioManager.h"/>
     <ClInclude Include="..\..\Source\Engine\LGMLEngine.h"/>

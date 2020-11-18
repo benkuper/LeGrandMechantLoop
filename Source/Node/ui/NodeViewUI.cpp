@@ -37,7 +37,7 @@ void NodeViewUI::updateInputConnectors()
 	{
 		if (inAudioConnector == nullptr)
 		{
-			inAudioConnector.reset(new NodeConnector(item, true));
+			inAudioConnector.reset(new NodeConnector(this, true));
 			addAndMakeVisible(inAudioConnector.get());
 			resized();
 		}
@@ -62,7 +62,7 @@ void NodeViewUI::updateOutputConnectors()
 	{
 		if (outAudioConnector == nullptr)
 		{
-			outAudioConnector.reset(new NodeConnector(item, false));
+			outAudioConnector.reset(new NodeConnector(this, false));
 			addAndMakeVisible(outAudioConnector.get());
 			resized();
 		}

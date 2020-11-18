@@ -12,28 +12,21 @@
 #include "../IONode.h"
 #include "../../../ui/NodeViewUI.h"
 
-class InputNodeViewUI :
-    public GenericAudioNodeViewUI<AudioInputProcessor>
+class IONodeViewUI :
+    public GenericAudioNodeViewUI<IOProcessor>
 {
 public:
-    InputNodeViewUI(GenericAudioNode<AudioInputProcessor> * n);
-    ~InputNodeViewUI();
+    IONodeViewUI(GenericAudioNode<IOProcessor> * n);
+    virtual ~IONodeViewUI();
 
-    OwnedArray<FloatSliderUI> inputRMSUI;
+    OwnedArray<FloatSliderUI> rmsUI;
+    OwnedArray<FloatSliderUI> gainUI;
     
+    void nodeInputsChanged() override;
     void nodeOutputsChanged() override;
 
-    void updateRMSUI();
+    void updateUI();
 
     void resizedInternalContent(Rectangle<int> &r) override;
-
-};
-
-class OutputNodeViewUI :
-    public GenericAudioNodeViewUI<AudioOutputProcessor>
-{
-public:
-    OutputNodeViewUI(GenericAudioNode<AudioOutputProcessor>* n);
-    ~OutputNodeViewUI();
 
 };

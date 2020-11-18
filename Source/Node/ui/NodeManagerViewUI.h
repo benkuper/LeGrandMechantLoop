@@ -25,7 +25,13 @@ public:
 
     NodeViewUI* createUIForItem(Node * n) override;
 
-    void resizedInternalContent(Rectangle<int>& r) override;
+    void resized() override;
+
+    void mouseDown(const MouseEvent& e) override;
+    void mouseDrag(const MouseEvent& e) override;
+    void mouseUp(const MouseEvent& e) override;
+
+    NodeConnector * getCandidateConnector(bool lookForInput, NodeViewUI* excludeUI = nullptr);
 
     static NodeManagerViewUI* create(const String& name) { return new NodeManagerViewUI(name); }
 };

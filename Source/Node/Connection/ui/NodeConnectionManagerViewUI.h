@@ -23,10 +23,19 @@ public:
     ~NodeConnectionManagerViewUI();
 
     NodeManagerViewUI* nodeManagerUI;
+    std::unique_ptr<NodeConnectionViewUI> tmpConnectionUI;
+    bool tmpConnectionLookForInput;
 
     NodeConnectionViewUI* createUIForItem(NodeConnection * item) override;
 
+    void placeItems(Rectangle<int>& r) override;
+
     void addItemUIInternal(NodeConnectionViewUI* ui) override;
 
+    void paint(Graphics& g) override;
     void resized();
+
+    void startCreateConnection(NodeConnector* connector);
+    void updateCreateConnection();
+    void endCreateConnection();
 };

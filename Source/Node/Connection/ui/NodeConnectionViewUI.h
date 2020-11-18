@@ -12,16 +12,34 @@
 #include "../NodeConnection.h"
 
 class NodeViewUI;
+class NodeConnector;
 
 class NodeConnectionViewUI :
-    public BaseItemMinimalUI<NodeConnection>
+    public BaseItemMinimalUI<NodeConnection>,
+    public ComponentListener
 {
 public:
-    NodeConnectionViewUI(NodeConnection* connection, NodeViewUI * sourceUI = nullptr, NodeViewUI * destUI = nullptr);
+    NodeConnectionViewUI(NodeConnection* connection, NodeConnector * sourceConnector = nullptr, NodeConnector * destConnector = nullptr);
     ~NodeConnectionViewUI();
 
-    NodeViewUI* sourceUI;
-    NodeViewUI* destUI;
+    NodeConnector* sourceConnector;
+    NodeConnector* destConnector;
+
+    Path path;
+    Path hitPath;
+
+    void paint(Graphics& g) override;
 
     void updateBounds();
+
+    void buildPath();
+
+    bool hitTest(int x, int y) override;
+
+    void setSourceConnector(NodeConnector* c);
+    void setDestConnector(NodeConnector* c);
+
+
+    void componentMovedOrResized(Component& c, bool, bool) override;
+    void componentBeingDeleted(Component& c) override;
 };

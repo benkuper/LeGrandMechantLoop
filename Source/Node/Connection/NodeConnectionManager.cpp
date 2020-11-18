@@ -18,3 +18,14 @@ NodeConnectionManager::NodeConnectionManager() :
 NodeConnectionManager::~NodeConnectionManager()
 {
 }
+
+void NodeConnectionManager::removeItemInternal(NodeConnection* c)
+{
+    c->clearConnections();
+}
+
+void NodeConnectionManager::addConnection(Node* sourceNode, Node* destNode)
+{
+    NodeConnection* connection = new NodeConnection(sourceNode, destNode);
+    addItem(connection);
+}

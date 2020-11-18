@@ -4,6 +4,12 @@
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{644794F3-EEA3-18B3-8950-FB0E90CE6C1E}" name="Source">
+      <GROUP id="{C932F17D-F807-6D54-C9FE-636145A3A77A}" name="Common">
+        <FILE id="nwxncy" name="ConnectionUIHelper.cpp" compile="1" resource="0"
+              file="Source/Common/ConnectionUIHelper.cpp"/>
+        <FILE id="kRFZbn" name="ConnectionUIHelper.h" compile="0" resource="0"
+              file="Source/Common/ConnectionUIHelper.h"/>
+      </GROUP>
       <GROUP id="{547E2B2F-2054-CDCA-AD1D-F31535731863}" name="Engine">
         <GROUP id="{91A11254-5AA5-4E03-34F2-115AAAF6C8EB}" name="ui">
           <FILE id="EbuWKi" name="AudioManagerEditor.cpp" compile="1" resource="0"

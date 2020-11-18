@@ -2,6 +2,9 @@
 
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="LGML\Source\Common">
+      <UniqueIdentifier>{BC3A8BBD-7A12-F94C-7CEF-4813DF3F986A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Engine\ui">
       <UniqueIdentifier>{A74A1E68-7A5D-A48B-5392-F5D02FFA9799}</UniqueIdentifier>
     </Filter>
@@ -799,6 +802,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Common\ConnectionUIHelper.cpp">
+      <Filter>LGML\Source\Common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Engine\ui\AudioManagerEditor.cpp">
       <Filter>LGML\Source\Engine\ui</Filter>
     </ClCompile>
@@ -3708,6 +3714,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Common\ConnectionUIHelper.h">
+      <Filter>LGML\Source\Common</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Engine\ui\AudioManagerEditor.h">
       <Filter>LGML\Source\Engine\ui</Filter>
     </ClInclude>

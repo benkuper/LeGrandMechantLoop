@@ -9,11 +9,11 @@
 */
 
 #include "NodeConnector.h"
-#include "../../Node.h"
+#include "../../ui//NodeViewUI.h"
 
-NodeConnector::NodeConnector(Node* n, bool isInput) :
+NodeConnector::NodeConnector(NodeViewUI * nodeViewUI, bool isInput) :
     isInput(isInput),
-    node(n)
+    nodeViewUI(nodeViewUI)
 {
     setRepaintsOnMouseActivity(true);
     updateTooltip();
@@ -31,8 +31,8 @@ void NodeConnector::paint(Graphics& g)
 
 void NodeConnector::updateTooltip()
 {
-    if (node == nullptr) return;
+    if (nodeViewUI == nullptr || nodeViewUI->item == nullptr) return;
 
-    StringArray s = isInput ? node->audioInputNames : node->audioOutputNames;
+    StringArray s = isInput ? nodeViewUI->item->audioInputNames : nodeViewUI->item->audioOutputNames;
     setTooltip(s.joinIntoString("\n"));
 }

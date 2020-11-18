@@ -1,0 +1,4 @@
+// Hint files help the Visual Studio IDE interpret Visual C++ identifiers
+// such as names of functions and macros.
+// For more information see https://go.microsoft.com/fwlink/?linkid=865984
+#define DECLARE_ASYNC_EVENT(BaseClass, EventPrefix, NotifierPrefix, Types) class EventPrefix##Event { public: enum Type Types; EventPrefix##Event(Type t, BaseClass * item) : type(t), item(item) {} Type type; BaseClass* item; }; QueuedNotifier<EventPrefix##Event> NotifierPrefix##Notifier; typedef QueuedNotifier<EventPrefix##Event>::Listener AsyncListener; void addAsync##EventPrefix##Listener(AsyncListener* newListener) { NotifierPrefix##Notifier.addListener(newListener); } void addAsyncCoalesced##EventPrefix##Listener(AsyncListener* newListener) { NotifierPrefix##Notifier.addAsyncCoalescedListener(newListener); } void removeAsync##EventPrefix##Listener(AsyncListener* listener) { NotifierPrefix##Notifier.removeListener(listener); }

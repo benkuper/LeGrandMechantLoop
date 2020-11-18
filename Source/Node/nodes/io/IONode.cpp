@@ -11,73 +11,82 @@
 #include "IONode.h"
 #include "ui/IONodeViewUI.h"
 
-// INPUT
-AudioInputProcessor::AudioInputProcessor(Node* node) :
-    IOProcessor(node)
+IOProcessor::IOProcessor(Node* n, bool isInput) :
+    GenericNodeAudioProcessor(n),
+    rmsCC("RMS"),
+    gainCC("Gain"),
+    isInput(isInput)
 {
-    updateOutputsFromNode();
+    addChildControllableContainer(&rmsCC);
+    addChildControllableContainer(&gainCC);
+
+    rmsCC.editorIsCollapsed = true;
+
+    updateIOFromNode();
 }
 
-void AudioInputProcessor::updateOutputsFromNode()
+void IOProcessor::updateInputsFromNode()
 {
-    while (inputRMS.size() > nodeRef->numOutputs)
+    if (!isInput) updateIOFromNode();
+}
+
+void IOProcessor::updateOutputsFromNode()
+{
+    if (isInput) updateIOFromNode();
+}
+
+void IOProcessor::updateIOFromNode()
+{
+    int numChannels = isInput ? nodeRef->numOutputs : nodeRef->numInputs;
+    StringArray names = isInput ? nodeRef->audioOutputNames : nodeRef->audioInputNames;
+
+    //remove surplus
+    while (rmsCC.controllables.size() > numChannels)
     {
-        removeControllable(inputRMS[inputRMS.size()-1]);
-        inputRMS.removeLast(1);
+        rmsCC.removeControllable(rmsCC.controllables[rmsCC.controllables.size() - 1]);
+        gainCC.removeControllable(gainCC.controllables[gainCC.controllables.size() - 1]);
     }
 
-    while (inputRMS.size() < nodeRef->numOutputs)
+    //rename existing
+    for (int i = 0; i < gainCC.controllables.size(); i++)
     {
-        String s = nodeRef->audioOutputNames[inputRMS.size()];
-        FloatParameter* p = addFloatParameter(s, "RMS for this input", 0, 0, 1);
+        String s = names[i];
+        gainCC.controllables[i]->setNiceName(s);
+    }
+
+    //add more
+    while (rmsCC.controllables.size() < numChannels)
+    {
+        String s = names[gainCC.controllables.size()];
+
+        FloatParameter* p = rmsCC.addFloatParameter(s, "RMS for this input", 0, 0, 1);
         p->setControllableFeedbackOnly(true);
-        inputRMS.add(p);
+
+        gainCC.addFloatParameter(s, "Gain for this input", 1, 0, 2);
     }
 
-    setPlayConfigDetails(nodeRef->numOutputs, nodeRef->numOutputs, getSampleRate(), getBlockSize());
+    setPlayConfigDetails(numChannels, numChannels, getSampleRate(), getBlockSize());
 }
 
-void AudioInputProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void IOProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    for (int i = 0; i < inputRMS.size() && i < buffer.getNumChannels() ; i++)
+    for (int i = 0; i < rmsCC.controllables.size() && i < buffer.getNumChannels(); i++)
     {
+        FloatParameter* rmsP = (FloatParameter*)rmsCC.controllables[i];
+        FloatParameter* gainP = (FloatParameter*)gainCC.controllables[i];
+
+        if (rmsP == nullptr || gainP == nullptr) return;
+
+        buffer.applyGain(i, 0, buffer.getNumSamples(), gainP->floatValue());
+
         float rms = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
-        inputRMS[i]->setValue(rms);
+        float curVal = rmsP->floatValue();
+        float targetVal = rmsP->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
+        rmsP->setValue(targetVal);
     }
 }
 
-NodeViewUI* AudioInputProcessor::createNodeViewUI()
+NodeViewUI* IOProcessor::createNodeViewUI()
 {
-    return new InputNodeViewUI((GenericAudioNode<AudioInputProcessor> *)nodeRef.get());
-}
-
-//OUTPUT
-AudioOutputProcessor::AudioOutputProcessor(Node* node) :
-    IOProcessor(node)
-{
-}
-
-void AudioOutputProcessor::updateInputsFromNode()
-{
-    while (outputRMS.size() > nodeRef->audioInputNames.size())
-    {
-        removeControllable(outputRMS[outputRMS.size() - 1]);
-        outputRMS.removeLast(1);
-    }
-
-    while (outputRMS.size() < nodeRef->audioInputNames.size())
-    {
-        FloatParameter* p = addFloatParameter(nodeRef->audioInputNames[outputRMS.size()] + "RMS", "RMS for this output", 0, 0, 1);
-        p->setControllableFeedbackOnly(true);
-        outputRMS.add(p);
-    }
-}
-
-void AudioOutputProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
-{
-}
-
-NodeViewUI* AudioOutputProcessor::createNodeViewUI()
-{
-    return new OutputNodeViewUI((GenericAudioNode<AudioOutputProcessor>*)nodeRef.get());
+    return new IONodeViewUI((GenericAudioNode<IOProcessor>*)nodeRef.get());
 }
