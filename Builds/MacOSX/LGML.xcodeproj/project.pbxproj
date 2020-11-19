@@ -285,6 +285,10 @@
 			isa = PBXBuildFile;
 			fileRef = 67038B9140608DAD8B6E6934;
 		};
+		C4AB9814673B0D5F9D939C01 = {
+			isa = PBXBuildFile;
+			fileRef = 4ACE978AE9CC0CC00C427119;
+		};
 		00691923FD0FEF27E71438CD = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -360,6 +364,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = IONodeViewUI.cpp;
 			path = ../../Source/Node/nodes/io/ui/IONodeViewUI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		112F4290A08B01FA8D5B1970 = {
+			isa = PBXFileReference;
+			lastKnownFileType = file;
+			name = "juce_timeline";
+			path = "../../Modules/juce_timeline";
 			sourceTree = "SOURCE_ROOT";
 		};
 		1178B25810D021BCD1237144 = {
@@ -577,6 +588,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Node.cpp;
 			path = ../../Source/Node/Node.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		4ACE978AE9CC0CC00C427119 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_juce_timeline.cpp";
+			path = "../../JuceLibraryCode/include_juce_timeline.cpp";
 			sourceTree = "SOURCE_ROOT";
 		};
 		4B982CEDC55A9BE7B87BCC59 = {
@@ -1445,6 +1463,7 @@
 				1178B25810D021BCD1237144,
 				8F7CD35E7DFEDB300F1565A4,
 				DC0C72D88A46EFB892562EEF,
+				112F4290A08B01FA8D5B1970,
 			);
 			name = "JUCE Modules";
 			sourceTree = "<group>";
@@ -1470,6 +1489,7 @@
 				F7546626F5987ED1AFE6D40A,
 				1EBAAFB7B33347A8FACCEFA5,
 				67038B9140608DAD8B6E6934,
+				4ACE978AE9CC0CC00C427119,
 				16D3E51E2FDD32BB40CAE5D0,
 			);
 			name = "JUCE Library Code";
@@ -1569,6 +1589,7 @@
 					"JUCE_MODULE_AVAILABLE_juce_organicui=1",
 					"JUCE_MODULE_AVAILABLE_juce_osc=1",
 					"JUCE_MODULE_AVAILABLE_juce_simpleweb=1",
+					"JUCE_MODULE_AVAILABLE_juce_timeline=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
 					"ORGANICUI_USE_WEBSERVER=1",
@@ -1644,6 +1665,7 @@
 					"JUCE_MODULE_AVAILABLE_juce_organicui=1",
 					"JUCE_MODULE_AVAILABLE_juce_osc=1",
 					"JUCE_MODULE_AVAILABLE_juce_simpleweb=1",
+					"JUCE_MODULE_AVAILABLE_juce_timeline=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
 					"ORGANICUI_USE_WEBSERVER=1",
@@ -1858,6 +1880,7 @@
 				41CC1BAF3544933BBA20F824,
 				383161D8BA5431CBBC808175,
 				9C690A6C09D4E52ECF8CE964,
+				C4AB9814673B0D5F9D939C01,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

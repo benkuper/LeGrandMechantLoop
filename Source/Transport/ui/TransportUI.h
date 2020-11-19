@@ -12,11 +12,63 @@
 #include "../Transport.h"
 
 class TransportUI :
-    public ShapeShifterContentComponent
+    public ShapeShifterContentComponent,
+    public InspectableContent,
+    public ContainerAsyncListener
 {
 public:
     TransportUI(StringRef name);
     ~TransportUI();
+
+    Transport* transport;
+
+    std::unique_ptr<TriggerImageUI> toggleBT;
+    std::unique_ptr<TriggerImageUI> stopBT;
+    
+    std::unique_ptr<IntParameterLabelUI> beatsPerBarUI;
+    std::unique_ptr<IntParameterLabelUI> beatUnitUI;
+    std::unique_ptr<FloatParameterLabelUI> bpmUI;
+
+    std::unique_ptr<IntParameterLabelUI> curBarUI;
+    std::unique_ptr<IntParameterLabelUI> curBeatUI;
+
+    class BeatViz :
+        public Component
+    {
+    public:
+        BeatViz(int index);
+        
+        int index;
+
+        Transport* transport;
+        void paint(Graphics& g) override;
+    };
+
+    class BarViz :
+        public Component,
+        public Timer
+    {
+    public:
+        BarViz();
+
+        Transport* transport;
+        OwnedArray<BeatViz> beats;
+
+        void rebuild();
+
+        void paint(Graphics& g) override;
+        void resized() override;
+
+        void timerCallback() override;
+    };
+
+    BarViz barViz;
+
+    void resized() override;
+
+    void mouseDown(const MouseEvent& e) override;
+
+    void newMessage(const ContainerAsyncEvent& e) override;
 
     static TransportUI* create(const String& name) { return new TransportUI(name); }
 };
