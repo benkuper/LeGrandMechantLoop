@@ -25,8 +25,8 @@ public:
 	ControllableContainer gainCC;
 	var gainGhostData;
 
-	void updateInputsFromNode() override;
-	void updateOutputsFromNode() override;
+	void updateInputsFromNodeInternal() override;
+	void updateOutputsFromNodeInternal() override;
 	void updateIOFromNode();
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
@@ -45,6 +45,9 @@ class AudioInputProcessor :
 public:
 	AudioInputProcessor(Node* node) : IOProcessor(node, true) {}
 	static const String getTypeStringStatic() { return "Audio Input"; }
+
+	int getExpectedNumInputs();
+	bool exposeAudioInput() { return false; }
 };
 
 class AudioOutputProcessor :
@@ -53,4 +56,7 @@ class AudioOutputProcessor :
 public:
 	AudioOutputProcessor(Node* node) : IOProcessor(node, false) {}
 	static const String getTypeStringStatic() { return "Audio Output"; }
+
+	int getExpectedNumOutputs();
+	bool exposeAudioOutput() { return false; }
 };

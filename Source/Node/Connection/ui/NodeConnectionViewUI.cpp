@@ -24,10 +24,14 @@ NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConne
 
 	setRepaintsOnMouseActivity(true);
 	autoDrawContourWhenSelected = false;
+
+	if(item != nullptr) item->addAsyncConnectionListener(this);
 }
 
 NodeConnectionViewUI::~NodeConnectionViewUI()
 {
+	if(item != nullptr && !inspectable.wasObjectDeleted()) item->removeAsyncConnectionListener(this);
+
 	setSourceConnector(nullptr);
 	setDestConnector(nullptr);
 }
@@ -38,6 +42,15 @@ void NodeConnectionViewUI::paint(Graphics& g)
 	if (isMouseOverOrDragging()) c = c.brighter();
 	g.setColour(c);
 	g.strokePath(path, PathStrokeType(isMouseOverOrDragging()?3:1));
+
+	if (item != nullptr)
+	{
+		Rectangle<float> tr = Rectangle<float>(0, 0, 12, 12).withCentre(path.getPointAlongPath(path.getLength() * .5f));
+		g.fillEllipse(tr);
+		g.setColour(c.darker(.8f));
+		g.setFont(g.getCurrentFont().withHeight(12).boldened());
+		g.drawText(String(item->channelMap.size()), tr, Justification::centred);
+	}
 }
 
 void NodeConnectionViewUI::updateBounds()
@@ -121,4 +134,9 @@ void NodeConnectionViewUI::componentBeingDeleted(Component& c)
 {
 	if (&c == sourceConnector) setSourceConnector(nullptr);
 	else if (&c == destConnector) setDestConnector(nullptr);
+}
+
+void NodeConnectionViewUI::newMessage(const NodeConnection::ConnectionEvent& e)
+{
+	if (e.type == e.CHANNELS_CONNECTION_CHANGED) repaint();
 }

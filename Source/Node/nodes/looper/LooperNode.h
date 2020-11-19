@@ -21,8 +21,14 @@ public:
 
     IntParameter* numTracks;
     IntParameter* numChannelsPerTrack;
+    
+    enum TrackOutputMode { MIXED_ONLY, SEPARATE_ONLY, ALL };
+    EnumParameter * trackOutputMode;
 
-    void updateAudioOutputs();
+    enum MonitorMode { OFF, ALWAYS, RECORDING_ONLY, ARMED_TRACK };
+    EnumParameter* monitorMode;
+
+    void updateOutTracks();
 
     void onContainerParameterChanged(Parameter* p) override;
 

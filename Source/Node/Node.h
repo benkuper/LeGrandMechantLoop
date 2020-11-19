@@ -48,11 +48,25 @@ public:
     void setAudioOutputs(const StringArray& outputNames);
 
     // Helpers
-    bool hasAudioInput() { return !audioInputNames.isEmpty(); }
-    bool hasAudioOutput() { return !audioOutputNames.isEmpty(); }
+    virtual bool exposeAudioInput() { return baseProcessor->exposeAudioInput(); }
+    virtual bool exposeAudioOutput() { return baseProcessor->exposeAudioOutput(); }
+
 
     template<class T>
     T* getProcessor() { return dynamic_cast<T*>(baseProcessor); }
+
+
+    class NodeListener
+    {
+    public:
+        virtual ~NodeListener() {}
+        virtual void audioInputsChanged(Node *n) {}
+        virtual void audioOutputsChanged(Node * n) {}
+    };
+
+    ListenerList<NodeListener> nodeListeners;
+    void addNodeListener(NodeListener* newListener) { nodeListeners.add(newListener); }
+    void removeNodeListener(NodeListener* listener) { nodeListeners.remove(listener); }
 
     DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED))
 

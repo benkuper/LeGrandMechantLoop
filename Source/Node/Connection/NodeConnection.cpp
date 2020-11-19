@@ -21,6 +21,7 @@ NodeConnection::NodeConnection(Node* sourceNode, Node* destNode) :
 {
     setSourceNode(sourceNode);
     setDestNode(destNode);
+
 }
 
 NodeConnection::~NodeConnection()
@@ -41,6 +42,7 @@ void NodeConnection::setSourceNode(Node* node)
 
     if (sourceNode != nullptr)
     {
+        sourceNode->removeNodeListener(this);
         sourceNode->removeInspectableListener(this);
     }
 
@@ -48,11 +50,12 @@ void NodeConnection::setSourceNode(Node* node)
 
     if (sourceNode != nullptr)
     {
+        sourceNode->addNodeListener(this);
         sourceNode->addInspectableListener(this);
         if(!isCurrentlyLoadingData && destNode != nullptr) createDefaultConnections();
     }
 
-    //changed
+    connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::SOURCE_NODE_CHANGED, this));
 }
 
 void NodeConnection::setDestNode(Node* node)
@@ -60,6 +63,7 @@ void NodeConnection::setDestNode(Node* node)
     if (node == destNode) return;
     if (destNode != nullptr)
     {
+        destNode->removeNodeListener(this);
         destNode->removeInspectableListener(this);
     }
 
@@ -67,15 +71,25 @@ void NodeConnection::setDestNode(Node* node)
 
     if (destNode != nullptr)
     {
+        destNode->addNodeListener(this);
         destNode->addInspectableListener(this);
         if(!isCurrentlyLoadingData && sourceNode != nullptr) createDefaultConnections();
     }
+
+    connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::DEST_NODE_CHANGED, this));
 }
 
 void NodeConnection::connectChannels(int sourceChannel, int destChannel)
 {
     jassert(sourceNode != nullptr && destNode != nullptr);
+    if (sourceChannel >= sourceNode->numOutputs || destChannel >= destNode->numInputs)
+    {
+        LOGWARNING("Wrong connection, not connecting");
+        return;
+    }
+    
     channelMap.add({ sourceChannel, destChannel });
+    connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
     AudioManager::getInstance()->graph.addConnection({ { sourceNode->nodeGraphID, sourceChannel }, { destNode->nodeGraphID,  destChannel } });
 }
 
@@ -83,6 +97,7 @@ void NodeConnection::disconnectChannels(int sourceChannel, int destChannel, bool
 {
     jassert(sourceNode != nullptr && destNode != nullptr);
     if (updateMap) channelMap.removeAllInstancesOf({ sourceChannel, destChannel });
+    connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
     AudioManager::getInstance()->graph.removeConnection({ { sourceNode->nodeGraphID, sourceChannel }, { destNode->nodeGraphID,  destChannel } });
 }
 
@@ -99,6 +114,27 @@ void NodeConnection::clearConnections()
 {
     for(auto & c : channelMap) disconnectChannels(c.sourceChannel, c.destChannel, false);
     channelMap.clear();
+    connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
+}
+
+void NodeConnection::audioInputsChanged(Node* n)
+{
+    if (n == destNode)
+    {
+        Array<ChannelMap> toRemove;
+        for (auto& cm : channelMap) if (cm.destChannel > destNode->numInputs - 1) toRemove.add(cm);
+        for (auto& rm : toRemove) channelMap.removeAllInstancesOf(rm);
+    }
+}
+
+void NodeConnection::audioOutputsChanged(Node* n)
+{
+    if (n == sourceNode)
+    {
+        Array<ChannelMap> toRemove;
+        for (auto& cm : channelMap) if (cm.sourceChannel > sourceNode->numOutputs - 1) toRemove.add(cm);
+        for (auto& rm : toRemove) disconnectChannels(rm.sourceChannel, rm.destChannel);
+    }
 }
 
 void NodeConnection::inspectableDestroyed(Inspectable* i)

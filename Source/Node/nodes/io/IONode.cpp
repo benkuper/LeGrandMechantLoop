@@ -12,7 +12,7 @@
 #include "ui/IONodeViewUI.h"
 
 IOProcessor::IOProcessor(Node* n, bool isInput) :
-	GenericNodeAudioProcessor(n),
+	GenericNodeAudioProcessor(n, false),
 	rmsCC("RMS"),
 	gainCC("Gain"),
 	isInput(isInput)
@@ -26,12 +26,12 @@ IOProcessor::IOProcessor(Node* n, bool isInput) :
 	updateIOFromNode();
 }
 
-void IOProcessor::updateInputsFromNode()
+void IOProcessor::updateInputsFromNodeInternal()
 {
 	if (!isInput) updateIOFromNode();
 }
 
-void IOProcessor::updateOutputsFromNode()
+void IOProcessor::updateOutputsFromNodeInternal()
 {
 	if (isInput) updateIOFromNode();
 }
@@ -40,8 +40,6 @@ void IOProcessor::updateIOFromNode()
 {
 	int numChannels = isInput ? nodeRef->numOutputs : nodeRef->numInputs;
 	StringArray names = isInput ? nodeRef->audioOutputNames : nodeRef->audioInputNames;
-
-
 
 	//remove surplus
 	while (rmsCC.controllables.size() > numChannels)
@@ -71,7 +69,6 @@ void IOProcessor::updateIOFromNode()
 
 	}
 
-	setPlayConfigDetails(numChannels, numChannels, getSampleRate(), getBlockSize());
 }
 
 void IOProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -111,3 +108,7 @@ NodeViewUI* IOProcessor::createNodeViewUI()
 {
 	return new IONodeViewUI((GenericAudioNode<IOProcessor>*)nodeRef.get());
 }
+
+int AudioInputProcessor::getExpectedNumInputs() { return nodeRef->numOutputs; }
+int AudioOutputProcessor::getExpectedNumOutputs() { return nodeRef->numInputs; }
+

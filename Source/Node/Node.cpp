@@ -64,6 +64,7 @@ void Node::setAudioInputs(const StringArray& inputNames)
     audioInputNames = inputNames;
     numInputs = audioInputNames.size();
     if (baseProcessor != nullptr) baseProcessor->updateInputsFromNode();
+    nodeListeners.call(&NodeListener::audioInputsChanged, this);
     nodeNotifier.addMessage(new NodeEvent(NodeEvent::INPUTS_CHANGED, this));
 }
 
@@ -79,6 +80,7 @@ void Node::setAudioOutputs(const StringArray& outputNames)
     audioOutputNames = outputNames;
     numOutputs = audioOutputNames.size();
     if (baseProcessor != nullptr) baseProcessor->updateOutputsFromNode();
+    nodeListeners.call(&NodeListener::audioOutputsChanged, this);
     nodeNotifier.addMessage(new NodeEvent(NodeEvent::OUTPUTS_CHANGED, this));
 }
 

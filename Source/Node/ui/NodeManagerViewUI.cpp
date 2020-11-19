@@ -16,11 +16,12 @@ NodeManagerViewUI::NodeManagerViewUI(StringRef name) :
     BaseManagerShapeShifterViewUI(name, RootNodeManager::getInstance())
 {
     addExistingItems(false);
+    contentIsFlexible = true;
 
     connectionManagerUI.reset(new NodeConnectionManagerViewUI(this, manager->connectionManager.get()));
     addAndMakeVisible(connectionManagerUI.get(), 0);
 
-    //enableSnapping = true;
+    enableSnapping = true;
 
     updatePositionOnDragMove = true;
 

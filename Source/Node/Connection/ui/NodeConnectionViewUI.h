@@ -16,7 +16,8 @@ class NodeConnector;
 
 class NodeConnectionViewUI :
     public BaseItemMinimalUI<NodeConnection>,
-    public ComponentListener
+    public ComponentListener,
+    public NodeConnection::AsyncListener
 {
 public:
     NodeConnectionViewUI(NodeConnection* connection, NodeConnector * sourceConnector = nullptr, NodeConnector * destConnector = nullptr);
@@ -42,4 +43,6 @@ public:
 
     void componentMovedOrResized(Component& c, bool, bool) override;
     void componentBeingDeleted(Component& c) override;
+
+    void newMessage(const NodeConnection::ConnectionEvent& e) override;
 };

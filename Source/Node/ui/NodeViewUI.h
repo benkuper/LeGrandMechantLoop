@@ -25,9 +25,12 @@ public:
     std::unique_ptr<NodeConnector> inAudioConnector;
     std::unique_ptr<NodeConnector> outAudioConnector;
 
+    std::unique_ptr<FloatSliderUI> outRMSUI;
+
     void updateInputConnectors();
     void updateOutputConnectors();
 
+    void paintOverChildren(Graphics& g) override;
     virtual void resized();
     virtual void resizedInternalContent(Rectangle<int>& r) override;
     virtual void resizedInternalContentNode(Rectangle<int>& r) {}

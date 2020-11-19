@@ -20,15 +20,24 @@ class NodeAudioProcessor :
 	public AudioProcessor
 {
 public:
-	NodeAudioProcessor(Node* n);
+	NodeAudioProcessor(Node* n, bool useOutRMS = true);
 	virtual ~NodeAudioProcessor() {}
 
 	WeakReference<Node> nodeRef;
 
 	FloatParameter* outRMS;
 
-	virtual void updateInputsFromNode() {}
-	virtual void updateOutputsFromNode() {}
+	virtual bool exposeAudioInput() { return getExpectedNumInputs() > 0; }
+	virtual bool exposeAudioOutput() { return getExpectedNumOutputs() > 0; }
+
+	virtual void updateInputsFromNode();
+	virtual void updateInputsFromNodeInternal() {}
+	virtual void updateOutputsFromNode();
+	virtual void updateOutputsFromNodeInternal() {}
+
+	virtual int getExpectedNumInputs();
+	virtual int getExpectedNumOutputs();
+	virtual void updatePlayConfig();
 
 	virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {}
 
@@ -58,7 +67,9 @@ class GenericNodeAudioProcessor :
 	public NodeAudioProcessor
 {
 public:
-	GenericNodeAudioProcessor(Node* n);
+	GenericNodeAudioProcessor(Node* n, bool useOutRMS = true);
 	virtual ~GenericNodeAudioProcessor() {}
+
+
 	virtual NodeViewUI* createNodeViewUI(); //to override by children
 };

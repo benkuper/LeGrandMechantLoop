@@ -18,6 +18,16 @@ NodeViewUI::NodeViewUI(Node* node) :
 	autoHideWhenDragging = false;
 	drawEmptyDragIcon = true;
 
+	if (item->baseProcessor->outRMS != nullptr)
+	{
+		outRMSUI.reset(item->baseProcessor->outRMS->createSlider());
+		outRMSUI->showLabel = false;
+		outRMSUI->showValue = false;
+		outRMSUI->orientation = outRMSUI->VERTICAL;
+		addAndMakeVisible(outRMSUI.get());
+
+	}
+
 	updateInputConnectors();
 	updateOutputConnectors();
 	
@@ -32,7 +42,7 @@ NodeViewUI::~NodeViewUI()
 
 void NodeViewUI::updateInputConnectors()
 {
-	bool showInConnector = item->hasAudioInput();
+	bool showInConnector = item->exposeAudioInput();
 	if (showInConnector)
 	{
 		if (inAudioConnector == nullptr)
@@ -57,7 +67,7 @@ void NodeViewUI::updateInputConnectors()
 
 void NodeViewUI::updateOutputConnectors()
 {
-	bool showOutConnector = item->hasAudioOutput();
+	bool showOutConnector = item->exposeAudioOutput();
 	if (showOutConnector)
 	{
 		if (outAudioConnector == nullptr)
@@ -78,6 +88,19 @@ void NodeViewUI::updateOutputConnectors()
 	}
 }
 
+void NodeViewUI::paintOverChildren(Graphics& g)
+{
+	BaseItemUI::paintOverChildren(g);
+	if (!item->enabled->boolValue())
+	{
+		if (inAudioConnector != nullptr && outAudioConnector != nullptr)
+		{
+			g.setColour(BLUE_COLOR);
+			g.drawLine(Line<int>(inAudioConnector->getBounds().getCentre(), outAudioConnector->getBounds().getCentre()).toFloat(), 2);
+		}
+	}
+}
+
 void NodeViewUI::resized()
 {
 	BaseItemUI::resized();
@@ -92,6 +115,7 @@ void NodeViewUI::resized()
 void NodeViewUI::resizedInternalContent(Rectangle<int>& r)
 {
 	BaseItemUI::resizedInternalContent(r);
+	if (outRMSUI != nullptr) outRMSUI->setBounds(r.removeFromRight(10).reduced(2));
 	resizedInternalContentNode(r);
 }
 

@@ -11,11 +11,12 @@
 #pragma once
 
 #include "JuceHeader.h"
-class Node;
+#include "Node/Node.h"
 
 class NodeConnection :
     public BaseItem,
-    public Inspectable::InspectableListener
+    public Inspectable::InspectableListener,
+    public Node::NodeListener
 {
 public:
     NodeConnection(Node * sourceNode = nullptr, Node * destNode = nullptr);
@@ -42,6 +43,8 @@ public:
     void createDefaultConnections();
     void clearConnections();
 
+    void audioInputsChanged(Node* n) override;
+    void audioOutputsChanged(Node* n) override;
 
     void inspectableDestroyed(Inspectable *) override;
 

@@ -25,7 +25,9 @@ NodeConnector::~NodeConnector()
 
 void NodeConnector::paint(Graphics& g)
 {
-    g.setColour(BLUE_COLOR.brighter(isMouseOverOrDragging()?.3f:0));
+    bool hasChannels = !(isInput ? nodeViewUI->item->audioInputNames : nodeViewUI->item->audioOutputNames).isEmpty();
+    Colour c = hasChannels ? BLUE_COLOR : NORMAL_COLOR;
+    g.setColour(c.brighter(isMouseOverOrDragging()?.3f:0));
     g.fillRoundedRectangle(getLocalBounds().toFloat(), 2);
 }
 
