@@ -11,10 +11,13 @@
 #include "NodeAudioProcessor.h"
 #include "Node.h"
 #include "ui/NodeViewUI.h"
+#include "Engine/AudioManager.h"
 
-NodeAudioProcessor::NodeAudioProcessor(Node* n, bool useOutRMS) : 
+NodeAudioProcessor::NodeAudioProcessor(Node* n, bool hasInput, bool hasOutput, bool useOutRMS) : 
     ControllableContainer("Processor"),
     nodeRef(n),
+    hasInput(hasInput),
+    hasOutput(hasOutput),
     outRMS(nullptr)
 {
     hideEditorHeader = true;
@@ -27,30 +30,35 @@ NodeAudioProcessor::NodeAudioProcessor(Node* n, bool useOutRMS) :
 }
 
 
-void NodeAudioProcessor::updateInputsFromNode()
+void NodeAudioProcessor::updateInputsFromNode(bool _updatePlayConfig)
 {
+    suspendProcessing(true);
+    GenericScopedLock<SpinLock> lock(processorLock);
+
     updateInputsFromNodeInternal();
-    updatePlayConfig();
+    if(_updatePlayConfig) updatePlayConfig();
+
+    suspendProcessing(false);
 }
 
-void NodeAudioProcessor::updateOutputsFromNode()
+void NodeAudioProcessor::updateOutputsFromNode(bool _updatePlayConfig)
 {
+    suspendProcessing(true);
+    GenericScopedLock<SpinLock> lock(processorLock);
+
     updateOutputsFromNodeInternal();
-    updatePlayConfig();
-}
+    if (_updatePlayConfig) updatePlayConfig();
 
-int NodeAudioProcessor::getExpectedNumInputs() {
-    return nodeRef->numInputs; 
-}
+    suspendProcessing(false);
 
-int NodeAudioProcessor::getExpectedNumOutputs() {
-    return nodeRef->numOutputs; 
 }
 
 /* AudioProcessor */
 void NodeAudioProcessor::updatePlayConfig()
 {
-    setPlayConfigDetails(getExpectedNumInputs(), getExpectedNumOutputs(), getSampleRate(), getBlockSize());
+    setPlayConfigDetails(nodeRef->numInputs, nodeRef->numOutputs, getSampleRate(), getBlockSize());
+    if (!isCurrentlyLoadingData) AudioManager::getInstance()->updateGraph();
+    //NLOG(nodeRef->niceName, "Buffer has now " << getChannel)
 }
 
 const String NodeAudioProcessor::getName() const {
@@ -71,20 +79,30 @@ void NodeAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& mi
         return;
     }
 
-    processBlockInternal(buffer, midiMessages);
-
-    if (outRMS != nullptr)
+    if (buffer.getNumChannels() < jmax(nodeRef->numInputs, nodeRef->numOutputs))
     {
-        float rms = 0;
-        for (int i = 0; i < buffer.getNumChannels(); i++) rms = jmax(rms, buffer.getRMSLevel(i, 0, buffer.getNumSamples()));
-        float curVal = outRMS->floatValue();
-        float targetVal = outRMS->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
-        outRMS->setValue(targetVal);
+        LOGWARNING("Not the same number of channels ! ");
+        return;
+    }
+
+    {
+        GenericScopedLock<SpinLock> lock(processorLock);
+
+        processBlockInternal(buffer, midiMessages);
+
+        if (outRMS != nullptr)
+        {
+            float rms = 0;
+            for (int i = 0; i < buffer.getNumChannels(); i++) rms = jmax(rms, buffer.getRMSLevel(i, 0, buffer.getNumSamples()));
+            float curVal = outRMS->floatValue();
+            float targetVal = outRMS->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
+            outRMS->setValue(targetVal);
+        }
     }
 }
 
-GenericNodeAudioProcessor::GenericNodeAudioProcessor(Node* n, bool useOutRMS) :
-    NodeAudioProcessor(n, useOutRMS)
+GenericNodeAudioProcessor::GenericNodeAudioProcessor(Node* n, bool hasInput, bool hasOutput, bool useOutRMS) :
+    NodeAudioProcessor(n, hasInput, hasOutput, useOutRMS)
 {
 }
 

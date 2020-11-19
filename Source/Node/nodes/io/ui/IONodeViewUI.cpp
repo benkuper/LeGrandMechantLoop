@@ -22,7 +22,7 @@ IONodeViewUI::~IONodeViewUI()
 
 void IONodeViewUI::nodeInputsChanged()
 {
-    NodeViewUI::nodeOutputsChanged();
+    NodeViewUI::nodeInputsChanged();
     if (!audioNode->processor->isInput) updateUI();
 }
 

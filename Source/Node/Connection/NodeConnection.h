@@ -39,7 +39,7 @@ public:
     void setDestNode(Node* node);
 
     void connectChannels(int sourceChannel, int destChannel);
-    void disconnectChannels(int sourceChannel, int destChannel, bool updateMap = true);
+    void disconnectChannels(int sourceChannel, int destChannel, bool updateMap = true, bool notify = true);
     void createDefaultConnections();
     void clearConnections();
 

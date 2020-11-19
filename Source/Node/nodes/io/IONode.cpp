@@ -12,7 +12,7 @@
 #include "ui/IONodeViewUI.h"
 
 IOProcessor::IOProcessor(Node* n, bool isInput) :
-	GenericNodeAudioProcessor(n, false),
+	GenericNodeAudioProcessor(n, !isInput, isInput, false),
 	rmsCC("RMS"),
 	gainCC("Gain"),
 	isInput(isInput)
@@ -109,6 +109,12 @@ NodeViewUI* IOProcessor::createNodeViewUI()
 	return new IONodeViewUI((GenericAudioNode<IOProcessor>*)nodeRef.get());
 }
 
-int AudioInputProcessor::getExpectedNumInputs() { return nodeRef->numOutputs; }
-int AudioOutputProcessor::getExpectedNumOutputs() { return nodeRef->numInputs; }
+void AudioInputProcessor::updatePlayConfig()
+{
+	setPlayConfigDetails(nodeRef->numOutputs, nodeRef->numOutputs, getSampleRate(), getBlockSize());
+}
 
+void AudioOutputProcessor::updatePlayConfig()
+{
+	setPlayConfigDetails(nodeRef->numInputs, nodeRef->numInputs, getSampleRate(), getBlockSize());
+}

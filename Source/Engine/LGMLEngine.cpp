@@ -26,6 +26,7 @@ LGMLEngine::LGMLEngine() :
     addChildControllableContainer(Transport::getInstance());
 
     ProjectSettings::getInstance()->addChildControllableContainer(AudioManager::getInstance());
+
 }
 
 LGMLEngine::~LGMLEngine()

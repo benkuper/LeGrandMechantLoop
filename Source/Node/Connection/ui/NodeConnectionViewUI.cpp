@@ -38,7 +38,7 @@ NodeConnectionViewUI::~NodeConnectionViewUI()
 
 void NodeConnectionViewUI::paint(Graphics& g)
 {
-	Colour c = item != nullptr ? (item->isSelected ? HIGHLIGHT_COLOR : BLUE_COLOR) : YELLOW_COLOR;
+	Colour c = item != nullptr ? (item->isSelected ? HIGHLIGHT_COLOR : (item->channelMap.size() > 0 ? BLUE_COLOR:NORMAL_COLOR)) : YELLOW_COLOR;
 	if (isMouseOverOrDragging()) c = c.brighter();
 	g.setColour(c);
 	g.strokePath(path, PathStrokeType(isMouseOverOrDragging()?3:1));

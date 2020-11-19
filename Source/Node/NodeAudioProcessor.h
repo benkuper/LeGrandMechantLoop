@@ -20,23 +20,23 @@ class NodeAudioProcessor :
 	public AudioProcessor
 {
 public:
-	NodeAudioProcessor(Node* n, bool useOutRMS = true);
+	NodeAudioProcessor(Node* n, bool hasInput = true, bool hasOutput = true, bool useOutRMS = true);
 	virtual ~NodeAudioProcessor() {}
 
 	WeakReference<Node> nodeRef;
 
+	SpinLock processorLock;
+
+	int hasInput; //defines if this processor is supposed to get input, even if the number of channels is zero
+	int hasOutput; //defines if this processor is supposed to provide output, even if the number of channels is zero
+
 	FloatParameter* outRMS;
 
-	virtual bool exposeAudioInput() { return getExpectedNumInputs() > 0; }
-	virtual bool exposeAudioOutput() { return getExpectedNumOutputs() > 0; }
-
-	virtual void updateInputsFromNode();
+	virtual void updateInputsFromNode(bool updatePlayConfig = true);
 	virtual void updateInputsFromNodeInternal() {}
-	virtual void updateOutputsFromNode();
+	virtual void updateOutputsFromNode(bool updatePlayConfig = true);
 	virtual void updateOutputsFromNodeInternal() {}
 
-	virtual int getExpectedNumInputs();
-	virtual int getExpectedNumOutputs();
 	virtual void updatePlayConfig();
 
 	virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {}
@@ -67,7 +67,7 @@ class GenericNodeAudioProcessor :
 	public NodeAudioProcessor
 {
 public:
-	GenericNodeAudioProcessor(Node* n, bool useOutRMS = true);
+	GenericNodeAudioProcessor(Node* n, bool hasInput = true, bool hasOutput =true, bool useOutRMS = true);
 	virtual ~GenericNodeAudioProcessor() {}
 
 

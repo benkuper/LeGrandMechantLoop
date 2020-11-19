@@ -19,4 +19,35 @@ public:
     MixerNodeViewUI(GenericAudioNode<MixerProcessor>* n);
     ~MixerNodeViewUI();
 
+    class InputGainLine :
+        public Component
+    {
+    public:
+        InputGainLine(ControllableContainer* gainsCC, int index);
+
+        int index;
+        ControllableContainer* gainsCC;
+
+        OwnedArray<FloatSliderUI> gainsUI;
+        void rebuild();
+
+        void paint(Graphics& g) override;
+        void resized() override;
+    };
+
+    OwnedArray<InputGainLine> gainLines;
+
+    OwnedArray<FloatSliderUI> outGainsUI;
+    OwnedArray<FloatSliderUI> rmsUI;
+
+    Rectangle<int> outRect;
+
+    void nodeInputsChanged() override;
+    void nodeOutputsChanged() override;
+
+    void updateLines();
+    void rebuildOutLine();
+
+    void paint(Graphics& g) override;
+    void resizedInternalContentNode(Rectangle<int> &r) override;
 };

@@ -33,6 +33,8 @@ public:
 
     std::unique_ptr<NodeConnectionManager> connectionManager;
 
+    void clear() override;
+
     void setAudioInputs(const int& numInputs); //auto naming
     void setAudioInputs(const StringArray& inputNames);
     void setAudioOutputs(const int& numOutputs); //auto naming

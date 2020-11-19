@@ -47,9 +47,6 @@ public:
     void setAudioOutputs(const int& numOutputs); //auto naming
     void setAudioOutputs(const StringArray& outputNames);
 
-    // Helpers
-    virtual bool exposeAudioInput() { return baseProcessor->exposeAudioInput(); }
-    virtual bool exposeAudioOutput() { return baseProcessor->exposeAudioOutput(); }
 
 
     template<class T>

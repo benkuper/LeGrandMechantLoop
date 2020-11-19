@@ -42,8 +42,7 @@ NodeViewUI::~NodeViewUI()
 
 void NodeViewUI::updateInputConnectors()
 {
-	bool showInConnector = item->exposeAudioInput();
-	if (showInConnector)
+	if (item->baseProcessor->hasInput)
 	{
 		if (inAudioConnector == nullptr)
 		{
@@ -53,7 +52,7 @@ void NodeViewUI::updateInputConnectors()
 		}
 		else
 		{
-			inAudioConnector->updateTooltip();
+			inAudioConnector->update();
 		}
 
 	}
@@ -62,13 +61,11 @@ void NodeViewUI::updateInputConnectors()
 		removeChildComponent(inAudioConnector.get());
 		inAudioConnector.reset();
 	}
-
 }
 
 void NodeViewUI::updateOutputConnectors()
 {
-	bool showOutConnector = item->exposeAudioOutput();
-	if (showOutConnector)
+	if (item->baseProcessor->hasOutput)
 	{
 		if (outAudioConnector == nullptr)
 		{
@@ -78,7 +75,7 @@ void NodeViewUI::updateOutputConnectors()
 		}
 		else
 		{
-			outAudioConnector->updateTooltip();
+			outAudioConnector->update();
 		}
 	}
 	else if (outAudioConnector != nullptr)

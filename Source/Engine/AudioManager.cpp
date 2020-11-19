@@ -59,6 +59,25 @@ int AudioManager::getNewGraphID()
     return graphIDIncrement++;
 }
 
+void AudioManager::updateGraph()
+{
+    graph.suspendProcessing(true);
+
+    AudioDeviceManager::AudioDeviceSetup setup = am.getAudioDeviceSetup();
+    currentSampleRate = setup.sampleRate;
+    currentBufferSize = setup.bufferSize;
+
+    numAudioInputs = setup.inputChannels.countNumberOfSetBits();
+    numAudioOutputs = setup.outputChannels.countNumberOfSetBits();
+
+    graph.setPlayConfigDetails(numAudioInputs, numAudioOutputs, currentSampleRate, currentBufferSize);
+    graph.prepareToPlay(currentSampleRate, currentBufferSize);
+
+    audioManagerListeners.call(&AudioManagerListener::audioSetupChanged);
+
+    graph.suspendProcessing(false);
+}
+
 void AudioManager::audioDeviceIOCallback(const float** inputChannelData, int numInputChannels, float** outputChannelData, int numOutputChannels, int numSamples)
 {
     for (int i = 0; i < numOutputChannels; ++i) FloatVectorOperations::clear(outputChannelData[i], numSamples);
@@ -74,18 +93,7 @@ void AudioManager::audioDeviceStopped()
 
 void AudioManager::changeListenerCallback(ChangeBroadcaster* source)
 {
-    AudioDeviceManager::AudioDeviceSetup setup = am.getAudioDeviceSetup();
-    currentSampleRate = setup.sampleRate;
-    currentBufferSize = setup.bufferSize;
-
-
-    numAudioInputs = setup.inputChannels.countNumberOfSetBits();
-    numAudioOutputs= setup.outputChannels.countNumberOfSetBits();
-
-    graph.setPlayConfigDetails(numAudioInputs, numAudioOutputs, currentSampleRate, currentBufferSize);
-    graph.prepareToPlay(currentSampleRate, currentBufferSize);
-
-    audioManagerListeners.call(&AudioManagerListener::audioSetupChanged);
+    updateGraph();
 }
 
 StringArray AudioManager::getInputChannelNames() const

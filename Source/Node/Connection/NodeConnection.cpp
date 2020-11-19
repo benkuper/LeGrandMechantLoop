@@ -93,11 +93,11 @@ void NodeConnection::connectChannels(int sourceChannel, int destChannel)
     AudioManager::getInstance()->graph.addConnection({ { sourceNode->nodeGraphID, sourceChannel }, { destNode->nodeGraphID,  destChannel } });
 }
 
-void NodeConnection::disconnectChannels(int sourceChannel, int destChannel, bool updateMap)
+void NodeConnection::disconnectChannels(int sourceChannel, int destChannel, bool updateMap, bool notify)
 {
     jassert(sourceNode != nullptr && destNode != nullptr);
     if (updateMap) channelMap.removeAllInstancesOf({ sourceChannel, destChannel });
-    connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
+    if(notify) connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
     AudioManager::getInstance()->graph.removeConnection({ { sourceNode->nodeGraphID, sourceChannel }, { destNode->nodeGraphID,  destChannel } });
 }
 
@@ -112,7 +112,7 @@ void NodeConnection::createDefaultConnections()
 
 void NodeConnection::clearConnections()
 {
-    for(auto & c : channelMap) disconnectChannels(c.sourceChannel, c.destChannel, false);
+    for(auto & c : channelMap) disconnectChannels(c.sourceChannel, c.destChannel, false, false);
     channelMap.clear();
     connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
 }
@@ -123,8 +123,11 @@ void NodeConnection::audioInputsChanged(Node* n)
     {
         Array<ChannelMap> toRemove;
         for (auto& cm : channelMap) if (cm.destChannel > destNode->numInputs - 1) toRemove.add(cm);
-        for (auto& rm : toRemove) channelMap.removeAllInstancesOf(rm);
+        for (auto& rm : toRemove) disconnectChannels(rm.sourceChannel, rm.destChannel, true, false);
+        if (!toRemove.isEmpty()) connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
     }
+
+
 }
 
 void NodeConnection::audioOutputsChanged(Node* n)
@@ -133,7 +136,8 @@ void NodeConnection::audioOutputsChanged(Node* n)
     {
         Array<ChannelMap> toRemove;
         for (auto& cm : channelMap) if (cm.sourceChannel > sourceNode->numOutputs - 1) toRemove.add(cm);
-        for (auto& rm : toRemove) disconnectChannels(rm.sourceChannel, rm.destChannel);
+        for (auto& rm : toRemove) disconnectChannels(rm.sourceChannel, rm.destChannel, true, false);
+        if (!toRemove.isEmpty()) connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
     }
 }
 

@@ -26,5 +26,5 @@ public:
     NodeViewUI * nodeViewUI;
 
     void paint(Graphics& g) override;
-    void updateTooltip();
+    void update();
 };

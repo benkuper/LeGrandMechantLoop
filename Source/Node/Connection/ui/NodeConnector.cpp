@@ -16,7 +16,7 @@ NodeConnector::NodeConnector(NodeViewUI * nodeViewUI, bool isInput) :
     nodeViewUI(nodeViewUI)
 {
     setRepaintsOnMouseActivity(true);
-    updateTooltip();
+    update();
 }
 
 NodeConnector::~NodeConnector()
@@ -31,10 +31,12 @@ void NodeConnector::paint(Graphics& g)
     g.fillRoundedRectangle(getLocalBounds().toFloat(), 2);
 }
 
-void NodeConnector::updateTooltip()
+void NodeConnector::update()
 {
     if (nodeViewUI == nullptr || nodeViewUI->item == nullptr) return;
 
     StringArray s = isInput ? nodeViewUI->item->audioInputNames : nodeViewUI->item->audioOutputNames;
     setTooltip(s.joinIntoString("\n"));
+
+    repaint();
 }

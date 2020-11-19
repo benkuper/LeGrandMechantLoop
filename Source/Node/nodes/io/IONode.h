@@ -46,8 +46,7 @@ public:
 	AudioInputProcessor(Node* node) : IOProcessor(node, true) {}
 	static const String getTypeStringStatic() { return "Audio Input"; }
 
-	int getExpectedNumInputs();
-	bool exposeAudioInput() { return false; }
+	void updatePlayConfig() override;
 };
 
 class AudioOutputProcessor :
@@ -57,6 +56,6 @@ public:
 	AudioOutputProcessor(Node* node) : IOProcessor(node, false) {}
 	static const String getTypeStringStatic() { return "Audio Output"; }
 
-	int getExpectedNumOutputs();
-	bool exposeAudioOutput() { return false; }
+	void updatePlayConfig() override;
+
 };

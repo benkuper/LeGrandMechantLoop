@@ -48,6 +48,9 @@ void Node::setProcessor(NodeAudioProcessor* processor)
     if (baseProcessor != nullptr)
     {
         nodeGraphPtr = AudioManager::getInstance()->graph.addNode(std::unique_ptr<NodeAudioProcessor>(baseProcessor), AudioProcessorGraph::NodeID(nodeGraphID));
+        baseProcessor->updateInputsFromNode(false);
+        baseProcessor->updateOutputsFromNode(false);
+        baseProcessor->updatePlayConfig();
         addChildControllableContainer(baseProcessor);
     }
 }
@@ -61,6 +64,7 @@ void Node::setAudioInputs(const int& numInputs)
 
 void Node::setAudioInputs(const StringArray& inputNames)
 {
+    if (audioInputNames == inputNames) return;
     audioInputNames = inputNames;
     numInputs = audioInputNames.size();
     if (baseProcessor != nullptr) baseProcessor->updateInputsFromNode();
@@ -77,6 +81,7 @@ void Node::setAudioOutputs(const int& numOutputs)
 
 void Node::setAudioOutputs(const StringArray& outputNames)
 {
+    if (audioOutputNames == outputNames) return;
     audioOutputNames = outputNames;
     numOutputs = audioOutputNames.size();
     if (baseProcessor != nullptr) baseProcessor->updateOutputsFromNode();

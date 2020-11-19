@@ -13,9 +13,139 @@
 MixerNodeViewUI::MixerNodeViewUI(GenericAudioNode<MixerProcessor>* n) :
     GenericAudioNodeViewUI(n)
 {
-    LOG("Mixer node view !");
+    updateLines();
+    rebuildOutLine();
+
+    setSize(200, 200);
 }
 
 MixerNodeViewUI::~MixerNodeViewUI()
 {
+}
+
+void MixerNodeViewUI::nodeInputsChanged()
+{
+    updateLines();
+}
+
+void MixerNodeViewUI::nodeOutputsChanged()
+{
+    for (auto& line : gainLines) line->rebuild();
+    rebuildOutLine();
+    resized();
+}
+
+void MixerNodeViewUI::updateLines()
+{
+    int numCC = audioNode->processor->gainRootCC.controllableContainers.size();
+    while (gainLines.size() > numCC)
+    {
+        removeChildComponent(gainLines[gainLines.size() - 1]);
+        gainLines.removeLast();
+    }
+
+    while (gainLines.size() < numCC)
+    {
+        InputGainLine* line = new InputGainLine(audioNode->processor->gainRootCC.controllableContainers[gainLines.size()], gainLines.size());
+        addAndMakeVisible(line);
+        gainLines.add(line);
+    }
+
+    resized();
+}
+
+void MixerNodeViewUI::rebuildOutLine()
+{
+    for (auto& ui : outGainsUI) removeChildComponent(ui);
+    for (auto& ui : rmsUI) removeChildComponent(ui);
+    outGainsUI.clear();
+    rmsUI.clear();
+
+    for (int i = 0; i < audioNode->processor->outGainsCC.controllables.size(); i++)
+    {
+        FloatSliderUI* gui = ((FloatParameter*)audioNode->processor->outGainsCC.controllables[i])->createSlider();
+        gui->orientation = gui->VERTICAL;
+        addAndMakeVisible(gui);
+        outGainsUI.add(gui);
+
+        FloatSliderUI* rui = ((FloatParameter*)audioNode->processor->rmsCC.controllables[i])->createSlider();
+        rui->orientation = rui->VERTICAL;
+        rui->showLabel = false;
+        rui->showValue = false;
+        addAndMakeVisible(rui);
+        rmsUI.add(rui);
+    }
+
+}
+
+void MixerNodeViewUI::paint(Graphics& g)
+{
+    BaseItemUI::paint(g);
+    g.setColour(NORMAL_COLOR.withAlpha(.5f));
+    g.drawRoundedRectangle(outRect.toFloat(), 2, 1);
+}
+
+void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
+{
+    outRect = r.removeFromTop(100).reduced(2);
+    Rectangle<int> outR(outRect);
+    
+    int sizePerGain = jmin(outR.getWidth() / outGainsUI.size(), 30);
+    for (int i = 0; i < outGainsUI.size(); i++)
+    {
+        Rectangle<int> gr = outR.removeFromLeft(sizePerGain).reduced(2);
+        rmsUI[i]->setBounds(gr.removeFromRight(6));
+        gr.removeFromRight(2);
+        outGainsUI[i]->setBounds(gr);
+    }
+
+    r.removeFromTop(6);
+
+    int lineHeight = jmin(r.getHeight() / gainLines.size(),80);
+    for (auto& line : gainLines) line->setBounds(r.removeFromTop(lineHeight).reduced(2));
+}
+
+
+// INPUT GAIN LINE
+
+MixerNodeViewUI::InputGainLine::InputGainLine(ControllableContainer* gainsCC, int index) :
+    gainsCC(gainsCC),
+    index(index)
+{
+    rebuild();
+}
+
+void MixerNodeViewUI::InputGainLine::rebuild()
+{
+    for (auto& ui : gainsUI) removeChildComponent(ui);
+    gainsUI.clear();
+
+    for (auto& c : gainsCC->controllables)
+    {
+        FloatSliderUI * ui = ((FloatParameter*)c)->createSlider();
+        ui->orientation = ui->VERTICAL;
+        gainsUI.add(ui);
+        addAndMakeVisible(ui);
+    }
+
+    resized();
+}
+
+void MixerNodeViewUI::InputGainLine::paint(Graphics& g)
+{
+    g.setColour(NORMAL_COLOR.withAlpha(.5f));
+    g.drawRoundedRectangle(getLocalBounds().toFloat(), 2, 1);
+}
+
+void MixerNodeViewUI::InputGainLine::resized()
+{
+    if (gainsUI.size() == 0) return;
+
+    Rectangle<int> r = getLocalBounds().reduced(2);
+    int sizePerGain = jmin(r.getWidth() / gainsUI.size(), 30);
+    for (int i = 0; i < gainsUI.size();i++)
+    {
+        Rectangle<int> gr = r.removeFromLeft(sizePerGain).reduced(2);
+        gainsUI[i]->setBounds(gr.withSizeKeepingCentre(jmin(gr.getWidth(), 16),gr.getHeight()));
+    }
 }

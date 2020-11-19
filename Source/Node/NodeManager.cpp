@@ -36,6 +36,12 @@ NodeManager::~NodeManager()
 }
 
 
+void NodeManager::clear()
+{
+	connectionManager->clear();
+	BaseManager::clear();
+}
+
 void NodeManager::setAudioInputs(const int& numInputs)
 {
 	StringArray s;
@@ -45,22 +51,6 @@ void NodeManager::setAudioInputs(const int& numInputs)
 
 void NodeManager::setAudioInputs(const StringArray& inputNames)
 {
-	/*
-	int currentNumInputs = audioInputNames.size();
-	int newNumInputs = inputNames.size();
-	while (currentNumInputs > newNumInputs) //remove surplus
-	{
-		currentNumInputs--;
-		AudioManager::getInstance()->graph.removeConnection(AudioProcessorGraph::Connection({ inputNodeID, currentNumInputs }, { nodeGraphID, currentNumInputs })); //straight channel disconnection
-	}
-
-	while (currentNumInputs < newNumInputs) //add missing
-	{
-		AudioManager::getInstance()->graph.addConnection(AudioProcessorGraph::Connection({ inputNodeID, currentNumInputs }, { nodeGraphID, currentNumInputs })); //straight channel connection
-		currentNumInputs++;
-	}
-	*/
-
 	audioInputNames = inputNames;
 	for (auto& n : audioInputNodes) updateAudioInputNode(n);
 
