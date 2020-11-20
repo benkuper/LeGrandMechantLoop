@@ -11,18 +11,14 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
-
+        submodules: true
+        
       - name: Checkout JUCE
         uses: actions/checkout@v2
         with:
           repository: benkuper/JUCE
           ref: develop-local
           path: JUCE
-
-      - name : Path check
-        run: pwd
-      - name : Folder check
-        run: ls -R
       - name: Build
         uses: sersoft-gmbh/xcodebuild-action@v1.3
         with:
