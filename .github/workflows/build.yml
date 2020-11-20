@@ -42,19 +42,19 @@ jobs:
       - name: Set Suffix
         id: set_suffix
         run: |
-          echo "GITHUB_REF_NAME=${{ env.GITHUB_REF_NAME }}"
+          echo "GITHUB_REF_NAME=$GITHUB_REF_NAME"
           if [$GITHUB_REF_NAME == 'master']
           then
               echo "::set-output name=suffix::bleedingedge"
           else
-              echo "::set-output name=suffix::${{ GITHUB_REF_NAME }}"
+              echo "::set-output name=suffix::$GITHUB_REF_NAME"
           fi
 
       - name: Create Package
         run:  |
           cd Packages
-          packagesbuild ${{ ProjectName }}.pkgproj \
-          mv ${{ ProjectName }}.pkg ${{ ProjectName }}-osx-${{ steps.set_suffix.outputs.suffix }}.pkg
+          packagesbuild ${{ env.ProjectName }}.pkgproj \
+          mv ${{ env.ProjectName }}.pkg ${{ env.ProjectName }}-osx-${{ steps.set_suffix.outputs.suffix }}.pkg
 
       - name: Upload
         uses: wei/curl@v1
