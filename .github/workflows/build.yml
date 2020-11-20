@@ -22,7 +22,7 @@ jobs:
       - name: Build
         uses: sersoft-gmbh/xcodebuild-action@v1.3
         with:
-          project: Builds/MacOSX_CI/${ProjectName}.xcodeproj
+          project: Builds/MacOSX_CI/${{ env.ProjectName }}.xcodeproj
           scheme: $ProjectName
           destination: platform=macOS
           action: build
