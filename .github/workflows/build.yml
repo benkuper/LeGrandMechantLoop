@@ -21,7 +21,8 @@ jobs:
 
       - name : Path check
         run: pwd
-        
+      - name : Folder check
+        run: ls -R
       - name: Build
         uses: sersoft-gmbh/xcodebuild-action@v1.3
         with:
