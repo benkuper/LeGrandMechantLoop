@@ -12,12 +12,12 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Checkout 
+      - name: Checkout JUCE
         uses: actions/checkout@v2
         with:
           repository: benkuper/JUCE
           ref: develop-local
-          path: '~'
+          path: JUCE
 
       - name: Build
         uses: sersoft-gmbh/xcodebuild-action@v1.3
