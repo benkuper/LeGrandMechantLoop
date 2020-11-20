@@ -19,8 +19,8 @@ jobs:
         run: |
           curl -L -o Packages.dmg 'http://s.sudre.free.fr/Software/files/Packages.dmg'
           hdiutil mount Packages.dmg
-          sudo installer -pkg /Volumes/Packages/ ${{ env.PackagesVersion }}/Install/ Packages.pkg -target /
-          hdiutil detach /Volumes/Packages/ ${{ env.PackagesVersion }}/
+          sudo installer -pkg "/Volumes/Packages ${{ env.PackagesVersion }}/Install Packages.pkg" -target /
+          hdiutil detach "/Volumes/Packages ${{ env.PackagesVersion }}/"
           
       - name: Checkout JUCE
         uses: actions/checkout@v2
