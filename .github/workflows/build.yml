@@ -17,7 +17,7 @@ jobs:
         with:
           repository: benkuper/JUCE
           ref: develop-local
-          path: JUCE
+          path: '~'
 
       - name: Build
         uses: sersoft-gmbh/xcodebuild-action@v1.3
