@@ -19,6 +19,9 @@ jobs:
           ref: develop-local
           path: JUCE
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+
       - name: Build
         uses: sersoft-gmbh/xcodebuild-action@v1.3
         with:
