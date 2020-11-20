@@ -3,6 +3,7 @@ on: [push]
 env:
   ProjectName: LGML
   PackagesVersion: 1.2.9
+
 jobs:
   osx:
     name: OSX
@@ -18,13 +19,8 @@ jobs:
         run: |
           curl -L -o Packages.dmg 'http://s.sudre.free.fr/Software/files/Packages.dmg'
           hdiutil mount Packages.dmg
-          sudo installer -pkg /Volumes/Packages/ ${{ PackagesVersion }}/Install/ Packages.pkg -target /
-          hdiutil detach /Volumes/Packages/ ${{ PackagesVersion }}/
-          echo "GITHUB_REPOSITORY_NAME_SLUG=$Env:GITHUB_REPOSITORY_NAME_SLUG"
-          echo "GITHUB_REF_SLUG=$Env:GITHUB_REF_SLUG"
-          echo "GITHUB_REF_NAME=$Env:GITHUB_REF_NAME"
-          echo "GITHUB_REF_NAME_SLUG=$Env:GITHUB_REF_NAME_SLUG"
-          echo "GITHUB_SHA_SHORT=$Env:GITHUB_SHA_SHORT"
+          sudo installer -pkg /Volumes/Packages/ ${{ env.PackagesVersion }}/Install/ Packages.pkg -target /
+          hdiutil detach /Volumes/Packages/ ${{ env.PackagesVersion }}/
           
       - name: Checkout JUCE
         uses: actions/checkout@v2
@@ -43,19 +39,23 @@ jobs:
           use-xcpretty: true
 
       - uses: FranzDiebold/github-env-vars-action@v1.2.1
-      - name: Set SUFFIX
+      - name: Set Suffix
+        id: set_suffix
         run: |
-          echo "GITHUB_REF_NAME=$Env:GITHUB_REF_NAME"
+          echo "GITHUB_REF_NAME=${{ env.GITHUB_REF_NAME }}"
           if [$GITHUB_REF_NAME == 'master']
           then
               echo "::set-output name=suffix::bleedingedge"
           else
-              echo "::set-output name=prerelease::${{ GITHUB_REF_NAME }}"
+              echo "::set-output name=suffix::${{ GITHUB_REF_NAME }}"
           fi
 
       - name: Create Package
-        run: packagesbuild Chataigne.pkgproj \
-             mv Chataigne.pkg Chataigne-osx-$SUFFIX.pkg
+        run:  |
+          cd Packages
+          packagesbuild ${{ ProjectName }}.pkgproj \
+          mv ${{ ProjectName }}.pkg ${{ ProjectName }}-osx-${{ steps.set_suffix.outputs.suffix }}.pkg
+
       - name: Upload
         uses: wei/curl@v1
         with:
