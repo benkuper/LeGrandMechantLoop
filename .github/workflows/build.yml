@@ -27,5 +27,5 @@ jobs:
           destination: platform=macOS
           jobs: 2
           action: build
-          use-xcpretty: false
+          use-xcpretty: true
 
