@@ -2,7 +2,7 @@ on: [push]
 
 env:
   ProjectName: LGML
-
+  PackagesVersion: 1.2.9
 jobs:
   osx:
     name: OSX
@@ -20,10 +20,13 @@ jobs:
           path: JUCE
 
       - name : Path check
-         run: |
+          run: |
               pwd
               ls
-              
+              curl -L -o Packages.dmg 'http://s.sudre.free.fr/Software/files/Packages.dmg'
+              hdiutil mount Packages.dmg
+              sudo installer -pkg /Volumes/Packages\ ${{ PackagesVersion }}/Install\ Packages.pkg -target /
+              hdiutil detach /Volumes/Packages\ ${{ PackagesVersion }}/
       - name: Build
         uses: sersoft-gmbh/xcodebuild-action@v1.3
         with:
