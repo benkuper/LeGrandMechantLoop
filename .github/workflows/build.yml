@@ -14,12 +14,25 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Download Packages 
+        run: |
+          curl -L -o Packages.dmg 'http://s.sudre.free.fr/Software/files/Packages.dmg'
+          hdiutil mount Packages.dmg
+          sudo installer -pkg /Volumes/Packages/ ${{ PackagesVersion }}/Install/ Packages.pkg -target /
+          hdiutil detach /Volumes/Packages/ ${{ PackagesVersion }}/
+          echo "GITHUB_REPOSITORY_NAME_SLUG=$Env:GITHUB_REPOSITORY_NAME_SLUG"
+          echo "GITHUB_REF_SLUG=$Env:GITHUB_REF_SLUG"
+          echo "GITHUB_REF_NAME=$Env:GITHUB_REF_NAME"
+          echo "GITHUB_REF_NAME_SLUG=$Env:GITHUB_REF_NAME_SLUG"
+          echo "GITHUB_SHA_SHORT=$Env:GITHUB_SHA_SHORT"
+          
       - name: Checkout JUCE
         uses: actions/checkout@v2
         with:
           repository: benkuper/JUCE
           ref: develop-local
           path: JUCE
+
       - name: Build
         uses: sersoft-gmbh/xcodebuild-action@v1.3
         with:
@@ -28,4 +41,23 @@ jobs:
           jobs: 2
           action: build
           use-xcpretty: true
+
+      - uses: FranzDiebold/github-env-vars-action@v1.2.1
+      - name: Set SUFFIX
+        run: |
+          echo "GITHUB_REF_NAME=$Env:GITHUB_REF_NAME"
+          if [$GITHUB_REF_NAME == 'master']
+          then
+              echo "::set-output name=suffix::bleedingedge"
+          else
+              echo "::set-output name=prerelease::${{ GITHUB_REF_NAME }}"
+          fi
+
+      - name: Create Package
+        run: packagesbuild Chataigne.pkgproj \
+             mv Chataigne.pkg Chataigne-osx-$SUFFIX.pkg
+      - name: Upload
+        uses: wei/curl@v1
+        with:
+          args: -X POST https://httpbin.org/post
 
