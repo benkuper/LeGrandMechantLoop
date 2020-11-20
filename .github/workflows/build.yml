@@ -21,7 +21,6 @@ jobs:
 
       - name : Path check
         run: pwd
-        run: pwd
         
       - name: Build
         uses: sersoft-gmbh/xcodebuild-action@v1.3
