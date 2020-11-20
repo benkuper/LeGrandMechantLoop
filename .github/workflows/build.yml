@@ -1,0 +1,28 @@
+on: [push]
+
+env:
+  ProjectName: LGML
+
+jobs:
+  osx:
+    name: OSX
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Checkout 
+        uses: actions/checkout@v2
+        with:
+          repository: benkuper/JUCE
+          ref: develop-local
+          path: JUCE
+
+      - name: Build
+        uses: sersoft-gmbh/xcodebuild-action@v1.3
+        with:
+          project: Builds/MacOSX_CI/$ProjectName.xcodeproj
+          scheme: $ProjectName
+          destination: platform=macOS
+          action: build
