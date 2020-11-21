@@ -89,14 +89,19 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/NodeViewUI_fa05b6d2.o \
   $(JUCE_OBJDIR)/VSTNodeViewUI_3913bedb.o \
   $(JUCE_OBJDIR)/VSTNode_36eb2a7f.o \
+  $(JUCE_OBJDIR)/SpatItemUI_d4d1ba3f.o \
   $(JUCE_OBJDIR)/SpatNodeViewUI_16ddaa73.o \
+  $(JUCE_OBJDIR)/SpatView_3e8405bd.o \
+  $(JUCE_OBJDIR)/SpatItem_4473f720.o \
   $(JUCE_OBJDIR)/SpatNode_41351a8f.o \
   $(JUCE_OBJDIR)/MixerNodeViewUI_bbe5a45b.o \
   $(JUCE_OBJDIR)/MixerNode_83b55be3.o \
   $(JUCE_OBJDIR)/IONodeViewUI_ba78daff.o \
   $(JUCE_OBJDIR)/IONode_620212ef.o \
   $(JUCE_OBJDIR)/LooperNodeViewUI_1c96a535.o \
+  $(JUCE_OBJDIR)/LooperTrackUI_322d1b0f.o \
   $(JUCE_OBJDIR)/LooperNode_c6b8472f.o \
+  $(JUCE_OBJDIR)/LooperTrack_22b5ae08.o \
   $(JUCE_OBJDIR)/Node_65f22bf0.o \
   $(JUCE_OBJDIR)/NodeAudioProcessor_710582c.o \
   $(JUCE_OBJDIR)/NodeManager_772dfa27.o \
@@ -244,9 +249,24 @@ $(JUCE_OBJDIR)/VSTNode_36eb2a7f.o: ../../Source/Node/nodes/vst/VSTNode.cpp
 	@echo "Compiling VSTNode.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
+$(JUCE_OBJDIR)/SpatItemUI_d4d1ba3f.o: ../../Source/Node/nodes/spat/ui/SpatItemUI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling SpatItemUI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
 $(JUCE_OBJDIR)/SpatNodeViewUI_16ddaa73.o: ../../Source/Node/nodes/spat/ui/SpatNodeViewUI.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling SpatNodeViewUI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/SpatView_3e8405bd.o: ../../Source/Node/nodes/spat/ui/SpatView.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling SpatView.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/SpatItem_4473f720.o: ../../Source/Node/nodes/spat/SpatItem.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling SpatItem.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/SpatNode_41351a8f.o: ../../Source/Node/nodes/spat/SpatNode.cpp
@@ -279,9 +299,19 @@ $(JUCE_OBJDIR)/LooperNodeViewUI_1c96a535.o: ../../Source/Node/nodes/looper/ui/Lo
 	@echo "Compiling LooperNodeViewUI.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
+$(JUCE_OBJDIR)/LooperTrackUI_322d1b0f.o: ../../Source/Node/nodes/looper/ui/LooperTrackUI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling LooperTrackUI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
 $(JUCE_OBJDIR)/LooperNode_c6b8472f.o: ../../Source/Node/nodes/looper/LooperNode.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling LooperNode.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/LooperTrack_22b5ae08.o: ../../Source/Node/nodes/looper/LooperTrack.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling LooperTrack.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/Node_65f22bf0.o: ../../Source/Node/Node.cpp

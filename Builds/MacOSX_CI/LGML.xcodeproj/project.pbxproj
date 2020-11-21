@@ -145,9 +145,21 @@
 			isa = PBXBuildFile;
 			fileRef = 36A9825F0D2DD9FF84EA17E1;
 		};
+		7F04CAED28FF42045CFB6849 = {
+			isa = PBXBuildFile;
+			fileRef = 8530BA68A7A0DE66DF8BC751;
+		};
 		71BE39A8BAEC827D77DFF23E = {
 			isa = PBXBuildFile;
 			fileRef = 55EEAD8AFDD8024BA2524572;
+		};
+		AD0EF314914A7C7454BD2EA1 = {
+			isa = PBXBuildFile;
+			fileRef = 1D3C8F499EB1E5E8AF9B16E9;
+		};
+		5CB4EF23740A2CEE713BCCC2 = {
+			isa = PBXBuildFile;
+			fileRef = 88B80FF1A1B7C9BA9C8A51A1;
 		};
 		EC9D9679278FD9D140CDB2F5 = {
 			isa = PBXBuildFile;
@@ -173,9 +185,17 @@
 			isa = PBXBuildFile;
 			fileRef = 19F11F31D630C760BBCEC079;
 		};
+		AEC35F8423572146E47F0C70 = {
+			isa = PBXBuildFile;
+			fileRef = 6D2B35E71D499D9E4E01E9FA;
+		};
 		8FEDFBAC3111F9067B012C53 = {
 			isa = PBXBuildFile;
 			fileRef = F974C2D82E5178DFE1C8CA09;
+		};
+		7B954FED1AA89B2193672805 = {
+			isa = PBXBuildFile;
+			fileRef = A4DBBD95E70CB4701AEB5AE9;
 		};
 		B04647E3F99DBD999C1EDA37 = {
 			isa = PBXBuildFile;
@@ -366,6 +386,13 @@
 			path = "../../Modules/juce_organicui";
 			sourceTree = "SOURCE_ROOT";
 		};
+		13CF90DFC1204A7632151D4E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = SpatView.h;
+			path = ../../Source/Node/nodes/spat/ui/SpatView.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		148F888C5AC71F227501279F = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -392,6 +419,20 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = NodeConnectionManager.h;
 			path = ../../Source/Node/Connection/NodeConnectionManager.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		1D3C8F499EB1E5E8AF9B16E9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = SpatView.cpp;
+			path = ../../Source/Node/nodes/spat/ui/SpatView.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		1E7C9B73E1AB82EE70757017 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = SpatItem.h;
+			path = ../../Source/Node/nodes/spat/SpatItem.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		1EBAAFB7B33347A8FACCEFA5 = {
@@ -476,6 +517,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = VSTNode.cpp;
 			path = ../../Source/Node/nodes/vst/VSTNode.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		37F5F99EC3552832F1043CDD = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = LooperTrackUI.h;
+			path = ../../Source/Node/nodes/looper/ui/LooperTrackUI.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		3A41A9EB3C9D087C84D4CFA3 = {
@@ -574,6 +622,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Node.cpp;
 			path = ../../Source/Node/Node.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		481F8169D03A59F4A07EF0A3 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = SpatItemUI.h;
+			path = ../../Source/Node/nodes/spat/ui/SpatItemUI.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		4ACE978AE9CC0CC00C427119 = {
@@ -695,6 +750,13 @@
 			path = "Info-App.plist";
 			sourceTree = "SOURCE_ROOT";
 		};
+		6D2B35E71D499D9E4E01E9FA = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = LooperTrackUI.cpp;
+			path = ../../Source/Node/nodes/looper/ui/LooperTrackUI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		6F1D4F401F68DDCD1214D472 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -744,6 +806,13 @@
 			path = ../../Source/Node/NodeFactory.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		7E797A2782749B5536F25F2E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = LooperTrack.h;
+			path = ../../Source/Node/nodes/looper/LooperTrack.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		8096301EEC61AAC32909A2B1 = {
 			isa = PBXFileReference;
 			explicitFileType = wrapper.application;
@@ -765,11 +834,25 @@
 			path = ../../Source/Node/Connection/NodeConnection.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		8530BA68A7A0DE66DF8BC751 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = SpatItemUI.cpp;
+			path = ../../Source/Node/nodes/spat/ui/SpatItemUI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		859F4958802D47DEEC06564B = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = Transport.cpp;
 			path = ../../Source/Transport/Transport.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		88B80FF1A1B7C9BA9C8A51A1 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = SpatItem.cpp;
+			path = ../../Source/Node/nodes/spat/SpatItem.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		8B2CB4E39ADD7811904BDFA0 = {
@@ -847,6 +930,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = MixerNodeViewUI.h;
 			path = ../../Source/Node/nodes/mixer/ui/MixerNodeViewUI.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		A4DBBD95E70CB4701AEB5AE9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = LooperTrack.cpp;
+			path = ../../Source/Node/nodes/looper/LooperTrack.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		A74F9AEDDDB240B88F9ED92D = {
@@ -1297,8 +1387,12 @@
 		31185E76108A9B1930066794 = {
 			isa = PBXGroup;
 			children = (
+				8530BA68A7A0DE66DF8BC751,
+				481F8169D03A59F4A07EF0A3,
 				55EEAD8AFDD8024BA2524572,
 				332CC0D25665437AA47C86C0,
+				1D3C8F499EB1E5E8AF9B16E9,
+				13CF90DFC1204A7632151D4E,
 			);
 			name = ui;
 			sourceTree = "<group>";
@@ -1307,6 +1401,8 @@
 			isa = PBXGroup;
 			children = (
 				31185E76108A9B1930066794,
+				88B80FF1A1B7C9BA9C8A51A1,
+				1E7C9B73E1AB82EE70757017,
 				3D00A98E8D33E781EE04DA18,
 				C19A9A9A8C73EF6397DB633F,
 			);
@@ -1356,6 +1452,8 @@
 			children = (
 				19F11F31D630C760BBCEC079,
 				94C52653366FCA618C27220C,
+				6D2B35E71D499D9E4E01E9FA,
+				37F5F99EC3552832F1043CDD,
 			);
 			name = ui;
 			sourceTree = "<group>";
@@ -1366,6 +1464,8 @@
 				F30E3A5821F440061A13389D,
 				F974C2D82E5178DFE1C8CA09,
 				F2A3009EE687E67083D5AF68,
+				A4DBBD95E70CB4701AEB5AE9,
+				7E797A2782749B5536F25F2E,
 			);
 			name = looper;
 			sourceTree = "<group>";
@@ -1718,14 +1818,19 @@
 				BADAEFBC76487F8E5F7FE35B,
 				5045CC99C38D9CE766F82B6A,
 				83613C33A4CB0E8079400D08,
+				7F04CAED28FF42045CFB6849,
 				71BE39A8BAEC827D77DFF23E,
+				AD0EF314914A7C7454BD2EA1,
+				5CB4EF23740A2CEE713BCCC2,
 				EC9D9679278FD9D140CDB2F5,
 				B57FAC03190BFF0C7813BB47,
 				DC3F01637C207965CC1432E9,
 				C93F78CE99351AE2316C4FB2,
 				868B8EEF2C35302C6D091BD5,
 				8F1FE1A4CEC1C762DC438BAF,
+				AEC35F8423572146E47F0C70,
 				8FEDFBAC3111F9067B012C53,
+				7B954FED1AA89B2193672805,
 				B04647E3F99DBD999C1EDA37,
 				45CA35A15678721A38CC065F,
 				8DC102E307EF75EE0CFFAAA7,

@@ -23,6 +23,9 @@ public:
     Transport();
     ~Transport();
 
+    enum Quantization { BAR, BEAT, FREE };
+    EnumParameter* quantization;
+
     FloatParameter * bpm;
     IntParameter* beatsPerBar; //first part of time signature
     IntParameter* beatUnit; //2nd part of time signature

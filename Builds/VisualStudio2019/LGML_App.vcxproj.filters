@@ -916,8 +916,17 @@
     <ClCompile Include="..\..\Source\Node\nodes\vst\VSTNode.cpp">
       <Filter>LGML\Source\Node\nodes\vst</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\spat\ui\SpatItemUI.cpp">
+      <Filter>LGML\Source\Node\nodes\spat\ui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\spat\ui\SpatNodeViewUI.cpp">
       <Filter>LGML\Source\Node\nodes\spat\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\spat\ui\SpatView.cpp">
+      <Filter>LGML\Source\Node\nodes\spat\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\spat\SpatItem.cpp">
+      <Filter>LGML\Source\Node\nodes\spat</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\spat\SpatNode.cpp">
       <Filter>LGML\Source\Node\nodes\spat</Filter>
@@ -937,7 +946,13 @@
     <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperNodeViewUI.cpp">
       <Filter>LGML\Source\Node\nodes\looper\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperTrackUI.cpp">
+      <Filter>LGML\Source\Node\nodes\looper\ui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\looper\LooperNode.cpp">
+      <Filter>LGML\Source\Node\nodes\looper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\LooperTrack.cpp">
       <Filter>LGML\Source\Node\nodes\looper</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\Node.cpp">
@@ -3957,8 +3972,17 @@
     <ClInclude Include="..\..\Source\Node\nodes\vst\VSTNode.h">
       <Filter>LGML\Source\Node\nodes\vst</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\spat\ui\SpatItemUI.h">
+      <Filter>LGML\Source\Node\nodes\spat\ui</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\spat\ui\SpatNodeViewUI.h">
       <Filter>LGML\Source\Node\nodes\spat\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\spat\ui\SpatView.h">
+      <Filter>LGML\Source\Node\nodes\spat\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\spat\SpatItem.h">
+      <Filter>LGML\Source\Node\nodes\spat</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\spat\SpatNode.h">
       <Filter>LGML\Source\Node\nodes\spat</Filter>
@@ -3978,7 +4002,13 @@
     <ClInclude Include="..\..\Source\Node\nodes\looper\ui\LooperNodeViewUI.h">
       <Filter>LGML\Source\Node\nodes\looper\ui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\ui\LooperTrackUI.h">
+      <Filter>LGML\Source\Node\nodes\looper\ui</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\looper\LooperNode.h">
+      <Filter>LGML\Source\Node\nodes\looper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\LooperTrack.h">
       <Filter>LGML\Source\Node\nodes\looper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\Node.h">

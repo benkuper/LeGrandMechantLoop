@@ -12,6 +12,8 @@
 
 #include "../../NodeAudioProcessor.h"
 
+class LooperTrack;
+
 class LooperProcessor :
         public GenericNodeAudioProcessor
 {
@@ -22,6 +24,8 @@ public:
     IntParameter* numTracks;
     IntParameter* numChannelsPerTrack;
     
+    ControllableContainer tracksCC;
+
     enum TrackOutputMode { MIXED_ONLY, SEPARATE_ONLY, ALL };
     EnumParameter * trackOutputMode;
 
@@ -29,6 +33,7 @@ public:
     EnumParameter* monitorMode;
 
     void updateOutTracks();
+    void updateLooperTracks();
 
     void onContainerParameterChanged(Parameter* p) override;
 

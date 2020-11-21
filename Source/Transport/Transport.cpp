@@ -46,6 +46,9 @@ Transport::Transport() :
 	pauseTrigger = addTrigger("Pause", "Stops playing but keeps the current time");
 	stopTrigger = addTrigger("Stop", "Stops playing and resets current time");
 
+	quantization = addEnumParameter("Quantization", "Default quantization for nodes.");
+	quantization->addOption("Bar", BAR)->addOption("Beat", BEAT)->addOption("Free", FREE);
+
 	AudioManager::getInstance()->am.addAudioCallback(this);
 
 }
