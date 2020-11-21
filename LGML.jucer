@@ -95,11 +95,17 @@
           </GROUP>
           <GROUP id="{0581DE71-D9D5-B444-9014-51F1CF249FDF}" name="spat">
             <GROUP id="{EB28E7A0-62EE-C45B-2B17-B1139A8A2EB9}" name="ui">
+              <FILE id="FUe1vb" name="SpatItemUI.cpp" compile="1" resource="0" file="Source/Node/nodes/spat/ui/SpatItemUI.cpp"/>
+              <FILE id="Rm9MNw" name="SpatItemUI.h" compile="0" resource="0" file="Source/Node/nodes/spat/ui/SpatItemUI.h"/>
               <FILE id="OuH1qb" name="SpatNodeViewUI.cpp" compile="1" resource="0"
                     file="Source/Node/nodes/spat/ui/SpatNodeViewUI.cpp"/>
               <FILE id="FCsfKU" name="SpatNodeViewUI.h" compile="0" resource="0"
                     file="Source/Node/nodes/spat/ui/SpatNodeViewUI.h"/>
+              <FILE id="Dn1IQC" name="SpatView.cpp" compile="1" resource="0" file="Source/Node/nodes/spat/ui/SpatView.cpp"/>
+              <FILE id="mcHWuX" name="SpatView.h" compile="0" resource="0" file="Source/Node/nodes/spat/ui/SpatView.h"/>
             </GROUP>
+            <FILE id="ztk9KN" name="SpatItem.cpp" compile="1" resource="0" file="Source/Node/nodes/spat/SpatItem.cpp"/>
+            <FILE id="C4UJc3" name="SpatItem.h" compile="0" resource="0" file="Source/Node/nodes/spat/SpatItem.h"/>
             <FILE id="GJLVTB" name="SpatNode.cpp" compile="1" resource="0" file="Source/Node/nodes/spat/SpatNode.cpp"/>
             <FILE id="WYOBmX" name="SpatNode.h" compile="0" resource="0" file="Source/Node/nodes/spat/SpatNode.h"/>
           </GROUP>
@@ -128,9 +134,14 @@
                     file="Source/Node/nodes/looper/ui/LooperNodeViewUI.cpp"/>
               <FILE id="sYfJne" name="LooperNodeViewUI.h" compile="0" resource="0"
                     file="Source/Node/nodes/looper/ui/LooperNodeViewUI.h"/>
+              <FILE id="ViuVt6" name="LooperTrackUI.cpp" compile="1" resource="0"
+                    file="Source/Node/nodes/looper/ui/LooperTrackUI.cpp"/>
+              <FILE id="oXiVXz" name="LooperTrackUI.h" compile="0" resource="0" file="Source/Node/nodes/looper/ui/LooperTrackUI.h"/>
             </GROUP>
             <FILE id="SBqo06" name="LooperNode.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperNode.cpp"/>
             <FILE id="MI1IfJ" name="LooperNode.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperNode.h"/>
+            <FILE id="Ufc6nf" name="LooperTrack.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperTrack.cpp"/>
+            <FILE id="lQlMOU" name="LooperTrack.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperTrack.h"/>
           </GROUP>
         </GROUP>
         <FILE id="YMfktw" name="Node.cpp" compile="1" resource="0" file="Source/Node/Node.cpp"/>
