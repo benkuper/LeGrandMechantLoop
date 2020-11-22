@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
-              jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source">
+              jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{644794F3-EEA3-18B3-8950-FB0E90CE6C1E}" name="Source">
       <GROUP id="{C932F17D-F807-6D54-C9FE-636145A3A77A}" name="Common">
@@ -173,7 +173,9 @@
             file="Source/MainComponentCommands.cpp"/>
     </GROUP>
   </MAINGROUP>
-  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" ORGANICUI_USE_WEBSERVER="1"/>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" ORGANICUI_USE_WEBSERVER="1"
+               JUCE_USE_WINRT_MIDI="1" JUCE_ASIO="1" JUCE_WASAPI="1" JUCE_DIRECTSOUND="1"
+               JUCE_ALSA="1" JUCE_JACK="1" JUCE_BELA="1"/>
   <EXPORTFORMATS>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
       <CONFIGURATIONS>

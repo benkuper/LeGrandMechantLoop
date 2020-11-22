@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    LooperTrack.h
-    Created: 21 Nov 2020 6:33:06pm
-    Author:  bkupe
+	LooperTrack.h
+	Created: 21 Nov 2020 6:33:06pm
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -13,54 +13,60 @@
 #include "JuceHeader.h"
 
 class LooperTrack :
-    public ControllableContainer
+	public ControllableContainer
 {
 public:
-    LooperTrack(int index, int numChannels);
-    ~LooperTrack();
+	LooperTrack(int index, int numChannels);
+	~LooperTrack();
 
-    enum TrackState { IDLE, WILL_RECORD, RECORDING, FINISH_RECORDING, PLAYING, WILL_STOP, STOPPED, WILL_PLAY, STATES_MAX };
-    static String trackStateNames[STATES_MAX];
+	enum TrackState { IDLE, WILL_RECORD, RECORDING, FINISH_RECORDING, PLAYING, WILL_STOP, STOPPED, WILL_PLAY, STATES_MAX };
+	static String trackStateNames[STATES_MAX];
 
-    EnumParameter* trackState;
+	EnumParameter* trackState;
 
-    Trigger* playRecordTrigger;
-    Trigger* stopTrigger;
-    Trigger* clearTrigger;
+	Trigger* playRecordTrigger;
+	Trigger* playTrigger;
+	Trigger* stopTrigger;
+	Trigger* clearTrigger;
 
-    BoolParameter* active;
-    FloatParameter* volume;
-    FloatParameter* rms;
+	BoolParameter* active;
+	FloatParameter* volume;
+	FloatParameter* rms;
 
-    int index;
-    int numChannels;
+	int index;
+	int numChannels;
 
-    int curSample;
-    AudioBuffer<float> buffer;
+	int curSample;
+	AudioBuffer<float> buffer;
 
-    double timeAtStateChange;
+	double timeAtStateChange;
 
-    void setNumChannels(int num);
-    void updateAudioBuffer();
+	int globalBeatAtStart;
+	int numBeats;
 
-    void recordOrPlayNow();
+	void setNumChannels(int num);
+	void updateAudioBuffer();
+	
+	void stateChanged();
 
-    void stateChanged();
+	void recordOrPlay();
+	void startRecording();
+	void finishRecordingAndPlay();
+	void cancelRecording();
+	void clearBuffer();
+	void startPlaying();
+	void stopPlaying();
 
-    void startRecording();
-    void stopRecordAndPlay();
-    void clearContent();
+	void handleWaiting();
 
-    void onContainerTriggerTriggered(Trigger *t) override;
-    void onContainerParameterChanged(Parameter* p) override;
+	void onContainerTriggerTriggered(Trigger* t) override;
+	void onContainerParameterChanged(Parameter* p) override;
 
-    void handleNewBeat();
-    void handleNewBar();
+	void handleBeatChanged(bool isNewBar);
+	void processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>&outputBuffer, int numMainChannels, bool outputIfRecording);
 
-
-    void processBlock(AudioBuffer<float>& inputBuffer);
-
-    //Helpers
-    bool isRecording() const;
-    bool isPlaying() const;
+	//Helpers
+	bool isRecording(bool includeWillRecord) const;
+	bool isPlaying(bool includeWillPlay) const;
+	bool isWaiting(bool waitingForRecord = true, bool waitingForFinishRecord = true, bool waitingForPlay = true, bool waitingForStop = true) const;
 };

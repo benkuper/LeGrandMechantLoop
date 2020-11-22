@@ -11,15 +11,17 @@
 #pragma once
 
 #include "../../NodeAudioProcessor.h"
+#include "Transport/Transport.h"
 
 class LooperTrack;
 
 class LooperProcessor :
-        public GenericNodeAudioProcessor
+        public GenericNodeAudioProcessor,
+        public Transport::TransportListener
 {
 public:
     LooperProcessor(Node * node);
-    ~LooperProcessor() {}
+    ~LooperProcessor();
 
     IntParameter* numTracks;
     IntParameter* numChannelsPerTrack;
@@ -35,10 +37,20 @@ public:
     void updateOutTracks();
     void updateLooperTracks();
 
+    void trackStateChanged(LooperTrack * t);
+
     void onContainerParameterChanged(Parameter* p) override;
+    void onControllableFeedbackUpdate(ControllableContainer * cc, Controllable* c) override;
+
+    virtual void beatChanged(bool isNewBar) override;
+    virtual void playStateChanged(bool isPlaying) override;
+
 
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+
+    //helpers
+    bool isOneTrackRecording(bool includeWillRecord = false);
+
     static String getTypeStringStatic() { return "Looper"; }
-  
     NodeViewUI* createNodeViewUI() override;
 };

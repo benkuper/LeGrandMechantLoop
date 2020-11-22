@@ -85,7 +85,7 @@ void TransportUI::BeatViz::paint(Graphics& g)
 	float progression = transport->beatProgression->floatValue();
 	Colour c = NORMAL_COLOR;
 	
-	if (transport->isPlayingParam->boolValue())
+	if (transport->isCurrentlyPlaying->boolValue())
 	{
 		c = beat >= index ? BLUE_COLOR.darker() : NORMAL_COLOR;
 		if (beat == index) c = c.interpolatedWith(YELLOW_COLOR, 1 - progression);
@@ -125,7 +125,13 @@ void TransportUI::BarViz::paint(Graphics& g)
 {
 	Rectangle<int> r = getLocalBounds().reduced(5, 2);
 	float progression = transport->barProgression->floatValue();
-	Colour c = transport->isPlayingParam->boolValue() ? BLUE_COLOR : NORMAL_COLOR;
+	Colour c = transport->isCurrentlyPlaying->boolValue() ? BLUE_COLOR : NORMAL_COLOR.darker();
+	if (transport->isSettingTempo)
+	{
+		float diff = Time::getMillisecondCounter() / 1000.0 - transport->timeAtStart;
+		c = BG_COLOR.darker(.2f).interpolatedWith(RED_COLOR, sinf(diff * 3 + float_Pi) * .5f + .5f);
+		progression = 1;
+	}
 	g.setColour(BG_COLOR.darker(.2f));
 	g.fillRoundedRectangle(r.toFloat(),2);
 	g.setColour(c);
@@ -139,7 +145,7 @@ void TransportUI::BarViz::resized()
 	const int beatWidth = 4;
 	r.setWidth(beatWidth);
 
-	for (int i = 0; i < beats.size(); i++) beats[i]->setBounds(r.translated(i * beatGap - beatWidth / 2, 0));
+	for (int i = 0; i < beats.size(); i++) beats[i]->setBounds(r.translated(i * beatGap, 0));
 }
 
 void TransportUI::BarViz::timerCallback()

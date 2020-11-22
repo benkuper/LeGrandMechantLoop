@@ -1691,6 +1691,13 @@
 					"JUCE_MODULE_AVAILABLE_juce_simpleweb=1",
 					"JUCE_MODULE_AVAILABLE_juce_timeline=1",
 					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
+					"JUCE_USE_WINRT_MIDI=1",
+					"JUCE_ASIO=1",
+					"JUCE_WASAPI=1",
+					"JUCE_DIRECTSOUND=1",
+					"JUCE_ALSA=1",
+					"JUCE_JACK=1",
+					"JUCE_BELA=1",
 					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
 					"ORGANICUI_USE_WEBSERVER=1",
 					"JUCE_STANDALONE_APPLICATION=1",
@@ -1701,6 +1708,7 @@
 					"../../JUCE/modules",
 					"../../Modules",
 					"../../Source",
+					"../../External/asio",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Info-App.plist;
@@ -1713,6 +1721,7 @@
 					"../../JUCE/modules",
 					"../../Modules",
 					"../../Source",
+					"../../External/asio",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.LGML;
 				PRODUCT_NAME = "LGML";
