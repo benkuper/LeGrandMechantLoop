@@ -23,7 +23,7 @@ LooperTrack::LooperTrack(int index, int numChannels) :
 
     trackState = addEnumParameter("State", "State of this track, for feedback");
     for (int i = 0; i < STATES_MAX; i++) trackState->addOption(trackStateNames[i], (TrackState)i);
-    trackState->setControllableFeedbackOnly(true);
+    //trackState->setControllableFeedbackOnly(true);
 
     playRecordTrigger = addTrigger("Play & Record", "If empty, this will start recording. If recording, this will stop recording and start playing. If already recorded, this will start playing");
     stopTrigger = addTrigger("Stop", "If recording, this will cancel the recording. If playing, this will stop the track but will keep the recorded content");

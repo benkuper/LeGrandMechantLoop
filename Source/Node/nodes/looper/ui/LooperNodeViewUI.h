@@ -13,6 +13,8 @@
 #include "../LooperNode.h"
 #include "../../../ui/NodeViewUI.h"
 
+class LooperTrackUI;
+
 class LooperNodeViewUI :
     public GenericAudioNodeViewUI<LooperProcessor>
 {
@@ -20,4 +22,11 @@ public:
     LooperNodeViewUI(GenericAudioNode<LooperProcessor>* n);
     ~LooperNodeViewUI();
 
+    void updateTracksUI();
+
+    OwnedArray<LooperTrackUI> tracksUI;
+
+    void controllableFeedbackUpdateInternal(Controllable* c) override;
+
+    void resizedInternalContentNode(Rectangle<int> &r) override;
 };
