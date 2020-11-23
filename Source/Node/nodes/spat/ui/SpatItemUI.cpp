@@ -41,11 +41,11 @@ void SpatItemUI::paint(Graphics& g)
     g.setColour(NORMAL_COLOR.withAlpha(.4f));
     g.fillEllipse(getLocalBounds().toFloat().withSizeKeepingCentre(size, size));
 
-    g.setColour(NORMAL_COLOR.withAlpha(.6f));
+    g.setColour(NORMAL_COLOR.brighter().withAlpha(.6f));
     g.drawEllipse(getLocalBounds().toFloat(),1);
 
     Rectangle<float> center = getLocalBounds().withSizeKeepingCentre(16, 16).toFloat();
-    Colour c = isMouseOverOrDragging() ? HIGHLIGHT_COLOR : NORMAL_COLOR;
+    Colour c = NORMAL_COLOR.brighter(isMouseOverOrDragging() ? .3f : 0);
     g.setColour(c.withAlpha(.6f));
     g.fillEllipse(center);
 
