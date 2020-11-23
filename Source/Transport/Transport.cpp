@@ -290,6 +290,8 @@ void Transport::audioDeviceIOCallback(const float** inputChannelData, int numInp
 	{
 		setTempoSampleCount += numSamples;
 	}
+
+	for (int i = 0; i < numOutputChannels; i++) FloatVectorOperations::clear(outputChannelData[i], numSamples);
 }
 
 void Transport::audioDeviceAboutToStart(AudioIODevice* device)
