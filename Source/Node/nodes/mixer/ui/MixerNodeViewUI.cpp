@@ -15,8 +15,6 @@ MixerNodeViewUI::MixerNodeViewUI(GenericAudioNode<MixerProcessor>* n) :
 {
     updateLines();
     rebuildOutLine();
-
-    setSize(200, 200);
 }
 
 MixerNodeViewUI::~MixerNodeViewUI()

@@ -995,6 +995,13 @@
 			path = ../../Source/Node/nodes/vst/ui/VSTNodeViewUI.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		BE191D2B96E7D24AF95BD784 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = RingBuffer.h;
+			path = ../../Source/Common/RingBuffer.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		BEC21D9389CC84DE2A6A22C6 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -1273,6 +1280,7 @@
 			children = (
 				4512B8F41500EB4419C62669,
 				CE2F73FF261289B9C99F6D48,
+				BE191D2B96E7D24AF95BD784,
 			);
 			name = Common;
 			sourceTree = "<group>";

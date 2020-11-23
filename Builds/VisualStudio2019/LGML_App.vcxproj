@@ -2916,6 +2916,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Common\ConnectionUIHelper.h"/>
+    <ClInclude Include="..\..\Source\Common\RingBuffer.h"/>
     <ClInclude Include="..\..\Source\Engine\ui\AudioManagerEditor.h"/>
     <ClInclude Include="..\..\Source\Engine\AudioManager.h"/>
     <ClInclude Include="..\..\Source\Engine\LGMLEngine.h"/>

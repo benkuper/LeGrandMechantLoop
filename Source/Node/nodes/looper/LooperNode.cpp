@@ -16,6 +16,8 @@ LooperProcessor::LooperProcessor(Node* node) :
 	GenericNodeAudioProcessor(node),
 	tracksCC("Tracks")
 {
+	nodeRef->viewUISize->setPoint(350, 220);
+
 	numTracks = addIntParameter("Track Count", "Number of tracks to use for this looper", 8, 1, 32);
 	numChannelsPerTrack = addIntParameter("Channel Per Track", "Number of channel to use for each track", 1, 1, 8);
 
@@ -25,18 +27,23 @@ LooperProcessor::LooperProcessor(Node* node) :
 	monitorMode = addEnumParameter("Monitor Mode", "How to monitor");
 	monitorMode->addOption("Off", OFF)->addOption("Always", ALWAYS)->addOption("Armed track", ARMED_TRACK)->addOption("When recording", RECORDING_ONLY);
 
+	fadeTimeMS = addIntParameter("Fade Time", "Number of ms to fade between start and end of the loop", 200, 0, 2000);
 	addChildControllableContainer(&tracksCC);
 
 	node->setAudioInputs(numChannelsPerTrack->intValue());
 	updateOutTracks();
 	updateLooperTracks();
 
+	updateRingBuffer();
+
 	Transport::getInstance()->addTransportListener(this);
+	AudioManager::getInstance()->addAudioManagerListener(this);
 }
 
 LooperProcessor::~LooperProcessor()
 {
 	Transport::getInstance()->removeTransportListener(this);
+	AudioManager::getInstance()->removeAudioManagerListener(this);
 }
 
 void LooperProcessor::updateOutTracks()
@@ -76,35 +83,15 @@ void LooperProcessor::updateLooperTracks()
 	Array<ControllableContainer*> tracksToAdd;
 	for (int i = tracksCC.controllableContainers.size(); i < numTracks->intValue(); i++)
 	{
-		tracksCC.addChildControllableContainer(new LooperTrack(i, numChannelsPerTrack->intValue()), true);
+		tracksCC.addChildControllableContainer(new LooperTrack(this, i, numChannelsPerTrack->intValue()), true);
 	}
 }
 
-void LooperProcessor::trackStateChanged(LooperTrack* t)
+void LooperProcessor::updateRingBuffer()
 {
-/*
-LooperTrack::TrackState s = t->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
-	switch (s)
-	{
-	case LooperTrack::IDLE:
-		break;
-
-	case LooperTrack::WILL_RECORD:
-	{
-
-	}
-	break;
-	case LooperTrack::RECORDING:
-		break;
-	case LooperTrack::WILL_PLAY:
-		break;
-	case LooperTrack::PLAYING:
-		break;
-	default:
-		break;
-	}
-	*/
+	ringBuffer.reset(new RingBuffer<float>(numChannelsPerTrack->intValue(), getFadeNumSamples() * 2)); //double to not have overlapping read and write
 }
+
 
 void LooperProcessor::onContainerParameterChanged(Parameter* p)
 {
@@ -127,15 +114,9 @@ void LooperProcessor::onContainerParameterChanged(Parameter* p)
 			((LooperTrack*)cc.get())->setNumChannels(numChannelsPerTrack->intValue());
 		}
 	}
+	else if (p == fadeTimeMS) updateRingBuffer();
 }
 
-void LooperProcessor::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
-{
-	if (LooperTrack* t = dynamic_cast<LooperTrack*>(cc))
-	{
-		if (c == t->trackState) trackStateChanged(t);
-	}
-}
 
 void LooperProcessor::beatChanged(bool isNewBar)
 {
@@ -147,12 +128,19 @@ void LooperProcessor::playStateChanged(bool isPlaying)
 	if (!isPlaying) for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->stopPlaying();
 }
 
+void LooperProcessor::audioSetupChanged()
+{
+	updateRingBuffer();
+}
+
 void LooperProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	TrackOutputMode tom = trackOutputMode->getValueDataAsEnum<TrackOutputMode>();
 	MonitorMode mm = monitorMode->getValueDataAsEnum<MonitorMode>();
 	int numMainChannels = tom == SEPARATE_ONLY ? 0 : numChannelsPerTrack->intValue();
 	bool oneIsRecording = isOneTrackRecording();
+
+	if(fadeTimeMS->intValue() > 0) ringBuffer->writeSamples(buffer, 0, jmin(buffer.getNumSamples(), ringBuffer->bufferSize));
 
 	AudioBuffer<float> tmpBuffer;
 	tmpBuffer.makeCopyOf(buffer);
@@ -163,7 +151,7 @@ void LooperProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffe
 	}
 
 	bool outputIfRecording = mm == RECORDING_ONLY || mm == ALWAYS;
-	for (int i = 0;i<numTracks->intValue();i++)
+	for (int i = 0; i < numTracks->intValue(); i++)
 	{
 		((LooperTrack*)tracksCC.controllableContainers[i].get())->processBlock(tmpBuffer, buffer, numMainChannels, outputIfRecording);
 	}
@@ -176,6 +164,11 @@ bool LooperProcessor::isOneTrackRecording(bool includeWillRecord)
 		if (((LooperTrack*)cc.get())->isRecording(includeWillRecord)) return true;
 	}
 	return false;
+}
+
+int LooperProcessor::getFadeNumSamples()
+{
+	return fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000;
 }
 
 NodeViewUI* LooperProcessor::createNodeViewUI()

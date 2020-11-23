@@ -9,6 +9,7 @@
               file="Source/Common/ConnectionUIHelper.cpp"/>
         <FILE id="kRFZbn" name="ConnectionUIHelper.h" compile="0" resource="0"
               file="Source/Common/ConnectionUIHelper.h"/>
+        <FILE id="zGQljp" name="RingBuffer.h" compile="0" resource="0" file="Source/Common/RingBuffer.h"/>
       </GROUP>
       <GROUP id="{547E2B2F-2054-CDCA-AD1D-F31535731863}" name="Engine">
         <GROUP id="{91A11254-5AA5-4E03-34F2-115AAAF6C8EB}" name="ui">

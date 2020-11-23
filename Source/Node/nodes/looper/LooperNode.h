@@ -12,12 +12,15 @@
 
 #include "../../NodeAudioProcessor.h"
 #include "Transport/Transport.h"
+#include "Common/RingBuffer.h"
+#include "Engine/AudioManager.h"
 
 class LooperTrack;
 
 class LooperProcessor :
         public GenericNodeAudioProcessor,
-        public Transport::TransportListener
+        public Transport::TransportListener,
+        public AudioManager::AudioManagerListener
 {
 public:
     LooperProcessor(Node * node);
@@ -25,7 +28,10 @@ public:
 
     IntParameter* numTracks;
     IntParameter* numChannelsPerTrack;
-    
+    IntParameter* fadeTimeMS;
+
+    std::unique_ptr<RingBuffer<float>> ringBuffer;
+
     ControllableContainer tracksCC;
 
     enum TrackOutputMode { MIXED_ONLY, SEPARATE_ONLY, ALL };
@@ -36,20 +42,20 @@ public:
 
     void updateOutTracks();
     void updateLooperTracks();
-
-    void trackStateChanged(LooperTrack * t);
+    void updateRingBuffer();
 
     void onContainerParameterChanged(Parameter* p) override;
-    void onControllableFeedbackUpdate(ControllableContainer * cc, Controllable* c) override;
 
     virtual void beatChanged(bool isNewBar) override;
     virtual void playStateChanged(bool isPlaying) override;
 
-
+    virtual void audioSetupChanged() override;
+    
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
     //helpers
     bool isOneTrackRecording(bool includeWillRecord = false);
+    int getFadeNumSamples(); //for ring buffer fade
 
     static String getTypeStringStatic() { return "Looper"; }
     NodeViewUI* createNodeViewUI() override;

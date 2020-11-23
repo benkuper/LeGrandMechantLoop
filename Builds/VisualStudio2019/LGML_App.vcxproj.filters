@@ -3912,6 +3912,9 @@
     <ClInclude Include="..\..\Source\Common\ConnectionUIHelper.h">
       <Filter>LGML\Source\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Common\RingBuffer.h">
+      <Filter>LGML\Source\Common</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Engine\ui\AudioManagerEditor.h">
       <Filter>LGML\Source\Engine\ui</Filter>
     </ClInclude>

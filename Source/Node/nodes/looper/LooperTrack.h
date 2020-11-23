@@ -11,13 +11,18 @@
 #pragma once
 
 #include "JuceHeader.h"
+#include "Common/RingBuffer.h"
+
+class LooperProcessor;
 
 class LooperTrack :
 	public ControllableContainer
 {
 public:
-	LooperTrack(int index, int numChannels);
+	LooperTrack(LooperProcessor * looper, int index, int numChannels);
 	~LooperTrack();
+
+	LooperProcessor* looper; //to get the ringbuffer
 
 	enum TrackState { IDLE, WILL_RECORD, RECORDING, FINISH_RECORDING, PLAYING, WILL_STOP, STOPPED, WILL_PLAY, STATES_MAX };
 	static String trackStateNames[STATES_MAX];
@@ -33,19 +38,24 @@ public:
 	FloatParameter* volume;
 	FloatParameter* rms;
 
+	IntParameter* loopBeat;
+	IntParameter* loopBar;
+	FloatParameter* loopProgression;
+
 	int index;
 	int numChannels;
 
 	int curSample;
 	AudioBuffer<float> buffer;
-
+	AudioBuffer<float> preRecBuffer; //a snapshot of the looper's ringbuffer just before recording. This allows for delay adjustement and nice fades for the end of the loop
 	double timeAtStateChange;
+	bool finishRecordLock;
 
 	int globalBeatAtStart;
 	int numBeats;
 
 	void setNumChannels(int num);
-	void updateAudioBuffer();
+	void updateBufferSize(int newSize);
 	
 	void stateChanged();
 

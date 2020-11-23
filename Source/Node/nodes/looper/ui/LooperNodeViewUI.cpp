@@ -15,7 +15,6 @@ LooperNodeViewUI::LooperNodeViewUI(GenericAudioNode<LooperProcessor>* n) :
     GenericAudioNodeViewUI(n)
 {
     updateTracksUI();
-    setSize(340, 280);
 }
 
 LooperNodeViewUI::~LooperNodeViewUI()

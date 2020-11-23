@@ -10,19 +10,22 @@
 
 #include "LooperTrack.h"
 #include "Transport/Transport.h"
+#include "LooperNode.h"
 
 String LooperTrack::trackStateNames[LooperTrack::STATES_MAX] = { "Idle", "Will Record", "Recording", "Finish Recording", "Playing", "Will Stop", "Stopped", "Will Play" };
 
-LooperTrack::LooperTrack(int index, int numChannels) :
+LooperTrack::LooperTrack(LooperProcessor * looper, int index, int numChannels) :
 	ControllableContainer("Track " + String(index + 1)),
+	looper(looper),
 	index(index),
 	numChannels(numChannels),
 	curSample(0),
 	globalBeatAtStart(0),
-	numBeats(0)
+	numBeats(0),
+	finishRecordLock(false)
 {
 	editorIsCollapsed = true;
-	isSelectable = false;
+	isSelectable = false; 
 
 	trackState = addEnumParameter("State", "State of this track, for feedback");
 	for (int i = 0; i < STATES_MAX; i++) trackState->addOption(trackStateNames[i], (TrackState)i);
@@ -35,10 +38,14 @@ LooperTrack::LooperTrack(int index, int numChannels) :
 
 	active = addBoolParameter("Active", "If this is not checked, this will act as a track mute.", true);
 	volume = addFloatParameter("Gain", "The gain for this track", 1, 0, 2);
+
+	loopBeat = addIntParameter("Current Beat", "Current beat of this loop", 0, 0);
+	loopBar = addIntParameter("Current Bar", "Current bar of this loop", 0, 0);
+	loopProgression = addFloatParameter("Progression", "The progression of this loop", 0, 0, 1);
+
 	rms = addFloatParameter("RMS", "RMS for this track, for feedback", 0, 0, 1);
 	rms->setControllableFeedbackOnly(true);
 
-	updateAudioBuffer();
 }
 
 LooperTrack::~LooperTrack()
@@ -49,15 +56,13 @@ void LooperTrack::setNumChannels(int num)
 {
 	if (num == numChannels) return;
 	numChannels = num;
-	updateAudioBuffer();
+	updateBufferSize(buffer.getNumSamples());
 	clearBuffer();
 }
 
-void LooperTrack::updateAudioBuffer()
+void LooperTrack::updateBufferSize(int newSize)
 {
-	int numSamples = curSample;
-	if(trackState->getValueDataAsEnum<TrackState>() == RECORDING) numSamples = Transport::getInstance()->getBarNumSamples() * 10; //10 bar by default when recording
-	buffer.setSize(numChannels, numSamples, true, true); 
+	buffer.setSize(numChannels, newSize, true, true); 
 }
 
 void LooperTrack::recordOrPlay()
@@ -107,7 +112,6 @@ void LooperTrack::stateChanged()
 
 	case RECORDING:
 	{
-		updateAudioBuffer();
 	}
 	break;
 
@@ -135,7 +139,19 @@ void LooperTrack::stateChanged()
 
 void LooperTrack::startRecording()
 {
+	int recNumSamples = looper->getSampleRate() * 60; // 1 min rec samples
+	updateBufferSize(recNumSamples);
+
 	clearBuffer();
+
+	//Store a snapshot of the ring buffer that will be faded at the end of the recorded buffer
+	int fadeNumSamples = looper->getFadeNumSamples();
+	if (fadeNumSamples > 0)
+	{
+		preRecBuffer.setSize(buffer.getNumChannels(), fadeNumSamples, false);
+		looper->ringBuffer->readSamples(preRecBuffer, fadeNumSamples);
+	}
+
 	trackState->setValueWithData(RECORDING);
 	if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
 	{
@@ -148,14 +164,38 @@ void LooperTrack::finishRecordingAndPlay()
 	if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) Transport::getInstance()->finishSetTempo(true);
 
 	numBeats = Transport::getInstance()->getBeatForSamples(curSample, false, false);
+	
+	loopBeat->setRange(0, numBeats-1);
+	loopBar->setRange(0, floor(numBeats * 1.0f / Transport::getInstance()->beatsPerBar->intValue())-1);
+
 	int curSamplePerfect = numBeats * Transport::getInstance()->getBeatNumSamples();
 
-	LOG("Finished recording, Num beats : " << numBeats << ", curSample : " << curSample << ", beatSamples : " << Transport::getInstance()->getBeatNumSamples());
+
+	// if curSample > perfect, use end of curSample to fade with start ?
+	// if curSample < perfect, use phantom buffer to fill in blank ?
 
 	curSample = curSamplePerfect;
 
-	if (isRecording(false)) updateAudioBuffer();
+	finishRecordLock = true;
+	if (isRecording(false)) updateBufferSize(curSample); //update size of buffer
+
+	//fade with ring buffer using looper fadeTimeMS
+	int fadeNumSamples = looper->getFadeNumSamples();
+	if (fadeNumSamples)
+	{
+		int bufferStartSample = curSample - 1 - fadeNumSamples;
+
+		buffer.applyGainRamp(bufferStartSample, fadeNumSamples, 1, 0);
+		for (int i = 0; i < buffer.getNumChannels(); i++)
+		{
+			buffer.addFromWithRamp(i, bufferStartSample, preRecBuffer.getReadPointer(i), fadeNumSamples, 0, 1);
+		}
+
+		preRecBuffer.clear();
+	}
+
 	startPlaying();
+	finishRecordLock = false;
 }
 
 void LooperTrack::cancelRecording()
@@ -176,7 +216,10 @@ void LooperTrack::clearBuffer()
 
 void LooperTrack::startPlaying()
 {
-	curSample = 0;
+	loopBar->setValue(0);
+	loopBeat->setValue(0);
+	loopProgression->setValue(0);
+
 	globalBeatAtStart = Transport::getInstance()->getTotalBeatCount();
 	LOG("[ " << index << " ] Global beat at start " << globalBeatAtStart);
 	trackState->setValueWithData(PLAYING);
@@ -184,7 +227,6 @@ void LooperTrack::startPlaying()
 
 void LooperTrack::stopPlaying()
 {
-	curSample = 0;
 	if (isRecording(true)) cancelRecording();
 	else if (isPlaying(true)) trackState->setValueWithData(STOPPED);
 }
@@ -205,13 +247,14 @@ void LooperTrack::handleWaiting()
 
 void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 {
+	TrackState s = trackState->getValueDataAsEnum<TrackState>();
 	if (t == playRecordTrigger)
 	{
 		recordOrPlay();
 	}
 	else if (t == playTrigger)
 	{
-		if (trackState->getValueDataAsEnum<TrackState>() == STOPPED) trackState->setValue(WILL_PLAY);
+		if (s == STOPPED) trackState->setValue(WILL_PLAY);
 	}
 	else if (t == stopTrigger)
 	{
@@ -220,10 +263,8 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 			cancelRecording();
 			trackState->setValueWithData(IDLE);
 		}
-		else
-		{
-			trackState->setValueWithData(WILL_STOP);
-		}
+		else if(s == PLAYING) trackState->setValueWithData(WILL_STOP);
+		else if (s == WILL_PLAY) trackState->setValueWithData(STOPPED);
 	}
 	else if (t == clearTrigger)
 	{
@@ -261,25 +302,33 @@ void LooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<floa
 
 	if (isRecording(false))
 	{
-		for (int i = 0; i < numChannels; i++)
+		if (!finishRecordLock)
 		{
-			buffer.copyFrom(i, curSample, inputBuffer, i, 0, blockSize);
+			for (int i = 0; i < numChannels; i++)
+			{
+				buffer.copyFrom(i, curSample, inputBuffer, i, 0, blockSize);
+			}
+
+			curSample += blockSize;
+			startReadSample = curSample;
+
+			if (outputIfRecording) outputToMainTrack = true;
 		}
-
-		curSample += blockSize;
-		startReadSample = curSample;
-
-		if (outputIfRecording) outputToMainTrack = true;
 	}
 	else if(isPlaying(false))
 	{
 		outputToMainTrack = true;
 
 		int curBeat = Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart;
-		int trackBeat = (curBeat % numBeats);
+		int trackBeat = curBeat % numBeats;
+		
+
 		int relBeatSamples = Transport::getInstance()->getRelativeBeatSamples();
 		startReadSample = Transport::getInstance()->getSamplesForBeat(trackBeat, 0, false) + relBeatSamples;
-		DBG("[ " << index << " ] " << " cur beat : " << curBeat << " ( " << globalBeatAtStart << " ) "  << Transport::getInstance()->getTotalBeatCount());
+
+		loopBeat->setValue(trackBeat);
+		loopBar->setValue(floor(trackBeat * 1.0f / Transport::getInstance()->beatsPerBar->intValue()));
+		loopProgression->setValue(startReadSample * 1.0f / buffer.getNumSamples());
 	}
 
 
@@ -314,7 +363,6 @@ void LooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<floa
 		rms->setValue(0);
 	}
 
-	
 
 
 	/*

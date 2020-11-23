@@ -110,6 +110,7 @@ public:
 	{
 	public:
 		virtual ~TransportListener() {}
+		virtual void beatNumSamplesChanged() {}
 		virtual void beatChanged(bool isNewBar) {} //this allow for event after both bar and beat have been updated
 		virtual void playStateChanged(bool isPlaying) {}
 	};

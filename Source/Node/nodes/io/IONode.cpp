@@ -17,6 +17,7 @@ IOProcessor::IOProcessor(Node* n, bool isInput) :
 	gainCC("Gain"),
 	isInput(isInput)
 {
+	nodeRef->viewUISize->setPoint(120, 150);
 
 	addChildControllableContainer(&rmsCC);
 	addChildControllableContainer(&gainCC);

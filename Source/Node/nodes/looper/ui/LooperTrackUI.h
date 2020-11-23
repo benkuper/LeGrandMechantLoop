@@ -30,10 +30,28 @@ public:
     std::unique_ptr<FloatSliderUI> volumeUI;
     std::unique_ptr<FloatSliderUI> rmsUI;
 
-    Rectangle<int> statusRect;
+    class Feedback :
+        public Component,
+        public Timer
+    {
+    public:
+        Feedback(LooperTrack* t);
+        ~Feedback();
+
+        LooperTrack* track;
+
+        Colour contourColor;
+        Colour fillColor;
+
+        void paint(Graphics& g) override;
+        void timerCallback() override;
+    };
+
+    Feedback feedback;
 
     void paint(Graphics& g) override;
     void resized() override;
 
     void newMessage(const ContainerAsyncEvent& e) override;
+
 };

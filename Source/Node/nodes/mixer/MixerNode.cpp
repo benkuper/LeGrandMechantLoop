@@ -17,6 +17,7 @@ MixerProcessor::MixerProcessor(Node* node) :
     outGainsCC("Out Gains"),
     gainRootCC("Channel Gains")
 {
+    nodeRef->viewUISize->setPoint(100, 250);
 
     numInputs = addIntParameter("Inputs", "Number of inputs", 2, 1, 32);
     numOutputs = addIntParameter("Outputs", "Number of outputs", 2, 1, 32);

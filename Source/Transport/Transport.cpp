@@ -99,11 +99,12 @@ void Transport::finishSetTempo(bool startPlaying)
 	bpm->setValue(60.0 / getTimeForSamples(numSamplesPerBeat));
 	timeInSamples = 0;
 
-	LOG("Finish set tempo, sample count : " << setTempoSampleCount);
 
 	curBar->setValue(0);
 	curBeat->setValue(0);
 
+	transportListeners.call(&TransportListener::beatNumSamplesChanged);
+	
 	if (startPlaying) playTrigger->trigger();
 }
 

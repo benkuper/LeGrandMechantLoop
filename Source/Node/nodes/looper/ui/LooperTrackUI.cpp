@@ -12,7 +12,8 @@
 
 LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     InspectableContentComponent(t),
-    track(t)
+    track(t),
+    feedback(t)
 {
     playRecordUI.reset(track->playRecordTrigger->createButtonUI());
     playRecordUI->customLabel = ">";
@@ -38,8 +39,7 @@ LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     activeUI->customFGColor = HIGHLIGHT_COLOR.darker(.25f);
 
     addAndMakeVisible(volumeUI.get());
-
-
+    addAndMakeVisible(&feedback);
     addAndMakeVisible(rmsUI.get());
     
     track->addAsyncContainerListener(this);
@@ -52,33 +52,8 @@ LooperTrackUI::~LooperTrackUI()
 
 void LooperTrackUI::paint(Graphics& g)
 {
-
-    LooperTrack::TrackState s = track->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
-    Colour c = NORMAL_COLOR;
-    Colour oc;
-
-    switch (s)
-    {
-    case LooperTrack::IDLE: ; break;
-    case LooperTrack::WILL_RECORD: oc = RED_COLOR; break;
-    case LooperTrack::RECORDING: c = RED_COLOR; break;
-    case LooperTrack::FINISH_RECORDING: c = HIGHLIGHT_COLOR;  break;
-    case LooperTrack::PLAYING: c = GREEN_COLOR; break;
-    case LooperTrack::WILL_STOP: c = BLUE_COLOR; break;
-    case LooperTrack::STOPPED: c = c.brighter();  break;
-    case LooperTrack::WILL_PLAY: oc = GREEN_COLOR; break;
-    }
-
-    if(oc == Colours::black) oc = c.brighter(.3f);
-
-
-    g.setColour(c);
+    g.setColour(feedback.contourColor);
     g.drawRoundedRectangle(getLocalBounds().reduced(1).toFloat(), 2, 1);
-
-    g.setColour(c);
-    g.fillRoundedRectangle(statusRect.toFloat(),4);
-    g.setColour(oc);
-    g.drawRoundedRectangle(statusRect.toFloat(), 4,1);
 }
 
 void LooperTrackUI::resized()
@@ -86,7 +61,7 @@ void LooperTrackUI::resized()
     Rectangle<int> r = getLocalBounds().reduced(4);
     //Rectangle<int> vr = r.removeFromRight(30).reduced(1);
 
-    statusRect = r.removeFromTop(10).reduced(2);
+    feedback.setBounds(r.removeFromTop(10).reduced(1));
     
     playRecordUI->setBounds(r.removeFromTop(30).reduced(1));
     stopUI->setBounds(r.removeFromTop(20).reduced(1));
@@ -106,4 +81,60 @@ void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
             repaint();
         }
     }
+}
+
+
+//Feedback
+LooperTrackUI::Feedback::Feedback(LooperTrack* t) :
+    track(t)
+{
+    startTimerHz(20);
+}
+
+LooperTrackUI::Feedback::~Feedback()
+{
+}
+
+void LooperTrackUI::Feedback::paint(Graphics& g)
+{
+    Rectangle<float> r = getLocalBounds().reduced(1).toFloat();
+
+    LooperTrack::TrackState s = track->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
+    fillColor = NORMAL_COLOR;
+    contourColor = Colours::black;
+    switch (s)
+    {
+    case LooperTrack::IDLE: break;
+    case LooperTrack::WILL_RECORD: contourColor = RED_COLOR; break;
+    case LooperTrack::RECORDING: fillColor = RED_COLOR;  break;
+    case LooperTrack::FINISH_RECORDING: fillColor = HIGHLIGHT_COLOR; break;
+    case LooperTrack::PLAYING: fillColor = GREEN_COLOR; break;
+    case LooperTrack::WILL_STOP: fillColor = BLUE_COLOR; break;
+    case LooperTrack::STOPPED: fillColor = fillColor.brighter();  break;
+    case LooperTrack::WILL_PLAY: contourColor = GREEN_COLOR; break;
+    }
+
+    if (contourColor == Colours::black) contourColor = fillColor.brighter(.3f);
+
+    if (track->isPlaying(false))
+    {
+        g.setColour(NORMAL_COLOR);
+        g.fillRoundedRectangle(r, 2);
+        float progression = track->loopProgression->floatValue();
+        g.setColour(fillColor);
+        g.fillRoundedRectangle(r.withWidth(progression * getWidth()), 2);
+    }
+    else
+    {
+        g.setColour(fillColor);
+        g.fillRoundedRectangle(r, 2);
+    }
+    
+    g.setColour(contourColor);
+    g.drawRoundedRectangle(r, 4, 1);
+}
+
+void LooperTrackUI::Feedback::timerCallback()
+{
+    repaint();
 }
