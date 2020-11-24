@@ -15,6 +15,7 @@
 #include "Interface/InterfaceManager.h"
 #include "Transport/Transport.h"
 #include "AudioManager.h"
+#include "VSTManager.h"
 
 LGMLEngine::LGMLEngine() :
     Engine("LGML File",".lgml")
@@ -26,6 +27,7 @@ LGMLEngine::LGMLEngine() :
     addChildControllableContainer(Transport::getInstance());
 
     ProjectSettings::getInstance()->addChildControllableContainer(AudioManager::getInstance());
+    GlobalSettings::getInstance()->addChildControllableContainer(VSTManager::getInstance());
 
 }
 
@@ -38,6 +40,8 @@ LGMLEngine::~LGMLEngine()
 
     AudioManager::deleteInstance();
     NodeFactory::deleteInstance();
+
+    VSTManager::deleteInstance();
 }
 
 void LGMLEngine::clearInternal()

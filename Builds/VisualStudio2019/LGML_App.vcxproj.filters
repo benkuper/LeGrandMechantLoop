@@ -2,6 +2,30 @@
 
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="LGML\Source\Common\MIDI\ui">
+      <UniqueIdentifier>{F08336EF-88D4-C671-245E-F4FAF4F4C16C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Common\MIDI">
+      <UniqueIdentifier>{C8433C7E-5A55-3695-276F-A402F86E8E8B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Common\Serial\lib\cobs">
+      <UniqueIdentifier>{01BAD8CE-B709-39C8-A38E-042CB9B3E513}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Common\Serial\lib\serial\impl\list_ports">
+      <UniqueIdentifier>{10AB634F-898B-9154-A1A7-3823043B6CA1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Common\Serial\lib\serial\impl">
+      <UniqueIdentifier>{BE28E800-AE8A-4F3E-4185-409A962077B0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Common\Serial\lib\serial">
+      <UniqueIdentifier>{D58E4495-7039-4356-3F59-1BD7EDE536DF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Common\Serial\lib">
+      <UniqueIdentifier>{782AC591-A567-F161-2451-3D0611760CE9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Common\Serial">
+      <UniqueIdentifier>{58464B0E-43B8-7741-6617-D577A3C567C0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Common">
       <UniqueIdentifier>{BC3A8BBD-7A12-F94C-7CEF-4813DF3F986A}</UniqueIdentifier>
     </Filter>
@@ -853,10 +877,64 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.cpp">
+      <Filter>LGML\Source\Common\MIDI\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceParameterUI.cpp">
+      <Filter>LGML\Source\Common\MIDI\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MIDIDevice.cpp">
+      <Filter>LGML\Source\Common\MIDI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MIDIDeviceParameter.cpp">
+      <Filter>LGML\Source\Common\MIDI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MIDIManager.cpp">
+      <Filter>LGML\Source\Common\MIDI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MTCReceiver.cpp">
+      <Filter>LGML\Source\Common\MIDI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MTCSender.cpp">
+      <Filter>LGML\Source\Common\MIDI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\lib\cobs\cobs.cpp">
+      <Filter>LGML\Source\Common\Serial\lib\cobs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\lib\serial\impl\list_ports\list_ports_linux.cc">
+      <Filter>LGML\Source\Common\Serial\lib\serial\impl\list_ports</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\lib\serial\impl\list_ports\list_ports_osx.cc">
+      <Filter>LGML\Source\Common\Serial\lib\serial\impl\list_ports</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\lib\serial\impl\list_ports\list_ports_win.cc">
+      <Filter>LGML\Source\Common\Serial\lib\serial\impl\list_ports</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\lib\serial\impl\unix.cc">
+      <Filter>LGML\Source\Common\Serial\lib\serial\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\lib\serial\impl\win.cc">
+      <Filter>LGML\Source\Common\Serial\lib\serial\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\lib\serial\serial.cc">
+      <Filter>LGML\Source\Common\Serial\lib\serial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\SerialDevice.cpp">
+      <Filter>LGML\Source\Common\Serial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\SerialDeviceParameter.cpp">
+      <Filter>LGML\Source\Common\Serial</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\SerialManager.cpp">
+      <Filter>LGML\Source\Common\Serial</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Common\ConnectionUIHelper.cpp">
       <Filter>LGML\Source\Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Engine\ui\AudioManagerEditor.cpp">
+      <Filter>LGML\Source\Engine\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Engine\ui\VSTManagerUI.cpp">
       <Filter>LGML\Source\Engine\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Engine\AudioManager.cpp">
@@ -866,6 +944,9 @@
       <Filter>LGML\Source\Engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Engine\LGMLSettings.cpp">
+      <Filter>LGML\Source\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Engine\VSTManager.cpp">
       <Filter>LGML\Source\Engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Interface\ui\InterfaceManagerUI.cpp">
@@ -3909,6 +3990,39 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.h">
+      <Filter>LGML\Source\Common\MIDI\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\MIDI\ui\MIDIDeviceParameterUI.h">
+      <Filter>LGML\Source\Common\MIDI\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\MIDI\MIDIDevice.h">
+      <Filter>LGML\Source\Common\MIDI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\MIDI\MIDIDeviceParameter.h">
+      <Filter>LGML\Source\Common\MIDI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\MIDI\MIDIManager.h">
+      <Filter>LGML\Source\Common\MIDI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\MIDI\MTCReceiver.h">
+      <Filter>LGML\Source\Common\MIDI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\MIDI\MTCSender.h">
+      <Filter>LGML\Source\Common\MIDI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\Serial\lib\cobs\cobs.h">
+      <Filter>LGML\Source\Common\Serial\lib\cobs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\Serial\SerialDevice.h">
+      <Filter>LGML\Source\Common\Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\Serial\SerialDeviceParameter.h">
+      <Filter>LGML\Source\Common\Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\Serial\SerialManager.h">
+      <Filter>LGML\Source\Common\Serial</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Common\ConnectionUIHelper.h">
       <Filter>LGML\Source\Common</Filter>
     </ClInclude>
@@ -3918,6 +4032,9 @@
     <ClInclude Include="..\..\Source\Engine\ui\AudioManagerEditor.h">
       <Filter>LGML\Source\Engine\ui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Engine\ui\VSTManagerUI.h">
+      <Filter>LGML\Source\Engine\ui</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Engine\AudioManager.h">
       <Filter>LGML\Source\Engine</Filter>
     </ClInclude>
@@ -3925,6 +4042,9 @@
       <Filter>LGML\Source\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Engine\LGMLSettings.h">
+      <Filter>LGML\Source\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Engine\VSTManager.h">
       <Filter>LGML\Source\Engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Interface\ui\InterfaceManagerUI.h">

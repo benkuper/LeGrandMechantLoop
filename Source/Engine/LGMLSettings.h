@@ -9,3 +9,14 @@
 */
 
 #pragma once
+#include "JuceHeader.h"
+
+class LGMLSettings :
+    public ControllableContainer
+{
+public:
+    juce_DeclareSingleton(LGMLSettings, true);
+
+    LGMLSettings();
+    ~LGMLSettings();
+};

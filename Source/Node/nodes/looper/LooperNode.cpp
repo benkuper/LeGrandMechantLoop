@@ -73,7 +73,8 @@ void LooperProcessor::updateOutTracks()
 
 void LooperProcessor::updateLooperTracks()
 {
-	GenericScopedLock<SpinLock> lock(processorLock);
+	bool shouldResume = !isSuspended();
+	suspendProcessing(true);
 
 	while (tracksCC.controllableContainers.size() > numTracks->intValue())
 	{
@@ -85,6 +86,8 @@ void LooperProcessor::updateLooperTracks()
 	{
 		tracksCC.addChildControllableContainer(new LooperTrack(this, i, numChannelsPerTrack->intValue()), true);
 	}
+
+	if(shouldResume) suspendProcessing(false);
 }
 
 void LooperProcessor::updateRingBuffer()

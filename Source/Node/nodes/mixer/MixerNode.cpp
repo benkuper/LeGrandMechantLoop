@@ -28,22 +28,9 @@ MixerProcessor::MixerProcessor(Node* node) :
     outGainsCC.editorIsCollapsed = true;
     addChildControllableContainer(&gainRootCC);
 
-    updateInputs();
-    updateOutputs();
-}
+    nodeRef->setAudioInputs(numInputs->intValue());
+    nodeRef->setAudioOutputs(numOutputs->intValue());
 
-void MixerProcessor::updateInputs()
-{
-    StringArray s;
-    for (int i = 0; i < numInputs->intValue(); i++) s.add("Input " + String(i + 1));
-    nodeRef->setAudioInputs(s);
-}
-
-void MixerProcessor::updateOutputs()
-{
-    StringArray s;
-    for (int i = 0; i < numOutputs->intValue(); i++) s.add("Output " + String(i + 1));
-    nodeRef->setAudioOutputs(s);
 }
 
 void MixerProcessor::updateInputsFromNodeInternal()
@@ -116,11 +103,11 @@ void MixerProcessor::onContainerParameterChanged(Parameter* p)
 
     if (p == numInputs)
     {
-        updateInputs();
+        nodeRef->setAudioInputs(numInputs->intValue());
     }
     else if (p == numOutputs)
     {
-        updateOutputs();
+        nodeRef->setAudioOutputs(numOutputs->intValue());
     }
 }
 

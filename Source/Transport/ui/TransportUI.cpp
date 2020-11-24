@@ -99,7 +99,7 @@ TransportUI::BarViz::BarViz() :
 	transport(Transport::getInstance())
 {
 	rebuild();
-	startTimerHz(30);
+	startTimerHz(20);
 }
 
 void TransportUI::BarViz::rebuild()
@@ -150,5 +150,5 @@ void TransportUI::BarViz::resized()
 
 void TransportUI::BarViz::timerCallback()
 {
-	repaint();
+	if(transport->isCurrentlyPlaying->boolValue()) repaint();
 }

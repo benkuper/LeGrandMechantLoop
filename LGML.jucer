@@ -1,10 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
-              jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio">
+              jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/serial/include&#10;../../External/vst2"
+              defines="VST_LOGGING=0&#10;">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{644794F3-EEA3-18B3-8950-FB0E90CE6C1E}" name="Source">
       <GROUP id="{C932F17D-F807-6D54-C9FE-636145A3A77A}" name="Common">
+        <GROUP id="{E480E851-C0D7-5BFC-6813-470E7AF56BCA}" name="MIDI">
+          <GROUP id="{828ADCCB-2C77-6F2A-EEFA-44566780C372}" name="ui">
+            <FILE id="syPyqG" name="MIDIDeviceChooser.cpp" compile="1" resource="0"
+                  file="Source/Common/MIDI/ui/MIDIDeviceChooser.cpp"/>
+            <FILE id="zucewM" name="MIDIDeviceChooser.h" compile="0" resource="0"
+                  file="Source/Common/MIDI/ui/MIDIDeviceChooser.h"/>
+            <FILE id="Z0Mkjt" name="MIDIDeviceParameterUI.cpp" compile="1" resource="0"
+                  file="Source/Common/MIDI/ui/MIDIDeviceParameterUI.cpp"/>
+            <FILE id="dTDnMz" name="MIDIDeviceParameterUI.h" compile="0" resource="0"
+                  file="Source/Common/MIDI/ui/MIDIDeviceParameterUI.h"/>
+          </GROUP>
+          <FILE id="crLjni" name="MIDIDevice.cpp" compile="1" resource="0" file="Source/Common/MIDI/MIDIDevice.cpp"/>
+          <FILE id="bCg7Dg" name="MIDIDevice.h" compile="0" resource="0" file="Source/Common/MIDI/MIDIDevice.h"/>
+          <FILE id="X7dKLW" name="MIDIDeviceParameter.cpp" compile="1" resource="0"
+                file="Source/Common/MIDI/MIDIDeviceParameter.cpp"/>
+          <FILE id="TS2zDx" name="MIDIDeviceParameter.h" compile="0" resource="0"
+                file="Source/Common/MIDI/MIDIDeviceParameter.h"/>
+          <FILE id="qOzjrk" name="MIDIManager.cpp" compile="1" resource="0" file="Source/Common/MIDI/MIDIManager.cpp"/>
+          <FILE id="mSTg6z" name="MIDIManager.h" compile="0" resource="0" file="Source/Common/MIDI/MIDIManager.h"/>
+          <FILE id="friONJ" name="MTCReceiver.cpp" compile="1" resource="0" file="Source/Common/MIDI/MTCReceiver.cpp"/>
+          <FILE id="zRe9Dm" name="MTCReceiver.h" compile="0" resource="0" file="Source/Common/MIDI/MTCReceiver.h"/>
+          <FILE id="bp7KL0" name="MTCSender.cpp" compile="1" resource="0" file="Source/Common/MIDI/MTCSender.cpp"/>
+          <FILE id="nrsxOp" name="MTCSender.h" compile="0" resource="0" file="Source/Common/MIDI/MTCSender.h"/>
+        </GROUP>
+        <GROUP id="{467FC2F5-FC75-E052-D866-6BFDA1CAC3A5}" name="Serial">
+          <GROUP id="{E755B249-7B5A-BF24-6D26-F23A6AD6FD84}" name="lib">
+            <GROUP id="{473E04C6-94A5-198A-D2E5-D20BE1C667F8}" name="cobs">
+              <FILE id="fAReqW" name="cobs.cpp" compile="1" resource="0" file="Source/Common/Serial/lib/cobs/cobs.cpp"/>
+              <FILE id="CXQ7Id" name="cobs.h" compile="0" resource="0" file="Source/Common/Serial/lib/cobs/cobs.h"/>
+            </GROUP>
+            <GROUP id="{D5516BDD-EDE2-A938-50E2-7FCF0019E88E}" name="serial">
+              <GROUP id="{316B39AD-7BD1-9F17-97B4-16972F97B8E8}" name="impl">
+                <GROUP id="{E89938A4-AA28-89F7-65E9-F94CD2A4338A}" name="list_ports">
+                  <FILE id="cxx01R" name="list_ports_linux.cc" compile="1" resource="0"
+                        file="Source/Common/Serial/lib/serial/impl/list_ports/list_ports_linux.cc"/>
+                  <FILE id="jIEsax" name="list_ports_osx.cc" compile="1" resource="0"
+                        file="Source/Common/Serial/lib/serial/impl/list_ports/list_ports_osx.cc"/>
+                  <FILE id="R7vTcQ" name="list_ports_win.cc" compile="1" resource="0"
+                        file="Source/Common/Serial/lib/serial/impl/list_ports/list_ports_win.cc"/>
+                </GROUP>
+                <FILE id="Jn2qB8" name="unix.cc" compile="1" resource="0" file="Source/Common/Serial/lib/serial/impl/unix.cc"/>
+                <FILE id="EgTtdN" name="win.cc" compile="1" resource="0" file="Source/Common/Serial/lib/serial/impl/win.cc"/>
+              </GROUP>
+              <FILE id="uCr6iG" name="serial.cc" compile="1" resource="0" file="Source/Common/Serial/lib/serial/serial.cc"/>
+            </GROUP>
+          </GROUP>
+          <FILE id="b0I7pP" name="SerialDevice.cpp" compile="1" resource="0"
+                file="Source/Common/Serial/SerialDevice.cpp"/>
+          <FILE id="iDCf7N" name="SerialDevice.h" compile="0" resource="0" file="Source/Common/Serial/SerialDevice.h"/>
+          <FILE id="fjaaFu" name="SerialDeviceParameter.cpp" compile="1" resource="0"
+                file="Source/Common/Serial/SerialDeviceParameter.cpp"/>
+          <FILE id="qWW52s" name="SerialDeviceParameter.h" compile="0" resource="0"
+                file="Source/Common/Serial/SerialDeviceParameter.h"/>
+          <FILE id="Oh3ntE" name="SerialManager.cpp" compile="1" resource="0"
+                file="Source/Common/Serial/SerialManager.cpp"/>
+          <FILE id="yu5loP" name="SerialManager.h" compile="0" resource="0" file="Source/Common/Serial/SerialManager.h"/>
+        </GROUP>
         <FILE id="nwxncy" name="ConnectionUIHelper.cpp" compile="1" resource="0"
               file="Source/Common/ConnectionUIHelper.cpp"/>
         <FILE id="kRFZbn" name="ConnectionUIHelper.h" compile="0" resource="0"
@@ -17,6 +75,9 @@
                 file="Source/Engine/ui/AudioManagerEditor.cpp"/>
           <FILE id="tvWd4t" name="AudioManagerEditor.h" compile="0" resource="0"
                 file="Source/Engine/ui/AudioManagerEditor.h"/>
+          <FILE id="mfSPuU" name="VSTManagerUI.cpp" compile="1" resource="0"
+                file="Source/Engine/ui/VSTManagerUI.cpp"/>
+          <FILE id="rWJIRL" name="VSTManagerUI.h" compile="0" resource="0" file="Source/Engine/ui/VSTManagerUI.h"/>
         </GROUP>
         <FILE id="OYf71G" name="AudioManager.cpp" compile="1" resource="0"
               file="Source/Engine/AudioManager.cpp"/>
@@ -26,6 +87,8 @@
         <FILE id="zlls78" name="LGMLSettings.cpp" compile="1" resource="0"
               file="Source/Engine/LGMLSettings.cpp"/>
         <FILE id="o9KN1k" name="LGMLSettings.h" compile="0" resource="0" file="Source/Engine/LGMLSettings.h"/>
+        <FILE id="OcMMtw" name="VSTManager.cpp" compile="1" resource="0" file="Source/Engine/VSTManager.cpp"/>
+        <FILE id="DdZTN2" name="VSTManager.h" compile="0" resource="0" file="Source/Engine/VSTManager.h"/>
       </GROUP>
       <GROUP id="{6C239390-C9E1-1E07-B84F-09F2B750F52B}" name="Interface">
         <GROUP id="{CE2F1281-172B-FC62-91EF-F50D7B79D742}" name="ui">
@@ -176,7 +239,8 @@
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" ORGANICUI_USE_WEBSERVER="1"
                JUCE_USE_WINRT_MIDI="1" JUCE_ASIO="1" JUCE_WASAPI="1" JUCE_DIRECTSOUND="1"
-               JUCE_ALSA="1" JUCE_JACK="1" JUCE_BELA="1"/>
+               JUCE_ALSA="1" JUCE_JACK="1" JUCE_BELA="1" JUCE_PLUGINHOST_VST="1"
+               JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1" JUCE_PLUGINHOST_LADSPA="1"/>
   <EXPORTFORMATS>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
       <CONFIGURATIONS>
@@ -203,7 +267,7 @@
         <MODULEPATH id="juce_timeline" path="Modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2019 targetFolder="Builds/VisualStudio2019">
+    <VS2019 targetFolder="Builds/VisualStudio2019" externalLibraries="Setupapi.lib">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="LGML"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="LGML"/>

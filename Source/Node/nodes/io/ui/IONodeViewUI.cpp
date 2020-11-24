@@ -23,13 +23,13 @@ IONodeViewUI::~IONodeViewUI()
 void IONodeViewUI::nodeInputsChanged()
 {
     NodeViewUI::nodeInputsChanged();
-    if (!audioNode->processor->isInput) updateUI();
+    if (!processor->isInput) updateUI();
 }
 
 void IONodeViewUI::nodeOutputsChanged()
 {
     NodeViewUI::nodeOutputsChanged();
-    if(audioNode->processor->isInput) updateUI();
+    if(processor->isInput) updateUI();
 }
 
 void IONodeViewUI::updateUI()
@@ -39,7 +39,7 @@ void IONodeViewUI::updateUI()
     rmsUI.clear();
     gainUI.clear();
 
-    int numChannels = audioNode->processor->isInput ? audioNode->numOutputs : audioNode->numInputs;
+    int numChannels = processor->isInput ? audioNode->numOutputs : audioNode->numInputs;
 
     for (int i = 0; i < numChannels; i++)
     {

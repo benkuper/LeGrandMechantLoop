@@ -25,8 +25,6 @@ public:
 
 	WeakReference<Node> nodeRef;
 
-	SpinLock processorLock;
-
 	int hasInput; //defines if this processor is supposed to get input, even if the number of channels is zero
 	int hasOutput; //defines if this processor is supposed to provide output, even if the number of channels is zero
 

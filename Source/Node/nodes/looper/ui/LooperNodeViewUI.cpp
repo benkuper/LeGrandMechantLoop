@@ -23,7 +23,7 @@ LooperNodeViewUI::~LooperNodeViewUI()
 
 void LooperNodeViewUI::updateTracksUI()
 {
-    int numTracks = audioNode->processor->tracksCC.controllableContainers.size();
+    int numTracks = processor->tracksCC.controllableContainers.size();
 
     while (tracksUI.size() > numTracks)
     {
@@ -33,7 +33,7 @@ void LooperNodeViewUI::updateTracksUI()
     
     while (tracksUI.size() < numTracks)
     {
-        LooperTrackUI* ui = new LooperTrackUI((LooperTrack *)audioNode->processor->tracksCC.controllableContainers[tracksUI.size()].get());
+        LooperTrackUI* ui = new LooperTrackUI((LooperTrack *)processor->tracksCC.controllableContainers[tracksUI.size()].get());
         addAndMakeVisible(ui);
         tracksUI.add(ui);
     }
@@ -44,7 +44,7 @@ void LooperNodeViewUI::updateTracksUI()
 void LooperNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
     GenericAudioNodeViewUI::controllableFeedbackUpdateInternal(c);
-    if (c == audioNode->processor->numTracks) updateTracksUI();
+    if (c == processor->numTracks) updateTracksUI();
 }
 
 void LooperNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)

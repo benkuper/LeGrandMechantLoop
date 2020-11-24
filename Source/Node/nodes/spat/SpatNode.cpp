@@ -39,27 +39,8 @@ SpatProcessor::SpatProcessor(Node* node) :
 	
 	addChildControllableContainer(&spatCC);
 
-	updateInputs();
-	updateOutputs();
-}
-
-void SpatProcessor::updateInputs()
-{
-	StringArray s;
-	for (int i = 0; i < numInputs->intValue(); i++) s.add("Input " + String(i + 1));
-	nodeRef->setAudioInputs(s);
-}
-
-void SpatProcessor::updateOutputs()
-{
-	StringArray s;
-	for (int i = 0; i < numOutputs->intValue(); i++) s.add("Output " + String(i + 1));
-	nodeRef->setAudioOutputs(s);
-}
-
-void SpatProcessor::updateInputsFromNodeInternal()
-{
-
+	nodeRef->setAudioInputs(numInputs->intValue());
+	nodeRef->setAudioOutputs(numOutputs->intValue());
 }
 
 void SpatProcessor::updateOutputsFromNodeInternal()
@@ -119,8 +100,8 @@ void SpatProcessor::updateRadiuses()
 
 void SpatProcessor::onContainerParameterChanged(Parameter* p)
 {
-	if (p == numInputs) updateInputs();
-	else if (p == numOutputs) updateOutputs();
+	if (p == numInputs) nodeRef->setAudioInputs(numInputs->intValue());
+	else if (p == numOutputs) nodeRef->setAudioInputs(numOutputs->intValue());
 	else if (p == spatMode || p == circleRadius || p == circleAngle)
 	{
 		placeItems();

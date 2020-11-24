@@ -12,7 +12,7 @@
 
 SpatNodeViewUI::SpatNodeViewUI(GenericAudioNode<SpatProcessor>* n) :
     GenericAudioNodeViewUI(n),
-    spatView(audioNode->processor)
+    spatView(processor)
 {
     addAndMakeVisible(&spatView);
 }
@@ -36,7 +36,7 @@ void SpatNodeViewUI::resizedInternalContentNode(Rectangle<int> &r)
 void SpatNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
     GenericAudioNodeViewUI::controllableFeedbackUpdateInternal(c);
-    if (c == audioNode->processor->spatPosition || c == audioNode->processor->circleRadius || c == audioNode->processor->circleAngle || c == audioNode->processor->spatRadius)
+    if (c == processor->spatPosition || c == processor->circleRadius || c == processor->circleAngle || c == processor->spatRadius)
     {
         spatView.resized();
     }

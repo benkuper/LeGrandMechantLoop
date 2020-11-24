@@ -19,7 +19,7 @@ class TransportUI :
 public:
     TransportUI(StringRef name);
     ~TransportUI();
-
+    
     Transport* transport;
 
     std::unique_ptr<TriggerImageUI> toggleBT;

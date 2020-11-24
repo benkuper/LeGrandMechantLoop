@@ -32,25 +32,24 @@ NodeAudioProcessor::NodeAudioProcessor(Node* n, bool hasInput, bool hasOutput, b
 
 void NodeAudioProcessor::updateInputsFromNode(bool _updatePlayConfig)
 {
+    bool shouldResume = !isSuspended();
     suspendProcessing(true);
-    GenericScopedLock<SpinLock> lock(processorLock);
 
     updateInputsFromNodeInternal();
     if(_updatePlayConfig) updatePlayConfig();
 
-    suspendProcessing(false);
+    if(shouldResume) suspendProcessing(false);
 }
 
 void NodeAudioProcessor::updateOutputsFromNode(bool _updatePlayConfig)
 {
+    bool shouldResume = !isSuspended();
     suspendProcessing(true);
-    GenericScopedLock<SpinLock> lock(processorLock);
 
     updateOutputsFromNodeInternal();
     if (_updatePlayConfig) updatePlayConfig();
 
-    suspendProcessing(false);
-
+    if(shouldResume) suspendProcessing(false);
 }
 
 /* AudioProcessor */
@@ -85,19 +84,15 @@ void NodeAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& mi
         return;
     }
 
+    processBlockInternal(buffer, midiMessages);
+
+    if (outRMS != nullptr)
     {
-        GenericScopedLock<SpinLock> lock(processorLock);
-
-        processBlockInternal(buffer, midiMessages);
-
-        if (outRMS != nullptr)
-        {
-            float rms = 0;
-            for (int i = 0; i < buffer.getNumChannels(); i++) rms = jmax(rms, buffer.getRMSLevel(i, 0, buffer.getNumSamples()));
-            float curVal = outRMS->floatValue();
-            float targetVal = outRMS->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
-            outRMS->setValue(targetVal);
-        }
+        float rms = 0;
+        for (int i = 0; i < buffer.getNumChannels(); i++) rms = jmax(rms, buffer.getRMSLevel(i, 0, buffer.getNumSamples()));
+        float curVal = outRMS->floatValue();
+        float targetVal = outRMS->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
+        outRMS->setValue(targetVal);
     }
 }
 

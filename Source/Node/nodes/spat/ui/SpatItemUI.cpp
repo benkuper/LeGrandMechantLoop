@@ -30,7 +30,7 @@ void SpatItemUI::mouseDown(const MouseEvent& e)
 
 bool SpatItemUI::hitTest(int x, int y)
 {
-    Rectangle<int> center = getLocalBounds().withSizeKeepingCentre(20,20);
+    Rectangle<int> center = getLocalBounds().withSizeKeepingCentre(30,30);
     return center.contains(x, y);
 }
 
@@ -44,7 +44,7 @@ void SpatItemUI::paint(Graphics& g)
     g.setColour(NORMAL_COLOR.brighter().withAlpha(.6f));
     g.drawEllipse(getLocalBounds().toFloat(),1);
 
-    Rectangle<float> center = getLocalBounds().withSizeKeepingCentre(16, 16).toFloat();
+    Rectangle<float> center = getLocalBounds().withSizeKeepingCentre(20,20).toFloat();
     Colour c = NORMAL_COLOR.brighter(isMouseOverOrDragging() ? .3f : 0);
     g.setColour(c.withAlpha(.6f));
     g.fillEllipse(center);

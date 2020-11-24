@@ -9,3 +9,14 @@
 */
 
 #include "LGMLSettings.h"
+
+juce_ImplementSingleton(LGMLSettings)
+
+LGMLSettings::LGMLSettings() :
+    ControllableContainer("LGML")
+{
+}
+
+LGMLSettings::~LGMLSettings()
+{
+}

@@ -27,8 +27,6 @@ public:
 
 	AudioBuffer<float> tmpBuffer;
 	
-	void updateInputs();
-	void updateOutputs();
 
 	void updateInputsFromNodeInternal() override;
 	void updateOutputsFromNodeInternal() override;

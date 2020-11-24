@@ -35,7 +35,7 @@ void MixerNodeViewUI::nodeOutputsChanged()
 
 void MixerNodeViewUI::updateLines()
 {
-    int numCC = audioNode->processor->gainRootCC.controllableContainers.size();
+    int numCC = processor->gainRootCC.controllableContainers.size();
     while (gainLines.size() > numCC)
     {
         removeChildComponent(gainLines[gainLines.size() - 1]);
@@ -44,7 +44,7 @@ void MixerNodeViewUI::updateLines()
 
     while (gainLines.size() < numCC)
     {
-        InputGainLine* line = new InputGainLine(audioNode->processor->gainRootCC.controllableContainers[gainLines.size()], gainLines.size());
+        InputGainLine* line = new InputGainLine(processor->gainRootCC.controllableContainers[gainLines.size()], gainLines.size());
         addAndMakeVisible(line);
         gainLines.add(line);
     }
@@ -59,14 +59,14 @@ void MixerNodeViewUI::rebuildOutLine()
     outGainsUI.clear();
     rmsUI.clear();
 
-    for (int i = 0; i < audioNode->processor->outGainsCC.controllables.size(); i++)
+    for (int i = 0; i < processor->outGainsCC.controllables.size(); i++)
     {
-        FloatSliderUI* gui = ((FloatParameter*)audioNode->processor->outGainsCC.controllables[i])->createSlider();
+        FloatSliderUI* gui = ((FloatParameter*)processor->outGainsCC.controllables[i])->createSlider();
         gui->orientation = gui->VERTICAL;
         addAndMakeVisible(gui);
         outGainsUI.add(gui);
 
-        FloatSliderUI* rui = ((FloatParameter*)audioNode->processor->rmsCC.controllables[i])->createSlider();
+        FloatSliderUI* rui = ((FloatParameter*)processor->rmsCC.controllables[i])->createSlider();
         rui->orientation = rui->VERTICAL;
         rui->showLabel = false;
         rui->showValue = false;
