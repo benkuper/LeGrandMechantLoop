@@ -19,6 +19,11 @@ VSTProcessor::VSTProcessor(Node* node) :
     ControllableContainer::addParameter(pluginParam);
 }
 
+VSTProcessor::~VSTProcessor()
+{
+    setupVST(nullptr);
+}
+
 void VSTProcessor::setupVST(PluginDescription* description)
 {
     bool shouldResume = !isSuspended();
@@ -26,7 +31,7 @@ void VSTProcessor::setupVST(PluginDescription* description)
 
     if (vst != nullptr)
     {
-
+        vst->releaseResources();
     }
 
     vstNotifier.addMessage(new VSTEvent(VSTEvent::VST_REMOVED, this));

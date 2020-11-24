@@ -2,6 +2,9 @@
 
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="LGML\Resources">
+      <UniqueIdentifier>{CAFC601F-9204-A3D8-32F6-D63743890420}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Common\MIDI\ui">
       <UniqueIdentifier>{F08336EF-88D4-C671-245E-F4FAF4F4C16C}</UniqueIdentifier>
     </Filter>
@@ -3930,6 +3933,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_timeline\TimelineAppCommands.cpp">
       <Filter>JUCE Modules\juce_timeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp">
+      <Filter>JUCE Library Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp">
       <Filter>JUCE Library Code</Filter>
@@ -8532,11 +8538,17 @@
     <ClInclude Include="..\..\Modules\juce_timeline\juce_timeline.h">
       <Filter>JUCE Modules\juce_timeline</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h">
+      <Filter>JUCE Library Code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
       <Filter>JUCE Library Code</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Resources\icon.png">
+      <Filter>LGML\Resources</Filter>
+    </None>
     <None Include="..\..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_devices\native\oboe\CMakeLists.txt">
       <Filter>JUCE Modules\juce_audio_devices\native\oboe</Filter>
     </None>
@@ -8599,6 +8611,9 @@
     </None>
     <None Include="..\..\Modules\juce_timeline\README.md">
       <Filter>JUCE Modules\juce_timeline</Filter>
+    </None>
+    <None Include=".\icon.ico">
+      <Filter>JUCE Library Code</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

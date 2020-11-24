@@ -4,6 +4,9 @@
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/serial/include&#10;../../External/vst2"
               defines="VST_LOGGING=0&#10;">
   <MAINGROUP id="xIhitl" name="LGML">
+    <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
+      <FILE id="k24oFh" name="icon.png" compile="0" resource="1" file="Resources/icon.png"/>
+    </GROUP>
     <GROUP id="{644794F3-EEA3-18B3-8950-FB0E90CE6C1E}" name="Source">
       <GROUP id="{C932F17D-F807-6D54-C9FE-636145A3A77A}" name="Common">
         <GROUP id="{E480E851-C0D7-5BFC-6813-470E7AF56BCA}" name="MIDI">
@@ -242,7 +245,7 @@
                JUCE_ALSA="1" JUCE_JACK="1" JUCE_BELA="1" JUCE_PLUGINHOST_VST="1"
                JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1" JUCE_PLUGINHOST_LADSPA="1"/>
   <EXPORTFORMATS>
-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="LGML"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="LGML"/>
@@ -267,7 +270,8 @@
         <MODULEPATH id="juce_timeline" path="Modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2019 targetFolder="Builds/VisualStudio2019" externalLibraries="Setupapi.lib">
+    <VS2019 targetFolder="Builds/VisualStudio2019" externalLibraries="Setupapi.lib"
+            smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="LGML"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="LGML"/>
@@ -292,7 +296,7 @@
         <MODULEPATH id="juce_timeline" path="Modules"/>
       </MODULEPATHS>
     </VS2019>
-    <XCODE_MAC targetFolder="Builds/MacOSX">
+    <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="LGML"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="LGML"/>
@@ -317,7 +321,7 @@
         <MODULEPATH id="juce_timeline" path="Modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <XCODE_MAC targetFolder="Builds/MacOSX_CI">
+    <XCODE_MAC targetFolder="Builds/MacOSX_CI" smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="0" name="Release"/>
       </CONFIGURATIONS>

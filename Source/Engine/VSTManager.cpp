@@ -22,12 +22,15 @@ VSTManager::VSTManager() :
     rescan->hideInEditor = true;
 
     formatManager.addDefaultFormats();
+
     userCanAddControllables = true;
     userAddControllablesFilters.add(FileParameter::getTypeStringStatic());
 }
 
 VSTManager::~VSTManager()
 {
+    idDescriptionMap.clear();
+    descriptions.clear();
 }
 
 void VSTManager::updateVSTList()
@@ -80,11 +83,9 @@ void VSTManager::onContainerParameterChanged(Parameter* p)
 
 void VSTManager::onControllableAdded(Controllable* c)
 {
-    if (isCurrentlyLoadingData) return;
-
     if (FileParameter* fp = dynamic_cast<FileParameter*>(c))
     {
-        fp->setNiceName("Path");
+        if(!isCurrentlyLoadingData) fp->setNiceName(getUniqueNameInContainer("Path"));
         fp->directoryMode = true;
     }
 }
@@ -94,6 +95,16 @@ void VSTManager::onControllableRemoved(Controllable* c)
     if (isCurrentlyLoadingData) return;
 
     startThread();
+}
+
+var VSTManager::getJSONData()
+{
+    var data = ControllableContainer::getJSONData();
+    return data;
+}
+
+void VSTManager::loadJSONDataInternal(var data)
+{
 }
 
 void VSTManager::afterLoadJSONDataInternal()

@@ -65,6 +65,10 @@
 			isa = PBXBuildFile;
 			fileRef = 9E775318D3325A8F050B1C20;
 		};
+		4EFDBFD373DED0858C08703B = {
+			isa = PBXBuildFile;
+			fileRef = 091EEE0FF52DF9B2CE28BCBE;
+		};
 		AA2A18630C45CB76F94377F0 = {
 			isa = PBXBuildFile;
 			fileRef = A6D9C1B2426EE8972DB8A81B;
@@ -313,6 +317,10 @@
 			isa = PBXBuildFile;
 			fileRef = 5CD89BBDF3160B85DEE0469B;
 		};
+		DD4BB6E638A4FA6F4E19AA99 = {
+			isa = PBXBuildFile;
+			fileRef = C581EDAA4D805AC8BEDD0F90;
+		};
 		EF69A87F272D7C597C4BBA28 = {
 			isa = PBXBuildFile;
 			fileRef = FC57670C4734632FC50D2C47;
@@ -436,6 +444,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = NodeConnector.h;
 			path = ../../Source/Node/Connection/ui/NodeConnector.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		091EEE0FF52DF9B2CE28BCBE = {
+			isa = PBXFileReference;
+			lastKnownFileType = file.icns;
+			name = Icon.icns;
+			path = Icon.icns;
 			sourceTree = "SOURCE_ROOT";
 		};
 		0D55825E638DFCD338C1E581 = {
@@ -1187,6 +1202,13 @@
 			path = ../../Source/Node/Node.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		AA945CC20764842E354B19A9 = {
+			isa = PBXFileReference;
+			lastKnownFileType = image.png;
+			name = icon.png;
+			path = ../../Resources/icon.png;
+			sourceTree = "SOURCE_ROOT";
+		};
 		AE29D315CADC57663A013656 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -1313,6 +1335,13 @@
 			path = "../../JuceLibraryCode/include_juce_gui_basics.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
+		C581EDAA4D805AC8BEDD0F90 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = BinaryData.cpp;
+			path = ../../JuceLibraryCode/BinaryData.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		C6194CC60A33215D7E62429B = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.objcpp;
@@ -1423,6 +1452,13 @@
 			lastKnownFileType = sourcecode.cpp.objcpp;
 			name = "include_juce_events.mm";
 			path = "../../JuceLibraryCode/include_juce_events.mm";
+			sourceTree = "SOURCE_ROOT";
+		};
+		D9D1372E70FB917C1F7539EC = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = BinaryData.h;
+			path = ../../JuceLibraryCode/BinaryData.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		DA9D831A6A29A0625DB4A706 = {
@@ -1585,6 +1621,14 @@
 			name = MTCReceiver.cpp;
 			path = ../../Source/Common/MIDI/MTCReceiver.cpp;
 			sourceTree = "SOURCE_ROOT";
+		};
+		07C7B46FEDC49DC296D12F82 = {
+			isa = PBXGroup;
+			children = (
+				AA945CC20764842E354B19A9,
+			);
+			name = Resources;
+			sourceTree = "<group>";
 		};
 		2C34DE17AC4CEA668E468357 = {
 			isa = PBXGroup;
@@ -1954,6 +1998,7 @@
 		AB2EAE186BA2D8E3194CD66A = {
 			isa = PBXGroup;
 			children = (
+				07C7B46FEDC49DC296D12F82,
 				873614FF407C0F9BFEB97260,
 			);
 			name = LGML;
@@ -1986,6 +2031,8 @@
 		B930FFF67622C886A75EF18D = {
 			isa = PBXGroup;
 			children = (
+				C581EDAA4D805AC8BEDD0F90,
+				D9D1372E70FB917C1F7539EC,
 				FC57670C4734632FC50D2C47,
 				C6194CC60A33215D7E62429B,
 				DDDE73BE013ABB74466D9B4F,
@@ -2015,6 +2062,7 @@
 			children = (
 				694AF08C7A6CAB9EC37B3BE3,
 				9E775318D3325A8F050B1C20,
+				091EEE0FF52DF9B2CE28BCBE,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -2373,6 +2421,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C862E2DAF88ACB6B3B3D916F,
+				4EFDBFD373DED0858C08703B,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2442,6 +2491,7 @@
 				C12B0F88DD0B741DEDD4934F,
 				D290400B52F9FBD455BB2ED3,
 				51EA34DE5982EB525938CC64,
+				DD4BB6E638A4FA6F4E19AA99,
 				EF69A87F272D7C597C4BBA28,
 				450AD1E593412651BDCA2C4F,
 				9CDBF499431CB31F73E5E10C,

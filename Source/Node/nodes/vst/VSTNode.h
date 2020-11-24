@@ -17,7 +17,7 @@ class VSTProcessor :
 {
 public:
 	VSTProcessor(Node* node);
-	~VSTProcessor() {}
+	~VSTProcessor();
 
 	VSTPluginParameter* pluginParam;
 	Array<Parameter *> VSTParameters;

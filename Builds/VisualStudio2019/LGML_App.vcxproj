@@ -2919,6 +2919,7 @@
     <ClCompile Include="..\..\Modules\juce_timeline\TimelineAppCommands.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_devices.cpp"/>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_formats.cpp"/>
@@ -4454,9 +4455,11 @@
     <ClInclude Include="..\..\Modules\juce_timeline\timeline\SequenceManager.h"/>
     <ClInclude Include="..\..\Modules\juce_timeline\TimelineAppCommands.h"/>
     <ClInclude Include="..\..\Modules\juce_timeline\juce_timeline.h"/>
+    <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Resources\icon.png"/>
     <None Include="..\..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_devices\native\oboe\CMakeLists.txt"/>
     <None Include="..\..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_devices\native\oboe\readme.md"/>
     <None Include="..\..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt"/>
@@ -4478,6 +4481,7 @@
     <None Include="..\..\Modules\juce_simpleweb\asio\README.md"/>
     <None Include="..\..\Modules\juce_simpleweb\README.md"/>
     <None Include="..\..\Modules\juce_timeline\README.md"/>
+    <None Include=".\icon.ico"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc"/>
