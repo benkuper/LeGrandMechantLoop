@@ -37,6 +37,8 @@ public:
 
     void afterLoadJSONDataInternal() override;
 
+    void onContainerTriggerTriggered(Trigger*) override;
+
     void run() override;
 
     DECLARE_ASYNC_EVENT(VSTManager, VSTManager, vstManager, ENUM_LIST(PLUGINS_UPDATED))

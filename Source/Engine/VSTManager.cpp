@@ -19,7 +19,8 @@ VSTManager::VSTManager() :
     vstManagerNotifier(5)
 {
     rescan = addTrigger("Rescan", "Rescan all paths");
-    
+    rescan->hideInEditor = true;
+
     formatManager.addDefaultFormats();
     userCanAddControllables = true;
     userAddControllablesFilters.add(FileParameter::getTypeStringStatic());
@@ -98,6 +99,11 @@ void VSTManager::onControllableRemoved(Controllable* c)
 void VSTManager::afterLoadJSONDataInternal()
 {
     startThread();
+}
+
+void VSTManager::onContainerTriggerTriggered(Trigger* t)
+{
+    if (t == rescan) updateVSTList();
 }
 
 void VSTManager::run()
