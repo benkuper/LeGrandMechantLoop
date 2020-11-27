@@ -26,15 +26,16 @@ SpatProcessor::SpatProcessor(Node* node) :
 
 	spatPosition = addPoint2DParameter("Position", "Position to compute the weights from");
 	spatPosition->setBounds(0, 0, 1, 1);
+	spatPosition->setPoint(.5f, .5f);
 
-	spatRadius = addFloatParameter("Radius", "Radius to compute the weights from", .2f, 0, 1);
+	spatRadius = addFloatParameter("Radius", "Radius to compute the weights from", .5f, 0, 1);
 	
 	AutomationKey * k = fadeCurve.addKey(0,1);
 	k->easingType->setValueWithData(Easing::BEZIER);
 	fadeCurve.addKey(1, 0);
 	addChildControllableContainer(&fadeCurve);
 
-	circleRadius = addFloatParameter("Circle Radius", "Radius of the circle if in circle mode", 0, 0, 2);
+	circleRadius = addFloatParameter("Circle Radius", "Radius of the circle if in circle mode", .8f, 0, 2);
 	circleAngle = addFloatParameter("Circle Angle", "Angle of the circle if in cirlce mode", 0, 0, 360);
 	
 	addChildControllableContainer(&spatCC);

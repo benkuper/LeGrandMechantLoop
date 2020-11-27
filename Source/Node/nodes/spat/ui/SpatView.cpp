@@ -80,8 +80,6 @@ void SpatView::mouseDrag(const MouseEvent& e)
 {
 
 	Point<float> pos = getMouseXYRelative().toFloat() / Point<float>(getWidth(), getHeight());
-
-	LOG(pos.toString());
 	if (SpatItemUI* si = dynamic_cast<SpatItemUI*>(e.eventComponent))
 	{
 		if (proc->spatMode->getValueDataAsEnum<SpatProcessor::SpatMode>() == SpatProcessor::FREE)

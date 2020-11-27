@@ -137,6 +137,10 @@
 			isa = PBXBuildFile;
 			fileRef = 75F216D420AA2A5C657DA8E7;
 		};
+		8F605F1CD41779C2757D5AB1 = {
+			isa = PBXBuildFile;
+			fileRef = 873A7EC76C6DB60E6CD566A4;
+		};
 		8E0542A2F682BF40C9A0E4EF = {
 			isa = PBXBuildFile;
 			fileRef = 4512B8F41500EB4419C62669;
@@ -410,6 +414,13 @@
 			name = WebKit.framework;
 			path = System/Library/Frameworks/WebKit.framework;
 			sourceTree = SDKROOT;
+		};
+		00A2F0B94E896892BD218107 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = AudioUIHelpers.h;
+			path = ../../Source/Common/AudioUIHelpers.h;
+			sourceTree = "SOURCE_ROOT";
 		};
 		030848E425B59E04EC0D9FF5 = {
 			isa = PBXFileReference;
@@ -1069,6 +1080,13 @@
 			path = ../../Source/Transport/Transport.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		873A7EC76C6DB60E6CD566A4 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = AudioUIHelpers.cpp;
+			path = ../../Source/Common/AudioUIHelpers.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		88B80FF1A1B7C9BA9C8A51A1 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -1725,6 +1743,8 @@
 			children = (
 				6A34FB08D1CC756AA228A248,
 				C82E8E3DD8C513FE3B127D2B,
+				873A7EC76C6DB60E6CD566A4,
+				00A2F0B94E896892BD218107,
 				4512B8F41500EB4419C62669,
 				CE2F73FF261289B9C99F6D48,
 				BE191D2B96E7D24AF95BD784,
@@ -2299,6 +2319,7 @@
 				BCC7001D3B9642B090090273,
 				9A917147555923500B7CA828,
 				43DDA6E2A14AA77FC2D35C17,
+				8F605F1CD41779C2757D5AB1,
 				8E0542A2F682BF40C9A0E4EF,
 				996D4E28B6274DB5B3FF3B63,
 				60F887BBFCAB43139B150D5C,

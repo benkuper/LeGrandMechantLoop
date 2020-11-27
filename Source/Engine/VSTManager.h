@@ -23,8 +23,6 @@ public:
     ~VSTManager();
 
     AudioPluginFormatManager formatManager;
-    KnownPluginList knownPluginList;
-
     OwnedArray<PluginDescription> descriptions;
     HashMap<String, PluginDescription*> idDescriptionMap;
 

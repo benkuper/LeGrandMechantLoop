@@ -43,10 +43,7 @@ void IONodeViewUI::updateUI()
 
     for (int i = 0; i < numChannels; i++)
     {
-        FloatSliderUI* s = ((FloatParameter *)processor->rmsCC.controllables[i])->createSlider();
-        s->orientation = s->VERTICAL;
-        s->showLabel = false;
-        s->showValue = false;
+        FloatSliderUI* s = (new RMSSliderUI((FloatParameter *)processor->rmsCC.controllables[i]));
         addAndMakeVisible(s);
         rmsUI.add(s);
 

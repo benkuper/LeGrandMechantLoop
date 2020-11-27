@@ -34,6 +34,7 @@ public:
 	Trigger* stopTrigger;
 	Trigger* clearTrigger;
 
+	BoolParameter* isCurrent;
 	BoolParameter* active;
 	FloatParameter* volume;
 	FloatParameter* rms;
@@ -44,6 +45,7 @@ public:
 
 	int index;
 	int numChannels;
+
 
 	int curSample;
 	AudioBuffer<float> buffer;
@@ -76,6 +78,7 @@ public:
 	void processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>&outputBuffer, int numMainChannels, bool outputIfRecording);
 
 	//Helpers
+	bool hasContent(bool includeRecordPhase) const;
 	bool isRecording(bool includeWillRecord) const;
 	bool isPlaying(bool includeWillPlay) const;
 	bool isWaiting(bool waitingForRecord = true, bool waitingForFinishRecord = true, bool waitingForPlay = true, bool waitingForStop = true) const;

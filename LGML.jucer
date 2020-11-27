@@ -66,6 +66,10 @@
                 file="Source/Common/Serial/SerialManager.cpp"/>
           <FILE id="yu5loP" name="SerialManager.h" compile="0" resource="0" file="Source/Common/Serial/SerialManager.h"/>
         </GROUP>
+        <FILE id="doeACa" name="AudioUIHelpers.cpp" compile="1" resource="0"
+              file="Source/Common/AudioUIHelpers.cpp"/>
+        <FILE id="HiYVvF" name="AudioUIHelpers.h" compile="0" resource="0"
+              file="Source/Common/AudioUIHelpers.h"/>
         <FILE id="nwxncy" name="ConnectionUIHelper.cpp" compile="1" resource="0"
               file="Source/Common/ConnectionUIHelper.cpp"/>
         <FILE id="kRFZbn" name="ConnectionUIHelper.h" compile="0" resource="0"

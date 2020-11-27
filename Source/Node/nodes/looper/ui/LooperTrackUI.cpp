@@ -9,6 +9,7 @@
 */
 
 #include "LooperTrackUI.h"
+#include "Common/AudioUIHelpers.h"
 
 LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     InspectableContentComponent(t),
@@ -25,10 +26,7 @@ LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     volumeUI.reset(track->volume->createSlider());
     volumeUI->orientation = volumeUI->VERTICAL;
 
-    rmsUI.reset(track->rms->createSlider());
-    rmsUI->orientation = rmsUI->VERTICAL;
-    rmsUI->showLabel = false;
-    rmsUI->showValue = false;
+    rmsUI.reset(new RMSSliderUI(track->rms));
 
     addAndMakeVisible(playRecordUI.get());
     addAndMakeVisible(stopUI.get());
@@ -52,6 +50,12 @@ LooperTrackUI::~LooperTrackUI()
 
 void LooperTrackUI::paint(Graphics& g)
 {
+    if (track->isCurrent->boolValue())
+    {
+        g.setColour(BLUE_COLOR.withAlpha(.2f));
+        g.fillRoundedRectangle(getLocalBounds().toFloat(), 2);
+    }
+
     g.setColour(feedback.contourColor);
     g.drawRoundedRectangle(getLocalBounds().reduced(1).toFloat(), 2, 1);
 }
@@ -78,6 +82,10 @@ void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
     {
         if (e.targetControllable == track->trackState)
         {
+            feedback.trackStateUpdate(track->trackState->getValueDataAsEnum<LooperTrack::TrackState>());
+        }
+        else if (e.targetControllable == track->isCurrent)
+        {
             repaint();
         }
     }
@@ -88,11 +96,31 @@ void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
 LooperTrackUI::Feedback::Feedback(LooperTrack* t) :
     track(t)
 {
-    startTimerHz(20);
 }
 
 LooperTrackUI::Feedback::~Feedback()
 {
+}
+
+void LooperTrackUI::Feedback::trackStateUpdate(LooperTrack::TrackState s)
+{
+    switch (s)
+    {
+    case LooperTrack::RECORDING: 
+    case LooperTrack::PLAYING:
+        startTimerHz(20); 
+        break;
+
+    case LooperTrack::STOPPED:
+    case LooperTrack::IDLE:
+        stopTimer();
+        repaint();
+        break;
+
+    default:
+        repaint();
+        break;
+    }
 }
 
 void LooperTrackUI::Feedback::paint(Graphics& g)
@@ -106,7 +134,12 @@ void LooperTrackUI::Feedback::paint(Graphics& g)
     {
     case LooperTrack::IDLE: break;
     case LooperTrack::WILL_RECORD: contourColor = RED_COLOR; break;
-    case LooperTrack::RECORDING: fillColor = RED_COLOR;  break;
+    case LooperTrack::RECORDING: 
+    {
+        float f = cosf(Time::getApproximateMillisecondCounter() / 500.0f) * .5f + .5f;
+        fillColor = RED_COLOR.darker(f); break;
+    }
+
     case LooperTrack::FINISH_RECORDING: fillColor = HIGHLIGHT_COLOR; break;
     case LooperTrack::PLAYING: fillColor = GREEN_COLOR; break;
     case LooperTrack::WILL_STOP: fillColor = BLUE_COLOR; break;

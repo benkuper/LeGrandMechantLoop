@@ -931,6 +931,9 @@
     <ClCompile Include="..\..\Source\Common\Serial\SerialManager.cpp">
       <Filter>LGML\Source\Common\Serial</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Common\AudioUIHelpers.cpp">
+      <Filter>LGML\Source\Common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Common\ConnectionUIHelper.cpp">
       <Filter>LGML\Source\Common</Filter>
     </ClCompile>
@@ -4028,6 +4031,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Common\Serial\SerialManager.h">
       <Filter>LGML\Source\Common\Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\AudioUIHelpers.h">
+      <Filter>LGML\Source\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Common\ConnectionUIHelper.h">
       <Filter>LGML\Source\Common</Filter>

@@ -20,10 +20,7 @@ NodeViewUI::NodeViewUI(Node* node) :
 
 	if (item->baseProcessor->outRMS != nullptr)
 	{
-		outRMSUI.reset(item->baseProcessor->outRMS->createSlider());
-		outRMSUI->showLabel = false;
-		outRMSUI->showValue = false;
-		outRMSUI->orientation = outRMSUI->VERTICAL;
+		outRMSUI.reset(new RMSSliderUI(item->baseProcessor->outRMS));
 		addAndMakeVisible(outRMSUI.get());
 
 	}

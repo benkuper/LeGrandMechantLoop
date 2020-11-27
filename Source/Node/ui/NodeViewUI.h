@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../Node.h"
+#include "Common/AudioUIHelpers.h"
 
 class NodeConnector;
 
@@ -25,7 +26,7 @@ public:
     std::unique_ptr<NodeConnector> inAudioConnector;
     std::unique_ptr<NodeConnector> outAudioConnector;
 
-    std::unique_ptr<FloatSliderUI> outRMSUI;
+    std::unique_ptr<RMSSliderUI> outRMSUI;
 
     void updateInputConnectors();
     void updateOutputConnectors();

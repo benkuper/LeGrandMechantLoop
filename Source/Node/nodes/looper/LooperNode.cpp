@@ -14,12 +14,21 @@
 
 LooperProcessor::LooperProcessor(Node* node) :
 	GenericNodeAudioProcessor(node),
-	tracksCC("Tracks")
+	tracksCC("Tracks"),
+	currentTrack(nullptr)
 {
 	nodeRef->viewUISize->setPoint(350, 220);
 
-	numTracks = addIntParameter("Track Count", "Number of tracks to use for this looper", 8, 1, 32);
+	const int defaultNumTracks = 8;
+
+	recTrigger = addTrigger("Rec", "Record to the current track");
+	clearCurrentTrigger = addTrigger("Clear","Clear the current track if not empty, otherwise clear the past one");
+	clearAllTrigger = addTrigger("Clear All","Clear all the tracks");
+	currentTrackIndex = addIntParameter("Current Track", "Index of the current track", 1, 1, defaultNumTracks);
+	
+	numTracks = addIntParameter("Track Count", "Number of tracks to use for this looper", defaultNumTracks, 1, 32);
 	numChannelsPerTrack = addIntParameter("Channel Per Track", "Number of channel to use for each track", 1, 1, 8);
+	autoNext = addBoolParameter("Auto Next", "If checked, will automatically select the next track to record", true);
 
 	trackOutputMode = addEnumParameter("Output Mode", "How to output the channels");
 	trackOutputMode->addOption("Mixed only", MIXED_ONLY)->addOption("Tracks only", SEPARATE_ONLY)->addOption("Mixed and tracks", ALL);
@@ -35,6 +44,8 @@ LooperProcessor::LooperProcessor(Node* node) :
 	updateLooperTracks();
 
 	updateRingBuffer();
+
+	setCurrentTrack(getTrackForIndex(currentTrackIndex->intValue()-1));
 
 	Transport::getInstance()->addTransportListener(this);
 	AudioManager::getInstance()->addAudioManagerListener(this);
@@ -78,7 +89,10 @@ void LooperProcessor::updateLooperTracks()
 
 	while (tracksCC.controllableContainers.size() > numTracks->intValue())
 	{
-		tracksCC.removeChildControllableContainer(tracksCC.controllableContainers[tracksCC.controllableContainers.size() - 1]);
+		LooperTrack* t = getTrackForIndex(tracksCC.controllableContainers.size() - 1);
+		if (t->isCurrent) setCurrentTrack(nullptr);
+
+		tracksCC.removeChildControllableContainer(t);
 	}
 
 	Array<ControllableContainer*> tracksToAdd;
@@ -95,6 +109,65 @@ void LooperProcessor::updateRingBuffer()
 	ringBuffer.reset(new RingBuffer<float>(numChannelsPerTrack->intValue(), getFadeNumSamples() * 2)); //double to not have overlapping read and write
 }
 
+void LooperProcessor::setCurrentTrack(LooperTrack* t)
+{
+	if (currentTrack == t) return;
+
+	if (currentTrack != nullptr)
+	{
+		currentTrack->isCurrent->setValue(false);
+	}
+
+	currentTrack = t;
+
+	if (currentTrack != nullptr)
+	{
+		currentTrack->isCurrent->setValue(true);
+	}
+}
+
+
+void LooperProcessor::onContainerTriggerTriggered(Trigger* t)
+{
+	if (t == recTrigger)
+	{
+		if (currentTrack != nullptr)
+		{
+			if(currentTrack->isPlaying(true)) currentTrackIndex->setValue(currentTrackIndex->intValue()+1);
+			
+			currentTrack->playRecordTrigger->trigger();
+			
+			LooperTrack::TrackState s = currentTrack->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
+			
+			if (s == LooperTrack::FINISH_RECORDING || currentTrack->isPlaying(true) && autoNext->boolValue())
+			{
+				currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
+			}
+		}
+	}
+	else if (t == clearCurrentTrigger)
+	{
+		if (currentTrack != nullptr)
+		{
+			if (autoNext->boolValue())
+			{
+				while (!currentTrack->hasContent(true) && currentTrackIndex->intValue() > 1)
+				{
+					currentTrackIndex->setValue(currentTrackIndex->intValue() - 1);
+				}
+			}
+			currentTrack->clearTrigger->trigger();
+		}
+	}
+	else if (t == clearAllTrigger)
+	{
+		for (auto& cc : tracksCC.controllableContainers)
+		{
+			((LooperTrack*)cc.get())->clearTrigger->trigger();
+			currentTrackIndex->setValue(1);
+		}
+	}
+}
 
 void LooperProcessor::onContainerParameterChanged(Parameter* p)
 {
@@ -104,6 +177,7 @@ void LooperProcessor::onContainerParameterChanged(Parameter* p)
 	{
 		updateOutTracks();
 		updateLooperTracks();
+		currentTrackIndex->setRange(1, numTracks->intValue());
 	}
 	else if (p == numChannelsPerTrack)
 	{
@@ -118,6 +192,10 @@ void LooperProcessor::onContainerParameterChanged(Parameter* p)
 		}
 	}
 	else if (p == fadeTimeMS) updateRingBuffer();
+	else if (p == currentTrackIndex)
+	{
+		setCurrentTrack(getTrackForIndex(currentTrackIndex->intValue()-1));
+	}
 }
 
 
@@ -172,6 +250,12 @@ bool LooperProcessor::isOneTrackRecording(bool includeWillRecord)
 int LooperProcessor::getFadeNumSamples()
 {
 	return fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000;
+}
+
+LooperTrack* LooperProcessor::getTrackForIndex(int index)
+{
+	if (index >= tracksCC.controllableContainers.size()) return nullptr;
+	return (LooperTrack*)tracksCC.controllableContainers[index].get();
 }
 
 NodeViewUI* LooperProcessor::createNodeViewUI()

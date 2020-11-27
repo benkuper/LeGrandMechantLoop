@@ -66,10 +66,7 @@ void MixerNodeViewUI::rebuildOutLine()
         addAndMakeVisible(gui);
         outGainsUI.add(gui);
 
-        FloatSliderUI* rui = ((FloatParameter*)processor->rmsCC.controllables[i])->createSlider();
-        rui->orientation = rui->VERTICAL;
-        rui->showLabel = false;
-        rui->showValue = false;
+        FloatSliderUI* rui = (new RMSSliderUI((FloatParameter*)processor->rmsCC.controllables[i]));
         addAndMakeVisible(rui);
         rmsUI.add(rui);
     }

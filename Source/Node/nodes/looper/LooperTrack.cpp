@@ -27,6 +27,9 @@ LooperTrack::LooperTrack(LooperProcessor * looper, int index, int numChannels) :
 	editorIsCollapsed = true;
 	isSelectable = false; 
 
+	isCurrent = addBoolParameter("Is Current", "Is this track the current one controlled by the looper ?", false);
+	isCurrent->hideInEditor = true;
+
 	trackState = addEnumParameter("State", "State of this track, for feedback");
 	for (int i = 0; i < STATES_MAX; i++) trackState->addOption(trackStateNames[i], (TrackState)i);
 	//trackState->setControllableFeedbackOnly(true);
@@ -388,6 +391,14 @@ void LooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<floa
 		}
 	}
 	*/
+}
+
+bool LooperTrack::hasContent(bool includeRecordPhase) const
+{
+	TrackState s = trackState->getValueDataAsEnum<TrackState>();
+	if (s == IDLE) return false;
+	if (isRecording(true)) return includeRecordPhase;
+	return true;
 }
 
 bool LooperTrack::isRecording(bool includeWillRecord) const

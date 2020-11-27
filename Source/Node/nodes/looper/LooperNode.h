@@ -30,6 +30,14 @@ public:
     IntParameter* numChannelsPerTrack;
     IntParameter* fadeTimeMS;
 
+    Trigger* recTrigger;
+    Trigger* clearCurrentTrigger;
+    Trigger* clearAllTrigger;
+    BoolParameter* autoNext;
+    IntParameter* currentTrackIndex;
+
+    LooperTrack* currentTrack;
+
     std::unique_ptr<RingBuffer<float>> ringBuffer;
 
     ControllableContainer tracksCC;
@@ -44,10 +52,14 @@ public:
     void updateLooperTracks();
     void updateRingBuffer();
 
+    void setCurrentTrack(LooperTrack* t);
+
+    void onContainerTriggerTriggered(Trigger* t) override;
     void onContainerParameterChanged(Parameter* p) override;
 
     virtual void beatChanged(bool isNewBar) override;
     virtual void playStateChanged(bool isPlaying) override;
+
 
     virtual void audioSetupChanged() override;
     
@@ -56,6 +68,7 @@ public:
     //helpers
     bool isOneTrackRecording(bool includeWillRecord = false);
     int getFadeNumSamples(); //for ring buffer fade
+    LooperTrack* getTrackForIndex(int index);
 
     static String getTypeStringStatic() { return "Looper"; }
     NodeViewUI* createNodeViewUI() override;

@@ -58,14 +58,10 @@ void VSTManager::updateVSTList()
         }
     }
 
-    for (auto& d : descriptions)
-    {
-        idDescriptionMap.set(d->fileOrIdentifier, d);
-    }
-
     String s = "Found plugins :";
     for (auto& d : descriptions)
     {
+        idDescriptionMap.set(d->fileOrIdentifier, d);
         s += "\n" + d->category + " > " + d->name + " (" + d->pluginFormatName + ")";
     }
     
@@ -109,7 +105,7 @@ void VSTManager::loadJSONDataInternal(var data)
 
 void VSTManager::afterLoadJSONDataInternal()
 {
-    startThread();
+    updateVSTList(); //not async to ensure file is loaded after first listing. Can be improved by handling async load in VST Nodes and connections
 }
 
 void VSTManager::onContainerTriggerTriggered(Trigger* t)
@@ -119,6 +115,7 @@ void VSTManager::onContainerTriggerTriggered(Trigger* t)
 
 void VSTManager::run()
 {
+    sleep(500);
     updateVSTList();
 }
 

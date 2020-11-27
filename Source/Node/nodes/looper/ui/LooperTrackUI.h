@@ -43,6 +43,8 @@ public:
         Colour contourColor;
         Colour fillColor;
 
+        void trackStateUpdate(LooperTrack::TrackState s);
+
         void paint(Graphics& g) override;
         void timerCallback() override;
     };
@@ -53,5 +55,4 @@ public:
     void resized() override;
 
     void newMessage(const ContainerAsyncEvent& e) override;
-
 };
