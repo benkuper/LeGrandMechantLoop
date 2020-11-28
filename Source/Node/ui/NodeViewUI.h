@@ -32,7 +32,7 @@ public:
     void updateOutputConnectors();
 
     void paintOverChildren(Graphics& g) override;
-    virtual void resized();
+    virtual void resized() override;
     virtual void resizedInternalContent(Rectangle<int>& r) override;
     virtual void resizedInternalContentNode(Rectangle<int>& r) {}
 

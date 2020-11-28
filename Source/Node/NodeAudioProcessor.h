@@ -41,7 +41,7 @@ public:
 
 	/* AudioProcessor */
 	virtual const String getName() const override;
-	virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) {}
+	virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override {}
 	virtual void releaseResources() override {}
 	virtual void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	virtual double getTailLengthSeconds() const override { return 0; }

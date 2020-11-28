@@ -29,7 +29,7 @@ public:
 
 	void onContainerParameterChanged(Parameter* p) override;
 
-	void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock);
+	void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	static const String getTypeStringStatic() { return "VST"; }
 	NodeViewUI* createNodeViewUI() override;

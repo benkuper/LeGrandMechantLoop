@@ -90,14 +90,14 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/debug;../../External/dnssd/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
-      <AdditionalDependencies>Servus.lib;dnssd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)\LGML.bsc</OutputFile>
     </Bscmake>
     <Lib>
-      <AdditionalDependencies>Servus.lib;dnssd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/debug;../../External/dnssd/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -139,14 +139,14 @@
       <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/release;../../External/dnssd/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>Servus.lib;dnssd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)\LGML.bsc</OutputFile>
     </Bscmake>
     <Lib>
-      <AdditionalDependencies>Servus.lib;dnssd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/release;../../External/dnssd/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>

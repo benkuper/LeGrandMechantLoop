@@ -2197,6 +2197,9 @@
 					"../../JuceLibraryCode",
 					"../../JUCE/modules",
 					"../../Modules",
+					"../../External/servus/include",
+					"../../External/dnssd/include",
+					"../../External/serial/include",
 					"../../Source",
 					"../../External/asio",
 					"../../External/servus/include",
@@ -2208,6 +2211,10 @@
 				INFOPLIST_FILE = Info-App.plist;
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"../../External/servus/lib/osx/release\"",
+				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				MTL_HEADER_SEARCH_PATHS = (
@@ -2215,6 +2222,9 @@
 					"../../JuceLibraryCode",
 					"../../JUCE/modules",
 					"../../Modules",
+					"../../External/servus/include",
+					"../../External/dnssd/include",
+					"../../External/serial/include",
 					"../../Source",
 					"../../External/asio",
 					"../../External/servus/include",
@@ -2222,6 +2232,7 @@
 					"../../External/vst2",
 					"../../External/serial/include",
 				);
+				OTHER_LDFLAGS = "-lServus";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.LGML;
 				PRODUCT_NAME = "LGML";
 				USE_HEADERMAP = NO;

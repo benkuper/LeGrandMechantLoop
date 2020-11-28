@@ -32,7 +32,7 @@ public:
 
     void addItemUIInternal(NodeConnectionViewUI* ui) override;
 
-    void resized(); //override to avoid baseManagerUI stuff
+    void resized() override; //override to avoid baseManagerUI stuff
 
     void startCreateConnection(NodeConnector* connector);
     void updateCreateConnection();

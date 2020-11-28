@@ -36,7 +36,7 @@ public:
 
 	AudioBuffer<float> tmpBuffer;
 
-	void updateOutputsFromNodeInternal();
+	void updateOutputsFromNodeInternal() override;
 
 	void updateSpatPoints();
 
