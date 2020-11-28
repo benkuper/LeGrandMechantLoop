@@ -3,15 +3,15 @@
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
 
-#define ApplicationName 'Blux'
-#define ApplicationVersion GetStringFileInfo('Binaries/CI/App/Blux.exe',"ProductVersion")
+#define ApplicationName 'LGML'
+#define ApplicationVersion GetStringFileInfo('Binaries/CI/App/LGML.exe',"ProductVersion")
 
 [Setup]
 AppName={#ApplicationName}
 AppId={#ApplicationName}
 AppVersion={#ApplicationVersion}
 AppPublisher=Ben Kuper
-AppPublisherURL=http://benjamin.kuperberg.fr/blux
+AppPublisherURL=http://benjamin.kuperberg.fr/lgml
 DefaultDirName={pf}\{#ApplicationName}
 DefaultGroupName={#ApplicationName}
 UninstallDisplayIcon={app}\{#ApplicationName}.exe
