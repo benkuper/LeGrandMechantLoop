@@ -246,8 +246,8 @@
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" ORGANICUI_USE_WEBSERVER="1"
                JUCE_USE_WINRT_MIDI="1" JUCE_ASIO="1" JUCE_WASAPI="1" JUCE_DIRECTSOUND="1"
-               JUCE_ALSA="1" JUCE_JACK="1" JUCE_PLUGINHOST_VST="1" JUCE_PLUGINHOST_VST3="1"
-               JUCE_PLUGINHOST_AU="1" ORGANICUI_USE_SERVUS="1"/>
+               JUCE_ALSA="1" JUCE_JACK="1" JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1"
+               ORGANICUI_USE_SERVUS="1"/>
   <EXPORTFORMATS>
     <VS2019 targetFolder="Builds/VisualStudio2019" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib"
             smallIcon="k24oFh" bigIcon="k24oFh">
@@ -337,7 +337,8 @@
     <VS2019 targetFolder="Builds/VisualStudio2019_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib"/>
-        <CONFIGURATION isDebug="0" name="Release" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib"/>
+        <CONFIGURATION isDebug="0" name="Release" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib"
+                       alwaysGenerateDebugSymbols="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_timeline" path="Modules"/>
