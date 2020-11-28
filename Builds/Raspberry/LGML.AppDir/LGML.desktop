@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=LGML
+Exec=LGML
+Icon=LGML
+Type=Application
+Categories=AudioVideo;Art;
+Comment=Node based DAW for live performance and looping
+Comment[fr]=Logiciel audio pour performances live et looping
+MimeType=text/lgml;
+Name[en]=LGML
+Terminal=false
+StartupNotify=true
+NoDisplay=false
+Name[en_US]=lgml.desktop
