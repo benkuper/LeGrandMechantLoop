@@ -21,6 +21,8 @@ class NodeManager :
 public:
     NodeManager(AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID);
     ~NodeManager();
+    
+    BoolParameter* isPlaying;
 
     AudioProcessorGraph::NodeID inputNodeID;
     AudioProcessorGraph::NodeID outputNodeID;
@@ -49,6 +51,9 @@ public:
     virtual Array<UndoableAction*> getRemoveItemUndoableAction(Node* n) override;
     virtual Array<UndoableAction*> getRemoveItemsUndoableAction(Array<Node*> n) override;
 
+    void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
+
+    bool hasPlayingNodes();
 
     var getJSONData() override;
     void loadJSONDataManagerInternal(var data) override;
@@ -64,7 +69,11 @@ public:
     RootNodeManager();
     ~RootNodeManager();
 
+
     void audioSetupChanged() override;
+
+    void onContainerParameterChanged(Parameter* p) override;
+
 };
 
 /*

@@ -25,6 +25,8 @@ public:
 
     virtual void clearItem() override;
 
+    BoolParameter* isNodePlaying;
+
     AudioProcessorGraph::NodeID nodeGraphID;
     NodeAudioProcessor * baseProcessor;
     AudioProcessorGraph::Node::Ptr nodeGraphPtr;
@@ -46,12 +48,9 @@ public:
     void setAudioInputs(const StringArray & inputNames);
     void setAudioOutputs(const int& numOutputs); //auto naming
     void setAudioOutputs(const StringArray& outputNames);
-
-
-
+    
     template<class T>
     T* getProcessor() { return dynamic_cast<T*>(baseProcessor); }
-
 
     class NodeListener
     {

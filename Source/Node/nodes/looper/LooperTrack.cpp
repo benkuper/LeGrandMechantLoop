@@ -11,6 +11,7 @@
 #include "LooperTrack.h"
 #include "Transport/Transport.h"
 #include "LooperNode.h"
+#include "Node/NodeManager.h"
 
 String LooperTrack::trackStateNames[LooperTrack::STATES_MAX] = { "Idle", "Will Record", "Recording", "Finish Recording", "Playing", "Will Stop", "Stopped", "Will Play" };
 
@@ -158,18 +159,20 @@ void LooperTrack::startRecording()
 	trackState->setValueWithData(RECORDING);
 	if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
 	{
-		Transport::getInstance()->play(true);
+		//If already has content, just play
+		bool doSetTempo = !RootNodeManager::getInstance()->hasPlayingNodes();
+		Transport::getInstance()->play(doSetTempo);
 	}
 }
 
 void LooperTrack::finishRecordingAndPlay()
 {
-	if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) Transport::getInstance()->finishSetTempo(true);
+	if (Transport::getInstance()->isSettingTempo) Transport::getInstance()->finishSetTempo(true);
 
 	numBeats = Transport::getInstance()->getBeatForSamples(curSample, false, false);
 	
 	loopBeat->setRange(0, numBeats-1);
-	loopBar->setRange(0, floor(numBeats * 1.0f / Transport::getInstance()->beatsPerBar->intValue())-1);
+	loopBar->setRange(0, jmax<int>(floor(numBeats * 1.0f / Transport::getInstance()->beatsPerBar->intValue()) - 1, 0));
 
 	int curSamplePerfect = numBeats * Transport::getInstance()->getBeatNumSamples();
 

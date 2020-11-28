@@ -70,6 +70,7 @@ void TransportUI::newMessage(const ContainerAsyncEvent& e)
 	if (e.type == e.ControllableFeedbackUpdate)
 	{
 		if (e.targetControllable == transport->beatsPerBar) barViz.rebuild();
+		else if (e.targetControllable == transport->isCurrentlyPlaying) barViz.repaint();
 	}
 }
 
@@ -150,5 +151,5 @@ void TransportUI::BarViz::resized()
 
 void TransportUI::BarViz::timerCallback()
 {
-	if(transport->isCurrentlyPlaying->boolValue()) repaint();
+	if(transport->isCurrentlyPlaying->boolValue() || transport->isSettingTempo) repaint();
 }

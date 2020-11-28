@@ -56,6 +56,7 @@ public:
 
     void onContainerTriggerTriggered(Trigger* t) override;
     void onContainerParameterChanged(Parameter* p) override;
+    void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
 
     virtual void beatChanged(bool isNewBar) override;
     virtual void playStateChanged(bool isPlaying) override;
@@ -66,6 +67,7 @@ public:
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
     //helpers
+    bool hasContent();
     bool isOneTrackRecording(bool includeWillRecord = false);
     int getFadeNumSamples(); //for ring buffer fade
     LooperTrack* getTrackForIndex(int index);

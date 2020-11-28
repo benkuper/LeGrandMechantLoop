@@ -13,6 +13,7 @@
 #include "Engine/AudioManager.h"
 #include "Connection/NodeConnectionManager.h"
 #include "nodes/io/IONode.h"
+#include "Transport/Transport.h"
 
 juce_ImplementSingleton(RootNodeManager)
 
@@ -25,6 +26,10 @@ NodeManager::NodeManager(AudioProcessorGraph::NodeID inputNodeID, AudioProcessor
 	managerFactory = NodeFactory::getInstance();
 	//audioProcessor = new NodeManagerAudioProcessor(this);
 	//AudioManager::getInstance()->graph.addNode(std::unique_ptr<AudioProcessor>(audioProcessor), nodeGraphID);
+
+	isPlaying = addBoolParameter("Is Node Playing", "This is a feedback to know if a node has playing content. Used by the global time to automatically stop if no content is playing", false);
+	isPlaying->setControllableFeedbackOnly(true);
+	isPlaying->hideInEditor = true;
 
 	connectionManager.reset(new NodeConnectionManager());
 	addChildControllableContainer(connectionManager.get());
@@ -65,25 +70,8 @@ void NodeManager::setAudioOutputs(const int& numOutputs)
 
 void NodeManager::setAudioOutputs(const StringArray& outputNames)
 {
-	/*
-	int currentNumOutputs = audioOutputNames.size();
-	int newNumOutputs = outputNames.size();
-	while (currentNumOutputs > newNumOutputs) //remove surplus
-	{
-		currentNumOutputs--;
-		AudioManager::getInstance()->graph.removeConnection(AudioProcessorGraph::Connection({ nodeGraphID, currentNumOutputs }, { outputNodeID, currentNumOutputs })); //straight channel disconnection
-	}
-
-	while (currentNumOutputs < newNumOutputs) //add missing
-	{
-		AudioManager::getInstance()->graph.addConnection(AudioProcessorGraph::Connection({ nodeGraphID, currentNumOutputs }, { outputNodeID, currentNumOutputs })); //straight channel connection
-		currentNumOutputs++;
-	}
-	*/
-
 	audioOutputNames = outputNames;
 	for (auto& n : audioOutputNodes) updateAudioOutputNode(n);
-
 }
 
 
@@ -145,6 +133,24 @@ Array<UndoableAction*> NodeManager::getRemoveItemsUndoableAction(Array<Node*> it
 	return result;
 }
 
+
+void NodeManager::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
+{
+	if (Node* n = c->getParentAs<Node>())
+	{
+		if (c == n->isNodePlaying)
+		{
+			isPlaying->setValue(hasPlayingNodes());
+		}
+	}
+}
+
+bool NodeManager::hasPlayingNodes()
+{
+	for (auto& i : items) if (i->isNodePlaying->boolValue()) return true;
+	return false;
+}
+
 var NodeManager::getJSONData()
 {
 	var data = BaseManager::getJSONData();
@@ -182,19 +188,15 @@ void RootNodeManager::audioSetupChanged()
 	setAudioOutputs(AudioManager::getInstance()->getOutputChannelNames());
 }
 
-/*
-NodeManagerAudioProcessor::NodeManagerAudioProcessor(NodeManager* manager) :
-	nodeManager(manager),
-	nodeManagerRef(manager)
+void RootNodeManager::onContainerParameterChanged(Parameter* p)
 {
-}
+	NodeManager::onContainerParameterChanged(p);
 
-NodeManagerAudioProcessor::~NodeManagerAudioProcessor()
-{
+	if (p == isPlaying)
+	{
+		if (!isPlaying->boolValue())
+		{
+			Transport::getInstance()->stopTrigger->trigger();
+		}
+	}
 }
-
-void NodeManagerAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
-{
-	DBG("Process block");
-}
-*/

@@ -67,7 +67,8 @@ PluginWindow::PluginWindow(VSTProcessor* processor) :
     processor(processor)
 {
     setVSTEditor(processor->vst.get());
-    setCentrePosition(Desktop::getInstance().getDisplays().getMainDisplay().userArea.getCentre());
+    const Displays::Display* d = Desktop::getInstance().getDisplays().getDisplayForRect(getScreenBounds());
+    if(d != nullptr) setCentrePosition(d->userArea.getCentre());
 
     setResizable(true, true);
     setDraggable(true);

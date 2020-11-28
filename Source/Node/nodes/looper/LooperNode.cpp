@@ -198,6 +198,18 @@ void LooperProcessor::onContainerParameterChanged(Parameter* p)
 	}
 }
 
+void LooperProcessor::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
+{
+	GenericNodeAudioProcessor::onControllableFeedbackUpdate(cc, c);
+	if (LooperTrack* t = c->getParentAs<LooperTrack>())
+	{
+		if (c == t->trackState)
+		{
+			nodeRef->isNodePlaying->setValue(hasContent());
+		}
+	}
+}
+
 
 void LooperProcessor::beatChanged(bool isNewBar)
 {
@@ -236,6 +248,15 @@ void LooperProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffe
 	{
 		((LooperTrack*)tracksCC.controllableContainers[i].get())->processBlock(tmpBuffer, buffer, numMainChannels, outputIfRecording);
 	}
+}
+
+bool LooperProcessor::hasContent()
+{
+	for (auto& cc : tracksCC.controllableContainers)
+	{
+		if (((LooperTrack*)cc.get())->hasContent(false)) return true;
+	}
+	return false;
 }
 
 bool LooperProcessor::isOneTrackRecording(bool includeWillRecord)
