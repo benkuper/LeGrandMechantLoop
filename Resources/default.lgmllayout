@@ -1,0 +1,107 @@
+{
+  "mainLayout": {
+    "type": 1,
+    "width": 1920,
+    "height": 997,
+    "direction": 2,
+    "shifters": [
+      {
+        "type": 1,
+        "width": 1920,
+        "height": 997,
+        "direction": 1,
+        "shifters": [
+          {
+            "type": 1,
+            "width": 253,
+            "height": 997,
+            "direction": 2,
+            "shifters": [
+              {
+                "type": 0,
+                "width": 253,
+                "height": 122,
+                "currentContent": "Transport",
+                "tabs": [
+                  {
+                    "name": "Transport"
+                  }
+                ]
+              },
+              {
+                "type": 0,
+                "width": 253,
+                "height": 200,
+                "currentContent": "Interfaces",
+                "tabs": [
+                  {
+                    "name": "Interfaces"
+                  }
+                ]
+              },
+              {
+                "type": 0,
+                "width": 253,
+                "height": 662,
+                "currentContent": "Outliner",
+                "tabs": [
+                  {
+                    "name": "Nodes (List View)"
+                  },
+                  {
+                    "name": "Outliner"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": 0,
+            "width": 1224,
+            "height": 997,
+            "currentContent": "Nodes (2D View)",
+            "tabs": [
+              {
+                "name": "Nodes (2D View)"
+              }
+            ]
+          },
+          {
+            "type": 1,
+            "width": 431,
+            "height": 997,
+            "direction": 2,
+            "shifters": [
+              {
+                "type": 0,
+                "width": 431,
+                "height": 668,
+                "currentContent": "Inspector",
+                "tabs": [
+                  {
+                    "name": "Inspector"
+                  }
+                ]
+              },
+              {
+                "type": 0,
+                "width": 431,
+                "height": 322,
+                "currentContent": "Logger",
+                "tabs": [
+                  {
+                    "name": "Help"
+                  },
+                  {
+                    "name": "Logger"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "windows": null
+}

@@ -8,11 +8,14 @@
 
 namespace BinaryData
 {
+    extern const char*   default_lgmllayout;
+    const int            default_lgmllayoutSize = 2599;
+
     extern const char*   icon_png;
     const int            icon_pngSize = 106933;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 1;
+    const int namedResourceListSize = 2;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

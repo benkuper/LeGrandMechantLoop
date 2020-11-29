@@ -29,6 +29,6 @@ void LGMLApplication::initialiseInternal(const String&)
 
 	DashboardManager::getInstance()->setupDownloadURL("http://benjamin.kuperberg.fr/download/dashboard/dashboard.php");
 
-	//ShapeShifterManager::getInstance()->setDefaultFileData(BinaryData::default_lgmllayout);
+    ShapeShifterManager::getInstance()->setDefaultFileData(BinaryData::default_lgmllayout);
 	ShapeShifterManager::getInstance()->setLayoutInformations("lgmllayout", "LGML/layouts");
 }

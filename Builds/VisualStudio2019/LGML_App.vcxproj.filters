@@ -8552,6 +8552,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Resources\default.lgmllayout">
+      <Filter>LGML\Resources</Filter>
+    </None>
     <None Include="..\..\Resources\icon.png">
       <Filter>LGML\Resources</Filter>
     </None>

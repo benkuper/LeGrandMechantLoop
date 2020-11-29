@@ -7,8 +7,120 @@
 namespace BinaryData
 {
 
-//================== icon.png ==================
+//================== default.lgmllayout ==================
 static const unsigned char temp_binary_data_0[] =
+"{\r\n"
+"  \"mainLayout\": {\r\n"
+"    \"type\": 1,\r\n"
+"    \"width\": 1920,\r\n"
+"    \"height\": 997,\r\n"
+"    \"direction\": 2,\r\n"
+"    \"shifters\": [\r\n"
+"      {\r\n"
+"        \"type\": 1,\r\n"
+"        \"width\": 1920,\r\n"
+"        \"height\": 997,\r\n"
+"        \"direction\": 1,\r\n"
+"        \"shifters\": [\r\n"
+"          {\r\n"
+"            \"type\": 1,\r\n"
+"            \"width\": 253,\r\n"
+"            \"height\": 997,\r\n"
+"            \"direction\": 2,\r\n"
+"            \"shifters\": [\r\n"
+"              {\r\n"
+"                \"type\": 0,\r\n"
+"                \"width\": 253,\r\n"
+"                \"height\": 122,\r\n"
+"                \"currentContent\": \"Transport\",\r\n"
+"                \"tabs\": [\r\n"
+"                  {\r\n"
+"                    \"name\": \"Transport\"\r\n"
+"                  }\r\n"
+"                ]\r\n"
+"              },\r\n"
+"              {\r\n"
+"                \"type\": 0,\r\n"
+"                \"width\": 253,\r\n"
+"                \"height\": 200,\r\n"
+"                \"currentContent\": \"Interfaces\",\r\n"
+"                \"tabs\": [\r\n"
+"                  {\r\n"
+"                    \"name\": \"Interfaces\"\r\n"
+"                  }\r\n"
+"                ]\r\n"
+"              },\r\n"
+"              {\r\n"
+"                \"type\": 0,\r\n"
+"                \"width\": 253,\r\n"
+"                \"height\": 662,\r\n"
+"                \"currentContent\": \"Outliner\",\r\n"
+"                \"tabs\": [\r\n"
+"                  {\r\n"
+"                    \"name\": \"Nodes (List View)\"\r\n"
+"                  },\r\n"
+"                  {\r\n"
+"                    \"name\": \"Outliner\"\r\n"
+"                  }\r\n"
+"                ]\r\n"
+"              }\r\n"
+"            ]\r\n"
+"          },\r\n"
+"          {\r\n"
+"            \"type\": 0,\r\n"
+"            \"width\": 1224,\r\n"
+"            \"height\": 997,\r\n"
+"            \"currentContent\": \"Nodes (2D View)\",\r\n"
+"            \"tabs\": [\r\n"
+"              {\r\n"
+"                \"name\": \"Nodes (2D View)\"\r\n"
+"              }\r\n"
+"            ]\r\n"
+"          },\r\n"
+"          {\r\n"
+"            \"type\": 1,\r\n"
+"            \"width\": 431,\r\n"
+"            \"height\": 997,\r\n"
+"            \"direction\": 2,\r\n"
+"            \"shifters\": [\r\n"
+"              {\r\n"
+"                \"type\": 0,\r\n"
+"                \"width\": 431,\r\n"
+"                \"height\": 668,\r\n"
+"                \"currentContent\": \"Inspector\",\r\n"
+"                \"tabs\": [\r\n"
+"                  {\r\n"
+"                    \"name\": \"Inspector\"\r\n"
+"                  }\r\n"
+"                ]\r\n"
+"              },\r\n"
+"              {\r\n"
+"                \"type\": 0,\r\n"
+"                \"width\": 431,\r\n"
+"                \"height\": 322,\r\n"
+"                \"currentContent\": \"Logger\",\r\n"
+"                \"tabs\": [\r\n"
+"                  {\r\n"
+"                    \"name\": \"Help\"\r\n"
+"                  },\r\n"
+"                  {\r\n"
+"                    \"name\": \"Logger\"\r\n"
+"                  }\r\n"
+"                ]\r\n"
+"              }\r\n"
+"            ]\r\n"
+"          }\r\n"
+"        ]\r\n"
+"      }\r\n"
+"    ]\r\n"
+"  },\r\n"
+"  \"windows\": null\r\n"
+"}";
+
+const char* default_lgmllayout = (const char*) temp_binary_data_0;
+
+//================== icon.png ==================
+static const unsigned char temp_binary_data_1[] =
 { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,2,0,0,0,2,0,8,6,0,0,0,244,120,212,250,0,0,0,9,112,72,89,115,0,0,28,32,0,0,28,32,1,205,15,155,158,0,0,5,200,105,84,88,116,88,77,76,58,99,111,109,46,97,100,111,98,101,46,120,109,112,0,0,0,0,0,60,63,120,
 112,97,99,107,101,116,32,98,101,103,105,110,61,34,239,187,191,34,32,105,100,61,34,87,53,77,48,77,112,67,101,104,105,72,122,114,101,83,122,78,84,99,122,107,99,57,100,34,63,62,32,60,120,58,120,109,112,109,101,116,97,32,120,109,108,110,115,58,120,61,34,
 97,100,111,98,101,58,110,115,58,109,101,116,97,47,34,32,120,58,120,109,112,116,107,61,34,65,100,111,98,101,32,88,77,80,32,67,111,114,101,32,53,46,54,45,99,49,52,56,32,55,57,46,49,54,52,48,51,54,44,32,50,48,49,57,47,48,56,47,49,51,45,48,49,58,48,54,58,
@@ -1526,7 +1638,7 @@ static const unsigned char temp_binary_data_0[] =
 6,0,34,34,162,9,196,0,64,68,68,52,129,24,0,136,136,136,38,16,3,0,17,17,209,4,98,0,32,34,34,154,64,12,0,68,68,68,19,136,1,128,136,136,104,2,49,0,16,17,17,77,32,6,0,34,34,162,9,196,0,64,68,68,52,129,24,0,136,136,136,38,16,3,0,17,17,209,4,98,0,32,34,34,
 154,64,12,0,68,68,68,19,136,1,128,136,136,104,2,49,0,16,17,17,77,32,6,0,34,34,162,9,196,0,64,68,68,52,129,254,31,10,84,254,97,142,84,247,109,0,0,0,0,73,69,78,68,174,66,96,130,0,0 };
 
-const char* icon_png = (const char*) temp_binary_data_0;
+const char* icon_png = (const char*) temp_binary_data_1;
 
 
 const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
@@ -1539,6 +1651,7 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 
     switch (hash)
     {
+        case 0x1fa434c2:  numBytes = 2599; return default_lgmllayout;
         case 0xd4093963:  numBytes = 106933; return icon_png;
         default: break;
     }
@@ -1549,11 +1662,13 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 
 const char* namedResourceList[] =
 {
+    "default_lgmllayout",
     "icon_png"
 };
 
 const char* originalFilenames[] =
 {
+    "default.lgmllayout",
     "icon.png"
 };
 
