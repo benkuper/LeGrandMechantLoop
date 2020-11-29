@@ -8621,6 +8621,9 @@
     <None Include="..\..\Modules\juce_timeline\README.md">
       <Filter>JUCE Modules\juce_timeline</Filter>
     </None>
+    <None Include=".\icon.ico">
+      <Filter>JUCE Library Code</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc">

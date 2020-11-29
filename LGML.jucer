@@ -336,7 +336,8 @@
         <MODULEPATH id="juce_timeline" path="Modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2019 targetFolder="Builds/VisualStudio2019_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib">
+    <VS2019 targetFolder="Builds/VisualStudio2019_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib"
+            smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib"/>
         <CONFIGURATION isDebug="0" name="Release" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib"
@@ -389,7 +390,8 @@
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/Raspberry" extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed"
-                externalLibraries="bluetooth&#10;Servus&#10;curl&#10;usb-1.0">
+                externalLibraries="bluetooth&#10;Servus&#10;curl&#10;usb-1.0"
+                smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"
                        libraryPath="../../External/servus/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf"/>
