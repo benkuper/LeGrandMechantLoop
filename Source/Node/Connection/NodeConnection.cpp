@@ -87,8 +87,10 @@ void NodeConnection::connectChannels(int sourceChannel, int destChannel)
         LOGWARNING("Wrong connection, not connecting");
         return;
     }
-    
+
     channelMap.add({ sourceChannel, destChannel });
+    ghostChannelMap.removeAllInstancesOf({ sourceChannel, destChannel });
+    
     connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
     AudioManager::getInstance()->graph.addConnection({ { sourceNode->nodeGraphID, sourceChannel }, { destNode->nodeGraphID,  destChannel } });
 }
@@ -117,28 +119,37 @@ void NodeConnection::clearConnections()
     connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
 }
 
-void NodeConnection::audioInputsChanged(Node* n)
+void NodeConnection::updateConnections()
 {
-    if (n == destNode)
+    Array<ChannelMap> toRemove;
+
+    //Remove phase
+    for (auto& cm : channelMap) if (cm.destChannel > destNode->numInputs - 1 || cm.sourceChannel > sourceNode->numOutputs - 1) toRemove.add(cm);
+    for (auto& rm : toRemove)
     {
-        Array<ChannelMap> toRemove;
-        for (auto& cm : channelMap) if (cm.destChannel > destNode->numInputs - 1) toRemove.add(cm);
-        for (auto& rm : toRemove) disconnectChannels(rm.sourceChannel, rm.destChannel, true, false);
-        if (!toRemove.isEmpty()) connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
+        ghostChannelMap.addIfNotAlreadyThere({ rm.sourceChannel, rm.destChannel });
+        disconnectChannels(rm.sourceChannel, rm.destChannel, true, false);
     }
 
+    //Add ghost phase
+    Array<ChannelMap> toAdd;
+    for (auto& cm : ghostChannelMap)  if (cm.destChannel <= destNode->numInputs - 1 && cm.sourceChannel <= sourceNode->numOutputs - 1) toAdd.add(cm);
+    for (auto& am : toAdd)
+    {
+        connectChannels(am.sourceChannel, am.destChannel);
+    }
 
+    if (!toRemove.isEmpty()) connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
+}
+
+void NodeConnection::audioInputsChanged(Node* n)
+{
+    if (n == destNode) updateConnections();
 }
 
 void NodeConnection::audioOutputsChanged(Node* n)
 {
-    if (n == sourceNode)
-    {
-        Array<ChannelMap> toRemove;
-        for (auto& cm : channelMap) if (cm.sourceChannel > sourceNode->numOutputs - 1) toRemove.add(cm);
-        for (auto& rm : toRemove) disconnectChannels(rm.sourceChannel, rm.destChannel, true, false);
-        if (!toRemove.isEmpty()) connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
-    }
+    if (n == sourceNode) updateConnections();
 }
 
 void NodeConnection::inspectableDestroyed(Inspectable* i)
@@ -164,8 +175,22 @@ var NodeConnection::getJSONData()
         ch.append(c.destChannel);
         chData.append(ch);
     }
-
     data.getDynamicObject()->setProperty("channels", chData);
+
+    if (ghostChannelMap.size() > 0)
+    {
+        var ghostData;
+        for (auto& c : ghostChannelMap)
+        {
+            var ch;
+            ch.append(c.sourceChannel);
+            ch.append(c.destChannel);
+            ghostData.append(ch);
+        }
+
+        data.getDynamicObject()->setProperty("ghostChannels", ghostData);
+    }
+  
     return data;
 }
 
@@ -174,11 +199,20 @@ void NodeConnection::loadJSONDataItemInternal(var data)
     if (data.hasProperty("sourceNode")) setSourceNode((Node*)RootNodeManager::getInstance()->getControllableContainerForAddress(data.getProperty("sourceNode", "")));
     if (data.hasProperty("destNode")) setDestNode((Node*)RootNodeManager::getInstance()->getControllableContainerForAddress(data.getProperty("destNode", "")));
     clearConnections();
+   
+    var ghostData = data.getProperty("ghostChannels", var());
+    for (int i = 0; i < ghostData.size(); i++)
+    {
+        ghostChannelMap.add({ ghostData[i][0], ghostData[i][1] });
+    }
+    
     var chData = data.getProperty("channels", var());
     for (int i = 0; i < chData.size(); i++)
     {
         connectChannels(chData[i][0], chData[i][1]);
     }
+
+    
 }
 
 InspectableEditor* NodeConnection::getEditor(bool isRoot)

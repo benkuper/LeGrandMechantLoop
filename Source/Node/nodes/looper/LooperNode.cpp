@@ -34,7 +34,7 @@ LooperProcessor::LooperProcessor(Node* node) :
 	currentTrackIndex = addIntParameter("Current Track", "Index of the current track", 1, 1, defaultNumTracks);
 	
 	numTracks = addIntParameter("Track Count", "Number of tracks to use for this looper", defaultNumTracks, 1, 32);
-	numChannelsPerTrack = addIntParameter("Channel Per Track", "Number of channel to use for each track", 1, 1, 8);
+	numChannelsPerTrack = addIntParameter("Channel Per Track", "Number of channel to use for each track", 2, 1, 8);
 	autoNext = addBoolParameter("Auto Next", "If checked, will automatically select the next track to record", true);
 
 	trackOutputMode = addEnumParameter("Output Mode", "How to output the channels");

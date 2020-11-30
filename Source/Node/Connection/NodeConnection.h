@@ -32,6 +32,7 @@ public:
         inline bool operator == (const ChannelMap& c2) const { return sourceChannel == c2.sourceChannel && destChannel == c2.destChannel; }
     };
     Array<ChannelMap> channelMap;
+    Array<ChannelMap> ghostChannelMap;
 
     void clearItem() override;
 
@@ -42,6 +43,8 @@ public:
     void disconnectChannels(int sourceChannel, int destChannel, bool updateMap = true, bool notify = true);
     void createDefaultConnections();
     void clearConnections();
+
+    void updateConnections();
 
     void audioInputsChanged(Node* n) override;
     void audioOutputsChanged(Node* n) override;
