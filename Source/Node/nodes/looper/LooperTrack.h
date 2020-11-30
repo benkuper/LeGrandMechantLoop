@@ -12,6 +12,7 @@
 
 #include "JuceHeader.h"
 #include "Common/RingBuffer.h"
+#include "Transport/Transport.h"
 
 class LooperProcessor;
 
@@ -46,14 +47,17 @@ public:
 	int index;
 	int numChannels;
 
+	Transport::Quantization playQuantization;
 
 	int curSample;
+	int freeRecStartOffset;
 	AudioBuffer<float> buffer;
 	AudioBuffer<float> preRecBuffer; //a snapshot of the looper's ringbuffer just before recording. This allows for delay adjustement and nice fades for the end of the loop
 	double timeAtStateChange;
 	bool finishRecordLock;
 
 	int globalBeatAtStart;
+	int curPlaySample;
 	int numBeats;
 
 	void setNumChannels(int num);

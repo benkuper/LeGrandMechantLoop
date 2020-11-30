@@ -30,6 +30,9 @@ public:
     IntParameter* numChannelsPerTrack;
     IntParameter* fadeTimeMS;
 
+    EnumParameter* quantization;
+    EnumParameter* freeFillMode;
+
     Trigger* recTrigger;
     Trigger* clearCurrentTrigger;
     Trigger* clearAllTrigger;
@@ -71,6 +74,9 @@ public:
     bool isOneTrackRecording(bool includeWillRecord = false);
     int getFadeNumSamples(); //for ring buffer fade
     LooperTrack* getTrackForIndex(int index);
+
+    Transport::Quantization getQuantization();
+    Transport::Quantization getFreeFillMode();
 
     static String getTypeStringStatic() { return "Looper"; }
     NodeViewUI* createNodeViewUI() override;

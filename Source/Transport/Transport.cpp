@@ -186,6 +186,13 @@ int Transport::getRelativeBeatSamples() const
 	return timeInSamples % numSamplesPerBeat;
 }
 
+int Transport::getBlockPerfectNumSamples(int samples, bool floorResult) const
+{
+	double numBlocksD = samples * 1.0 / blockSize;
+	int numBlocks = floorResult?floor(numBlocksD):round(numBlocksD);
+	return numBlocks * blockSize;
+}
+
 int Transport::getBarForSamples(int samples, bool floorResult) const
 {
 	double numBarsD = samples * 1.0 / getBarNumSamples();

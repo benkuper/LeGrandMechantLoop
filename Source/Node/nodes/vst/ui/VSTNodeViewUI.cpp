@@ -62,7 +62,7 @@ void VSTNodeViewUI::windowClosed()
 }
 
 PluginWindow::PluginWindow(VSTProcessor* processor) :
-    DocumentWindow(processor->vst->getName(), BG_COLOR.darker(.1f), DocumentWindow::allButtons, true),
+    DocumentWindow(processor->vst->getName(), BG_COLOR.darker(.1f), DocumentWindow::closeButton, true),
     inspectable(processor),
     processor(processor)
 {
@@ -85,7 +85,7 @@ PluginWindow::~PluginWindow()
 
 void PluginWindow::resized()
 {
-    ResizableWindow::resized();
+    DocumentWindow::resized();
 }
 
 void PluginWindow::newMessage(const VSTProcessor::VSTEvent& e)

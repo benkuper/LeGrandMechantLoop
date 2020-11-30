@@ -21,6 +21,13 @@ LooperProcessor::LooperProcessor(Node* node) :
 
 	const int defaultNumTracks = 8;
 
+	quantization = addEnumParameter("Quantization", "The way to know when to stop recording. Default means getting the quantization from the Transport.\nBar/beat means it will stop the recording to fill an round number of bar/beat, even if you stop before. Free means it will stop instantly.");
+	quantization->addOption("Default", Transport::DEFAULT)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Free", Transport::FREE);
+	
+	freeFillMode = addEnumParameter("Fill Mode", "In free mode, allows to fill the buffer with empty data to complete a bar or a beat.", getQuantization() == Transport::FREE);
+	freeFillMode->addOption("From Quantization", Transport::DEFAULT)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Direct", Transport::FREE);
+
+
 	recTrigger = addTrigger("Rec", "Record to the current track");
 	clearCurrentTrigger = addTrigger("Clear","Clear the current track if not empty, otherwise clear the past one");
 	clearAllTrigger = addTrigger("Clear All","Clear all the tracks");
@@ -196,6 +203,10 @@ void LooperProcessor::onContainerParameterChanged(Parameter* p)
 	{
 		setCurrentTrack(getTrackForIndex(currentTrackIndex->intValue()-1));
 	}
+	else if (p == quantization)
+	{
+		freeFillMode->setEnabled(getQuantization() == Transport::FREE);
+	}
 }
 
 void LooperProcessor::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
@@ -277,6 +288,20 @@ LooperTrack* LooperProcessor::getTrackForIndex(int index)
 {
 	if (index >= tracksCC.controllableContainers.size()) return nullptr;
 	return (LooperTrack*)tracksCC.controllableContainers[index].get();
+}
+
+Transport::Quantization LooperProcessor::getQuantization()
+{
+	Transport::Quantization q = quantization->getValueDataAsEnum<Transport::Quantization>();
+	if (q == Transport::DEFAULT) q = Transport::getInstance()->quantization->getValueDataAsEnum<Transport::Quantization>();
+	return q;
+}
+
+Transport::Quantization LooperProcessor::getFreeFillMode()
+{
+	Transport::Quantization q = freeFillMode->getValueDataAsEnum<Transport::Quantization>();
+	if (q == Transport::DEFAULT) q = getQuantization();
+	return q;
 }
 
 NodeViewUI* LooperProcessor::createNodeViewUI()

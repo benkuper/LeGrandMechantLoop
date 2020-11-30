@@ -23,7 +23,7 @@ public:
 	Transport();
 	~Transport();
 
-	enum Quantization { BAR, BEAT, FREE };
+	enum Quantization { BAR, BEAT, FREE, DEFAULT };
 	EnumParameter* quantization;
 
 	FloatParameter* bpm;
@@ -77,6 +77,7 @@ public:
 	int getSamplesToNextBeat() const;
 	int getRelativeBarSamples() const;
 	int getRelativeBeatSamples() const;
+	int getBlockPerfectNumSamples(int samples, bool floorResult = true) const;
 
 	int getBarForSamples(int samples, bool floorResult = true) const;
 	int getBeatForSamples(int samples, bool relative = true, bool floorResult = true) const;

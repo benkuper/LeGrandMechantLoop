@@ -23,4 +23,6 @@ public:
 
     var getJSONData() override;
     void loadJSONDataInternalEngine(var data, ProgressTask* loadingTask) override;
+
+    String getMinimumRequiredFileVersion() override;
 };

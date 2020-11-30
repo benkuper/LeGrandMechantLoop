@@ -67,3 +67,8 @@ void LGMLEngine::loadJSONDataInternalEngine(var data, ProgressTask* loadingTask)
     Transport::getInstance()->loadJSONData(data.getProperty(Transport::getInstance()->shortName, var()));
 }
 
+String LGMLEngine::getMinimumRequiredFileVersion()
+{
+    return "1.0.0b1";
+}
+

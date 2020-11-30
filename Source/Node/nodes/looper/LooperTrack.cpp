@@ -9,7 +9,6 @@
 */
 
 #include "LooperTrack.h"
-#include "Transport/Transport.h"
 #include "LooperNode.h"
 #include "Node/NodeManager.h"
 
@@ -20,8 +19,10 @@ LooperTrack::LooperTrack(LooperProcessor * looper, int index, int numChannels) :
 	looper(looper),
 	index(index),
 	numChannels(numChannels),
+	freeRecStartOffset(0),
 	curSample(0),
 	globalBeatAtStart(0),
+	curPlaySample(0),
 	numBeats(0),
 	finishRecordLock(false)
 {
@@ -110,7 +111,11 @@ void LooperTrack::stateChanged()
 
 	case WILL_RECORD:
 	{
-		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) startRecording();
+		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue() 
+			|| looper->getQuantization() == Transport::FREE)
+		{
+			startRecording();
+		}
 	}
 	break;
 
@@ -121,22 +126,32 @@ void LooperTrack::stateChanged()
 
 	case FINISH_RECORDING:
 	{
-		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) finishRecordingAndPlay();
+		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()
+			|| looper->getQuantization() == Transport::FREE)
+		{
+			finishRecordingAndPlay();
+		}
 	}
 
 	case PLAYING:
 	{
+		curPlaySample = 0; //for freeplaybck
 	}
 	break;
 
 	case WILL_STOP:
+		if (playQuantization == Transport::FREE) stopPlaying();
 		break;
 
 	case STOPPED:
-		break;
+	{
+		curPlaySample = 0; //for free playback
+	}
+	break;
 
 	case WILL_PLAY:
 		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) Transport::getInstance()->play();
+		if (playQuantization == Transport::FREE) startPlaying();
 		break;
 	}
 }
@@ -163,42 +178,96 @@ void LooperTrack::startRecording()
 		bool doSetTempo = !RootNodeManager::getInstance()->hasPlayingNodes();
 		Transport::getInstance()->play(doSetTempo);
 	}
+
+	Transport::Quantization q = looper->getQuantization();
+	if (q == Transport::FREE)
+	{
+		Transport::Quantization fillMode = looper->getFreeFillMode();
+		freeRecStartOffset = 0;
+		if (fillMode == Transport::BAR) freeRecStartOffset = Transport::getInstance()->getRelativeBarSamples();
+		else if (fillMode == Transport::BEAT) freeRecStartOffset = Transport::getInstance()->getRelativeBeatSamples();
+	}
 }
 
 void LooperTrack::finishRecordingAndPlay()
 {
-	if (Transport::getInstance()->isSettingTempo) Transport::getInstance()->finishSetTempo(true);
-
-	numBeats = Transport::getInstance()->getBeatForSamples(curSample, false, false);
+	Transport::Quantization q = looper->getQuantization();
+	Transport::Quantization fillMode = looper->getFreeFillMode();
 	
-	loopBeat->setRange(0, numBeats-1);
-	loopBar->setRange(0, jmax<int>(floor(numBeats * 1.0f / Transport::getInstance()->beatsPerBar->intValue()) - 1, 0));
+	int beatsPerBar = Transport::getInstance()->beatsPerBar->intValue();
+	
+	if (Transport::getInstance()->isSettingTempo) Transport::getInstance()->finishSetTempo(true);
+	
+	
+	if (q == Transport::FREE)
+	{
+		if (fillMode == Transport::BAR) numBeats = jmax(Transport::getInstance()->getBarForSamples(curSample, false), 1) * beatsPerBar;
+		else if (fillMode == Transport::BEAT) numBeats = jmax(Transport::getInstance()->getBeatForSamples(curSample, false, false), 1);
+		else //fillMode FREE
+		{
+			loopBeat->setRange(0, numBeats - 1);
+			loopBar->setRange(0, 0);
+		}
+	}
+	else
+	{
+		numBeats = Transport::getInstance()->getBeatForSamples(curSample, false, false);
+	}
 
-	int curSamplePerfect = numBeats * Transport::getInstance()->getBeatNumSamples();
+	if(q != Transport::FREE || (q == Transport::FREE && fillMode != Transport::FREE))
+	{
+		loopBeat->setRange(0, numBeats - 1);
+		loopBar->setRange(0, jmax<int>(floor(numBeats * 1.0f / beatsPerBar) - 1, 0));
 
+		int curSamplePerfect = numBeats * Transport::getInstance()->getBeatNumSamples();
+		curSample = curSamplePerfect;
+	}
+	else
+	{
+		curSample = Transport::getInstance()->getBlockPerfectNumSamples(curSample, false); //make it blockPerfect
+	}
 
 	// if curSample > perfect, use end of curSample to fade with start ?
 	// if curSample < perfect, use phantom buffer to fill in blank ?
 
-	curSample = curSamplePerfect;
 
 	finishRecordLock = true;
-	if (isRecording(false)) updateBufferSize(curSample); //update size of buffer
+	if (isRecording(false)) updateBufferSize(curSample); //update size of buffer, will fill with silence if buffer is larger than what has been recorded
 
-	//fade with ring buffer using looper fadeTimeMS
-	int fadeNumSamples = looper->getFadeNumSamples();
-	if (fadeNumSamples)
+	if (freeRecStartOffset > 0 && q == Transport::FREE && fillMode != Transport::FREE) //This is made to align recorded content to bar/beat by offsetting the data with freeRecStartOffset
 	{
-		int bufferStartSample = curSample - 1 - fadeNumSamples;
-
-		buffer.applyGainRamp(bufferStartSample, fadeNumSamples, 1, 0);
+		AudioBuffer<float> tmpBuffer(1, buffer.getNumSamples());
 		for (int i = 0; i < buffer.getNumChannels(); i++)
 		{
-			buffer.addFromWithRamp(i, bufferStartSample, preRecBuffer.getReadPointer(i), fadeNumSamples, 0, 1);
-		}
+			int bufferMinusOffsetSamples = buffer.getNumSamples() - freeRecStartOffset;
 
-		preRecBuffer.clear();
+			tmpBuffer.copyFrom(0, 0, buffer.getReadPointer(i, bufferMinusOffsetSamples), freeRecStartOffset); //copies end to back
+			tmpBuffer.copyFrom(0, freeRecStartOffset, buffer.getReadPointer(i, 0), bufferMinusOffsetSamples);
+			buffer.copyFrom(i, 0, tmpBuffer.getReadPointer(0), buffer.getNumSamples());
+		}
 	}
+
+
+	if (q != Transport::FREE || (q == Transport::FREE && fillMode == Transport::FREE))
+	{
+		//fade with ring buffer using looper fadeTimeMS
+		int fadeNumSamples = looper->getFadeNumSamples();
+
+		if (fadeNumSamples)
+		{
+			int bufferStartSample = curSample - 1 - fadeNumSamples;
+
+			buffer.applyGainRamp(bufferStartSample, fadeNumSamples, 1, 0);
+			for (int i = 0; i < buffer.getNumChannels(); i++)
+			{
+				buffer.addFromWithRamp(i, bufferStartSample, preRecBuffer.getReadPointer(i), fadeNumSamples, 0, 1);
+			}
+
+			preRecBuffer.clear();
+		}
+	}
+
+	playQuantization = q != Transport::FREE ? q : fillMode;
 
 	startPlaying();
 	finishRecordLock = false;
@@ -210,6 +279,7 @@ void LooperTrack::cancelRecording()
 	{
 		Transport::getInstance()->stop();
 	}
+
 	clearBuffer();
 }
 
@@ -226,7 +296,18 @@ void LooperTrack::startPlaying()
 	loopBeat->setValue(0);
 	loopProgression->setValue(0);
 
-	globalBeatAtStart = Transport::getInstance()->getTotalBeatCount();
+	Transport::Quantization q = looper->getQuantization();
+	Transport::Quantization fillMode = looper->getFreeFillMode();
+
+	if (q == Transport::BAR || (q == Transport::FREE && fillMode == Transport::BAR))
+	{
+		globalBeatAtStart = Transport::getInstance()->curBar->intValue() * Transport::getInstance()->beatsPerBar->intValue(); //snap to bar
+	}
+	else
+	{
+		globalBeatAtStart = Transport::getInstance()->getTotalBeatCount();
+	}
+
 	LOG("[ " << index << " ] Global beat at start " << globalBeatAtStart);
 	trackState->setValueWithData(PLAYING);
 }
@@ -289,10 +370,19 @@ void LooperTrack::onContainerParameterChanged(Parameter* p)
 void LooperTrack::handleBeatChanged(bool isNewBar)
 {
 	if (!isWaiting()) return;
-	Transport::Quantization q = Transport::getInstance()->quantization->getValueDataAsEnum<Transport::Quantization>();
 	TrackState s = trackState->getValueDataAsEnum<TrackState>();
 	if (s == IDLE) return;
-	if((q == Transport::BAR && isNewBar) || (q == Transport::BEAT)) handleWaiting();
+	
+	if (isRecording(true))
+	{
+		Transport::Quantization q = looper->getQuantization();
+		if ((q == Transport::BAR && isNewBar) || (q == Transport::BEAT)) handleWaiting();
+	}
+	else if (isPlaying(true))
+	{
+		if ((playQuantization == Transport::BAR && isNewBar) || (playQuantization == Transport::BEAT)) handleWaiting();
+	}
+	
 }
 
 void LooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>& outputBuffer, int numMainChannels, bool outputIfRecording)
@@ -325,15 +415,24 @@ void LooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<floa
 	{
 		outputToMainTrack = true;
 
-		int curBeat = Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart;
-		int trackBeat = curBeat % numBeats;
+		if (playQuantization == Transport::FREE)
+		{
+			if (curPlaySample + blockSize >= buffer.getNumSamples()) curPlaySample = 0;
+			startReadSample = curPlaySample;
+			curPlaySample += blockSize;
+		}
+		else //bar, beat
+		{
+			int curBeat = Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart;
+			int trackBeat = curBeat % numBeats;
 		
+			int relBeatSamples = Transport::getInstance()->getRelativeBeatSamples();
+			startReadSample = Transport::getInstance()->getSamplesForBeat(trackBeat, 0, false) + relBeatSamples;
 
-		int relBeatSamples = Transport::getInstance()->getRelativeBeatSamples();
-		startReadSample = Transport::getInstance()->getSamplesForBeat(trackBeat, 0, false) + relBeatSamples;
+			loopBeat->setValue(trackBeat);
+			loopBar->setValue(floor(trackBeat * 1.0f / Transport::getInstance()->beatsPerBar->intValue()));
+		}
 
-		loopBeat->setValue(trackBeat);
-		loopBar->setValue(floor(trackBeat * 1.0f / Transport::getInstance()->beatsPerBar->intValue()));
 		loopProgression->setValue(startReadSample * 1.0f / buffer.getNumSamples());
 	}
 
@@ -368,32 +467,6 @@ void LooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<floa
 	{
 		rms->setValue(0);
 	}
-
-
-
-	/*
-	//tmp
-	int relBarSamples = Transport::getInstance()->timeInSamples % Transport::getInstance()->getBarNumSamples();
-
-	//tracks
-	for (int i = 0; i < numTracks->intValue(); i++)
-	{
-		LooperTrack* t = (LooperTrack*)tracksCC.controllableContainers[i].get();
-		bool includeSource = (mm == RECORDING_ONLY && t->isRecording(false)) || t->isPlaying(false);
-		if (includeSource)
-		{
-			for (int i = 0; i < trackStartChannel; i++)
-			{
-				buffer.addFrom(i, 0, t->buffer, i, relBarSamples, buffer.getNumSamples());
-			}
-
-			if (tom == SEPARATE_ONLY || tom == ALL)
-			{
-				buffer.copyFrom(trackStartChannel + i, 0, t->buffer, i, relBarSamples, buffer.getNumSamples());
-			}
-		}
-	}
-	*/
 }
 
 bool LooperTrack::hasContent(bool includeRecordPhase) const
