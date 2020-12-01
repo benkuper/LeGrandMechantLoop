@@ -10,8 +10,8 @@
 
 #include "IONodeViewUI.h"
 
-IONodeViewUI::IONodeViewUI(GenericAudioNode<IOProcessor>* n) :
-    GenericAudioNodeViewUI(n)
+IONodeViewUI::IONodeViewUI(GenericNode<IOProcessor>* n) :
+    GenericNodeViewUI(n)
 {
     updateUI();
 }

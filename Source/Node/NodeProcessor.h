@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-	NodeAudioProcessor.h
+	NodeProcessor.h
 	Created: 15 Nov 2020 10:34:19pm
 	Author:  bkupe
 
@@ -15,13 +15,13 @@
 class Node;
 class NodeViewUI;
 
-class NodeAudioProcessor :
+class NodeProcessor :
 	public ControllableContainer,
 	public AudioProcessor
 {
 public:
-	NodeAudioProcessor(Node* n, bool hasInput = true, bool hasOutput = true, bool useOutRMS = true);
-	virtual ~NodeAudioProcessor() {}
+	NodeProcessor(Node* n, bool hasInput = true, bool hasOutput = true, bool useOutRMS = true);
+	virtual ~NodeProcessor() {}
 
 	WeakReference<Node> nodeRef;
 
@@ -61,12 +61,12 @@ public:
 
 
 
-class GenericNodeAudioProcessor :
-	public NodeAudioProcessor
+class GenericNodeProcessor :
+	public NodeProcessor
 {
 public:
-	GenericNodeAudioProcessor(Node* n, bool hasInput = true, bool hasOutput =true, bool useOutRMS = true);
-	virtual ~GenericNodeAudioProcessor() {}
+	GenericNodeProcessor(Node* n, bool hasInput = true, bool hasOutput =true, bool useOutRMS = true);
+	virtual ~GenericNodeProcessor() {}
 
 
 	virtual NodeViewUI* createNodeViewUI(); //to override by children

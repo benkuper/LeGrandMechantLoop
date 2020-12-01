@@ -107,6 +107,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/NodeManagerViewUI_3961ec97.o \
   $(JUCE_OBJDIR)/NodeUI_7a7ad1cd.o \
   $(JUCE_OBJDIR)/NodeViewUI_fa05b6d2.o \
+  $(JUCE_OBJDIR)/MIDIInputNode_dc741f49.o \
   $(JUCE_OBJDIR)/VSTNodeViewUI_3913bedb.o \
   $(JUCE_OBJDIR)/VSTNode_36eb2a7f.o \
   $(JUCE_OBJDIR)/SpatItemUI_d4d1ba3f.o \
@@ -120,10 +121,14 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/IONode_620212ef.o \
   $(JUCE_OBJDIR)/LooperNodeViewUI_1c96a535.o \
   $(JUCE_OBJDIR)/LooperTrackUI_322d1b0f.o \
+  $(JUCE_OBJDIR)/AudioLooperNode_959be8f7.o \
+  $(JUCE_OBJDIR)/AudioLooperTrack_30464540.o \
   $(JUCE_OBJDIR)/LooperNode_c6b8472f.o \
   $(JUCE_OBJDIR)/LooperTrack_22b5ae08.o \
+  $(JUCE_OBJDIR)/MIDILooperNode_638e8910.o \
+  $(JUCE_OBJDIR)/MIDILooperTrack_20a7a847.o \
   $(JUCE_OBJDIR)/Node_65f22bf0.o \
-  $(JUCE_OBJDIR)/NodeAudioProcessor_710582c.o \
+  $(JUCE_OBJDIR)/NodeProcessor_59b2bf4c.o \
   $(JUCE_OBJDIR)/NodeManager_772dfa27.o \
   $(JUCE_OBJDIR)/NodeFactory_79762504.o \
   $(JUCE_OBJDIR)/TransportUI_6ff0b291.o \
@@ -360,6 +365,11 @@ $(JUCE_OBJDIR)/NodeViewUI_fa05b6d2.o: ../../Source/Node/ui/NodeViewUI.cpp
 	@echo "Compiling NodeViewUI.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
+$(JUCE_OBJDIR)/MIDIInputNode_dc741f49.o: ../../Source/Node/nodes/midi/MIDIInputNode.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling MIDIInputNode.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
 $(JUCE_OBJDIR)/VSTNodeViewUI_3913bedb.o: ../../Source/Node/nodes/vst/ui/VSTNodeViewUI.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling VSTNodeViewUI.cpp"
@@ -425,6 +435,16 @@ $(JUCE_OBJDIR)/LooperTrackUI_322d1b0f.o: ../../Source/Node/nodes/looper/ui/Loope
 	@echo "Compiling LooperTrackUI.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
+$(JUCE_OBJDIR)/AudioLooperNode_959be8f7.o: ../../Source/Node/nodes/looper/AudioLooperNode.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling AudioLooperNode.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/AudioLooperTrack_30464540.o: ../../Source/Node/nodes/looper/AudioLooperTrack.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling AudioLooperTrack.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
 $(JUCE_OBJDIR)/LooperNode_c6b8472f.o: ../../Source/Node/nodes/looper/LooperNode.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling LooperNode.cpp"
@@ -435,14 +455,24 @@ $(JUCE_OBJDIR)/LooperTrack_22b5ae08.o: ../../Source/Node/nodes/looper/LooperTrac
 	@echo "Compiling LooperTrack.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
+$(JUCE_OBJDIR)/MIDILooperNode_638e8910.o: ../../Source/Node/nodes/looper/MIDILooperNode.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling MIDILooperNode.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/MIDILooperTrack_20a7a847.o: ../../Source/Node/nodes/looper/MIDILooperTrack.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling MIDILooperTrack.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
 $(JUCE_OBJDIR)/Node_65f22bf0.o: ../../Source/Node/Node.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling Node.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
-$(JUCE_OBJDIR)/NodeAudioProcessor_710582c.o: ../../Source/Node/NodeAudioProcessor.cpp
+$(JUCE_OBJDIR)/NodeProcessor_59b2bf4c.o: ../../Source/Node/NodeProcessor.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling NodeAudioProcessor.cpp"
+	@echo "Compiling NodeProcessor.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/NodeManager_772dfa27.o: ../../Source/Node/NodeManager.cpp

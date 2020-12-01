@@ -20,8 +20,8 @@ class LooperTrack :
 	public ControllableContainer
 {
 public:
-	LooperTrack(LooperProcessor * looper, int index, int numChannels);
-	~LooperTrack();
+	LooperTrack(LooperProcessor * looper, int index);
+	virtual ~LooperTrack();
 
 	LooperProcessor* looper; //to get the ringbuffer
 
@@ -37,22 +37,17 @@ public:
 
 	BoolParameter* isCurrent;
 	BoolParameter* active;
-	FloatParameter* volume;
-	FloatParameter* rms;
 
 	IntParameter* loopBeat;
 	IntParameter* loopBar;
 	FloatParameter* loopProgression;
 
 	int index;
-	int numChannels;
 
 	Transport::Quantization playQuantization;
 
 	int curSample;
 	int freeRecStartOffset;
-	AudioBuffer<float> buffer;
-	AudioBuffer<float> preRecBuffer; //a snapshot of the looper's ringbuffer just before recording. This allows for delay adjustement and nice fades for the end of the loop
 	double timeAtStateChange;
 	bool finishRecordLock;
 
@@ -60,26 +55,25 @@ public:
 	int curPlaySample;
 	int numBeats;
 
-	void setNumChannels(int num);
-	void updateBufferSize(int newSize);
 	
-	void stateChanged();
+	virtual void stateChanged();
 
-	void recordOrPlay();
-	void startRecording();
-	void finishRecordingAndPlay();
-	void cancelRecording();
-	void clearBuffer();
-	void startPlaying();
-	void stopPlaying();
+	virtual void recordOrPlay();
+	virtual void startRecording();
+	virtual void startRecordingInternal() {}
+	virtual void finishRecordingAndPlay();
+	virtual void finishRecordingAndPlayInternal() {}
+	virtual void cancelRecording();
+	virtual void clearBuffer();
+	virtual void startPlaying();
+	virtual void stopPlaying();
 
-	void handleWaiting();
+	virtual void handleWaiting();
 
-	void onContainerTriggerTriggered(Trigger* t) override;
-	void onContainerParameterChanged(Parameter* p) override;
+	virtual void onContainerTriggerTriggered(Trigger* t) override;
+	virtual void onContainerParameterChanged(Parameter* p) override;
 
-	void handleBeatChanged(bool isNewBar);
-	void processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>&outputBuffer, int numMainChannels, bool outputIfRecording);
+	virtual void handleBeatChanged(bool isNewBar);
 
 	//Helpers
 	bool hasContent(bool includeRecordPhase) const;

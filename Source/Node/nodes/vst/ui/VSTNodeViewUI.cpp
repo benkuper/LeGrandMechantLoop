@@ -9,14 +9,17 @@
 */
 
 #include "VSTNodeViewUI.h"
+#include "Common/MIDI/ui/MIDIDeviceParameterUI.h"
 
-VSTNodeViewUI::VSTNodeViewUI(GenericAudioNode<VSTProcessor>* n) :
-    GenericAudioNodeViewUI(n),
+VSTNodeViewUI::VSTNodeViewUI(GenericNode<VSTProcessor>* n) :
+    GenericNodeViewUI(n),
     editBT("Edit VST")
 {
     editBT.addListener(this);
     addAndMakeVisible(&editBT);
 
+    midiParamUI.reset(processor->midiParam->createMIDIParameterUI());
+    addAndMakeVisible(midiParamUI.get());
 }
 
 VSTNodeViewUI::~VSTNodeViewUI()
@@ -26,19 +29,20 @@ VSTNodeViewUI::~VSTNodeViewUI()
 
 void VSTNodeViewUI::resizedHeader(Rectangle<int>& r)
 {
-    GenericAudioNodeViewUI::resizedHeader(r);
+    GenericNodeViewUI::resizedHeader(r);
     editBT.setBounds(r.removeFromRight(100).reduced(1));
+    midiParamUI->setBounds(r.reduced(1));
 }
 
 void VSTNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
-    GenericAudioNodeViewUI::controllableFeedbackUpdateInternal(c);
+    GenericNodeViewUI::controllableFeedbackUpdateInternal(c);
    // if (c == processor->pluginParam) updateVSTEditor();
 }
 
 void VSTNodeViewUI::buttonClicked(Button* b)
 {
-    GenericAudioNodeViewUI::buttonClicked(b);
+    GenericNodeViewUI::buttonClicked(b);
     if (b == &editBT)
     {
         if (processor->vst != nullptr && processor->vst->hasEditor())
@@ -50,7 +54,7 @@ void VSTNodeViewUI::buttonClicked(Button* b)
             }
             else
             {
-                pluginEditor->toFront(true);
+                //pluginEditor->toFront(true);
             }
         }
     }

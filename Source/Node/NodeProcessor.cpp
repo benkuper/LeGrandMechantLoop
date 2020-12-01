@@ -1,19 +1,19 @@
 /*
   ==============================================================================
 
-    NodeAudioProcessor.cpp
+    NodeProcessor.cpp
     Created: 15 Nov 2020 10:34:19pm
     Author:  bkupe
 
   ==============================================================================
 */
 
-#include "NodeAudioProcessor.h"
+#include "NodeProcessor.h"
 #include "Node.h"
 #include "ui/NodeViewUI.h"
 #include "Engine/AudioManager.h"
 
-NodeAudioProcessor::NodeAudioProcessor(Node* n, bool hasInput, bool hasOutput, bool useOutRMS) : 
+NodeProcessor::NodeProcessor(Node* n, bool hasInput, bool hasOutput, bool useOutRMS) : 
     ControllableContainer("Processor"),
     nodeRef(n),
     hasInput(hasInput),
@@ -30,7 +30,7 @@ NodeAudioProcessor::NodeAudioProcessor(Node* n, bool hasInput, bool hasOutput, b
 }
 
 
-void NodeAudioProcessor::updateInputsFromNode(bool _updatePlayConfig)
+void NodeProcessor::updateInputsFromNode(bool _updatePlayConfig)
 {
     bool shouldResume = !isSuspended();
     suspendProcessing(true);
@@ -41,7 +41,7 @@ void NodeAudioProcessor::updateInputsFromNode(bool _updatePlayConfig)
     if(shouldResume) suspendProcessing(false);
 }
 
-void NodeAudioProcessor::updateOutputsFromNode(bool _updatePlayConfig)
+void NodeProcessor::updateOutputsFromNode(bool _updatePlayConfig)
 {
     bool shouldResume = !isSuspended();
     suspendProcessing(true);
@@ -53,18 +53,18 @@ void NodeAudioProcessor::updateOutputsFromNode(bool _updatePlayConfig)
 }
 
 /* AudioProcessor */
-void NodeAudioProcessor::updatePlayConfig()
+void NodeProcessor::updatePlayConfig()
 {
     setPlayConfigDetails(nodeRef->numInputs, nodeRef->numOutputs, getSampleRate(), getBlockSize());
     if (!isCurrentlyLoadingData) AudioManager::getInstance()->updateGraph();
     //NLOG(nodeRef->niceName, "Buffer has now " << getChannel)
 }
 
-const String NodeAudioProcessor::getName() const {
+const String NodeProcessor::getName() const {
     return nodeRef.wasObjectDeleted() ? "[Deleted]" : nodeRef->niceName; 
 }
 
-void NodeAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void NodeProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     if (nodeRef == nullptr || nodeRef.wasObjectDeleted())
     {
@@ -74,7 +74,7 @@ void NodeAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& mi
 
     if (!nodeRef->enabled->boolValue())
     {
-        processBlockBypassed(buffer, midiMessages);
+        //processBlockBypassed(buffer, midiMessages);
         return;
     }
 
@@ -96,12 +96,12 @@ void NodeAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& mi
     }
 }
 
-GenericNodeAudioProcessor::GenericNodeAudioProcessor(Node* n, bool hasInput, bool hasOutput, bool useOutRMS) :
-    NodeAudioProcessor(n, hasInput, hasOutput, useOutRMS)
+GenericNodeProcessor::GenericNodeProcessor(Node* n, bool hasInput, bool hasOutput, bool useOutRMS) :
+    NodeProcessor(n, hasInput, hasOutput, useOutRMS)
 {
 }
 
-NodeViewUI* GenericNodeAudioProcessor::createNodeViewUI()
+NodeViewUI* GenericNodeProcessor::createNodeViewUI()
 {
     return new NodeViewUI(nodeRef.get()); 
 }

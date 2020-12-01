@@ -21,8 +21,8 @@ public:
 
     void addConnection(Node * sourceNode, Node * destNode, var channelMapData = var());
     Array<UndoableAction*> getAddConnectionUndoableAction(Node* sourceNode, Node* destNode, var channelMapData = var());
-
     virtual NodeConnection* getConnectionForSourceAndDest(Node* sourceNode, Node* destNode);
-
     Array<UndoableAction*> getRemoveAllLinkedConnectionsActions(Array<Node*> itemsToRemove);
+
+    void afterLoadJSONDataInternal() override;
 };

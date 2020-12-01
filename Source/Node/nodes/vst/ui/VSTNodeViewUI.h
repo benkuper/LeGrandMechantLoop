@@ -45,15 +45,16 @@ public:
 };
 
 class VSTNodeViewUI :
-    public GenericAudioNodeViewUI<VSTProcessor>,
+    public GenericNodeViewUI<VSTProcessor>,
     public PluginWindow::PluginWindowListener
 {
 public:
-    VSTNodeViewUI(GenericAudioNode<VSTProcessor>* n);
+    VSTNodeViewUI(GenericNode<VSTProcessor>* n);
     ~VSTNodeViewUI();
 
     TextButton editBT;
     std::unique_ptr<PluginWindow> pluginEditor;
+    std::unique_ptr<MIDIDeviceParameterUI> midiParamUI;
 
     void resizedHeader(Rectangle<int>& r) override;
     void controllableFeedbackUpdateInternal(Controllable* c) override;

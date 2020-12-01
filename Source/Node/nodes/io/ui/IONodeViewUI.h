@@ -13,10 +13,10 @@
 #include "../../../ui/NodeViewUI.h"
 
 class IONodeViewUI :
-    public GenericAudioNodeViewUI<IOProcessor>
+    public GenericNodeViewUI<IOProcessor>
 {
 public:
-    IONodeViewUI(GenericAudioNode<IOProcessor> * n);
+    IONodeViewUI(GenericNode<IOProcessor> * n);
     virtual ~IONodeViewUI();
 
     OwnedArray<FloatSliderUI> rmsUI;

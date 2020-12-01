@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "../../NodeAudioProcessor.h"
+#include "../../NodeProcessor.h"
 
 class SpatProcessor;
 

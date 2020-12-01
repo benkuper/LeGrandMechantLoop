@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include "../../NodeAudioProcessor.h"
+#include "../../NodeProcessor.h"
 
 class IOProcessor :
-	public GenericNodeAudioProcessor
+	public GenericNodeProcessor
 {
 public:
 	IOProcessor(Node* n, bool isInput);

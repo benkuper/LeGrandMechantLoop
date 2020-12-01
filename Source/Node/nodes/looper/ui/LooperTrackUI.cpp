@@ -10,6 +10,8 @@
 
 #include "LooperTrackUI.h"
 #include "Common/AudioUIHelpers.h"
+#include "../LooperNode.h"
+#include "../AudioLooperTrack.h"
 
 LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     InspectableContentComponent(t),
@@ -23,10 +25,15 @@ LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     clearUI.reset(track->clearTrigger->createButtonUI());
 
     activeUI.reset(track->active->createButtonToggle());
-    volumeUI.reset(track->volume->createSlider());
-    volumeUI->orientation = volumeUI->VERTICAL;
-
-    rmsUI.reset(new RMSSliderUI(track->rms));
+    
+    LooperProcessor::LooperType looperType = track->looper->looperType;
+    if (looperType == LooperProcessor::AUDIO)
+    {
+        AudioLooperTrack* audioTrack = (AudioLooperTrack*)track;
+        volumeUI.reset(audioTrack->volume->createSlider());
+        volumeUI->orientation = volumeUI->VERTICAL;
+        rmsUI.reset(new RMSSliderUI(audioTrack->rms));
+    }
 
     addAndMakeVisible(playRecordUI.get());
     addAndMakeVisible(stopUI.get());

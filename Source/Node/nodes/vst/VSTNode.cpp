@@ -10,18 +10,42 @@
 
 #include "VSTNode.h"
 #include "ui/VSTNodeViewUI.h"
+#include "Transport/Transport.h"
 
 VSTProcessor::VSTProcessor(Node* node) :
-    GenericNodeAudioProcessor(node),
+    GenericNodeProcessor(node),
+    currentDevice(nullptr),
     vstNotifier(5)
 {
+
     pluginParam = new VSTPluginParameter("VST", "The VST to use");
     ControllableContainer::addParameter(pluginParam);
+
+    midiParam = new MIDIDeviceParameter("MIDI Device", true, false);
+    ControllableContainer::addParameter(midiParam);
+
 }
 
 VSTProcessor::~VSTProcessor()
 {
+    setMIDIDevice(nullptr);
     setupVST(nullptr);
+}
+
+void VSTProcessor::setMIDIDevice(MIDIInputDevice* d)
+{
+    if (currentDevice == d) return;
+    if (currentDevice != nullptr)
+    {
+        currentDevice->removeMIDIInputListener(this);
+    }
+
+    currentDevice = d;
+
+    if (currentDevice != nullptr)
+    {
+        currentDevice->addMIDIInputListener(this);
+    }
 }
 
 void VSTProcessor::setupVST(PluginDescription* description)
@@ -68,18 +92,25 @@ void VSTProcessor::setupVST(PluginDescription* description)
 void VSTProcessor::updatePlayConfig()
 {
     if(vst != nullptr) vst->setPlayConfigDetails(nodeRef->numInputs, nodeRef->numOutputs, getSampleRate(), getBlockSize());
-    GenericNodeAudioProcessor::updatePlayConfig();
+    GenericNodeProcessor::updatePlayConfig();
 }
 
 void VSTProcessor::onContainerParameterChanged(Parameter* p)
 {
-    GenericNodeAudioProcessor::onContainerParameterChanged(p);
+    GenericNodeProcessor::onContainerParameterChanged(p);
     if (p == pluginParam) setupVST(pluginParam->getPluginDescription());
+    if (p == midiParam) setMIDIDevice(midiParam->inputDevice);
+}
+
+void VSTProcessor::midiMessageReceived(const MidiMessage& m)
+{
+    midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
 }
 
 void VSTProcessor::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
     if (vst != nullptr) vst->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock);
+    midiCollector.reset(sampleRate);
 }
 
 void VSTProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -87,12 +118,16 @@ void VSTProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& 
     if (vst != nullptr)
     {
         //LOG(vst->getNumInputChannels() << ", " << vst->getNumOutputChannels() << " / " << buffer.getNumChannels());
-        DBG("Process");
-        vst->processBlock(buffer, midiMessages);
+        midiBuffer.clear();
+        midiCollector.removeNextBlockOfMessages(midiBuffer, buffer.getNumSamples());
+        vst->setPlayHead(Transport::getInstance());
+        vst->processBlock(buffer, midiBuffer);
     }
+
+    midiBuffer.clear();
 }
 
 NodeViewUI* VSTProcessor::createNodeViewUI()
 {
-    return new VSTNodeViewUI((GenericAudioNode<VSTProcessor>*)nodeRef.get());
+    return new VSTNodeViewUI((GenericNode<VSTProcessor>*)nodeRef.get());
 }

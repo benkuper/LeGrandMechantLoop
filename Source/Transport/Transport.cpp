@@ -313,7 +313,6 @@ void Transport::audioDeviceStopped()
 {
 }
 
-/*
 bool Transport::getCurrentPosition(CurrentPositionInfo& result)
 {
 	result.bpm = bpm->floatValue();
@@ -321,16 +320,15 @@ bool Transport::getCurrentPosition(CurrentPositionInfo& result)
 	result.isRecording = isSettingTempo;
 
 	result.ppqPosition = (double)(curBeat->intValue()); //??
-	result.ppqPositionOfLastBarStart = (double)(getTimeForBar()); // ?? 
+	result.ppqPositionOfLastBarStart = (double)(curBar->intValue() * beatsPerBar->intValue()); // ?? 
 	result.ppqLoopStart = 0;
 	result.ppqLoopEnd = 0;
 	result.timeSigNumerator = beatsPerBar->intValue();
 	result.timeSigDenominator = 4;
 	result.timeInSamples = timeInSamples;
-	result.timeInSeconds = curTimeHiRes;
+	result.timeInSeconds = getCurrentTime();
 	result.editOriginTime = 0;
 	result.frameRate = FrameRateType::fpsUnknown;
 	result.isLooping = false;
 	return true;
 }
-*/

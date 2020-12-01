@@ -11,8 +11,8 @@
 #include "LooperNodeViewUI.h"
 #include "LooperTrackUI.h"
 
-LooperNodeViewUI::LooperNodeViewUI(GenericAudioNode<LooperProcessor>* n) :
-    GenericAudioNodeViewUI(n)
+LooperNodeViewUI::LooperNodeViewUI(GenericNode<LooperProcessor>* n) :
+    GenericNodeViewUI(n)
 {
     updateTracksUI();
 }
@@ -43,7 +43,7 @@ void LooperNodeViewUI::updateTracksUI()
 
 void LooperNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
-    GenericAudioNodeViewUI::controllableFeedbackUpdateInternal(c);
+    GenericNodeViewUI::controllableFeedbackUpdateInternal(c);
     if (c == processor->numTracks) updateTracksUI();
 }
 

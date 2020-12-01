@@ -10,7 +10,7 @@
 
 #include "NodeFactory.h"
 #include "nodes/io/IONode.h"
-#include "nodes/looper/LooperNode.h"
+#include "nodes/looper/AudioLooperNode.h"
 #include "nodes/mixer/MixerNode.h"
 #include "nodes/spat/SpatNode.h"
 #include "nodes/vst/VSTNode.h"
@@ -19,10 +19,10 @@ juce_ImplementSingleton(NodeFactory)
 
 NodeFactory::NodeFactory()
 {
-    defs.add(Definition::createDef("", AudioInputProcessor::getTypeStringStatic(), &GenericAudioNode<AudioInputProcessor>::create));
-    defs.add(Definition::createDef("", AudioOutputProcessor::getTypeStringStatic(), &GenericAudioNode<AudioOutputProcessor>::create));
-    defs.add(Definition::createDef("", LooperProcessor::getTypeStringStatic(), &GenericAudioNode<LooperProcessor>::create));
-    defs.add(Definition::createDef("", MixerProcessor::getTypeStringStatic(), &GenericAudioNode<MixerProcessor>::create));
-    defs.add(Definition::createDef("", SpatProcessor::getTypeStringStatic(), &GenericAudioNode<SpatProcessor>::create));
-    defs.add(Definition::createDef("", VSTProcessor::getTypeStringStatic(), &GenericAudioNode<VSTProcessor>::create));
+    defs.add(Definition::createDef("", AudioInputProcessor::getTypeStringStatic(), &GenericNode<AudioInputProcessor>::create));
+    defs.add(Definition::createDef("", AudioOutputProcessor::getTypeStringStatic(), &GenericNode<AudioOutputProcessor>::create));
+    defs.add(Definition::createDef("", AudioLooperProcessor::getTypeStringStatic(), &GenericNode<AudioLooperProcessor>::create));
+    defs.add(Definition::createDef("", MixerProcessor::getTypeStringStatic(), &GenericNode<MixerProcessor>::create));
+    defs.add(Definition::createDef("", SpatProcessor::getTypeStringStatic(), &GenericNode<SpatProcessor>::create));
+    defs.add(Definition::createDef("", VSTProcessor::getTypeStringStatic(), &GenericNode<VSTProcessor>::create));
 }

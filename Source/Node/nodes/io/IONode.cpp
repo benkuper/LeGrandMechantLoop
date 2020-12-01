@@ -12,7 +12,7 @@
 #include "ui/IONodeViewUI.h"
 
 IOProcessor::IOProcessor(Node* n, bool isInput) :
-	GenericNodeAudioProcessor(n, !isInput, isInput, false),
+	GenericNodeProcessor(n, !isInput, isInput, false),
 	rmsCC("RMS"),
 	gainCC("Gain"),
 	isInput(isInput)
@@ -92,7 +92,7 @@ void IOProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 
 var IOProcessor::getJSONData()
 {
-	var data = GenericNodeAudioProcessor::getJSONData();
+	var data = GenericNodeProcessor::getJSONData();
 	var gainData;
 	for (auto& c : gainCC.controllables) gainData.append(((FloatParameter*)c)->floatValue());
 	data.getDynamicObject()->setProperty("gains", gainData);
@@ -101,13 +101,13 @@ var IOProcessor::getJSONData()
 
 void IOProcessor::loadJSONDataInternal(var data)
 {
-	GenericNodeAudioProcessor::loadJSONDataInternal(data);
+	GenericNodeProcessor::loadJSONDataInternal(data);
 	gainGhostData = data.getProperty("gains", var());
 }
 
 NodeViewUI* IOProcessor::createNodeViewUI()
 {
-	return new IONodeViewUI((GenericAudioNode<IOProcessor>*)nodeRef.get());
+	return new IONodeViewUI((GenericNode<IOProcessor>*)nodeRef.get());
 }
 
 void AudioInputProcessor::updatePlayConfig()

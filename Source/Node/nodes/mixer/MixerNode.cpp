@@ -12,7 +12,7 @@
 #include "ui/MixerNodeViewUI.h"
 
 MixerProcessor::MixerProcessor(Node* node) :
-    GenericNodeAudioProcessor(node),
+    GenericNodeProcessor(node),
     rmsCC("RMS"),
     outGainsCC("Out Gains"),
     gainRootCC("Channel Gains")
@@ -99,7 +99,7 @@ FloatParameter * MixerProcessor::getGainParameter(int inputIndex, int outputInde
 
 void MixerProcessor::onContainerParameterChanged(Parameter* p)
 {
-    GenericNodeAudioProcessor::onContainerParameterChanged(p);
+    GenericNodeProcessor::onContainerParameterChanged(p);
 
     if (p == numInputs)
     {
@@ -145,5 +145,5 @@ void MixerProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer
 
 NodeViewUI* MixerProcessor::createNodeViewUI()
 {
-    return new MixerNodeViewUI((GenericAudioNode<MixerProcessor>*)nodeRef.get());
+    return new MixerNodeViewUI((GenericNode<MixerProcessor>*)nodeRef.get());
 }

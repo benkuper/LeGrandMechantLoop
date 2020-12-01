@@ -53,6 +53,9 @@
     <Filter Include="LGML\Source\Node\ui">
       <UniqueIdentifier>{3B1D1023-6B9A-7940-0DE2-650FF8A525A4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Node\nodes\midi">
+      <UniqueIdentifier>{1EE6AEB2-51BC-B4A4-A071-582C73D129ED}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Node\nodes\vst\ui">
       <UniqueIdentifier>{082EC81F-591F-1A96-B637-450A9541B692}</UniqueIdentifier>
     </Filter>
@@ -997,6 +1000,9 @@
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <Filter>LGML\Source\Node\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\midi\MIDIInputNode.cpp">
+      <Filter>LGML\Source\Node\nodes\midi</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\vst\ui\VSTNodeViewUI.cpp">
       <Filter>LGML\Source\Node\nodes\vst\ui</Filter>
     </ClCompile>
@@ -1036,16 +1042,28 @@
     <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperTrackUI.cpp">
       <Filter>LGML\Source\Node\nodes\looper\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\AudioLooperNode.cpp">
+      <Filter>LGML\Source\Node\nodes\looper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\AudioLooperTrack.cpp">
+      <Filter>LGML\Source\Node\nodes\looper</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\looper\LooperNode.cpp">
       <Filter>LGML\Source\Node\nodes\looper</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\looper\LooperTrack.cpp">
       <Filter>LGML\Source\Node\nodes\looper</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\MIDILooperNode.cpp">
+      <Filter>LGML\Source\Node\nodes\looper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\MIDILooperTrack.cpp">
+      <Filter>LGML\Source\Node\nodes\looper</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\Node.cpp">
       <Filter>LGML\Source\Node</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Node\NodeAudioProcessor.cpp">
+    <ClCompile Include="..\..\Source\Node\NodeProcessor.cpp">
       <Filter>LGML\Source\Node</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\NodeManager.cpp">
@@ -4101,6 +4119,9 @@
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h">
       <Filter>LGML\Source\Node\ui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\midi\MIDIInputNode.h">
+      <Filter>LGML\Source\Node\nodes\midi</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\vst\ui\VSTNodeViewUI.h">
       <Filter>LGML\Source\Node\nodes\vst\ui</Filter>
     </ClInclude>
@@ -4140,16 +4161,28 @@
     <ClInclude Include="..\..\Source\Node\nodes\looper\ui\LooperTrackUI.h">
       <Filter>LGML\Source\Node\nodes\looper\ui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\AudioLooperNode.h">
+      <Filter>LGML\Source\Node\nodes\looper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\AudioLooperTrack.h">
+      <Filter>LGML\Source\Node\nodes\looper</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\looper\LooperNode.h">
       <Filter>LGML\Source\Node\nodes\looper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\looper\LooperTrack.h">
       <Filter>LGML\Source\Node\nodes\looper</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\MIDILooperNode.h">
+      <Filter>LGML\Source\Node\nodes\looper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\MIDILooperTrack.h">
+      <Filter>LGML\Source\Node\nodes\looper</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Node\Node.h">
       <Filter>LGML\Source\Node</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Node\NodeAudioProcessor.h">
+    <ClInclude Include="..\..\Source\Node\NodeProcessor.h">
       <Filter>LGML\Source\Node</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\NodeManager.h">

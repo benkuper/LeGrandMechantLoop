@@ -16,6 +16,7 @@
 #include "Transport/Transport.h"
 #include "AudioManager.h"
 #include "VSTManager.h"
+#include "Common/MIDI/MIDIManager.h"
 
 LGMLEngine::LGMLEngine() :
     Engine("LGML File",".lgml")
@@ -42,6 +43,8 @@ LGMLEngine::~LGMLEngine()
     NodeFactory::deleteInstance();
 
     VSTManager::deleteInstance();
+
+    MIDIManager::deleteInstance();
 }
 
 void LGMLEngine::clearInternal()

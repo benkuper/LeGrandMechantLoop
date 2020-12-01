@@ -9,10 +9,10 @@
 */
 
 #pragma once
-#include "../../NodeAudioProcessor.h"
+#include "../../NodeProcessor.h"
 
 class MixerProcessor :
-	public GenericNodeAudioProcessor
+	public GenericNodeProcessor
 {
 public:
 	MixerProcessor(Node * node);

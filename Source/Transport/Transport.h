@@ -14,8 +14,8 @@
 
 class Transport :
 	public ControllableContainer,
-	public AudioIODeviceCallback
-	// public AudioPlayHead
+	public AudioIODeviceCallback,
+	public AudioPlayHead
 {
 public:
 	juce_DeclareSingleton(Transport, true);
@@ -105,7 +105,7 @@ public:
 	virtual void audioDeviceStopped() override;
 
 	// Inherited via AudioPlayHead
-	//virtual bool getCurrentPosition(CurrentPositionInfo& result) override;
+	virtual bool getCurrentPosition(CurrentPositionInfo& result) override;
 
 	class TransportListener
 	{
@@ -119,7 +119,6 @@ public:
 	ListenerList<TransportListener> transportListeners;
 	void addTransportListener(TransportListener* newListener) { transportListeners.add(newListener); }
 	void removeTransportListener(TransportListener* listener) { transportListeners.remove(listener); }
-
 
 	//DECLARE_ASYNC_EVENT(Transport, Transport, transport, ENUM_LIST(TIME_SIGNATURE_CHANGED, BPM_CHANGED))
 };

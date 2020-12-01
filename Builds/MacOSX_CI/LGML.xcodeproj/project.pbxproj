@@ -225,6 +225,10 @@
 			isa = PBXBuildFile;
 			fileRef = E0030CE5FB0E247A4CF27996;
 		};
+		0869D98823121C7B3F126445 = {
+			isa = PBXBuildFile;
+			fileRef = 31E8EC8ABDD55E7B66D292EE;
+		};
 		5045CC99C38D9CE766F82B6A = {
 			isa = PBXBuildFile;
 			fileRef = 8C29D7354E42E53340668E47;
@@ -277,6 +281,14 @@
 			isa = PBXBuildFile;
 			fileRef = 6D2B35E71D499D9E4E01E9FA;
 		};
+		A1794DB314B3A94E4E3BF65B = {
+			isa = PBXBuildFile;
+			fileRef = A7A9F61A5231C14E9C3727BA;
+		};
+		5AA204ADEACFF255283733E1 = {
+			isa = PBXBuildFile;
+			fileRef = 70980459B2FCF9B564E37411;
+		};
 		8FEDFBAC3111F9067B012C53 = {
 			isa = PBXBuildFile;
 			fileRef = F974C2D82E5178DFE1C8CA09;
@@ -285,13 +297,21 @@
 			isa = PBXBuildFile;
 			fileRef = A4DBBD95E70CB4701AEB5AE9;
 		};
+		F6F83967BE7C09A27F169D3D = {
+			isa = PBXBuildFile;
+			fileRef = AAC144AD2644909839DE1622;
+		};
+		BF40A91990E1FB1CC4CF28D3 = {
+			isa = PBXBuildFile;
+			fileRef = CC6D02F4097155EF3C88BADC;
+		};
 		B04647E3F99DBD999C1EDA37 = {
 			isa = PBXBuildFile;
 			fileRef = 4647F2C3AE98B4565DA5939F;
 		};
-		45CA35A15678721A38CC065F = {
+		610A0CFE3C8021FFF5287096 = {
 			isa = PBXBuildFile;
-			fileRef = 60D00F54BBE68ABBA4A87B1A;
+			fileRef = FD7F3A1181BAA95675BD5EF5;
 		};
 		8DC102E307EF75EE0CFFAAA7 = {
 			isa = PBXBuildFile;
@@ -618,13 +638,6 @@
 			path = ../../Source/Common/Serial/SerialManager.h;
 			sourceTree = "SOURCE_ROOT";
 		};
-		28BE208CF17BE743ECA1EF66 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			name = NodeAudioProcessor.h;
-			path = ../../Source/Node/NodeAudioProcessor.h;
-			sourceTree = "SOURCE_ROOT";
-		};
 		2A00FB335325AFC037E3C916 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -651,6 +664,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = MIDIManager.h;
 			path = ../../Source/Common/MIDI/MIDIManager.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		31E8EC8ABDD55E7B66D292EE = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MIDIInputNode.cpp;
+			path = ../../Source/Node/nodes/midi/MIDIInputNode.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		327C7D386076B9A825C02210 = {
@@ -765,6 +785,13 @@
 			path = System/Library/Frameworks/AudioToolbox.framework;
 			sourceTree = SDKROOT;
 		};
+		3D3E664144ABBC910726B7F5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = MIDILooperNode.h;
+			path = ../../Source/Node/nodes/looper/MIDILooperNode.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		3DCAA901175936711B7515FF = {
 			isa = PBXFileReference;
 			lastKnownFileType = wrapper.framework;
@@ -856,6 +883,13 @@
 			path = ../../Source/Node/Connection/NodeConnectionManager.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
+		4FDE5F96C33546CB2F65C53F = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = AudioLooperTrack.h;
+			path = ../../Source/Node/nodes/looper/AudioLooperTrack.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		55EEAD8AFDD8024BA2524572 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -868,6 +902,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MIDIManager.cpp;
 			path = ../../Source/Common/MIDI/MIDIManager.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		56EDA0081CEF199BEC8A0791 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = NodeProcessor.h;
+			path = ../../Source/Node/NodeProcessor.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		5AD384D4D6F8086C677B641A = {
@@ -919,11 +960,11 @@
 			path = ../../Source/Engine/LGMLEngine.h;
 			sourceTree = "SOURCE_ROOT";
 		};
-		60D00F54BBE68ABBA4A87B1A = {
+		612167DB194E292CB8B633EB = {
 			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			name = NodeAudioProcessor.cpp;
-			path = ../../Source/Node/NodeAudioProcessor.cpp;
+			lastKnownFileType = sourcecode.c.h;
+			name = MIDILooperTrack.h;
+			path = ../../Source/Node/nodes/looper/MIDILooperTrack.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		6352599CD8E6D8DB64962308 = {
@@ -973,6 +1014,13 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MixerNodeViewUI.cpp;
 			path = ../../Source/Node/nodes/mixer/ui/MixerNodeViewUI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
+		70980459B2FCF9B564E37411 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = AudioLooperTrack.cpp;
+			path = ../../Source/Node/nodes/looper/AudioLooperTrack.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		72BA93CDF92AD6A1BB316341 = {
@@ -1234,6 +1282,13 @@
 			path = System/Library/Frameworks/Carbon.framework;
 			sourceTree = SDKROOT;
 		};
+		A7A9F61A5231C14E9C3727BA = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = AudioLooperNode.cpp;
+			path = ../../Source/Node/nodes/looper/AudioLooperNode.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		A8FF7EA1FDC144D4C0EE2DFF = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -1246,6 +1301,13 @@
 			lastKnownFileType = image.png;
 			name = icon.png;
 			path = ../../Resources/icon.png;
+			sourceTree = "SOURCE_ROOT";
+		};
+		AAC144AD2644909839DE1622 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MIDILooperNode.cpp;
+			path = ../../Source/Node/nodes/looper/MIDILooperNode.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		AE29D315CADC57663A013656 = {
@@ -1274,6 +1336,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = NodeManagerUI.h;
 			path = ../../Source/Node/ui/NodeManagerUI.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		B463D38C78098DB516167BBB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = MIDIInputNode.h;
+			path = ../../Source/Node/nodes/midi/MIDIInputNode.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		B50559696E5176264924A111 = {
@@ -1386,6 +1455,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = InterfaceManagerUI.h;
 			path = ../../Source/Interface/ui/InterfaceManagerUI.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		CC6D02F4097155EF3C88BADC = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = MIDILooperTrack.cpp;
+			path = ../../Source/Node/nodes/looper/MIDILooperTrack.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		CDC194B8727EC2780FD680C5 = {
@@ -1577,6 +1653,13 @@
 			path = ../../Source/Node/nodes/looper/LooperNode.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		F4F5AC482E51A089C9222AB1 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = AudioLooperNode.h;
+			path = ../../Source/Node/nodes/looper/AudioLooperNode.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		F5B5365F6DAA755EAF8E1022 = {
 			isa = PBXFileReference;
 			lastKnownFileType = file;
@@ -1617,6 +1700,13 @@
 			lastKnownFileType = sourcecode.cpp.objcpp;
 			name = "include_juce_audio_basics.mm";
 			path = "../../JuceLibraryCode/include_juce_audio_basics.mm";
+			sourceTree = "SOURCE_ROOT";
+		};
+		FD7F3A1181BAA95675BD5EF5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = NodeProcessor.cpp;
+			path = ../../Source/Node/NodeProcessor.cpp;
 			sourceTree = "SOURCE_ROOT";
 		};
 		FE20A325656D2383B83A86BE = {
@@ -1852,6 +1942,15 @@
 			name = ui;
 			sourceTree = "<group>";
 		};
+		B76163A403175095063A0719 = {
+			isa = PBXGroup;
+			children = (
+				31E8EC8ABDD55E7B66D292EE,
+				B463D38C78098DB516167BBB,
+			);
+			name = midi;
+			sourceTree = "<group>";
+		};
 		9CC660CBFABCDD9A4549061A = {
 			isa = PBXGroup;
 			children = (
@@ -1949,10 +2048,18 @@
 			isa = PBXGroup;
 			children = (
 				F30E3A5821F440061A13389D,
+				A7A9F61A5231C14E9C3727BA,
+				F4F5AC482E51A089C9222AB1,
+				70980459B2FCF9B564E37411,
+				4FDE5F96C33546CB2F65C53F,
 				F974C2D82E5178DFE1C8CA09,
 				F2A3009EE687E67083D5AF68,
 				A4DBBD95E70CB4701AEB5AE9,
 				7E797A2782749B5536F25F2E,
+				AAC144AD2644909839DE1622,
+				3D3E664144ABBC910726B7F5,
+				CC6D02F4097155EF3C88BADC,
+				612167DB194E292CB8B633EB,
 			);
 			name = looper;
 			sourceTree = "<group>";
@@ -1960,6 +2067,7 @@
 		9BBA54FAAB2B58725091A8EB = {
 			isa = PBXGroup;
 			children = (
+				B76163A403175095063A0719,
 				C84229A4BED380C6EA19E880,
 				604D1A4C6CC59DD48C38E980,
 				8A78C3E4E3CC79EFBFA4015B,
@@ -1977,8 +2085,8 @@
 				9BBA54FAAB2B58725091A8EB,
 				4647F2C3AE98B4565DA5939F,
 				A8FF7EA1FDC144D4C0EE2DFF,
-				60D00F54BBE68ABBA4A87B1A,
-				28BE208CF17BE743ECA1EF66,
+				FD7F3A1181BAA95675BD5EF5,
+				56EDA0081CEF199BEC8A0791,
 				5E55B89A27AC99BF159D09D9,
 				33C19109F622D4DCB2C7A883,
 				E58E95BFB7B15AF49F22719A,
@@ -2362,6 +2470,7 @@
 				00D76851A8B9D465B2A2842E,
 				1E158326F5F572CC0DEE0550,
 				BADAEFBC76487F8E5F7FE35B,
+				0869D98823121C7B3F126445,
 				5045CC99C38D9CE766F82B6A,
 				83613C33A4CB0E8079400D08,
 				7F04CAED28FF42045CFB6849,
@@ -2375,10 +2484,14 @@
 				868B8EEF2C35302C6D091BD5,
 				8F1FE1A4CEC1C762DC438BAF,
 				AEC35F8423572146E47F0C70,
+				A1794DB314B3A94E4E3BF65B,
+				5AA204ADEACFF255283733E1,
 				8FEDFBAC3111F9067B012C53,
 				7B954FED1AA89B2193672805,
+				F6F83967BE7C09A27F169D3D,
+				BF40A91990E1FB1CC4CF28D3,
 				B04647E3F99DBD999C1EDA37,
-				45CA35A15678721A38CC065F,
+				610A0CFE3C8021FFF5287096,
 				8DC102E307EF75EE0CFFAAA7,
 				51B8E3F3726ADC750BCFCB40,
 				B77D7F3C8C472791B2EBCA49,

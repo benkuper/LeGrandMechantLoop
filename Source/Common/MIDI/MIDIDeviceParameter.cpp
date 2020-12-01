@@ -11,8 +11,10 @@
 #include "MIDIDeviceParameter.h"
 #include "ui/MIDIDeviceParameterUI.h"
 
-MIDIDeviceParameter::MIDIDeviceParameter(const String & name) :
+MIDIDeviceParameter::MIDIDeviceParameter(const String & name, bool canHaveInput, bool canHaveOutput) :
 	Parameter(CUSTOM, name, "MIDI Devices",var(), var(),var()),
+	canHaveInput(canHaveInput),
+	canHaveOutput(canHaveOutput),
 	inputDevice(nullptr),
 	outputDevice(nullptr)
 {
@@ -60,6 +62,7 @@ void MIDIDeviceParameter::setOutputDevice(MIDIOutputDevice * o)
 
 void MIDIDeviceParameter::midiDeviceInAdded(MIDIInputDevice * i)
 {	
+	if (!canHaveInput) return;
 	DBG("Device In added " << i->name << " / " << ghostDeviceIn);
 	if (inputDevice == nullptr && i->name == ghostDeviceIn)
 	{
@@ -69,6 +72,7 @@ void MIDIDeviceParameter::midiDeviceInAdded(MIDIInputDevice * i)
 
 void MIDIDeviceParameter::midiDeviceOutAdded(MIDIOutputDevice * o)
 {
+	if (!canHaveOutput) return;
 	if (outputDevice == nullptr&& o->name == ghostDeviceOut)
 	{
 		setOutputDevice(o);
@@ -77,6 +81,7 @@ void MIDIDeviceParameter::midiDeviceOutAdded(MIDIOutputDevice * o)
 
 void MIDIDeviceParameter::midiDeviceInRemoved(MIDIInputDevice * i)
 {
+	if (!canHaveInput) return;
 	if (i == inputDevice)
 	{
 		if (i != nullptr)
@@ -89,6 +94,7 @@ void MIDIDeviceParameter::midiDeviceInRemoved(MIDIInputDevice * i)
 
 void MIDIDeviceParameter::midiDeviceOutRemoved(MIDIOutputDevice * o)
 {
+	if (!canHaveOutput) return;
 	if (o == outputDevice)
 	{
 		if(o != nullptr) ghostDeviceOut = o->name;

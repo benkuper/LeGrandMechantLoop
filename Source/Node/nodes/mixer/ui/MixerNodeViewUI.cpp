@@ -10,8 +10,8 @@
 
 #include "MixerNodeViewUI.h"
 
-MixerNodeViewUI::MixerNodeViewUI(GenericAudioNode<MixerProcessor>* n) :
-    GenericAudioNodeViewUI(n)
+MixerNodeViewUI::MixerNodeViewUI(GenericNode<MixerProcessor>* n) :
+    GenericNodeViewUI(n)
 {
     updateLines();
     rebuildOutLine();

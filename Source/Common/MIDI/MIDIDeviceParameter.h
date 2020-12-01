@@ -19,8 +19,11 @@ class MIDIDeviceParameter :
 	public MIDIManager::Listener
 {
 public:
-	MIDIDeviceParameter(const String &name);
+	MIDIDeviceParameter(const String &name, bool canHaveInput = true, bool canHaveOutput = true);
 	~MIDIDeviceParameter();
+
+	bool canHaveInput;
+	bool canHaveOutput;
 
 	MIDIInputDevice * inputDevice;
 	MIDIOutputDevice * outputDevice;

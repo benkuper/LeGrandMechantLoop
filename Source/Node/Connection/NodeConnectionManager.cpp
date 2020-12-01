@@ -64,3 +64,12 @@ Array<UndoableAction*> NodeConnectionManager::getRemoveAllLinkedConnectionsActio
     actions.addArray(getRemoveItemsUndoableAction(connectionsToRemove));
     return actions;
 }
+
+void NodeConnectionManager::afterLoadJSONDataInternal()
+{
+    BaseManager::afterLoadJSONDataInternal();
+
+    Array<NodeConnection*> toRemove;
+    for (auto& i : items) if (i->sourceNode == nullptr || i->destNode == nullptr) toRemove.add(i);
+    for (auto& i : toRemove) removeItem(i);
+}

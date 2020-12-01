@@ -157,6 +157,11 @@
           <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
         </GROUP>
         <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
+          <GROUP id="{2AFD37B5-268E-5FDE-DDA5-E58EC198EC24}" name="midi">
+            <FILE id="eWKnsf" name="MIDIInputNode.cpp" compile="1" resource="0"
+                  file="Source/Node/nodes/midi/MIDIInputNode.cpp"/>
+            <FILE id="qNJo74" name="MIDIInputNode.h" compile="0" resource="0" file="Source/Node/nodes/midi/MIDIInputNode.h"/>
+          </GROUP>
           <GROUP id="{AC321AE6-FB6A-AD04-F5D5-FC5C94A342F7}" name="vst">
             <GROUP id="{680507CD-BC08-6441-0592-037DA297C999}" name="ui">
               <FILE id="Pqn9oN" name="VSTNodeViewUI.cpp" compile="1" resource="0"
@@ -211,18 +216,33 @@
                     file="Source/Node/nodes/looper/ui/LooperTrackUI.cpp"/>
               <FILE id="oXiVXz" name="LooperTrackUI.h" compile="0" resource="0" file="Source/Node/nodes/looper/ui/LooperTrackUI.h"/>
             </GROUP>
+            <FILE id="UohpXP" name="AudioLooperNode.cpp" compile="1" resource="0"
+                  file="Source/Node/nodes/looper/AudioLooperNode.cpp"/>
+            <FILE id="nIz1OM" name="AudioLooperNode.h" compile="0" resource="0"
+                  file="Source/Node/nodes/looper/AudioLooperNode.h"/>
+            <FILE id="Ktw4tE" name="AudioLooperTrack.cpp" compile="1" resource="0"
+                  file="Source/Node/nodes/looper/AudioLooperTrack.cpp"/>
+            <FILE id="giB1PC" name="AudioLooperTrack.h" compile="0" resource="0"
+                  file="Source/Node/nodes/looper/AudioLooperTrack.h"/>
             <FILE id="SBqo06" name="LooperNode.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperNode.cpp"/>
             <FILE id="MI1IfJ" name="LooperNode.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperNode.h"/>
             <FILE id="Ufc6nf" name="LooperTrack.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperTrack.cpp"/>
             <FILE id="lQlMOU" name="LooperTrack.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperTrack.h"/>
+            <FILE id="KYUtps" name="MIDILooperNode.cpp" compile="1" resource="0"
+                  file="Source/Node/nodes/looper/MIDILooperNode.cpp"/>
+            <FILE id="FWoyQ0" name="MIDILooperNode.h" compile="0" resource="0"
+                  file="Source/Node/nodes/looper/MIDILooperNode.h"/>
+            <FILE id="BEmcGZ" name="MIDILooperTrack.cpp" compile="1" resource="0"
+                  file="Source/Node/nodes/looper/MIDILooperTrack.cpp"/>
+            <FILE id="vfdaTR" name="MIDILooperTrack.h" compile="0" resource="0"
+                  file="Source/Node/nodes/looper/MIDILooperTrack.h"/>
           </GROUP>
         </GROUP>
         <FILE id="YMfktw" name="Node.cpp" compile="1" resource="0" file="Source/Node/Node.cpp"/>
         <FILE id="TfcTHt" name="Node.h" compile="0" resource="0" file="Source/Node/Node.h"/>
-        <FILE id="jIqX1t" name="NodeAudioProcessor.cpp" compile="1" resource="0"
-              file="Source/Node/NodeAudioProcessor.cpp"/>
-        <FILE id="hDnJ23" name="NodeAudioProcessor.h" compile="0" resource="0"
-              file="Source/Node/NodeAudioProcessor.h"/>
+        <FILE id="jIqX1t" name="NodeProcessor.cpp" compile="1" resource="0"
+              file="Source/Node/NodeProcessor.cpp"/>
+        <FILE id="hDnJ23" name="NodeProcessor.h" compile="0" resource="0" file="Source/Node/NodeProcessor.h"/>
         <FILE id="PkUUJk" name="NodeManager.cpp" compile="1" resource="0" file="Source/Node/NodeManager.cpp"/>
         <FILE id="Tonclt" name="NodeManager.h" compile="0" resource="0" file="Source/Node/NodeManager.h"/>
         <FILE id="gA65mU" name="NodeFactory.cpp" compile="1" resource="0" file="Source/Node/NodeFactory.cpp"/>

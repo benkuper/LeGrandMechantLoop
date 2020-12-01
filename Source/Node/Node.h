@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "NodeAudioProcessor.h"
+#include "NodeProcessor.h"
 
 #
 class NodeConnection;
@@ -28,7 +28,7 @@ public:
     BoolParameter* isNodePlaying;
 
     AudioProcessorGraph::NodeID nodeGraphID;
-    NodeAudioProcessor * baseProcessor;
+    NodeProcessor * baseProcessor;
     AudioProcessorGraph::Node::Ptr nodeGraphPtr;
 
     StringArray audioInputNames;
@@ -42,7 +42,7 @@ public:
 
     FloatParameter* outGain;
 
-    void setProcessor(NodeAudioProcessor * processor); //needs to be called from
+    void setProcessor(NodeProcessor * processor); //needs to be called from
 
     void setAudioInputs(const int& numInputs); //auto naming
     void setAudioInputs(const StringArray & inputNames);
@@ -71,27 +71,27 @@ public:
 };
 
 template<class T>
-class GenericAudioNode :
+class GenericNode :
     public Node
 {
 public:
-    GenericAudioNode(var params = var()) :
+    GenericNode(var params = var()) :
         Node(getTypeString(), params)
     {
         processor = new T(this);
-        setProcessor((GenericNodeAudioProcessor*)processor);
+        setProcessor((GenericNodeProcessor*)processor);
     }
 
-    virtual ~GenericAudioNode() {}
+    virtual ~GenericNode() {}
 
     T* processor;
 
     virtual NodeViewUI* createViewUI() override 
     {
-        return processor != nullptr ? ((GenericNodeAudioProcessor*)processor)->createNodeViewUI() : nullptr;
+        return processor != nullptr ? ((GenericNodeProcessor*)processor)->createNodeViewUI() : nullptr;
     }
 
     String getTypeString() const override { return T::getTypeStringStatic(); }
-    static GenericAudioNode<T>* create(var params) { return new GenericAudioNode<T>(params); }
+    static GenericNode<T>* create(var params) { return new GenericNode<T>(params); }
 };
 

@@ -38,7 +38,7 @@ void Node::clearItem()
     BaseItem::clearItem();
 }
 
-void Node::setProcessor(NodeAudioProcessor* processor)
+void Node::setProcessor(NodeProcessor* processor)
 {
     if (baseProcessor == processor) return;
 
@@ -51,7 +51,7 @@ void Node::setProcessor(NodeAudioProcessor* processor)
 
     if (baseProcessor != nullptr)
     {
-        nodeGraphPtr = AudioManager::getInstance()->graph.addNode(std::unique_ptr<NodeAudioProcessor>(baseProcessor), AudioProcessorGraph::NodeID(nodeGraphID));
+        nodeGraphPtr = AudioManager::getInstance()->graph.addNode(std::unique_ptr<NodeProcessor>(baseProcessor), AudioProcessorGraph::NodeID(nodeGraphID));
         baseProcessor->updateInputsFromNode(false);
         baseProcessor->updateOutputsFromNode(false);
         baseProcessor->updatePlayConfig();

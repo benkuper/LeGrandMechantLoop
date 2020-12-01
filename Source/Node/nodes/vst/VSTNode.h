@@ -9,11 +9,13 @@
 */
 
 #pragma once
-#include "../../NodeAudioProcessor.h"
+#include "../../NodeProcessor.h"
 #include "Engine/VSTManager.h"
+#include "Common/MIDI/MIDIDeviceParameter.h"
 
 class VSTProcessor :
-	public GenericNodeAudioProcessor
+	public GenericNodeProcessor,
+	public MIDIInputDevice::MIDIInputListener
 {
 public:
 	VSTProcessor(Node* node);
@@ -21,13 +23,20 @@ public:
 
 	VSTPluginParameter* pluginParam;
 	Array<Parameter *> VSTParameters;
+	MIDIDeviceParameter* midiParam;
 
+	MIDIInputDevice* currentDevice;
 	std::unique_ptr<AudioPluginInstance> vst;
+	MidiMessageCollector midiCollector;
+	MidiBuffer midiBuffer; //own implementation to separate controllers
 
+	void setMIDIDevice(MIDIInputDevice* d);
 	void setupVST(PluginDescription* description);
 	void updatePlayConfig() override;
 
 	void onContainerParameterChanged(Parameter* p) override;
+
+	void midiMessageReceived(const MidiMessage& m) override;
 
 	void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;

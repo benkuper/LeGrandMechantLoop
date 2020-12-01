@@ -10,8 +10,8 @@
 
 #include "SpatNodeViewUI.h"
 
-SpatNodeViewUI::SpatNodeViewUI(GenericAudioNode<SpatProcessor>* n) :
-    GenericAudioNodeViewUI(n),
+SpatNodeViewUI::SpatNodeViewUI(GenericNode<SpatProcessor>* n) :
+    GenericNodeViewUI(n),
     spatView(processor)
 {
     addAndMakeVisible(&spatView);
@@ -35,7 +35,7 @@ void SpatNodeViewUI::resizedInternalContentNode(Rectangle<int> &r)
 
 void SpatNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
-    GenericAudioNodeViewUI::controllableFeedbackUpdateInternal(c);
+    GenericNodeViewUI::controllableFeedbackUpdateInternal(c);
     if (c == processor->spatPosition || c == processor->circleRadius || c == processor->circleAngle || c == processor->spatRadius)
     {
         spatView.resized();

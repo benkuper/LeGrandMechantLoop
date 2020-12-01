@@ -12,7 +12,7 @@
 #include "ui/SpatNodeViewUI.h"
 
 SpatProcessor::SpatProcessor(Node* node) :
-    GenericNodeAudioProcessor(node),
+    GenericNodeProcessor(node),
     spatCC("Points"),
 	fadeCurve("Fade Curve",nullptr)
 {
@@ -150,5 +150,5 @@ void SpatProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer&
 
 NodeViewUI* SpatProcessor::createNodeViewUI()
 {
-    return new SpatNodeViewUI((GenericAudioNode<SpatProcessor>*)nodeRef.get());
+    return new SpatNodeViewUI((GenericNode<SpatProcessor>*)nodeRef.get());
 }

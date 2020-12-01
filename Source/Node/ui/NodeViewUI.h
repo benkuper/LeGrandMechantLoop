@@ -45,13 +45,13 @@ public:
 };
 
 template<class T>
-class GenericAudioNodeViewUI :
+class GenericNodeViewUI :
     public NodeViewUI
 {
 public:
-    GenericAudioNodeViewUI(GenericAudioNode<T>* audioNode) : NodeViewUI(audioNode), audioNode(audioNode), processor(audioNode->processor) {}
-    ~GenericAudioNodeViewUI() {}
+    GenericNodeViewUI(GenericNode<T>* audioNode) : NodeViewUI(audioNode), audioNode(audioNode), processor(audioNode->processor) {}
+    ~GenericNodeViewUI() {}
 
-    GenericAudioNode<T> *  audioNode;
+    GenericNode<T> *  audioNode;
     T* processor;
 };

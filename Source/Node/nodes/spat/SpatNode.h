@@ -12,7 +12,7 @@
 #include "SpatItem.h"
 
 class SpatProcessor :
-	public GenericNodeAudioProcessor
+	public GenericNodeProcessor
 {
 public:
 	SpatProcessor(Node* node);
