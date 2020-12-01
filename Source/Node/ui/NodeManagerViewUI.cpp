@@ -49,18 +49,24 @@ void NodeManagerViewUI::resized()
 void NodeManagerViewUI::mouseDown(const MouseEvent& e)
 {
     if (NodeConnector* c = dynamic_cast<NodeConnector*>(e.originalComponent))  connectionManagerUI->startCreateConnection(c);
+    else if (NodeConnectionViewUI::Handle* h = dynamic_cast<NodeConnectionViewUI::Handle*>(e.originalComponent))
+    {
+        NodeConnectionViewUI* cui = dynamic_cast<NodeConnectionViewUI*>(h->getParentComponent());
+        NodeConnector* c = h == &cui->sourceHandle ? cui->destConnector : cui->sourceConnector;
+        connectionManagerUI->startCreateConnection(c, cui->item);
+    }
     else if (e.eventComponent == this) BaseManagerViewUI::mouseDown(e);
 }
 
 void NodeManagerViewUI::mouseDrag(const MouseEvent& e)
 {
-    if (NodeConnector* c = dynamic_cast<NodeConnector*>(e.originalComponent))  connectionManagerUI->updateCreateConnection();
+    if (connectionManagerUI->tmpConnectionUI != nullptr) connectionManagerUI->updateCreateConnection();
     else if (e.eventComponent == this) BaseManagerViewUI::mouseDrag(e);
 }
 
 void NodeManagerViewUI::mouseUp(const MouseEvent& e)
 {
-    if (NodeConnector* c = dynamic_cast<NodeConnector*>(e.originalComponent))  connectionManagerUI->endCreateConnection();
+    if (connectionManagerUI->tmpConnectionUI != nullptr) connectionManagerUI->endCreateConnection();
     else if(e.eventComponent == this) BaseManagerViewUI::mouseUp(e);
 }
 

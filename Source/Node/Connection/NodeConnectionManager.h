@@ -19,7 +19,8 @@ public:
     NodeConnectionManager();
     ~NodeConnectionManager();
 
-    void addConnection(Node * sourceNode, Node * destNode);
+    void addConnection(Node * sourceNode, Node * destNode, var channelMapData = var());
+    Array<UndoableAction*> getAddConnectionUndoableAction(Node* sourceNode, Node* destNode, var channelMapData = var());
 
     virtual NodeConnection* getConnectionForSourceAndDest(Node* sourceNode, Node* destNode);
 

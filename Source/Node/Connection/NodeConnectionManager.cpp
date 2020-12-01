@@ -19,7 +19,7 @@ NodeConnectionManager::~NodeConnectionManager()
 {
 }
 
-void NodeConnectionManager::addConnection(Node* sourceNode, Node* destNode)
+void NodeConnectionManager::addConnection(Node* sourceNode, Node* destNode, var channelMapData)
 {
     if (getConnectionForSourceAndDest(sourceNode, destNode))
     {
@@ -28,7 +28,21 @@ void NodeConnectionManager::addConnection(Node* sourceNode, Node* destNode)
     }
 
     NodeConnection* connection = new NodeConnection(sourceNode, destNode);
+    if (channelMapData.isObject()) connection->loadChannelMapData(channelMapData);
     addItem(connection);
+}
+
+Array<UndoableAction*> NodeConnectionManager::getAddConnectionUndoableAction(Node* sourceNode, Node* destNode, var channelMapData)
+{
+    if (getConnectionForSourceAndDest(sourceNode, destNode))
+    {
+        LOGWARNING("Connection already exists !");
+        return Array<UndoableAction*>();
+    }
+
+    NodeConnection* connection = new NodeConnection(sourceNode, destNode);
+    if (channelMapData.isObject()) connection->loadChannelMapData(channelMapData);
+    return getAddItemUndoableAction(connection);
 }
 
 NodeConnection* NodeConnectionManager::getConnectionForSourceAndDest(Node* sourceNode, Node* destNode)

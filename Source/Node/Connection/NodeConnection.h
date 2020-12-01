@@ -54,6 +54,8 @@ public:
     var getJSONData() override;
     void loadJSONDataItemInternal(var data) override;
 
+    var getChannelMapData();
+    void loadChannelMapData(var data);
 
     InspectableEditor* getEditor(bool isRoot) override;
     

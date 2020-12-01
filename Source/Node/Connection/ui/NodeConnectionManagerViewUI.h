@@ -24,6 +24,7 @@ public:
 
     NodeManagerViewUI* nodeManagerUI;
     std::unique_ptr<NodeConnectionViewUI> tmpConnectionUI;
+    NodeConnection * tmpConnectionToReplace;
     bool tmpConnectionLookForInput;
 
     NodeConnectionViewUI* createUIForItem(NodeConnection * item) override;
@@ -34,7 +35,7 @@ public:
 
     void resized() override; //override to avoid baseManagerUI stuff
 
-    void startCreateConnection(NodeConnector* connector);
+    void startCreateConnection(NodeConnector* connector, NodeConnection * connectionToReplace = nullptr);
     void updateCreateConnection();
     void endCreateConnection();
 };

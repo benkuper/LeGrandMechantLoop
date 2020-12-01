@@ -56,10 +56,12 @@ void NodeConnectionManagerViewUI::resized()
 {
 }
 
-void NodeConnectionManagerViewUI::startCreateConnection(NodeConnector* connector)
+void NodeConnectionManagerViewUI::startCreateConnection(NodeConnector* connector, NodeConnection* connectionToReplace)
 {
 	if (connector == nullptr) return;
 
+	tmpConnectionToReplace = connectionToReplace;
+	if (NodeConnectionViewUI * cui = getUIForItem(tmpConnectionToReplace)) cui->setAlpha(.5f);
 	tmpConnectionLookForInput = !connector->isInput;
 	tmpConnectionUI.reset(new NodeConnectionViewUI(nullptr, connector->isInput  ? nullptr : connector, connector->isInput ? connector : nullptr));
 	addAndMakeVisible(tmpConnectionUI.get());
@@ -85,9 +87,31 @@ void NodeConnectionManagerViewUI::endCreateConnection()
 	
 	if (tmpConnectionUI->sourceConnector != nullptr && tmpConnectionUI->destConnector != nullptr) 
 	{
-		manager->addConnection(tmpConnectionUI->sourceConnector->nodeViewUI->item, tmpConnectionUI->destConnector->nodeViewUI->item);
+		if (tmpConnectionToReplace != nullptr
+			&& tmpConnectionUI->sourceConnector->nodeViewUI->item == tmpConnectionToReplace->sourceNode
+			&& tmpConnectionUI->destConnector->nodeViewUI->item == tmpConnectionToReplace->destNode)
+		{
+			//same, do nothing
+		}
+		else
+		{
+			Array<UndoableAction*> actions;
+			var channelMapData;
+			if (tmpConnectionToReplace != nullptr)
+			{
+				channelMapData = tmpConnectionToReplace->getChannelMapData();
+				actions.addArray(manager->getRemoveItemUndoableAction(tmpConnectionToReplace));
+			}
+
+			actions.addArray(manager->getAddConnectionUndoableAction(tmpConnectionUI->sourceConnector->nodeViewUI->item, tmpConnectionUI->destConnector->nodeViewUI->item, channelMapData));
+
+			UndoMaster::getInstance()->performActions("Move Connection", actions);
+		}
 	}
 
+	if (NodeConnectionViewUI* cui = getUIForItem(tmpConnectionToReplace)) cui->setAlpha(1);
+
+	tmpConnectionToReplace = nullptr;
 	removeChildComponent(tmpConnectionUI.get());
 	tmpConnectionUI.reset();
 }

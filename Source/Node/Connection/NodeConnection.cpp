@@ -21,7 +21,6 @@ NodeConnection::NodeConnection(Node* sourceNode, Node* destNode) :
 {
     setSourceNode(sourceNode);
     setDestNode(destNode);
-
 }
 
 NodeConnection::~NodeConnection()
@@ -167,15 +166,8 @@ var NodeConnection::getJSONData()
     var data = BaseItem::getJSONData();
     if (sourceNode != nullptr) data.getDynamicObject()->setProperty("sourceNode", sourceNode->getControlAddress(RootNodeManager::getInstance()));
     if (destNode != nullptr) data.getDynamicObject()->setProperty("destNode", destNode->getControlAddress(RootNodeManager::getInstance()));
-    var chData;
-    for(auto & c : channelMap)
-    {
-        var ch;
-        ch.append(c.sourceChannel);
-        ch.append(c.destChannel);
-        chData.append(ch);
-    }
-    data.getDynamicObject()->setProperty("channels", chData);
+   
+    data.getDynamicObject()->setProperty("channels", getChannelMapData());
 
     if (ghostChannelMap.size() > 0)
     {
@@ -206,13 +198,30 @@ void NodeConnection::loadJSONDataItemInternal(var data)
         ghostChannelMap.add({ ghostData[i][0], ghostData[i][1] });
     }
     
-    var chData = data.getProperty("channels", var());
-    for (int i = 0; i < chData.size(); i++)
+    loadChannelMapData(data.getProperty("channels",var()));
+}
+
+var NodeConnection::getChannelMapData()
+{
+    var chData;
+    for (auto& c : channelMap)
     {
-        connectChannels(chData[i][0], chData[i][1]);
+        var ch;
+        ch.append(c.sourceChannel);
+        ch.append(c.destChannel);
+        chData.append(ch);
     }
 
-    
+    return chData;
+}
+
+void NodeConnection::loadChannelMapData(var data)
+{
+    if(!data.isVoid()) clearConnections();
+    for (int i = 0; i < data.size(); i++)
+    {
+        connectChannels(data[i][0], data[i][1]);
+    }
 }
 
 InspectableEditor* NodeConnection::getEditor(bool isRoot)

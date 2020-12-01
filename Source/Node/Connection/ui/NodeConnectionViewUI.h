@@ -40,9 +40,20 @@ public:
     void setSourceConnector(NodeConnector* c);
     void setDestConnector(NodeConnector* c);
 
-
     void componentMovedOrResized(Component& c, bool, bool) override;
     void componentBeingDeleted(Component& c) override;
 
     void newMessage(const NodeConnection::ConnectionEvent& e) override;
+
+    class Handle :
+        public Component
+    {
+    public:
+        Handle();
+        ~Handle() {}
+        void paint(Graphics& g) override;
+    };
+
+    Handle sourceHandle;
+    Handle destHandle;
 };

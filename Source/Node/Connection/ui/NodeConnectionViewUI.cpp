@@ -25,6 +25,11 @@ NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConne
 	setRepaintsOnMouseActivity(true);
 	autoDrawContourWhenSelected = false;
 
+	sourceHandle.setSize(16, 16);
+	addAndMakeVisible(&sourceHandle);
+	destHandle.setSize(16, 16);
+	addAndMakeVisible(&destHandle);
+
 	if(item != nullptr) item->addAsyncConnectionListener(this);
 }
 
@@ -79,6 +84,9 @@ void NodeConnectionViewUI::buildPath()
 	path.cubicTo(sourceP.translated(60, 0), destP.translated(-60, 0), destP);
 
 	hitPath = PathHelpers::buildHitPath(&path);
+
+	sourceHandle.setCentrePosition(path.getPointAlongPath(20).toInt());
+	destHandle.setCentrePosition(path.getPointAlongPath(path.getLength()-20).toInt());
 }
 bool NodeConnectionViewUI::hitTest(int x, int y)
 {
@@ -139,4 +147,19 @@ void NodeConnectionViewUI::componentBeingDeleted(Component& c)
 void NodeConnectionViewUI::newMessage(const NodeConnection::ConnectionEvent& e)
 {
 	if (e.type == e.CHANNELS_CONNECTION_CHANGED) repaint();
+}
+
+NodeConnectionViewUI::Handle::Handle()
+{
+	setRepaintsOnMouseActivity(true);
+}
+
+void NodeConnectionViewUI::Handle::paint(Graphics& g)
+{
+	Rectangle<float> r = getLocalBounds().reduced(4).toFloat();
+	g.setColour(isMouseOverOrDragging()?BLUE_COLOR.brighter(.1f):BG_COLOR);
+	g.fillEllipse(r);
+	
+	g.setColour(BLUE_COLOR.brighter(isMouseOverOrDragging()?.3f:0));
+	g.drawEllipse(r, 1);
 }
