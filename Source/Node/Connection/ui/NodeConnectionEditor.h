@@ -12,16 +12,15 @@
 
 #include "../NodeConnection.h"
 
-class NodeConnectionEditor :
+class NodeAudioConnectionEditor :
     public BaseItemEditor
 {
 public:
-    NodeConnectionEditor(NodeConnection* connection, bool isRoot);
-    ~NodeConnectionEditor();
+    NodeAudioConnectionEditor(NodeAudioConnection* connection, bool isRoot);
+    ~NodeAudioConnectionEditor();
 
-    NodeConnection* connection;
+    NodeAudioConnection* connection;
     Rectangle<int> slotsRect;
-
 
     void resizedInternalContent(Rectangle<int> &r) override;
 

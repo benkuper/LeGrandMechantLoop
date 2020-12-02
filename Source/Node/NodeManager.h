@@ -62,18 +62,18 @@ public:
 
 class RootNodeManager :
     public NodeManager,
-    public AudioManager::AudioManagerListener
+    public AudioManager::AudioManagerListener,
+    public EngineListener
 {
 public:
     juce_DeclareSingleton(RootNodeManager, true);
     RootNodeManager();
     ~RootNodeManager();
 
-
     void audioSetupChanged() override;
-
     void onContainerParameterChanged(Parameter* p) override;
 
+    void endLoadFile() override;
 };
 
 /*

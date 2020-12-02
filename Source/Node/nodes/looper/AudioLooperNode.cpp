@@ -23,7 +23,6 @@ AudioLooperProcessor::AudioLooperProcessor(Node* n) :
 	nodeRef->setAudioInputs(numChannelsPerTrack->intValue());
 	updateOutTracks();
 	updateLooperTracks();
-
 	updateRingBuffer();
 
 	AudioManager::getInstance()->addAudioManagerListener(this);
@@ -59,32 +58,20 @@ void AudioLooperProcessor::updateOutTracks()
 	nodeRef->setAudioOutputs(s);
 }
 
-void AudioLooperProcessor::updateLooperTracks()
+LooperTrack * AudioLooperProcessor::createLooperTrack(int index)
 {
-	bool shouldResume = !isSuspended();
-	suspendProcessing(true);
-
-	while (tracksCC.controllableContainers.size() > numTracks->intValue())
-	{
-		AudioLooperTrack* t = (AudioLooperTrack *)getTrackForIndex(tracksCC.controllableContainers.size() - 1);
-		if (t->isCurrent) setCurrentTrack(nullptr);
-
-		tracksCC.removeChildControllableContainer(t);
-	}
-
-	Array<ControllableContainer*> tracksToAdd;
-	for (int i = tracksCC.controllableContainers.size(); i < numTracks->intValue(); i++)
-	{
-		tracksCC.addChildControllableContainer(new AudioLooperTrack(this, i, numChannelsPerTrack->intValue()), true);
-	}
-
-	if (shouldResume) suspendProcessing(false);
+	return new AudioLooperTrack(this, index, numChannelsPerTrack->intValue());
 }
-
 
 void AudioLooperProcessor::updateRingBuffer()
 {
 	ringBuffer.reset(new RingBuffer<float>(numChannelsPerTrack->intValue(), getFadeNumSamples() * 2)); //double to not have overlapping read and write
+}
+
+
+int AudioLooperProcessor::getFadeNumSamples()
+{
+	return fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000;
 }
 
 void AudioLooperProcessor::audioSetupChanged()

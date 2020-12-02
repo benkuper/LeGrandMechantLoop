@@ -11,6 +11,7 @@
 #include "NodeFactory.h"
 #include "nodes/io/IONode.h"
 #include "nodes/looper/AudioLooperNode.h"
+#include "nodes/looper/MIDILooperNode.h"
 #include "nodes/mixer/MixerNode.h"
 #include "nodes/spat/SpatNode.h"
 #include "nodes/vst/VSTNode.h"
@@ -22,6 +23,7 @@ NodeFactory::NodeFactory()
     defs.add(Definition::createDef("", AudioInputProcessor::getTypeStringStatic(), &GenericNode<AudioInputProcessor>::create));
     defs.add(Definition::createDef("", AudioOutputProcessor::getTypeStringStatic(), &GenericNode<AudioOutputProcessor>::create));
     defs.add(Definition::createDef("", AudioLooperProcessor::getTypeStringStatic(), &GenericNode<AudioLooperProcessor>::create));
+    defs.add(Definition::createDef("", MIDILooperProcessor::getTypeStringStatic(), &GenericNode<MIDILooperProcessor>::create));
     defs.add(Definition::createDef("", MixerProcessor::getTypeStringStatic(), &GenericNode<MixerProcessor>::create));
     defs.add(Definition::createDef("", SpatProcessor::getTypeStringStatic(), &GenericNode<SpatProcessor>::create));
     defs.add(Definition::createDef("", VSTProcessor::getTypeStringStatic(), &GenericNode<VSTProcessor>::create));

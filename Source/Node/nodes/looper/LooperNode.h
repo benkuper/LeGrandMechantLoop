@@ -12,8 +12,6 @@
 
 #include "../../NodeProcessor.h"
 #include "Transport/Transport.h"
-#include "Common/RingBuffer.h"
-#include "Engine/AudioManager.h"
 
 class LooperTrack;
 
@@ -48,6 +46,9 @@ public:
     enum MonitorMode { OFF, ALWAYS, RECORDING_ONLY, ARMED_TRACK };
     EnumParameter* monitorMode;
 
+    virtual void updateLooperTracks();
+    virtual LooperTrack* createLooperTrack(int index) { return nullptr; }
+
     virtual void setCurrentTrack(LooperTrack* t);
 
     virtual void onContainerTriggerTriggered(Trigger* t) override;
@@ -60,7 +61,6 @@ public:
     //helpers
     virtual bool hasContent();
     virtual bool isOneTrackRecording(bool includeWillRecord = false);
-    virtual int getFadeNumSamples(); //for ring buffer fade
     LooperTrack* getTrackForIndex(int index);
 
     Transport::Quantization getQuantization();

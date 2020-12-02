@@ -70,16 +70,18 @@ void NodeManagerViewUI::mouseUp(const MouseEvent& e)
     else if(e.eventComponent == this) BaseManagerViewUI::mouseUp(e);
 }
 
-NodeConnector* NodeManagerViewUI::getCandidateConnector(bool lookForInput, NodeViewUI* excludeUI)
+NodeConnector* NodeManagerViewUI::getCandidateConnector(bool lookForInput, NodeConnection::ConnectionType connectionType, NodeViewUI* excludeUI)
 {
     for (auto& ui : itemsUI)
     {
         if (ui == excludeUI) continue;
         if (!ui->isVisible()) continue;
         
-        NodeConnector* c = lookForInput ? ui->inAudioConnector.get() : ui->outAudioConnector.get();
-        if (c == nullptr) continue;
+        NodeConnector* c = nullptr;
+        if(connectionType == NodeConnection::AUDIO) c = lookForInput ? ui->inAudioConnector.get() : ui->outAudioConnector.get();
+        else if(connectionType == NodeConnection::MIDI) c = lookForInput ? ui->inMIDIConnector.get() : ui->outMIDIConnector.get();
 
+        if (c == nullptr || c->connectionType != connectionType) continue;
         if (c->getLocalBounds().expanded(10).contains(c->getMouseXYRelative())) return c;
     }
 

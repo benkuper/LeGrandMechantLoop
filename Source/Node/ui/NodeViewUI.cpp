@@ -22,7 +22,6 @@ NodeViewUI::NodeViewUI(Node* node) :
 	{
 		outRMSUI.reset(new RMSSliderUI(item->baseProcessor->outRMS));
 		addAndMakeVisible(outRMSUI.get());
-
 	}
 
 	updateInputConnectors();
@@ -39,11 +38,12 @@ NodeViewUI::~NodeViewUI()
 
 void NodeViewUI::updateInputConnectors()
 {
-	if (item->baseProcessor->hasInput)
+	//AUDIO
+	if (item->baseProcessor->hasAudioInput)
 	{
 		if (inAudioConnector == nullptr)
 		{
-			inAudioConnector.reset(new NodeConnector(this, true));
+			inAudioConnector.reset(new NodeConnector(this, true, NodeConnection::AUDIO));
 			addAndMakeVisible(inAudioConnector.get());
 			resized();
 		}
@@ -51,22 +51,40 @@ void NodeViewUI::updateInputConnectors()
 		{
 			inAudioConnector->update();
 		}
-
 	}
 	else if (inAudioConnector != nullptr)
 	{
 		removeChildComponent(inAudioConnector.get());
 		inAudioConnector.reset();
 	}
+
+	if (item->hasMIDIInput)
+	{
+		if (inMIDIConnector == nullptr)
+		{
+			inMIDIConnector.reset(new NodeConnector(this, true, NodeConnection::MIDI));
+			addAndMakeVisible(inMIDIConnector.get());
+			resized();
+		}
+		else
+		{
+			inMIDIConnector->update();
+		}
+	}
+	else if (inMIDIConnector != nullptr)
+	{
+		removeChildComponent(inMIDIConnector.get());
+		inMIDIConnector.reset();
+	}
 }
 
 void NodeViewUI::updateOutputConnectors()
 {
-	if (item->baseProcessor->hasOutput)
+	if (item->baseProcessor->hasAudioOutput)
 	{
 		if (outAudioConnector == nullptr)
 		{
-			outAudioConnector.reset(new NodeConnector(this, false));
+			outAudioConnector.reset(new NodeConnector(this, false, NodeConnection::AUDIO));
 			addAndMakeVisible(outAudioConnector.get());
 			resized();
 		}
@@ -79,6 +97,25 @@ void NodeViewUI::updateOutputConnectors()
 	{
 		removeChildComponent(outAudioConnector.get());
 		outAudioConnector.reset();
+	}
+
+	if (item->hasMIDIOutput)
+	{
+		if (outMIDIConnector == nullptr)
+		{
+			outMIDIConnector.reset(new NodeConnector(this, false, NodeConnection::MIDI));
+			addAndMakeVisible(outMIDIConnector.get());
+			resized();
+		}
+		else
+		{
+			outMIDIConnector->update();
+		}
+	}
+	else if (outMIDIConnector != nullptr)
+	{
+		removeChildComponent(outMIDIConnector.get());
+		outMIDIConnector.reset();
 	}
 }
 
@@ -99,11 +136,24 @@ void NodeViewUI::resized()
 {
 	BaseItemUI::resized();
 
-	Rectangle<int> inR = getLocalBounds().removeFromLeft(10);
-	Rectangle<int> outR = getLocalBounds().removeFromRight(10);
+	int w = 10;
+	Rectangle<int> inR = getLocalBounds().removeFromLeft(w).reduced(0, 10);
+	Rectangle<int> outR = getLocalBounds().removeFromRight(w).reduced(0, 10);
 
-	if (inAudioConnector != nullptr) inAudioConnector->setBounds(inR.withHeight(inR.getWidth()).withCentre(Point<int>(inR.getCentreX(), jmin(inR.getCentreY(), 20))));
-	if (outAudioConnector != nullptr) outAudioConnector->setBounds(outR.withHeight(outR.getWidth()).withCentre(Point<int>(outR.getCentreX(), jmin(outR.getCentreY(), 20))));
+	if (inAudioConnector != nullptr)
+	{
+		inAudioConnector->setBounds(inR.removeFromTop(w));
+		inR.removeFromTop(20);
+	}
+
+	if (outAudioConnector != nullptr)
+	{
+		outAudioConnector->setBounds(outR.removeFromTop(w));
+		outR.removeFromTop(20);
+	}
+
+	if (inMIDIConnector != nullptr) inMIDIConnector->setBounds(inR.removeFromTop(w));
+	if (outMIDIConnector != nullptr) outMIDIConnector->setBounds(outR.removeFromTop(w));
 }
 
 void NodeViewUI::resizedInternalContent(Rectangle<int>& r)
@@ -130,6 +180,6 @@ void NodeViewUI::nodeOutputsChanged()
 
 void NodeViewUI::newMessage(const Node::NodeEvent& e)
 {
-	if (e.type == e.INPUTS_CHANGED) nodeInputsChanged();
-	else if (e.type == e.OUTPUTS_CHANGED) nodeOutputsChanged();
+	if (e.type == e.INPUTS_CHANGED || e.type == e.MIDI_INPUT_CHANGED) nodeInputsChanged();
+	else if (e.type == e.OUTPUTS_CHANGED || e.type == e.MIDI_OUTPUT_CHANGED) nodeOutputsChanged();
 }

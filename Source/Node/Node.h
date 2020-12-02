@@ -12,8 +12,9 @@
 
 #include "NodeProcessor.h"
 
-#
 class NodeConnection;
+class NodeAudioConnection;
+class NodeMIDIConnection;
 class NodeViewUI;
 
 class Node :
@@ -36,9 +37,13 @@ public:
 
     int numInputs;
     int numOutputs;
+    bool hasMIDIInput;
+    bool hasMIDIOutput;
 
-    Array<NodeConnection*> inConnections;
-    Array<NodeConnection*> outConnections;
+    Array<NodeAudioConnection*> inAudioConnections;
+    Array<NodeAudioConnection*> outAudioConnections;
+    Array<NodeMIDIConnection*> inMidiConnections;
+    Array<NodeMIDIConnection*> outMidiConnections;
 
     FloatParameter* outGain;
 
@@ -48,7 +53,15 @@ public:
     void setAudioInputs(const StringArray & inputNames);
     void setAudioOutputs(const int& numOutputs); //auto naming
     void setAudioOutputs(const StringArray& outputNames);
-    
+
+    void addInConnection(NodeConnection* c);
+    void removeInConnection(NodeConnection* c);
+    void addOutConnection(NodeConnection* c);
+    void removeOutConnection(NodeConnection* c);
+
+    void setMIDIIO(bool hasInput, bool hasOutput);
+
+
     template<class T>
     T* getProcessor() { return dynamic_cast<T*>(baseProcessor); }
 
@@ -57,14 +70,16 @@ public:
     public:
         virtual ~NodeListener() {}
         virtual void audioInputsChanged(Node *n) {}
-        virtual void audioOutputsChanged(Node * n) {}
+        virtual void audioOutputsChanged(Node* n) {}
+        virtual void midiInputChanged(Node* n) {}
+        virtual void midiOutputChanged(Node * n) {}
     };
 
     ListenerList<NodeListener> nodeListeners;
     void addNodeListener(NodeListener* newListener) { nodeListeners.add(newListener); }
     void removeNodeListener(NodeListener* listener) { nodeListeners.remove(listener); }
 
-    DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED))
+    DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED, MIDI_INPUT_CHANGED, MIDI_OUTPUT_CHANGED))
 
     virtual NodeViewUI* createViewUI();
     WeakReference<Node>::Master masterReference;

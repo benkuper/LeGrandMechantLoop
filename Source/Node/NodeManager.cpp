@@ -175,10 +175,13 @@ RootNodeManager::RootNodeManager() :
 
 	setAudioInputs(AudioManager::getInstance()->getInputChannelNames());
 	setAudioOutputs(AudioManager::getInstance()->getOutputChannelNames());
+
+	Engine::mainEngine->addEngineListener(this);
 }
 
 RootNodeManager::~RootNodeManager()
 {
+	Engine::mainEngine->removeEngineListener(this);
 	AudioManager::getInstance()->removeAudioManagerListener(this);
 }
 
@@ -199,4 +202,9 @@ void RootNodeManager::onContainerParameterChanged(Parameter* p)
 			Transport::getInstance()->stopTrigger->trigger();
 		}
 	}
+}
+
+void RootNodeManager::endLoadFile()
+{
+	for (auto& i : items) i->baseProcessor->updatePlayConfig();
 }

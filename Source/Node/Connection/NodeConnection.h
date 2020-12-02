@@ -19,11 +19,35 @@ class NodeConnection :
     public Node::NodeListener
 {
 public:
-    NodeConnection(Node * sourceNode = nullptr, Node * destNode = nullptr);
-    ~NodeConnection();
+    enum ConnectionType { AUDIO, MIDI };
+    NodeConnection(Node * sourceNode = nullptr, Node * destNode = nullptr, ConnectionType ct = AUDIO);
+    virtual ~NodeConnection();
 
+    ConnectionType connectionType;
     Node * sourceNode;
     Node * destNode;
+
+    virtual void setSourceNode(Node* node);
+    virtual void setDestNode(Node* node);
+
+    virtual void handleNodesUpdated() {}
+
+    void inspectableDestroyed(Inspectable *) override;
+
+    var getJSONData() override;
+    void loadJSONDataItemInternal(var data) override;
+    virtual void loadJSONDataConnectionInternal(var data) {}
+
+    
+    DECLARE_ASYNC_EVENT(NodeConnection, Connection, connection, ENUM_LIST(SOURCE_NODE_CHANGED, DEST_NODE_CHANGED, CHANNELS_CONNECTION_CHANGED))
+};
+
+class NodeAudioConnection :
+    public NodeConnection
+{
+public:
+    NodeAudioConnection(Node* sourceNode = nullptr, Node* destNode = nullptr);
+    ~NodeAudioConnection();
 
     struct ChannelMap {
         int sourceChannel;
@@ -35,9 +59,8 @@ public:
     Array<ChannelMap> ghostChannelMap;
 
     void clearItem() override;
-
-    void setSourceNode(Node* node);
-    void setDestNode(Node* node);
+   
+    void handleNodesUpdated() override;
 
     void connectChannels(int sourceChannel, int destChannel);
     void disconnectChannels(int sourceChannel, int destChannel, bool updateMap = true, bool notify = true);
@@ -49,15 +72,23 @@ public:
     void audioInputsChanged(Node* n) override;
     void audioOutputsChanged(Node* n) override;
 
-    void inspectableDestroyed(Inspectable *) override;
-
     var getJSONData() override;
-    void loadJSONDataItemInternal(var data) override;
+    void loadJSONDataConnectionInternal(var data) override;
 
     var getChannelMapData();
     void loadChannelMapData(var data);
 
     InspectableEditor* getEditor(bool isRoot) override;
-    
-    DECLARE_ASYNC_EVENT(NodeConnection, Connection, connection, ENUM_LIST(SOURCE_NODE_CHANGED, DEST_NODE_CHANGED, CHANNELS_CONNECTION_CHANGED))
+
+};
+
+class NodeMIDIConnection :
+    public NodeConnection
+{
+public:
+    NodeMIDIConnection(Node* sourceNode = nullptr, Node* destNode = nullptr);
+    ~NodeMIDIConnection();
+
+    void clearItem() override;
+
 };

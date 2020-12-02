@@ -46,16 +46,17 @@ public:
 
 	Transport::Quantization playQuantization;
 
-	int curSample;
+	int curSample; //for tracking rec and play
+	int bufferNumSamples;
 	int freeRecStartOffset;
 	double timeAtStateChange;
 	bool finishRecordLock;
 
 	int globalBeatAtStart;
-	int curPlaySample;
+	int freePlaySample;
+	int curReadSample;
 	int numBeats;
 
-	
 	virtual void stateChanged();
 
 	virtual void recordOrPlay();
@@ -74,6 +75,8 @@ public:
 	virtual void onContainerParameterChanged(Parameter* p) override;
 
 	virtual void handleBeatChanged(bool isNewBar);
+
+	void processTrack(int blockSize);
 
 	//Helpers
 	bool hasContent(bool includeRecordPhase) const;

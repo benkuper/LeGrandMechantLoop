@@ -43,7 +43,10 @@ public:
         Colour contourColor;
         Colour fillColor;
 
+
         void trackStateUpdate(LooperTrack::TrackState s);
+
+        void updateContourColor();
 
         void paint(Graphics& g) override;
         void timerCallback() override;

@@ -82,7 +82,12 @@ void VSTProcessor::setupVST(PluginDescription* description)
             nodeRef->setAudioOutputs(description->numOutputChannels);
             vst->prepareToPlay(getSampleRate(), getBlockSize());
             vstNotifier.addMessage(new VSTEvent(VSTEvent::VST_SET, this));
-            DBG("VST IS READY");
+
+            nodeRef->setMIDIIO(vst->acceptsMidi(), false);
+        }
+        else
+        {
+            nodeRef->setMIDIIO(false, false);
         }
     }
 
@@ -117,14 +122,18 @@ void VSTProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& 
 {
     if (vst != nullptr)
     {
-        //LOG(vst->getNumInputChannels() << ", " << vst->getNumOutputChannels() << " / " << buffer.getNumChannels());
-        midiBuffer.clear();
-        midiCollector.removeNextBlockOfMessages(midiBuffer, buffer.getNumSamples());
+        if (currentDevice != nullptr)
+        {
+            inMidiBuffer.clear();
+            //LOG(vst->getNumInputChannels() << ", " << vst->getNumOutputChannels() << " / " << buffer.getNumChannels());
+            midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
+        }
+       
         vst->setPlayHead(Transport::getInstance());
-        vst->processBlock(buffer, midiBuffer);
+        vst->processBlock(buffer, inMidiBuffer);
     }
 
-    midiBuffer.clear();
+    inMidiBuffer.clear();
 }
 
 NodeViewUI* VSTProcessor::createNodeViewUI()

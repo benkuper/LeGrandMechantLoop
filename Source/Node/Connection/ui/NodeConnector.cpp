@@ -11,7 +11,8 @@
 #include "NodeConnector.h"
 #include "../../ui//NodeViewUI.h"
 
-NodeConnector::NodeConnector(NodeViewUI * nodeViewUI, bool isInput) :
+NodeConnector::NodeConnector(NodeViewUI * nodeViewUI, bool isInput, NodeConnection::ConnectionType connectionType) :
+    connectionType(connectionType),
     isInput(isInput),
     nodeViewUI(nodeViewUI)
 {
@@ -25,8 +26,18 @@ NodeConnector::~NodeConnector()
 
 void NodeConnector::paint(Graphics& g)
 {
-    bool hasChannels = !(isInput ? nodeViewUI->item->audioInputNames : nodeViewUI->item->audioOutputNames).isEmpty();
-    Colour c = hasChannels ? BLUE_COLOR : NORMAL_COLOR;
+    Colour c = NORMAL_COLOR;
+
+    if (connectionType == NodeConnection::AUDIO)
+    {
+        bool hasChannels = !(isInput ? nodeViewUI->item->audioInputNames : nodeViewUI->item->audioOutputNames).isEmpty();
+        if (hasChannels) c = BLUE_COLOR;
+    }
+    else if(connectionType == NodeConnection::MIDI)
+    {
+        c = GREEN_COLOR;
+    }
+
     g.setColour(c.brighter(isMouseOverOrDragging()?.3f:0));
     g.fillRoundedRectangle(getLocalBounds().toFloat(), 2);
 }

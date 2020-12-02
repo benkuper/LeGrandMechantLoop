@@ -11,6 +11,9 @@
 #pragma once
 
 #include "LooperNode.h"
+#include "Common/RingBuffer.h"
+#include "Engine/AudioManager.h"
+
 class AudioLooperTrack;
 
 class AudioLooperProcessor :
@@ -28,8 +31,9 @@ public:
     EnumParameter* trackOutputMode;
 
     virtual void updateOutTracks();
-    virtual void updateLooperTracks();
+    virtual LooperTrack * createLooperTrack(int index) override;
     virtual void updateRingBuffer();
+    virtual int getFadeNumSamples(); //for ring buffer fade
 
     virtual void audioSetupChanged() override;
 

@@ -25,10 +25,16 @@ public:
 
 	WeakReference<Node> nodeRef;
 
-	int hasInput; //defines if this processor is supposed to get input, even if the number of channels is zero
-	int hasOutput; //defines if this processor is supposed to provide output, even if the number of channels is zero
+	bool hasAudioInput; //defines if this processor is supposed to get input, even if the number of channels is zero
+	bool hasAudioOutput; //defines if this processor is supposed to provide output, even if the number of channels is zero
+	bool hasMIDIInput;
+	bool hasMIDIOutput;
 
 	FloatParameter* outRMS;
+
+	MidiBuffer inMidiBuffer;
+
+	virtual void clearProcessor() {}
 
 	virtual void updateInputsFromNode(bool updatePlayConfig = true);
 	virtual void updateInputsFromNodeInternal() {}
@@ -36,6 +42,8 @@ public:
 	virtual void updateOutputsFromNodeInternal() {}
 
 	virtual void updatePlayConfig();
+
+	void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer);
 
 	virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {}
 

@@ -28,7 +28,6 @@ public:
 	MIDIInputDevice* currentDevice;
 	std::unique_ptr<AudioPluginInstance> vst;
 	MidiMessageCollector midiCollector;
-	MidiBuffer midiBuffer; //own implementation to separate controllers
 
 	void setMIDIDevice(MIDIInputDevice* d);
 	void setupVST(PluginDescription* description);

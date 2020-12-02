@@ -11,6 +11,7 @@
 #include "Node.h"
 #include "Engine/AudioManager.h"
 #include "ui/NodeViewUI.h"
+#include "Connection/NodeConnection.h"
 
 Node::Node(StringRef name,var params) :
     BaseItem(name, true),
@@ -18,6 +19,8 @@ Node::Node(StringRef name,var params) :
     baseProcessor(nullptr),
     numInputs(0),
     numOutputs(0),
+    hasMIDIInput(false),
+    hasMIDIOutput(false),
     nodeNotifier(5)
 {
     saveAndLoadRecursiveData = true;
@@ -35,6 +38,7 @@ Node::~Node()
 
 void Node::clearItem()
 {
+    baseProcessor->clearProcessor();
     BaseItem::clearItem();
 }
 
@@ -91,6 +95,56 @@ void Node::setAudioOutputs(const StringArray& outputNames)
     if (baseProcessor != nullptr) baseProcessor->updateOutputsFromNode();
     nodeListeners.call(&NodeListener::audioOutputsChanged, this);
     nodeNotifier.addMessage(new NodeEvent(NodeEvent::OUTPUTS_CHANGED, this));
+}
+
+void Node::addInConnection(NodeConnection* c)
+{
+    baseProcessor->suspendProcessing(true);
+    if (c->connectionType == NodeConnection::AUDIO) inAudioConnections.addIfNotAlreadyThere((NodeAudioConnection*)c);
+    else if (c->connectionType == NodeConnection::MIDI) inMidiConnections.addIfNotAlreadyThere((NodeMIDIConnection*)c);
+    baseProcessor->suspendProcessing(false);
+}
+
+void Node::removeInConnection(NodeConnection* c)
+{
+    baseProcessor->suspendProcessing(true);
+    if (c->connectionType == NodeConnection::AUDIO) inAudioConnections.removeAllInstancesOf((NodeAudioConnection*)c);
+    else if (c->connectionType == NodeConnection::MIDI) inMidiConnections.removeAllInstancesOf((NodeMIDIConnection*)c);
+    baseProcessor->suspendProcessing(false);
+}
+
+void Node::addOutConnection(NodeConnection* c)
+{
+    baseProcessor->suspendProcessing(true);
+    if (c->connectionType == NodeConnection::AUDIO) outAudioConnections.addIfNotAlreadyThere((NodeAudioConnection*)c);
+    else if (c->connectionType == NodeConnection::MIDI) outMidiConnections.addIfNotAlreadyThere((NodeMIDIConnection*)c);
+    baseProcessor->suspendProcessing(false);
+}
+
+void Node::removeOutConnection(NodeConnection* c)
+{
+    baseProcessor->suspendProcessing(true);
+    if (c->connectionType == NodeConnection::AUDIO) outAudioConnections.removeAllInstancesOf((NodeAudioConnection*)c);
+    else if (c->connectionType == NodeConnection::MIDI) outMidiConnections.removeAllInstancesOf((NodeMIDIConnection*)c);
+    baseProcessor->suspendProcessing(false);
+}
+
+void Node::setMIDIIO(bool hasInput, bool hasOutput)
+{
+    if (hasMIDIInput != hasInput)
+    {
+        hasMIDIInput = hasInput;
+        nodeListeners.call(&NodeListener::midiInputChanged, this);
+        nodeNotifier.addMessage(new NodeEvent(NodeEvent::MIDI_INPUT_CHANGED, this));
+    }
+
+    if (hasMIDIOutput != hasOutput)
+    {
+        hasMIDIOutput = hasOutput;
+        nodeListeners.call(&NodeListener::midiOutputChanged, this);
+        nodeNotifier.addMessage(new NodeEvent(NodeEvent::MIDI_OUTPUT_CHANGED, this));
+    }
+
 }
 
 NodeViewUI* Node::createViewUI()

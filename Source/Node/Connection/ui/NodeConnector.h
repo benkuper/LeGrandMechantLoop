@@ -19,9 +19,10 @@ class NodeConnector :
     public SettableTooltipClient
 {
 public:
-    NodeConnector(NodeViewUI * n, bool isInput);
+    NodeConnector(NodeViewUI * n, bool isInput, NodeConnection::ConnectionType connectionType);
     ~NodeConnector();
 
+    NodeConnection::ConnectionType connectionType;
     bool isInput;
     NodeViewUI * nodeViewUI;
 

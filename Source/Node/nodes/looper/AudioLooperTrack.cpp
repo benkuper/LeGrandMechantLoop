@@ -54,7 +54,7 @@ void AudioLooperTrack::startRecordingInternal()
 	clearBuffer();
 
 	//Store a snapshot of the ring buffer that will be faded at the end of the recorded buffer
-	int fadeNumSamples = looper->getFadeNumSamples();
+	int fadeNumSamples = audioLooper->getFadeNumSamples();
 	if (fadeNumSamples > 0)
 	{
 		preRecBuffer.setSize(buffer.getNumChannels(), fadeNumSamples, false);
@@ -67,7 +67,7 @@ void AudioLooperTrack::finishRecordingAndPlayInternal()
 	Transport::Quantization q = looper->getQuantization();
 	Transport::Quantization fillMode = looper->getFreeFillMode();
 
-	if (isRecording(false)) updateBufferSize(curSample); //update size of buffer, will fill with silence if buffer is larger than what has been recorded
+	if (isRecording(false)) updateBufferSize(bufferNumSamples); //update size of buffer, will fill with silence if buffer is larger than what has been recorded
 
 	if (freeRecStartOffset > 0 && q == Transport::FREE && fillMode != Transport::FREE) //This is made to align recorded content to bar/beat by offsetting the data with freeRecStartOffset
 	{
@@ -86,11 +86,11 @@ void AudioLooperTrack::finishRecordingAndPlayInternal()
 	if (q != Transport::FREE || (q == Transport::FREE && fillMode == Transport::FREE))
 	{
 		//fade with ring buffer using looper fadeTimeMS
-		int fadeNumSamples = looper->getFadeNumSamples();
+		int fadeNumSamples = audioLooper->getFadeNumSamples();
 
 		if (fadeNumSamples)
 		{
-			int bufferStartSample = curSample - 1 - fadeNumSamples;
+			int bufferStartSample = bufferNumSamples - 1 - fadeNumSamples;
 
 			buffer.applyGainRamp(bufferStartSample, fadeNumSamples, 1, 0);
 			for (int i = 0; i < buffer.getNumChannels(); i++)
@@ -101,18 +101,18 @@ void AudioLooperTrack::finishRecordingAndPlayInternal()
 			preRecBuffer.clear();
 		}
 	}
+
 }
 
 void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>& outputBuffer, int numMainChannels, bool outputIfRecording)
 {
+	int blockSize = inputBuffer.getNumSamples();
+	int trackChannel = numMainChannels + index;
+	bool outputToMainTrack = false;
+	bool outputToSeparateTrack = outputBuffer.getNumChannels() > trackChannel;
 	float rmsVal = 0;
 
-	bool outputToMainTrack = false;
-	int trackChannel = numMainChannels + index;
-	bool outputToSeparateTrack = outputBuffer.getNumChannels() > trackChannel;
-
-	int startReadSample = 0;
-	int blockSize = inputBuffer.getNumSamples();
+	if (buffer.getNumSamples() == 0) return;
 
 	if (isRecording(false))
 	{
@@ -122,58 +122,36 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 			{
 				buffer.copyFrom(i, curSample, inputBuffer, i, 0, blockSize);
 			}
-
-			curSample += blockSize;
-			startReadSample = curSample;
-
 			if (outputIfRecording) outputToMainTrack = true;
 		}
 	}
-	else if (isPlaying(false))
-	{
-		outputToMainTrack = true;
 
-		if (playQuantization == Transport::FREE)
-		{
-			if (curPlaySample + blockSize >= buffer.getNumSamples()) curPlaySample = 0;
-			startReadSample = curPlaySample;
-			curPlaySample += blockSize;
-		}
-		else //bar, beat
-		{
-			int curBeat = Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart;
-			int trackBeat = curBeat % numBeats;
+	processTrack(blockSize);
 
-			int relBeatSamples = Transport::getInstance()->getRelativeBeatSamples();
-			startReadSample = Transport::getInstance()->getSamplesForBeat(trackBeat, 0, false) + relBeatSamples;
-
-			loopBeat->setValue(trackBeat);
-			loopBar->setValue(floor(trackBeat * 1.0f / Transport::getInstance()->beatsPerBar->intValue()));
-		}
-
-		loopProgression->setValue(startReadSample * 1.0f / buffer.getNumSamples());
-	}
+	if (isPlaying(false)) outputToMainTrack = true;
 
 	if (outputToSeparateTrack)
 	{
 		outputBuffer.clear(trackChannel, 0, blockSize);
 	}
 
-	if ((outputToMainTrack || outputToSeparateTrack) && (startReadSample <= buffer.getNumSamples()))
+	float vol = active->boolValue() ? volume->floatValue() : 0;
+
+	if ((outputToMainTrack || outputToSeparateTrack) && (curReadSample <= bufferNumSamples))
 	{
 		for (int i = 0; i < numChannels; i++)
 		{
 			if (outputToMainTrack)
 			{
-				outputBuffer.addFrom(i, 0, buffer, i, startReadSample, blockSize, volume->floatValue());
+				outputBuffer.addFrom(i, 0, buffer, i, curReadSample, blockSize, vol);
 			}
 
 			if (outputToSeparateTrack)
 			{
-				outputBuffer.addFrom(trackChannel, 0, buffer, i, startReadSample, blockSize, volume->floatValue());
+				outputBuffer.addFrom(trackChannel, 0, buffer, i, curReadSample, blockSize, vol);
 			}
 
-			rmsVal = jmax(rmsVal, buffer.getRMSLevel(i, startReadSample, blockSize));
+			rmsVal = jmax(rmsVal, buffer.getRMSLevel(i, curReadSample, blockSize));
 		}
 
 		float curVal = rms->floatValue();

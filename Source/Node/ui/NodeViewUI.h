@@ -25,6 +25,8 @@ public:
 
     std::unique_ptr<NodeConnector> inAudioConnector;
     std::unique_ptr<NodeConnector> outAudioConnector;
+    std::unique_ptr<NodeConnector> inMIDIConnector;
+    std::unique_ptr<NodeConnector> outMIDIConnector;
 
     std::unique_ptr<RMSSliderUI> outRMSUI;
 

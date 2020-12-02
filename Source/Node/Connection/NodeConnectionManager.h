@@ -19,10 +19,15 @@ public:
     NodeConnectionManager();
     ~NodeConnectionManager();
 
-    void addConnection(Node * sourceNode, Node * destNode, var channelMapData = var());
-    Array<UndoableAction*> getAddConnectionUndoableAction(Node* sourceNode, Node* destNode, var channelMapData = var());
-    virtual NodeConnection* getConnectionForSourceAndDest(Node* sourceNode, Node* destNode);
+    NodeConnection* createConnectionForType(NodeConnection::ConnectionType t);
+
+    void addConnection(Node * sourceNode, Node * destNode, NodeConnection::ConnectionType connectionType, var channelMapData = var());
+    Array<UndoableAction*> getAddConnectionUndoableAction(Node* sourceNode, Node* destNode, NodeConnection::ConnectionType connectionType, var channelMapData = var());
+    virtual NodeConnection* getConnectionForSourceAndDest(Node* sourceNode, Node* destNode, NodeConnection::ConnectionType connectionType);
     Array<UndoableAction*> getRemoveAllLinkedConnectionsActions(Array<Node*> itemsToRemove);
+
+    NodeConnection* addItemFromData(var data, bool addToUndo = true) override;
+    Array<NodeConnection *> addItemsFromData(var data, bool addToUndo = true) override;
 
     void afterLoadJSONDataInternal() override;
 };

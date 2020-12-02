@@ -38,8 +38,10 @@ NodeConnectionManagerViewUI::~NodeConnectionManagerViewUI()
 {
 	NodeViewUI* sourceUI = nodeManagerUI->getUIForItem(item->sourceNode);
 	NodeViewUI* destUI = nodeManagerUI->getUIForItem(item->destNode);
+	NodeConnector* sourceConnector = item->connectionType == NodeConnection::AUDIO ? sourceUI->outAudioConnector.get() : sourceUI->outMIDIConnector.get();
+	NodeConnector* destConnector = item->connectionType == NodeConnection::AUDIO ? destUI->inAudioConnector.get() : destUI->inMIDIConnector.get();
 
-	return new NodeConnectionViewUI(item, sourceUI->outAudioConnector.get(), destUI->inAudioConnector.get());
+	return new NodeConnectionViewUI(item, sourceConnector, destConnector);
 }
 
 void NodeConnectionManagerViewUI::placeItems(Rectangle<int> &r)
@@ -71,9 +73,9 @@ void NodeConnectionManagerViewUI::updateCreateConnection()
 {
 	if (tmpConnectionUI == nullptr) return;
 
-	NodeViewUI* excludeUI = (tmpConnectionLookForInput  ? tmpConnectionUI->sourceConnector : tmpConnectionUI->destConnector)->nodeViewUI;
-	NodeConnector* candidateConnector = nodeManagerUI->getCandidateConnector(tmpConnectionLookForInput, excludeUI);
-	
+	NodeConnector* baseConnector = tmpConnectionLookForInput ? tmpConnectionUI->sourceConnector : tmpConnectionUI->destConnector;
+	NodeConnector* candidateConnector = nodeManagerUI->getCandidateConnector(tmpConnectionLookForInput, baseConnector->connectionType, baseConnector->nodeViewUI);
+
 
 	if (tmpConnectionLookForInput) tmpConnectionUI->setDestConnector(candidateConnector);
 	else tmpConnectionUI->setSourceConnector(candidateConnector);
@@ -95,17 +97,20 @@ void NodeConnectionManagerViewUI::endCreateConnection()
 		}
 		else
 		{
-			Array<UndoableAction*> actions;
 			var channelMapData;
-			if (tmpConnectionToReplace != nullptr)
+			Array<UndoableAction*> actions;
+
+			if (tmpConnectionToReplace != nullptr && tmpConnectionToReplace->connectionType == NodeConnection::AUDIO)
 			{
-				channelMapData = tmpConnectionToReplace->getChannelMapData();
+				channelMapData = ((NodeAudioConnection *)tmpConnectionToReplace)->getChannelMapData();
 				actions.addArray(manager->getRemoveItemUndoableAction(tmpConnectionToReplace));
 			}
 
-			actions.addArray(manager->getAddConnectionUndoableAction(tmpConnectionUI->sourceConnector->nodeViewUI->item, tmpConnectionUI->destConnector->nodeViewUI->item, channelMapData));
+			NodeConnection::ConnectionType connectionType = tmpConnectionUI->sourceConnector->connectionType;
 
-			UndoMaster::getInstance()->performActions("Move Connection", actions);
+			actions.addArray(manager->getAddConnectionUndoableAction(tmpConnectionUI->sourceConnector->nodeViewUI->item, tmpConnectionUI->destConnector->nodeViewUI->item, connectionType, channelMapData));
+
+			UndoMaster::getInstance()->performActions(tmpConnectionToReplace != nullptr?"Move Connection":"Add Connection", actions);
 		}
 	}
 

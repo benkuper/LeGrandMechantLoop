@@ -79,8 +79,8 @@ void LooperTrackUI::resized()
     clearUI->setBounds(r.removeFromTop(20).reduced(1));
 
     activeUI->setBounds(r.removeFromBottom(r.getWidth()).reduced(1));
-    rmsUI->setBounds(r.removeFromRight(8).reduced(1));
-    volumeUI->setBounds(r.reduced(1));
+    if(rmsUI != nullptr) rmsUI->setBounds(r.removeFromRight(8).reduced(1));
+    if(volumeUI != nullptr) volumeUI->setBounds(r.reduced(1));
 }
 
 void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
@@ -90,6 +90,7 @@ void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
         if (e.targetControllable == track->trackState)
         {
             feedback.trackStateUpdate(track->trackState->getValueDataAsEnum<LooperTrack::TrackState>());
+            repaint();
         }
         else if (e.targetControllable == track->isCurrent)
         {
@@ -103,11 +104,13 @@ void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
 LooperTrackUI::Feedback::Feedback(LooperTrack* t) :
     track(t)
 {
+    updateContourColor();
 }
 
 LooperTrackUI::Feedback::~Feedback()
 {
 }
+
 
 void LooperTrackUI::Feedback::trackStateUpdate(LooperTrack::TrackState s)
 {
@@ -121,13 +124,42 @@ void LooperTrackUI::Feedback::trackStateUpdate(LooperTrack::TrackState s)
     case LooperTrack::STOPPED:
     case LooperTrack::IDLE:
         stopTimer();
-        repaint();
         break;
 
     default:
-        repaint();
         break;
     }
+   
+    updateContourColor();
+    repaint();
+}
+
+void LooperTrackUI::Feedback::updateContourColor()
+{
+    LooperTrack::TrackState s = track->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
+    switch (s)
+    {
+    case LooperTrack::IDLE: contourColor = NORMAL_COLOR; break;
+    case LooperTrack::WILL_RECORD:
+    case LooperTrack::RECORDING:
+    case LooperTrack::FINISH_RECORDING:
+        contourColor = RED_COLOR;
+        break;
+
+    case LooperTrack::WILL_PLAY:
+    case LooperTrack::PLAYING:
+        contourColor = GREEN_COLOR;
+        break;
+
+    case LooperTrack::WILL_STOP:
+        contourColor = BLUE_COLOR;
+        break;
+
+    case LooperTrack::STOPPED:
+        contourColor = NORMAL_COLOR.brighter();
+        break;
+    }
+
 }
 
 void LooperTrackUI::Feedback::paint(Graphics& g)
@@ -136,25 +168,18 @@ void LooperTrackUI::Feedback::paint(Graphics& g)
 
     LooperTrack::TrackState s = track->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
     fillColor = NORMAL_COLOR;
-    contourColor = Colours::black;
     switch (s)
     {
-    case LooperTrack::IDLE: break;
-    case LooperTrack::WILL_RECORD: contourColor = RED_COLOR; break;
-    case LooperTrack::RECORDING: 
+    case LooperTrack::RECORDING:
     {
         float f = cosf(Time::getApproximateMillisecondCounter() / 500.0f) * .5f + .5f;
         fillColor = RED_COLOR.darker(f); break;
     }
-
     case LooperTrack::FINISH_RECORDING: fillColor = HIGHLIGHT_COLOR; break;
     case LooperTrack::PLAYING: fillColor = GREEN_COLOR; break;
     case LooperTrack::WILL_STOP: fillColor = BLUE_COLOR; break;
     case LooperTrack::STOPPED: fillColor = fillColor.brighter();  break;
-    case LooperTrack::WILL_PLAY: contourColor = GREEN_COLOR; break;
     }
-
-    if (contourColor == Colours::black) contourColor = fillColor.brighter(.3f);
 
     if (track->isPlaying(false))
     {

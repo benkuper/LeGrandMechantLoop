@@ -13,7 +13,7 @@
 #include "LooperTrack.h"
 
 LooperProcessor::LooperProcessor(Node* node, LooperType looperType) :
-	GenericNodeProcessor(node),
+	GenericNodeProcessor(node, looperType == AUDIO, looperType == AUDIO, looperType == AUDIO),
 	looperType(looperType),
 	tracksCC("Tracks"),
 	currentTrack(nullptr)
@@ -57,6 +57,28 @@ LooperProcessor::~LooperProcessor()
 }
 
 
+
+void LooperProcessor::updateLooperTracks()
+{
+	bool shouldResume = !isSuspended();
+	suspendProcessing(true);
+
+	while (tracksCC.controllableContainers.size() > numTracks->intValue())
+	{
+		LooperTrack* t = getTrackForIndex(tracksCC.controllableContainers.size() - 1);
+		if (t->isCurrent) setCurrentTrack(nullptr);
+
+		tracksCC.removeChildControllableContainer(t);
+	}
+
+	Array<ControllableContainer*> tracksToAdd;
+	for (int i = tracksCC.controllableContainers.size(); i < numTracks->intValue(); i++)
+	{
+		tracksCC.addChildControllableContainer(createLooperTrack(i), true);
+	}
+
+	if (shouldResume) suspendProcessing(false);
+}
 
 void LooperProcessor::setCurrentTrack(LooperTrack* t)
 {
@@ -124,6 +146,7 @@ void LooperProcessor::onContainerParameterChanged(Parameter* p)
 
 	if (p == numTracks)
 	{
+		updateLooperTracks();
 		currentTrackIndex->setRange(1, numTracks->intValue());
 	}
 	else if (p == currentTrackIndex)
@@ -175,11 +198,6 @@ bool LooperProcessor::isOneTrackRecording(bool includeWillRecord)
 		if (((LooperTrack*)cc.get())->isRecording(includeWillRecord)) return true;
 	}
 	return false;
-}
-
-int LooperProcessor::getFadeNumSamples()
-{
-	return fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000;
 }
 
 LooperTrack* LooperProcessor::getTrackForIndex(int index)

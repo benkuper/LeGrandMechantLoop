@@ -19,35 +19,46 @@ NodeConnectionManager::~NodeConnectionManager()
 {
 }
 
-void NodeConnectionManager::addConnection(Node* sourceNode, Node* destNode, var channelMapData)
+NodeConnection* NodeConnectionManager::createConnectionForType(NodeConnection::ConnectionType t)
 {
-    if (getConnectionForSourceAndDest(sourceNode, destNode))
-    {
-        LOGWARNING("Connection already exists !");
-        return;
-    }
-
-    NodeConnection* connection = new NodeConnection(sourceNode, destNode);
-    if (channelMapData.isObject()) connection->loadChannelMapData(channelMapData);
-    addItem(connection);
+    if (t == NodeConnection::AUDIO) return new NodeAudioConnection();
+    else if (t == NodeConnection::MIDI) return new NodeMIDIConnection();
+    return nullptr;
 }
 
-Array<UndoableAction*> NodeConnectionManager::getAddConnectionUndoableAction(Node* sourceNode, Node* destNode, var channelMapData)
+void NodeConnectionManager::addConnection(Node* sourceNode, Node* destNode, NodeConnection::ConnectionType connectionType, var channelMapData)
 {
-    if (getConnectionForSourceAndDest(sourceNode, destNode))
+    UndoMaster::getInstance()->performActions("Add Connection", getAddConnectionUndoableAction(sourceNode, destNode, connectionType, channelMapData));
+}
+
+Array<UndoableAction*> NodeConnectionManager::getAddConnectionUndoableAction(Node* sourceNode, Node* destNode, NodeConnection::ConnectionType connectionType, var channelMapData)
+{
+    if (getConnectionForSourceAndDest(sourceNode, destNode, connectionType))
     {
         LOGWARNING("Connection already exists !");
         return Array<UndoableAction*>();
     }
 
-    NodeConnection* connection = new NodeConnection(sourceNode, destNode);
-    if (channelMapData.isObject()) connection->loadChannelMapData(channelMapData);
+    NodeConnection* connection = nullptr;
+    if (connectionType == NodeConnection::AUDIO)
+    {
+        NodeAudioConnection* nc = new NodeAudioConnection(sourceNode, destNode);
+        if (channelMapData.isObject()) nc->loadChannelMapData(channelMapData);
+        connection = nc;
+    }
+    else if (connectionType == NodeConnection::MIDI)
+    {
+        connection = new NodeMIDIConnection(sourceNode, destNode);
+    }
+
+    if (connection == nullptr) return Array<UndoableAction*>();
+
     return getAddItemUndoableAction(connection);
 }
 
-NodeConnection* NodeConnectionManager::getConnectionForSourceAndDest(Node* sourceNode, Node* destNode)
+NodeConnection* NodeConnectionManager::getConnectionForSourceAndDest(Node* sourceNode, Node* destNode, NodeConnection::ConnectionType connectionType)
 {
-    for (auto& c : items) if (c->sourceNode == sourceNode && c->destNode == destNode) return c;
+    for (auto& c : items) if (c->sourceNode == sourceNode && c->destNode == destNode && c->connectionType == connectionType) return c;
     return nullptr;
 }
 
@@ -64,6 +75,26 @@ Array<UndoableAction*> NodeConnectionManager::getRemoveAllLinkedConnectionsActio
     actions.addArray(getRemoveItemsUndoableAction(connectionsToRemove));
     return actions;
 }
+
+NodeConnection* NodeConnectionManager::addItemFromData(var data, bool addToUndo)
+{
+    NodeConnection::ConnectionType t = (NodeConnection::ConnectionType)(int)data.getProperty("connectionType", NodeConnection::AUDIO);
+    if (NodeConnection * nc = createConnectionForType(t)) return addItem(nc, data, addToUndo);;
+    return nullptr;
+}
+
+Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool addToUndo)
+{
+    Array<NodeConnection*> itemsToAdd;
+
+    for (int i = 0; i < data.size(); i++)
+    {
+        NodeConnection::ConnectionType t = (NodeConnection::ConnectionType)(int)data[i].getProperty("connectionType", NodeConnection::AUDIO);
+        if (NodeConnection* nc = createConnectionForType(t)) itemsToAdd.add(nc);
+    }
+    return addItems(itemsToAdd, data, addToUndo);
+}
+
 
 void NodeConnectionManager::afterLoadJSONDataInternal()
 {

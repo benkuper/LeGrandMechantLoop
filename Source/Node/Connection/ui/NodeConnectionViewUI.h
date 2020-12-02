@@ -49,8 +49,9 @@ public:
         public Component
     {
     public:
-        Handle();
+        Handle(Colour c);
         ~Handle() {}
+        Colour color;
         void paint(Graphics& g) override;
     };
 

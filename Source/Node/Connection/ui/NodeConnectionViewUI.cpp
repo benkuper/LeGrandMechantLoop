@@ -15,7 +15,9 @@
 NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConnector * _sourceConnector, NodeConnector * _destConnector) :
     BaseItemMinimalUI(connection),
 	sourceConnector(nullptr),
-	destConnector(nullptr)
+	destConnector(nullptr),
+	sourceHandle(connection != nullptr ? (connection->connectionType == NodeConnection::AUDIO ? BLUE_COLOR : GREEN_COLOR) : NORMAL_COLOR),
+	destHandle(connection != nullptr?(connection->connectionType == NodeConnection::AUDIO?BLUE_COLOR:GREEN_COLOR):NORMAL_COLOR)
 {
 	setOpaque(false);
 
@@ -25,10 +27,14 @@ NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConne
 	setRepaintsOnMouseActivity(true);
 	autoDrawContourWhenSelected = false;
 
-	sourceHandle.setSize(16, 16);
-	addAndMakeVisible(&sourceHandle);
-	destHandle.setSize(16, 16);
-	addAndMakeVisible(&destHandle);
+	
+	if (connection != nullptr)
+	{
+		sourceHandle.setSize(16, 16);
+		destHandle.setSize(16, 16);
+		addAndMakeVisible(&sourceHandle);
+		addAndMakeVisible(&destHandle);
+	}
 
 	if(item != nullptr) item->addAsyncConnectionListener(this);
 }
@@ -43,18 +49,36 @@ NodeConnectionViewUI::~NodeConnectionViewUI()
 
 void NodeConnectionViewUI::paint(Graphics& g)
 {
-	Colour c = item != nullptr ? (item->isSelected ? HIGHLIGHT_COLOR : (item->channelMap.size() > 0 ? BLUE_COLOR:NORMAL_COLOR)) : YELLOW_COLOR;
+
+	NodeAudioConnection* ac = nullptr;
+	
+	Colour c = YELLOW_COLOR;
+
+	if (item != nullptr)
+	{
+		NodeConnection::ConnectionType ct = sourceConnector != nullptr ? sourceConnector->connectionType : destConnector->connectionType;
+		if (item->connectionType == NodeConnection::AUDIO) ac = (NodeAudioConnection*)item;
+		if (item->isSelected) c = HIGHLIGHT_COLOR;
+		else
+		{
+			if (item != nullptr) c = ct == NodeConnection::AUDIO ? BLUE_COLOR : GREEN_COLOR;
+			if (ac != nullptr && ac->channelMap.size() == 0) c = NORMAL_COLOR;
+		}
+	}
+
 	if (isMouseOverOrDragging()) c = c.brighter();
 	g.setColour(c);
 	g.strokePath(path, PathStrokeType(isMouseOverOrDragging()?3:1));
 
-	if (item != nullptr)
+	if (item == nullptr) return;
+
+	if (ac != nullptr)
 	{
 		Rectangle<float> tr = Rectangle<float>(0, 0, 12, 12).withCentre(path.getPointAlongPath(path.getLength() * .5f));
 		g.fillEllipse(tr);
 		g.setColour(c.darker(.8f));
 		g.setFont(g.getCurrentFont().withHeight(12).boldened());
-		g.drawText(String(item->channelMap.size()), tr, Justification::centred);
+		g.drawText(String(ac->channelMap.size()), tr, Justification::centred);
 	}
 }
 
@@ -149,7 +173,8 @@ void NodeConnectionViewUI::newMessage(const NodeConnection::ConnectionEvent& e)
 	if (e.type == e.CHANNELS_CONNECTION_CHANGED) repaint();
 }
 
-NodeConnectionViewUI::Handle::Handle()
+NodeConnectionViewUI::Handle::Handle(Colour c):
+	color(c)
 {
 	setRepaintsOnMouseActivity(true);
 }
@@ -157,9 +182,9 @@ NodeConnectionViewUI::Handle::Handle()
 void NodeConnectionViewUI::Handle::paint(Graphics& g)
 {
 	Rectangle<float> r = getLocalBounds().reduced(4).toFloat();
-	g.setColour(isMouseOverOrDragging()?BLUE_COLOR.brighter(.1f):BG_COLOR);
+	g.setColour(isMouseOverOrDragging()? color.brighter(.1f):BG_COLOR);
 	g.fillEllipse(r);
 	
-	g.setColour(BLUE_COLOR.brighter(isMouseOverOrDragging()?.3f:0));
+	g.setColour(color.brighter(isMouseOverOrDragging()?.3f:0));
 	g.drawEllipse(r, 1);
 }

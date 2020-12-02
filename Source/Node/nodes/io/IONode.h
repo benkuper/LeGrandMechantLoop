@@ -30,6 +30,7 @@ public:
 	void updateIOFromNode();
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
 	static const String getTypeStringStatic() { return "Audio IO"; }
 

@@ -90,6 +90,11 @@ void IOProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 	}
 }
 
+void IOProcessor::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+{
+	buffer.clear();
+}
+
 var IOProcessor::getJSONData()
 {
 	var data = GenericNodeProcessor::getJSONData();

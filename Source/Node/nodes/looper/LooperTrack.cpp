@@ -20,8 +20,10 @@ LooperTrack::LooperTrack(LooperProcessor * looper, int index) :
 	index(index),
 	freeRecStartOffset(0),
 	curSample(0),
+	bufferNumSamples(0),
 	globalBeatAtStart(0),
-	curPlaySample(0),
+	freePlaySample(0),
+	curReadSample(0),
 	numBeats(0),
 	finishRecordLock(false)
 {
@@ -117,7 +119,7 @@ void LooperTrack::stateChanged()
 
 	case PLAYING:
 	{
-		curPlaySample = 0; //for freeplaybck
+		freePlaySample = 0; //for freeplaybck
 	}
 	break;
 
@@ -127,7 +129,7 @@ void LooperTrack::stateChanged()
 
 	case STOPPED:
 	{
-		curPlaySample = 0; //for free playback
+		freePlaySample = 0;
 	}
 	break;
 
@@ -203,6 +205,7 @@ void LooperTrack::finishRecordingAndPlay()
 
 
 	finishRecordLock = true;
+	bufferNumSamples = curSample;
 
 	finishRecordingAndPlayInternal();
 
@@ -224,8 +227,8 @@ void LooperTrack::cancelRecording()
 
 void LooperTrack::clearBuffer()
 {
-	
 	curSample = 0;
+	bufferNumSamples = 0;
 	trackState->setValueWithData(IDLE);
 }
 
@@ -322,6 +325,48 @@ void LooperTrack::handleBeatChanged(bool isNewBar)
 		if ((playQuantization == Transport::BAR && isNewBar) || (playQuantization == Transport::BEAT)) handleWaiting();
 	}
 	
+}
+
+void LooperTrack::processTrack(int blockSize)
+{
+	int startReadSample = 0;
+
+	if (isRecording(false))
+	{
+		if (!finishRecordLock)
+		{
+			curSample += blockSize;
+			startReadSample = curSample;
+		}
+	}
+	else if (isPlaying(false))
+	{
+		if (playQuantization == Transport::FREE)
+		{
+			if (freePlaySample + blockSize >= bufferNumSamples)
+			{
+				freePlaySample = 0;
+			}
+			startReadSample = freePlaySample;
+			freePlaySample += blockSize;
+		}
+		else //bar, beat
+		{
+			int curBeat = Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart;
+			int trackBeat = curBeat % numBeats;
+
+			int relBeatSamples = Transport::getInstance()->getRelativeBeatSamples();
+			startReadSample = Transport::getInstance()->getSamplesForBeat(trackBeat, 0, false) + relBeatSamples;
+
+			loopBeat->setValue(trackBeat);
+			loopBar->setValue(floor(trackBeat * 1.0f / Transport::getInstance()->beatsPerBar->intValue()));
+		}
+
+		loopProgression->setValue(startReadSample * 1.0f / bufferNumSamples);
+		curSample = startReadSample;
+	}
+
+	curReadSample = startReadSample;
 }
 
 bool LooperTrack::hasContent(bool includeRecordPhase) const

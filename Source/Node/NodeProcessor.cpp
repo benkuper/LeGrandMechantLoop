@@ -13,11 +13,11 @@
 #include "ui/NodeViewUI.h"
 #include "Engine/AudioManager.h"
 
-NodeProcessor::NodeProcessor(Node* n, bool hasInput, bool hasOutput, bool useOutRMS) : 
+NodeProcessor::NodeProcessor(Node* n, bool hasAudioInput, bool hasAudioOutput, bool useOutRMS) :
     ControllableContainer("Processor"),
     nodeRef(n),
-    hasInput(hasInput),
-    hasOutput(hasOutput),
+    hasAudioInput(hasAudioInput),
+    hasAudioOutput(hasAudioOutput),
     outRMS(nullptr)
 {
     hideEditorHeader = true;
@@ -28,7 +28,6 @@ NodeProcessor::NodeProcessor(Node* n, bool hasInput, bool hasOutput, bool useOut
         outRMS->setControllableFeedbackOnly(true);
     }
 }
-
 
 void NodeProcessor::updateInputsFromNode(bool _updatePlayConfig)
 {
@@ -60,6 +59,11 @@ void NodeProcessor::updatePlayConfig()
     //NLOG(nodeRef->niceName, "Buffer has now " << getChannel)
 }
 
+void NodeProcessor::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)
+{
+    inMidiBuffer.addEvents(inputBuffer, 0, getBlockSize(), 0);
+}
+
 const String NodeProcessor::getName() const {
     return nodeRef.wasObjectDeleted() ? "[Deleted]" : nodeRef->niceName; 
 }
@@ -74,7 +78,7 @@ void NodeProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMes
 
     if (!nodeRef->enabled->boolValue())
     {
-        //processBlockBypassed(buffer, midiMessages);
+        processBlockBypassed(buffer, midiMessages);
         return;
     }
 
@@ -84,7 +88,7 @@ void NodeProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMes
         return;
     }
 
-    processBlockInternal(buffer, midiMessages);
+    processBlockInternal(buffer, inMidiBuffer);
 
     if (outRMS != nullptr)
     {
