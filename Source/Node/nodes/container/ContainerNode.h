@@ -45,10 +45,17 @@ public:
     void updateOutputsFromNodeInternal() override;
 
     void nodePlayConfigUpdated(Node* n) override;
+    
+    void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
 
     void updatePlayConfig() override;
     void prepareToPlay(double sampleRate, int maxBlockSize) override;
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    
+    
+
+    var getJSONData() override;
+    void loadJSONDataInternal(var data) override;
 
     static const String getTypeStringStatic() { return "Container"; }
 

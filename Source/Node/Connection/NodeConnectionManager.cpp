@@ -10,9 +10,9 @@
 
 #include "NodeConnectionManager.h"
 
-NodeConnectionManager::NodeConnectionManager(AudioProcessorGraph* graph) :
+NodeConnectionManager::NodeConnectionManager(NodeManager * nodeManager) :
     BaseManager("Connections"),
-    graph(graph)
+    nodeManager(nodeManager)
 {
 }
 
@@ -22,8 +22,8 @@ NodeConnectionManager::~NodeConnectionManager()
 
 NodeConnection* NodeConnectionManager::createConnectionForType(NodeConnection::ConnectionType t)
 {
-    if (t == NodeConnection::AUDIO) return new NodeAudioConnection();
-    else if (t == NodeConnection::MIDI) return new NodeMIDIConnection();
+    if (t == NodeConnection::AUDIO) return new NodeAudioConnection(nodeManager);
+    else if (t == NodeConnection::MIDI) return new NodeMIDIConnection(nodeManager);
     return nullptr;
 }
 
@@ -43,13 +43,13 @@ Array<UndoableAction*> NodeConnectionManager::getAddConnectionUndoableAction(Nod
     NodeConnection* connection = nullptr;
     if (connectionType == NodeConnection::AUDIO)
     {
-        NodeAudioConnection* nc = new NodeAudioConnection(sourceNode, destNode);
+        NodeAudioConnection* nc = new NodeAudioConnection(nodeManager, sourceNode, destNode);
         if (channelMapData.isObject()) nc->loadChannelMapData(channelMapData);
         connection = nc;
     }
     else if (connectionType == NodeConnection::MIDI)
     {
-        connection = new NodeMIDIConnection(sourceNode, destNode);
+        connection = new NodeMIDIConnection(nodeManager, sourceNode, destNode);
     }
 
     if (connection == nullptr) return Array<UndoableAction*>();
@@ -94,37 +94,6 @@ Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool ad
         if (NodeConnection* nc = createConnectionForType(t)) itemsToAdd.add(nc);
     }
     return addItems(itemsToAdd, data, addToUndo);
-}
-
-
-void NodeConnectionManager::addItemInternal(NodeConnection* nc, var data)
-{
-    if (NodeAudioConnection* nac = dynamic_cast<NodeAudioConnection*>(nc))
-    {
-        nac->addAudioConnectionListener(this);
-        for (auto& cm : nac->channelMap) //add existing channel mappings
-        {
-            graph->addConnection({ {nac->sourceNode->nodeGraphID, cm.sourceChannel}, { nac->destNode->nodeGraphID, cm.destChannel } });
-        }
-    }
-}
-
-void NodeConnectionManager::removeItemInternal(NodeConnection* nc)
-{
-    if (NodeAudioConnection* nac = dynamic_cast<NodeAudioConnection*>(nc))
-    {
-        nac->removeAudioConnectionListener(this);
-    }
-}
-
-void NodeConnectionManager::askForConnectChannels(NodeConnection* nc, int sourceChannel, int destChannel)
-{
-    graph->addConnection({ {nc->sourceNode->nodeGraphID, sourceChannel},{nc->destNode->nodeGraphID, destChannel} });
-}
-
-void NodeConnectionManager::askForDisconnectChannels(NodeConnection* nc, int sourceChannel, int destChannel)
-{
-    graph->removeConnection({ {nc->sourceNode->nodeGraphID, sourceChannel},{nc->destNode->nodeGraphID, destChannel} });
 }
 
 void NodeConnectionManager::afterLoadJSONDataInternal()

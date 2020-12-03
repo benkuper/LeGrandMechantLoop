@@ -13,6 +13,8 @@
 #include "JuceHeader.h"
 #include "Node/Node.h"
 
+class NodeManager;
+
 class NodeConnection :
     public BaseItem,
     public Inspectable::InspectableListener,
@@ -20,8 +22,10 @@ class NodeConnection :
 {
 public:
     enum ConnectionType { AUDIO, MIDI };
-    NodeConnection(Node * sourceNode = nullptr, Node * destNode = nullptr, ConnectionType ct = AUDIO);
+    NodeConnection(NodeManager * nodeManager = nullptr, Node * sourceNode = nullptr, Node * destNode = nullptr, ConnectionType ct = AUDIO);
     virtual ~NodeConnection();
+
+    NodeManager* nodeManager;
 
     ConnectionType connectionType;
     Node * sourceNode;
@@ -47,7 +51,7 @@ class NodeAudioConnection :
     public NodeConnection
 {
 public:
-    NodeAudioConnection(Node* sourceNode = nullptr, Node* destNode = nullptr);
+    NodeAudioConnection(NodeManager* nodeManager = nullptr, Node* sourceNode = nullptr, Node* destNode = nullptr);
     ~NodeAudioConnection();
 
     struct ChannelMap {
@@ -79,18 +83,6 @@ public:
     var getChannelMapData();
     void loadChannelMapData(var data);
 
-    class AudioConnectionListener
-    {
-    public:
-        virtual ~AudioConnectionListener() {}
-        virtual void askForConnectChannels(NodeConnection * nc, int sourceChannel, int destChannel) {}
-        virtual void askForDisconnectChannels(NodeConnection* nc, int sourceChannel, int destChannel) {}
-    };
-
-    ListenerList<AudioConnectionListener> audioConnectionListeners;
-    void addAudioConnectionListener(AudioConnectionListener* newListener) { audioConnectionListeners.add(newListener); }
-    void removeAudioConnectionListener(AudioConnectionListener* listener) { audioConnectionListeners.remove(listener); }
-
     InspectableEditor* getEditor(bool isRoot) override;
 
 };
@@ -99,7 +91,7 @@ class NodeMIDIConnection :
     public NodeConnection
 {
 public:
-    NodeMIDIConnection(Node* sourceNode = nullptr, Node* destNode = nullptr);
+    NodeMIDIConnection(NodeManager* nodeManager = nullptr, Node* sourceNode = nullptr, Node* destNode = nullptr);
     ~NodeMIDIConnection();
 
     void clearItem() override;

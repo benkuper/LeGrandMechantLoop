@@ -12,15 +12,16 @@
 
 #include "NodeConnection.h"
 
+class NodeManager;
+
 class NodeConnectionManager :
-    public BaseManager<NodeConnection>,
-    public NodeAudioConnection::AudioConnectionListener
+    public BaseManager<NodeConnection>
 {
 public:
-    NodeConnectionManager(AudioProcessorGraph * graph);
+    NodeConnectionManager(NodeManager * nodeManager);
     ~NodeConnectionManager();
 
-    AudioProcessorGraph* graph;
+    NodeManager* nodeManager;
 
     NodeConnection* createConnectionForType(NodeConnection::ConnectionType t);
 
@@ -31,12 +32,6 @@ public:
 
     NodeConnection* addItemFromData(var data, bool addToUndo = true) override;
     Array<NodeConnection *> addItemsFromData(var data, bool addToUndo = true) override;
-
-    void addItemInternal(NodeConnection* nc, var data) override;
-    void removeItemInternal(NodeConnection* nc) override;
-
-    void askForConnectChannels(NodeConnection * n, int sourceChannel, int destChannel) override;
-    void askForDisconnectChannels(NodeConnection *n, int sourceChannel, int destChannel) override;
 
     void afterLoadJSONDataInternal() override;
 };

@@ -13,8 +13,9 @@
 #include "Node/NodeManager.h"
 #include "ui/NodeConnectionEditor.h"
 
-NodeConnection::NodeConnection(Node* sourceNode, Node* destNode, ConnectionType ct) :
+NodeConnection::NodeConnection(NodeManager* nodeManager, Node* sourceNode, Node* destNode, ConnectionType ct) :
 	BaseItem("Connection", true, false),
+	nodeManager(nodeManager),
 	connectionType(ct),
 	sourceNode(nullptr),
 	destNode(nullptr),
@@ -105,22 +106,22 @@ void NodeConnection::inspectableDestroyed(Inspectable* i)
 var NodeConnection::getJSONData()
 {
 	var data = BaseItem::getJSONData();
-	if (sourceNode != nullptr) data.getDynamicObject()->setProperty("sourceNode", sourceNode->getControlAddress(RootNodeManager::getInstance()));
-	if (destNode != nullptr) data.getDynamicObject()->setProperty("destNode", destNode->getControlAddress(RootNodeManager::getInstance()));
+	if (sourceNode != nullptr) data.getDynamicObject()->setProperty("sourceNode", sourceNode->shortName);
+	if (destNode != nullptr) data.getDynamicObject()->setProperty("destNode", destNode->shortName);
 	data.getDynamicObject()->setProperty("connectionType", connectionType);
 	return data;
 }
 
 void NodeConnection::loadJSONDataItemInternal(var data)
 {
-	if (data.hasProperty("sourceNode")) setSourceNode((Node*)RootNodeManager::getInstance()->getControllableContainerForAddress(data.getProperty("sourceNode", "")));
-	if (data.hasProperty("destNode")) setDestNode((Node*)RootNodeManager::getInstance()->getControllableContainerForAddress(data.getProperty("destNode", "")));
+	if (data.hasProperty("sourceNode")) setSourceNode(nodeManager->getItemWithName(data.getProperty("sourceNode", "")));
+	if (data.hasProperty("destNode")) setDestNode(nodeManager->getItemWithName(data.getProperty("destNode", "")));
 	
 	loadJSONDataConnectionInternal(data);
 }
 
-NodeAudioConnection::NodeAudioConnection(Node* sourceNode, Node* destNode) :
-	NodeConnection(sourceNode, destNode, AUDIO)
+NodeAudioConnection::NodeAudioConnection(NodeManager* nodeManager, Node* sourceNode, Node* destNode) :
+	NodeConnection(nodeManager, sourceNode, destNode, AUDIO)
 {
 	createDefaultConnections();
 }
@@ -170,7 +171,7 @@ void NodeAudioConnection::connectChannels(int sourceChannel, int destChannel)
 	channelMap.add({ sourceChannel, destChannel });
 	ghostChannelMap.removeAllInstancesOf({ sourceChannel, destChannel });
 
-	audioConnectionListeners.call(&AudioConnectionListener::askForConnectChannels, this, sourceChannel, destChannel);
+	nodeManager->graph->addConnection({{sourceNode->nodeGraphID, sourceChannel}, { destNode->nodeGraphID, destChannel } });
 	connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
 	
 }
@@ -180,7 +181,7 @@ void NodeAudioConnection::disconnectChannels(int sourceChannel, int destChannel,
 	jassert(sourceNode != nullptr && destNode != nullptr);
 	if (updateMap) channelMap.removeAllInstancesOf({ sourceChannel, destChannel });
 
-	audioConnectionListeners.call(&AudioConnectionListener::askForDisconnectChannels, this, sourceChannel, destChannel);
+	nodeManager->graph->removeConnection({ {sourceNode->nodeGraphID, sourceChannel}, { destNode->nodeGraphID, destChannel } });
 	if (notify) connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
 }
 
@@ -298,8 +299,8 @@ void NodeAudioConnection::loadJSONDataConnectionInternal(var data)
 	loadChannelMapData(data.getProperty("channels", var()));
 }
 
-NodeMIDIConnection::NodeMIDIConnection(Node* sourceNode, Node* destNode) :
-	NodeConnection(sourceNode, destNode, MIDI)
+NodeMIDIConnection::NodeMIDIConnection(NodeManager* nodeManager, Node* sourceNode, Node* destNode) :
+	NodeConnection(nodeManager, sourceNode, destNode, MIDI)
 {
 }
 

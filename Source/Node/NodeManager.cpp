@@ -29,7 +29,7 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 	isPlaying->setControllableFeedbackOnly(true);
 	isPlaying->hideInEditor = true;
 
-	connectionManager.reset(new NodeConnectionManager(graph));
+	connectionManager.reset(new NodeConnectionManager(this));
 	addChildControllableContainer(connectionManager.get());
 }
 

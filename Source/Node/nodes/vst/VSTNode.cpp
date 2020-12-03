@@ -115,7 +115,7 @@ void VSTProcessor::midiMessageReceived(const MidiMessage& m)
 void VSTProcessor::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
     if (vst != nullptr) vst->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock);
-    midiCollector.reset(sampleRate);
+    if(sampleRate != 0) midiCollector.reset(sampleRate);
 }
 
 void VSTProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
