@@ -11,16 +11,17 @@
 #include "NodeManagerViewUI.h"
 #include "../Connection/ui/NodeConnectionManagerViewUI.h"
 #include "../Connection/ui/NodeConnector.h"
+#include "NodeManagerUI.h"
 
-NodeManagerViewUI::NodeManagerViewUI(StringRef name) :
-    BaseManagerShapeShifterViewUI(name, RootNodeManager::getInstance())
+NodeManagerViewUI::NodeManagerViewUI(NodeManager * manager) :
+    BaseManagerViewUI(manager->niceName, manager)
 {
     addExistingItems(false);
-    contentIsFlexible = true;
 
     connectionManagerUI.reset(new NodeConnectionManagerViewUI(this, manager->connectionManager.get()));
     addAndMakeVisible(connectionManagerUI.get(), 0);
 
+    bringToFrontOnSelect = false;
     enableSnapping = true;
 
     updatePositionOnDragMove = true;
@@ -41,7 +42,7 @@ NodeViewUI* NodeManagerViewUI::createUIForItem(Node* n)
 
 void NodeManagerViewUI::resized()
 {
-    BaseManagerShapeShifterViewUI::resized();
+    BaseManagerViewUI::resized();
     connectionManagerUI->setBounds(getLocalBounds());
     connectionManagerUI->resized();
 }
@@ -86,4 +87,84 @@ NodeConnector* NodeManagerViewUI::getCandidateConnector(bool lookForInput, NodeC
     }
 
     return nullptr;
+}
+
+NodeManagerViewPanel::NodeManagerViewPanel(StringRef contentName) :
+    ShapeShifterContentComponent(contentName)
+{
+    contentIsFlexible = true;
+    setManager(RootNodeManager::getInstance());
+}
+
+NodeManagerViewPanel::~NodeManagerViewPanel()
+{
+}
+
+void NodeManagerViewPanel::setManager(NodeManager* manager)
+{
+    if (managerUI != nullptr)
+    {
+        if (managerUI->manager == manager) return;
+        removeChildComponent(managerUI.get());
+    }
+    
+    if (manager != nullptr) managerUI.reset(new NodeManagerViewUI(manager));
+    else managerUI.reset();
+
+    if (managerUI != nullptr)
+    {
+        addAndMakeVisible(managerUI.get());
+    }
+
+    updateCrumbs();
+    resized();
+
+    if (NodeManagerPanel* p = ShapeShifterManager::getInstance()->getContentForType<NodeManagerPanel>())
+    {
+        p->setManager(manager);
+    }
+}
+
+void NodeManagerViewPanel::updateCrumbs()
+{
+    for (auto& c : crumbsBT) removeChildComponent(c);
+    crumbsBT.clear();
+    crumbManagers.clear();
+
+    if (managerUI == nullptr || managerUI->manager == nullptr) return;
+
+    ControllableContainer* pc = managerUI->manager;
+    while (pc != nullptr)
+    {
+        if (NodeManager* m = dynamic_cast<NodeManager*>(pc))
+        {
+            String n = m == RootNodeManager::getInstance() ? "Root" : m->parentContainer->parentContainer->niceName; //container's name
+
+            TextButton * bt = new TextButton(n);
+            bt->addListener(this);
+            bt->setEnabled(m != managerUI->manager);
+            addAndMakeVisible(bt);
+
+            crumbsBT.insert(0,bt);
+            crumbManagers.insert(0,m);
+        }
+
+        pc = pc->parentContainer;
+    }
+}
+
+void NodeManagerViewPanel::resized()
+{
+    if (managerUI != nullptr) managerUI->setBounds(getLocalBounds());
+    Rectangle<int> hr = getLocalBounds().removeFromTop(24);
+    hr.removeFromRight(30);
+    for (auto& c : crumbsBT) c->setBounds(hr.removeFromLeft(80).reduced(2));
+}
+
+void NodeManagerViewPanel::buttonClicked(Button* b)
+{
+    if (crumbsBT.contains((TextButton*)b))
+    {
+        setManager(crumbManagers[crumbsBT.indexOf((TextButton*)b)]);
+    }
 }

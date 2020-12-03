@@ -164,6 +164,7 @@ void LooperTrack::startRecording()
 
 void LooperTrack::finishRecordingAndPlay()
 {
+	
 	Transport::Quantization q = looper->getQuantization();
 	Transport::Quantization fillMode = looper->getFreeFillMode();
 	
@@ -185,6 +186,13 @@ void LooperTrack::finishRecordingAndPlay()
 	else
 	{
 		numBeats = Transport::getInstance()->getBeatForSamples(curSample, false, false);
+	}
+
+	if (numBeats == 0)
+	{
+		NLOGWARNING(looper->nodeRef->niceName, "Error recording loop");
+		clearBuffer();
+		return;
 	}
 
 	if(q != Transport::FREE || (q == Transport::FREE && fillMode != Transport::FREE))

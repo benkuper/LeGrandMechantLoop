@@ -19,11 +19,12 @@ class NodeManager :
     public BaseManager<Node>
 {
 public:
-    NodeManager(AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID);
+    NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID);
     ~NodeManager();
     
     BoolParameter* isPlaying;
 
+    AudioProcessorGraph* graph;
     AudioProcessorGraph::NodeID inputNodeID;
     AudioProcessorGraph::NodeID outputNodeID;
 
@@ -54,7 +55,7 @@ public:
     void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
 
     bool hasPlayingNodes();
-
+    
     var getJSONData() override;
     void loadJSONDataManagerInternal(var data) override;
 };
@@ -63,7 +64,8 @@ public:
 class RootNodeManager :
     public NodeManager,
     public AudioManager::AudioManagerListener,
-    public EngineListener
+    public EngineListener,
+    public Node::NodeListener
 {
 public:
     juce_DeclareSingleton(RootNodeManager, true);
@@ -73,36 +75,10 @@ public:
     void audioSetupChanged() override;
     void onContainerParameterChanged(Parameter* p) override;
 
+    void addItemInternal(Node* n, var data) override;
+    void removeItemInternal(Node* n) override;
+
+    void nodePlayConfigUpdated(Node * n) override;
+
     void endLoadFile() override;
 };
-
-/*
-class NodeManagerAudioProcessor :
-    public AudioProcessor
-{
-public:
-    NodeManagerAudioProcessor(NodeManager * manager);
-    virtual ~NodeManagerAudioProcessor();
-
-    NodeManager* nodeManager;
-    WeakReference<Inspectable> nodeManagerRef;
-
-    virtual const String getName() const override { return nodeManager == nullptr ? "[Deleted]" : nodeManager->niceName; }
-    virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) {}
-    virtual void releaseResources() override {}
-    virtual void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
-    virtual double getTailLengthSeconds() const override { return 0; }
-    virtual bool acceptsMidi() const override { return false; }
-    virtual bool producesMidi() const override { return false; }
-
-    virtual AudioProcessorEditor* createEditor() override { return nullptr; }
-    virtual bool hasEditor() const override { return false; }
-    virtual int getNumPrograms() override { return 0; }
-    virtual int getCurrentProgram() override { return 0; }
-    virtual void setCurrentProgram(int index) override {}
-    virtual const String getProgramName(int index) override { return "[NoProgram]"; }
-    virtual void changeProgramName(int index, const String& newName) override {}
-    virtual void getStateInformation(juce::MemoryBlock& destData) override {}
-    virtual void setStateInformation(const void* data, int sizeInBytes) override {}
-};
-*/

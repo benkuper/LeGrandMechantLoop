@@ -10,8 +10,9 @@
 
 #include "NodeConnectionManager.h"
 
-NodeConnectionManager::NodeConnectionManager() :
-    BaseManager("Connections")
+NodeConnectionManager::NodeConnectionManager(AudioProcessorGraph* graph) :
+    BaseManager("Connections"),
+    graph(graph)
 {
 }
 
@@ -95,6 +96,36 @@ Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool ad
     return addItems(itemsToAdd, data, addToUndo);
 }
 
+
+void NodeConnectionManager::addItemInternal(NodeConnection* nc, var data)
+{
+    if (NodeAudioConnection* nac = dynamic_cast<NodeAudioConnection*>(nc))
+    {
+        nac->addAudioConnectionListener(this);
+        for (auto& cm : nac->channelMap) //add existing channel mappings
+        {
+            graph->addConnection({ {nac->sourceNode->nodeGraphID, cm.sourceChannel}, { nac->destNode->nodeGraphID, cm.destChannel } });
+        }
+    }
+}
+
+void NodeConnectionManager::removeItemInternal(NodeConnection* nc)
+{
+    if (NodeAudioConnection* nac = dynamic_cast<NodeAudioConnection*>(nc))
+    {
+        nac->removeAudioConnectionListener(this);
+    }
+}
+
+void NodeConnectionManager::askForConnectChannels(NodeConnection* nc, int sourceChannel, int destChannel)
+{
+    graph->addConnection({ {nc->sourceNode->nodeGraphID, sourceChannel},{nc->destNode->nodeGraphID, destChannel} });
+}
+
+void NodeConnectionManager::askForDisconnectChannels(NodeConnection* nc, int sourceChannel, int destChannel)
+{
+    graph->removeConnection({ {nc->sourceNode->nodeGraphID, sourceChannel},{nc->destNode->nodeGraphID, destChannel} });
+}
 
 void NodeConnectionManager::afterLoadJSONDataInternal()
 {

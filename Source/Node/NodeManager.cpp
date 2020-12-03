@@ -17,24 +17,23 @@
 
 juce_ImplementSingleton(RootNodeManager)
 
-NodeManager::NodeManager(AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID) :
+NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID) :
 	BaseManager("Nodes"),
-	//nodeGraphID(AudioManager::getInstance()->getNewGraphID()),
+	graph(graph),
 	inputNodeID(inputNodeID),
 	outputNodeID(outputNodeID)
 {
 	managerFactory = NodeFactory::getInstance();
-	//audioProcessor = new NodeManagerAudioProcessor(this);
-	//AudioManager::getInstance()->graph.addNode(std::unique_ptr<AudioProcessor>(audioProcessor), nodeGraphID);
-
+	
 	isPlaying = addBoolParameter("Is Node Playing", "This is a feedback to know if a node has playing content. Used by the global time to automatically stop if no content is playing", false);
 	isPlaying->setControllableFeedbackOnly(true);
 	isPlaying->hideInEditor = true;
 
-	connectionManager.reset(new NodeConnectionManager());
+	connectionManager.reset(new NodeConnectionManager(graph));
 	addChildControllableContainer(connectionManager.get());
-
 }
+
+
 
 NodeManager::~NodeManager()
 {
@@ -79,9 +78,9 @@ void NodeManager::updateAudioInputNode(Node* n)
 {
 	if (AudioInputProcessor* p = n->getProcessor<AudioInputProcessor>())
 	{
-		for (int i = 0; i < n->audioInputNames.size(); i++) AudioManager::getInstance()->graph.removeConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight channel 
+		for (int i = 0; i < n->audioInputNames.size(); i++) graph->removeConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight channel 
 		n->setAudioOutputs(audioInputNames); //inverse to get good connector names
-		for (int i = 0; i < audioInputNames.size(); i++) AudioManager::getInstance()->graph.addConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight 
+		for (int i = 0; i < audioInputNames.size(); i++) graph->addConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight 
 	}
 }
 
@@ -89,14 +88,16 @@ void NodeManager::updateAudioOutputNode(Node* n)
 {
 	if (AudioOutputProcessor* p = n->getProcessor<AudioOutputProcessor>())
 	{
-		for (int i = 0; i < n->audioOutputNames.size(); i++) AudioManager::getInstance()->graph.removeConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight channel 
+		for (int i = 0; i < n->audioOutputNames.size(); i++) graph->removeConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight channel 
 		n->setAudioInputs(audioOutputNames); //inverse to get good connector names
-		for (int i = 0; i < audioOutputNames.size(); i++) AudioManager::getInstance()->graph.addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight 
+		for (int i = 0; i < audioOutputNames.size(); i++) graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight 
 	}
 }
 
 void NodeManager::addItemInternal(Node* n, var data)
 {
+	n->setGraph(graph);
+
 	if (AudioInputProcessor* p = n->getProcessor<AudioInputProcessor>())
 	{
 		audioInputNodes.add(n);
@@ -168,7 +169,8 @@ void NodeManager::loadJSONDataManagerInternal(var data)
 //ROOT
 
 RootNodeManager::RootNodeManager() :
-	NodeManager(AudioProcessorGraph::NodeID(AUDIO_GRAPH_INPUT_ID),
+	NodeManager(&AudioManager::getInstance()->graph,
+		AudioProcessorGraph::NodeID(AUDIO_GRAPH_INPUT_ID),
 		AudioProcessorGraph::NodeID(AUDIO_GRAPH_OUTPUT_ID))
 {
 	AudioManager::getInstance()->addAudioManagerListener(this);
@@ -202,6 +204,24 @@ void RootNodeManager::onContainerParameterChanged(Parameter* p)
 			Transport::getInstance()->stopTrigger->trigger();
 		}
 	}
+}
+
+void RootNodeManager::addItemInternal(Node* n, var data)
+{
+	NodeManager::addItemInternal(n, data);
+	n->addNodeListener(this);
+	AudioManager::getInstance()->updateGraph();
+}
+
+void RootNodeManager::removeItemInternal(Node* n)
+{
+	NodeManager::removeItemInternal(n);
+	n->removeNodeListener(this);
+}
+
+void RootNodeManager::nodePlayConfigUpdated(Node* n)
+{
+	AudioManager::getInstance()->updateGraph();
 }
 
 void RootNodeManager::endLoadFile()

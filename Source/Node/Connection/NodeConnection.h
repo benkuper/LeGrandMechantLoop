@@ -30,13 +30,14 @@ public:
     virtual void setSourceNode(Node* node);
     virtual void setDestNode(Node* node);
 
-    virtual void handleNodesUpdated() {}
+    virtual void handleNodesUpdated();
 
     void inspectableDestroyed(Inspectable *) override;
 
     var getJSONData() override;
     void loadJSONDataItemInternal(var data) override;
     virtual void loadJSONDataConnectionInternal(var data) {}
+
 
     
     DECLARE_ASYNC_EVENT(NodeConnection, Connection, connection, ENUM_LIST(SOURCE_NODE_CHANGED, DEST_NODE_CHANGED, CHANNELS_CONNECTION_CHANGED))
@@ -77,6 +78,18 @@ public:
 
     var getChannelMapData();
     void loadChannelMapData(var data);
+
+    class AudioConnectionListener
+    {
+    public:
+        virtual ~AudioConnectionListener() {}
+        virtual void askForConnectChannels(NodeConnection * nc, int sourceChannel, int destChannel) {}
+        virtual void askForDisconnectChannels(NodeConnection* nc, int sourceChannel, int destChannel) {}
+    };
+
+    ListenerList<AudioConnectionListener> audioConnectionListeners;
+    void addAudioConnectionListener(AudioConnectionListener* newListener) { audioConnectionListeners.add(newListener); }
+    void removeAudioConnectionListener(AudioConnectionListener* listener) { audioConnectionListeners.remove(listener); }
 
     InspectableEditor* getEditor(bool isRoot) override;
 

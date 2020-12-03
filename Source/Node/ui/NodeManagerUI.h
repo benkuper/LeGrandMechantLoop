@@ -13,11 +13,26 @@
 #include "NodeUI.h"
 
 class NodeManagerUI :
-    public BaseManagerShapeShifterUI<NodeManager, Node, NodeUI>
+    public BaseManagerUI<NodeManager, Node, NodeUI>
 {
 public:
-    NodeManagerUI(StringRef name);
+    NodeManagerUI(NodeManager * manager);
     ~NodeManagerUI();
 
-    static NodeManagerUI* create(const String& name) { return new NodeManagerUI(name); }
+};
+
+class NodeManagerPanel :
+    public ShapeShifterContentComponent
+{
+public:
+    NodeManagerPanel(StringRef contentName);
+    ~NodeManagerPanel();
+
+    std::unique_ptr<NodeManagerUI> managerUI;
+
+    void setManager(NodeManager* manager);
+    void resized() override;
+
+    static NodeManagerPanel* create(const String& name) { return new NodeManagerPanel(name); }
+
 };

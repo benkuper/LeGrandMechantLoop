@@ -53,6 +53,12 @@
     <Filter Include="LGML\Source\Node\ui">
       <UniqueIdentifier>{3B1D1023-6B9A-7940-0DE2-650FF8A525A4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Node\nodes\container\ui">
+      <UniqueIdentifier>{99D6322E-0269-6246-3612-9E7226A00E4C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Node\nodes\container">
+      <UniqueIdentifier>{BA990CA5-35E9-2EFA-1401-AB8CBC2A39E6}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Node\nodes\midi">
       <UniqueIdentifier>{1EE6AEB2-51BC-B4A4-A071-582C73D129ED}</UniqueIdentifier>
     </Filter>
@@ -999,6 +1005,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\container\ui\ContainerNodeUI.cpp">
+      <Filter>LGML\Source\Node\nodes\container\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\container\ContainerNode.cpp">
+      <Filter>LGML\Source\Node\nodes\container</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\midi\MIDIInputNode.cpp">
       <Filter>LGML\Source\Node\nodes\midi</Filter>
@@ -4118,6 +4130,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\container\ui\ContainerNodeUI.h">
+      <Filter>LGML\Source\Node\nodes\container\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\container\ContainerNode.h">
+      <Filter>LGML\Source\Node\nodes\container</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\midi\MIDIInputNode.h">
       <Filter>LGML\Source\Node\nodes\midi</Filter>

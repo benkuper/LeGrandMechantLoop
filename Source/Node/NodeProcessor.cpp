@@ -55,8 +55,12 @@ void NodeProcessor::updateOutputsFromNode(bool _updatePlayConfig)
 void NodeProcessor::updatePlayConfig()
 {
     setPlayConfigDetails(nodeRef->numInputs, nodeRef->numOutputs, getSampleRate(), getBlockSize());
-    if (!isCurrentlyLoadingData) AudioManager::getInstance()->updateGraph();
+    if (!isCurrentlyLoadingData)
+    {
+        nodeRef->notifyPlayConfigUpdated();
+    }
     //NLOG(nodeRef->niceName, "Buffer has now " << getChannel)
+
 }
 
 void NodeProcessor::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)

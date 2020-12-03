@@ -36,15 +36,12 @@ LooperProcessor::LooperProcessor(Node* node, LooperType looperType) :
 	
 	numTracks = addIntParameter("Track Count", "Number of tracks to use for this looper", defaultNumTracks, 1, 32);
 	autoNext = addBoolParameter("Auto Next", "If checked, will automatically select the next track to record", true);
-
 	
 	monitorMode = addEnumParameter("Monitor Mode", "How to monitor");
 	monitorMode->addOption("Always", ALWAYS)->addOption("Armed track", ARMED_TRACK)->addOption("When recording", RECORDING_ONLY)->addOption("Off", OFF);
 
 	fadeTimeMS = addIntParameter("Fade Time", "Number of ms to fade between start and end of the loop", 20, 0, 2000);
 	addChildControllableContainer(&tracksCC);
-
-
 
 	setCurrentTrack(getTrackForIndex(currentTrackIndex->intValue()-1));
 
@@ -55,8 +52,6 @@ LooperProcessor::~LooperProcessor()
 {
 	Transport::getInstance()->removeTransportListener(this);
 }
-
-
 
 void LooperProcessor::updateLooperTracks()
 {

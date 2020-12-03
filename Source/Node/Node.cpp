@@ -15,6 +15,7 @@
 
 Node::Node(StringRef name,var params) :
     BaseItem(name, true),
+    graph(nullptr),
     nodeGraphID(AudioManager::getInstance()->getNewGraphID()),
     baseProcessor(nullptr),
     numInputs(0),
@@ -32,7 +33,7 @@ Node::Node(StringRef name,var params) :
 
 Node::~Node()
 {
-    if(nodeGraphPtr != nullptr) AudioManager::getInstance()->graph.removeNode(nodeGraphPtr.get());
+    if(nodeGraphPtr != nullptr && graph != nullptr) graph->removeNode(nodeGraphPtr.get());
     masterReference.clear();
 }
 
@@ -42,12 +43,38 @@ void Node::clearItem()
     BaseItem::clearItem();
 }
 
+void Node::setGraph(AudioProcessorGraph* _graph)
+{
+    if (graph != nullptr)
+    {
+        graph->removeNode(AudioProcessorGraph::NodeID(nodeGraphID));
+        nodeGraphPtr.reset();
+    }
+
+    graph = _graph;
+    
+    if (graph != nullptr)
+    {
+        nodeGraphPtr = graph->addNode(std::unique_ptr<NodeProcessor>(baseProcessor), AudioProcessorGraph::NodeID(nodeGraphID));
+        baseProcessor->updateInputsFromNode(false);
+        baseProcessor->updateOutputsFromNode(false);
+        baseProcessor->updatePlayConfig();
+    }
+   
+}
+
 void Node::setProcessor(NodeProcessor* processor)
 {
     if (baseProcessor == processor) return;
 
     if (baseProcessor != nullptr)
     {
+        if (graph != nullptr)
+        {
+            graph->removeNode(AudioProcessorGraph::NodeID(nodeGraphID));
+            nodeGraphPtr.reset();
+        }
+
         removeChildControllableContainer(baseProcessor);
     }
 
@@ -55,10 +82,13 @@ void Node::setProcessor(NodeProcessor* processor)
 
     if (baseProcessor != nullptr)
     {
-        nodeGraphPtr = AudioManager::getInstance()->graph.addNode(std::unique_ptr<NodeProcessor>(baseProcessor), AudioProcessorGraph::NodeID(nodeGraphID));
-        baseProcessor->updateInputsFromNode(false);
-        baseProcessor->updateOutputsFromNode(false);
-        baseProcessor->updatePlayConfig();
+        if (graph != nullptr)
+        {
+            nodeGraphPtr = graph->addNode(std::unique_ptr<NodeProcessor>(baseProcessor), AudioProcessorGraph::NodeID(nodeGraphID));
+            baseProcessor->updateInputsFromNode(false);
+            baseProcessor->updateOutputsFromNode(false);
+            baseProcessor->updatePlayConfig();
+        }
         addChildControllableContainer(baseProcessor);
     }
 }
@@ -145,6 +175,11 @@ void Node::setMIDIIO(bool hasInput, bool hasOutput)
         nodeNotifier.addMessage(new NodeEvent(NodeEvent::MIDI_OUTPUT_CHANGED, this));
     }
 
+}
+
+void Node::notifyPlayConfigUpdated()
+{
+    nodeListeners.call(&NodeListener::nodePlayConfigUpdated, this);
 }
 
 NodeViewUI* Node::createViewUI()

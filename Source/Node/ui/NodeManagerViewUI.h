@@ -16,10 +16,10 @@
 class NodeConnectionManagerViewUI;
 
 class NodeManagerViewUI :
-    public BaseManagerShapeShifterViewUI<NodeManager, Node, NodeViewUI>
+    public BaseManagerViewUI<NodeManager, Node, NodeViewUI>
 {
 public:
-    NodeManagerViewUI(StringRef name);
+    NodeManagerViewUI(NodeManager * manager);
     ~NodeManagerViewUI();
 
     std::unique_ptr< NodeConnectionManagerViewUI> connectionManagerUI;
@@ -34,5 +34,29 @@ public:
 
     NodeConnector * getCandidateConnector(bool lookForInput, NodeConnection::ConnectionType connectionType, NodeViewUI* excludeUI = nullptr);
 
-    static NodeManagerViewUI* create(const String& name) { return new NodeManagerViewUI(name); }
+};
+
+
+class NodeManagerViewPanel :
+    public ShapeShifterContentComponent,
+    public Button::Listener
+{
+public:
+    NodeManagerViewPanel(StringRef contentName);
+    ~NodeManagerViewPanel();
+
+    std::unique_ptr<NodeManagerViewUI> managerUI;
+
+    OwnedArray<TextButton> crumbsBT;
+    Array<NodeManager*> crumbManagers;
+
+    void setManager(NodeManager* manager);
+    void updateCrumbs();
+
+    void resized() override;
+
+    void buttonClicked(Button* b) override;
+
+    static NodeManagerViewPanel* create(const String& name) { return new NodeManagerViewPanel(name); }
+
 };

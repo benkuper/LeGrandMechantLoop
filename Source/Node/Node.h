@@ -26,6 +26,8 @@ public:
 
     virtual void clearItem() override;
 
+    AudioProcessorGraph* graph;
+
     BoolParameter* isNodePlaying;
 
     AudioProcessorGraph::NodeID nodeGraphID;
@@ -47,7 +49,9 @@ public:
 
     FloatParameter* outGain;
 
-    void setProcessor(NodeProcessor * processor); //needs to be called from
+
+    void setGraph(AudioProcessorGraph* graph);
+    void setProcessor(NodeProcessor * processor); //needs to be called from child classes
 
     void setAudioInputs(const int& numInputs); //auto naming
     void setAudioInputs(const StringArray & inputNames);
@@ -61,6 +65,7 @@ public:
 
     void setMIDIIO(bool hasInput, bool hasOutput);
 
+    void notifyPlayConfigUpdated();
 
     template<class T>
     T* getProcessor() { return dynamic_cast<T*>(baseProcessor); }
@@ -73,6 +78,7 @@ public:
         virtual void audioOutputsChanged(Node* n) {}
         virtual void midiInputChanged(Node* n) {}
         virtual void midiOutputChanged(Node * n) {}
+        virtual void nodePlayConfigUpdated(Node* n) {};
     };
 
     ListenerList<NodeListener> nodeListeners;
