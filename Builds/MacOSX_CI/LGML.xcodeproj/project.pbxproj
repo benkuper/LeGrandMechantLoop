@@ -577,6 +577,13 @@
 			path = System/Library/Frameworks/Foundation.framework;
 			sourceTree = SDKROOT;
 		};
+		16D3E51E2FDD32BB40CAE5D0 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = JuceHeader.h;
+			path = ../../JuceLibraryCode/JuceHeader.h;
+			sourceTree = "SOURCE_ROOT";
+		};
 		19F11F31D630C760BBCEC079 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -2276,6 +2283,7 @@
 				1EBAAFB7B33347A8FACCEFA5,
 				67038B9140608DAD8B6E6934,
 				4ACE978AE9CC0CC00C427119,
+				16D3E51E2FDD32BB40CAE5D0,
 			);
 			name = "JUCE Library Code";
 			sourceTree = "<group>";
