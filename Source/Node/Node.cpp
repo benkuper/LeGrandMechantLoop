@@ -43,6 +43,14 @@ void Node::clearItem()
     BaseItem::clearItem();
 }
 
+void Node::onContainerParameterChangedInternal(Parameter* p)
+{
+    if (p == enabled)
+    {
+        if(!enabled->boolValue()) for (auto& c : outAudioConnections) c->activityLevel = 0;
+    }
+}
+
 void Node::setGraph(AudioProcessorGraph* _graph)
 {
     if (graph != nullptr)
@@ -85,9 +93,7 @@ void Node::setProcessor(NodeProcessor* processor)
         if (graph != nullptr)
         {
             nodeGraphPtr = graph->addNode(std::unique_ptr<NodeProcessor>(baseProcessor), AudioProcessorGraph::NodeID(nodeGraphID));
-            baseProcessor->updateInputsFromNode(false);
-            baseProcessor->updateOutputsFromNode(false);
-            baseProcessor->updatePlayConfig();
+            baseProcessor->init();
         }
         addChildControllableContainer(baseProcessor);
     }

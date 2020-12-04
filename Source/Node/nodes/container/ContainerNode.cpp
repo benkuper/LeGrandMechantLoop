@@ -13,14 +13,10 @@
 #include "ui/ContainerNodeUI.h"
 
 ContainerProcessor::ContainerProcessor(Node* n) :
-    GenericNodeProcessor(n),
+    GenericNodeProcessor(n, true, true, true, true),
     inputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),
     outputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID()))
 {
-    numAudioInputs = addIntParameter("Audio Inputs", "Number of audio inputs to create for this container", 2, 0, 16);
-    numAudioOutputs = addIntParameter("Audio Outputs", "Number of audio outputs to create for this container", 2, 0, 16);
-    outVolume = addFloatParameter("Out Volume", "Main gain to apply after the node has been processed", 1, 0, 2);
-
     std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procIn(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioInputNode));
     std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procOut(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode));
 
@@ -30,20 +26,21 @@ ContainerProcessor::ContainerProcessor(Node* n) :
     nodeManager.reset(new NodeManager(&graph, inputID, outputID));
     addChildControllableContainer(nodeManager.get());
 
-    nodeRef->setAudioInputs(numAudioInputs->intValue());
-    nodeRef->setAudioOutputs(numAudioOutputs->intValue());
- 
-    //force refresh
-    updateInputsFromNodeInternal();
-    updateOutputsFromNodeInternal();
-    updateGraph();
-
     nodeManager->addBaseManagerListener(this);
 }
 
 ContainerProcessor::~ContainerProcessor()
 {
+}
+
+void ContainerProcessor::clearProcessor()
+{
     nodeManager->clear();
+}
+
+void ContainerProcessor::initInternal()
+{
+    updateGraph();
 }
 
 void ContainerProcessor::onContainerParameterChanged(Parameter* p)
@@ -107,8 +104,6 @@ void ContainerProcessor::prepareToPlay(double sampleRate, int maxBlockSize)
 void ContainerProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     graph.processBlock(buffer, midiMessages);
-
-    buffer.applyGain(outVolume->floatValue());
 }
 
 var ContainerProcessor::getJSONData()

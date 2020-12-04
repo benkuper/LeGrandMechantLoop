@@ -30,6 +30,9 @@ public:
     enum TrackOutputMode { MIXED_ONLY, SEPARATE_ONLY, ALL };
     EnumParameter* trackOutputMode;
 
+
+    virtual void initInternal() override;
+
     virtual void updateOutTracks();
     virtual LooperTrack * createLooperTrack(int index) override;
     virtual void updateRingBuffer();

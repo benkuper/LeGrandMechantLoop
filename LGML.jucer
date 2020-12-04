@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b5">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b6">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="fut9ay" name="default.lgmllayout" compile="0" resource="1"
@@ -157,6 +157,18 @@
           <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
         </GROUP>
         <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
+          <GROUP id="{9F78E0B0-2904-96AB-DCE3-D8F72EA41A6A}" name="router">
+            <GROUP id="{424502B2-0A02-FEB5-50FF-9462F3C242BC}" name="ui">
+              <FILE id="srEvjX" name="AudioRouterNodeUI.cpp" compile="1" resource="0"
+                    file="Source/Node/nodes/router/ui/AudioRouterNodeUI.cpp"/>
+              <FILE id="DmE32Z" name="AudioRouterNodeUI.h" compile="0" resource="0"
+                    file="Source/Node/nodes/router/ui/AudioRouterNodeUI.h"/>
+            </GROUP>
+            <FILE id="VaZHCY" name="AudioRouterNode.cpp" compile="1" resource="0"
+                  file="Source/Node/nodes/router/AudioRouterNode.cpp"/>
+            <FILE id="eUo5gS" name="AudioRouterNode.h" compile="0" resource="0"
+                  file="Source/Node/nodes/router/AudioRouterNode.h"/>
+          </GROUP>
           <GROUP id="{2FECFF2B-11FE-FCF4-0756-A4D02F2AD957}" name="container">
             <GROUP id="{7D02B1C3-C669-1914-7556-D5092F0626BF}" name="ui">
               <FILE id="TLZpQN" name="ContainerNodeUI.cpp" compile="1" resource="0"
@@ -167,11 +179,6 @@
             <FILE id="q0nEXU" name="ContainerNode.cpp" compile="1" resource="0"
                   file="Source/Node/nodes/container/ContainerNode.cpp"/>
             <FILE id="fp1jgF" name="ContainerNode.h" compile="0" resource="0" file="Source/Node/nodes/container/ContainerNode.h"/>
-          </GROUP>
-          <GROUP id="{2AFD37B5-268E-5FDE-DDA5-E58EC198EC24}" name="midi">
-            <FILE id="eWKnsf" name="MIDIInputNode.cpp" compile="1" resource="0"
-                  file="Source/Node/nodes/midi/MIDIInputNode.cpp"/>
-            <FILE id="qNJo74" name="MIDIInputNode.h" compile="0" resource="0" file="Source/Node/nodes/midi/MIDIInputNode.h"/>
           </GROUP>
           <GROUP id="{AC321AE6-FB6A-AD04-F5D5-FC5C94A342F7}" name="vst">
             <GROUP id="{680507CD-BC08-6441-0592-037DA297C999}" name="ui">

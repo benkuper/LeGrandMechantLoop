@@ -21,7 +21,6 @@ MIDILooperProcessor::MIDILooperProcessor(Node* n) :
     ControllableContainer::addParameter(midiParam);
 
     nodeRef->setMIDIIO(false, true);
-    updateLooperTracks();
 }
 
 MIDILooperProcessor::~MIDILooperProcessor()
@@ -29,6 +28,12 @@ MIDILooperProcessor::~MIDILooperProcessor()
 
 }
 
+
+void MIDILooperProcessor::initInternal()
+{
+    LooperProcessor::initInternal();
+    updateLooperTracks();
+}
 
 void MIDILooperProcessor::setMIDIDevice(MIDIInputDevice* d)
 {

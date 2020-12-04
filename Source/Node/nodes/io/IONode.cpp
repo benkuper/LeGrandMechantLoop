@@ -12,19 +12,14 @@
 #include "ui/IONodeViewUI.h"
 
 IOProcessor::IOProcessor(Node* n, bool isInput) :
-	GenericNodeProcessor(n, !isInput, isInput, false),
-	rmsCC("RMS"),
-	gainCC("Gain"),
+	GenericNodeProcessor(n, !isInput, isInput),
+	channelsCC("Channels"),
 	isInput(isInput)
 {
-	nodeRef->viewUISize->setPoint(120, 150);
+	nodeRef->viewUISize->setPoint(150, 180);
 
-	addChildControllableContainer(&rmsCC);
-	addChildControllableContainer(&gainCC);
-
-	rmsCC.editorIsCollapsed = true;
-
-	updateIOFromNode();
+	channelsCC.saveAndLoadRecursiveData = true;
+	addChildControllableContainer(&channelsCC);
 }
 
 void IOProcessor::updateInputsFromNodeInternal()
@@ -43,30 +38,27 @@ void IOProcessor::updateIOFromNode()
 	StringArray names = isInput ? nodeRef->audioOutputNames : nodeRef->audioInputNames;
 
 	//remove surplus
-	while (rmsCC.controllables.size() > numChannels)
+	while (channelsCC.controllableContainers.size() > numChannels)
 	{
-		rmsCC.removeControllable(rmsCC.controllables[rmsCC.controllables.size() - 1]);
-		gainCC.removeControllable(gainCC.controllables[gainCC.controllables.size() - 1]);
+		channelsCC.removeChildControllableContainer(channelsCC.controllableContainers[channelsCC.controllableContainers.size() - 1]);
 	}
 
 	//rename existing
-	for (int i = 0; i < gainCC.controllables.size(); i++)
+	for (int i = 0; i < channelsCC.controllableContainers.size(); i++)
 	{
 		String s = names[i];
-		gainCC.controllables[i]->setNiceName(s);
+		channelsCC.controllableContainers[i]->setNiceName(s);
 	}
 
 	//add more
-	while (rmsCC.controllables.size() < numChannels)
+	while (channelsCC.controllableContainers.size() < numChannels)
 	{
-		int index = gainCC.controllables.size();
+		int index = channelsCC.controllableContainers.size();
 		String s = names[index];
 
-		FloatParameter* p = rmsCC.addFloatParameter(s, "RMS for this input", 0, 0, 1);
-		p->setControllableFeedbackOnly(true);
-
-		FloatParameter * gp = gainCC.addFloatParameter(s, "Gain for this input", 1, 0, 2);
-		if (index < gainGhostData.size()) gp->setValue(gainGhostData[index]);
+		IOChannel* channel = new IOChannel(s);
+		channelsCC.addChildControllableContainer(channel, true);
+		if (index < gainGhostData.size()) channel->gain->setValue(gainGhostData[index]);
 
 	}
 
@@ -74,19 +66,19 @@ void IOProcessor::updateIOFromNode()
 
 void IOProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	for (int i = 0; i < rmsCC.controllables.size() && i < buffer.getNumChannels(); i++)
+	for (int i = 0; i < channelsCC.controllableContainers.size() && i < buffer.getNumChannels(); i++)
 	{
-		FloatParameter* rmsP = (FloatParameter*)rmsCC.controllables[i];
-		FloatParameter* gainP = (FloatParameter*)gainCC.controllables[i];
+		IOChannel* chan = (IOChannel *)channelsCC.controllableContainers[i].get();
 
-		if (rmsP == nullptr || gainP == nullptr) return;
+		if (chan->rms == nullptr || chan->gain == nullptr) return;
 
-		buffer.applyGain(i, 0, buffer.getNumSamples(), gainP->floatValue());
+		float gain = chan->active->boolValue() ? chan->gain->floatValue() : 0;
+		buffer.applyGain(i, 0, buffer.getNumSamples(), gain);
 
 		float rms = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
-		float curVal = rmsP->floatValue();
-		float targetVal = rmsP->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
-		rmsP->setValue(targetVal);
+		float curVal = chan->rms->floatValue();
+		float targetVal = chan->rms->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
+		chan->rms->setValue(targetVal);
 	}
 }
 
@@ -99,7 +91,7 @@ var IOProcessor::getJSONData()
 {
 	var data = GenericNodeProcessor::getJSONData();
 	var gainData;
-	for (auto& c : gainCC.controllables) gainData.append(((FloatParameter*)c)->floatValue());
+	for (auto& cc : channelsCC.controllableContainers) gainData.append(((IOChannel*)cc.get())->gain->floatValue());
 	data.getDynamicObject()->setProperty("gains", gainData);
 	return data;
 }
@@ -123,4 +115,13 @@ void AudioInputProcessor::updatePlayConfig()
 void AudioOutputProcessor::updatePlayConfig()
 {
 	setPlayConfigDetails(nodeRef->numInputs, nodeRef->numInputs, getSampleRate(), getBlockSize());
+}
+
+IOChannel::IOChannel(StringRef name) :
+	ControllableContainer(name)
+{
+	gain = addFloatParameter("Gain", "Gain for this channel", 1, 0, 3);
+	rms = addFloatParameter("RMS", "RMS for this channel", 0, 0, 1);
+	rms->setControllableFeedbackOnly(true);
+	active = addBoolParameter("Active", "Fast way to mute a channel", true);
 }

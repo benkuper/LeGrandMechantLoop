@@ -34,38 +34,56 @@ void IONodeViewUI::nodeOutputsChanged()
 
 void IONodeViewUI::updateUI()
 {
-    for (auto& i : rmsUI) removeChildComponent(i);
-    for (auto& i : gainUI) removeChildComponent(i);
-    rmsUI.clear();
-    gainUI.clear();
+    for (auto& i : channelsUI)
+    {
+        contentComponents.removeAllInstancesOf(i);
+        removeChildComponent(i);
+    }
+    channelsUI.clear();
 
     int numChannels = processor->isInput ? audioNode->numOutputs : audioNode->numInputs;
 
     for (int i = 0; i < numChannels; i++)
     {
-        FloatSliderUI* s = (new RMSSliderUI((FloatParameter *)processor->rmsCC.controllables[i]));
-        addAndMakeVisible(s);
-        rmsUI.add(s);
-
-        FloatSliderUI* gs = ((FloatParameter*)processor->gainCC.controllables[i])->createSlider();
-        gs->orientation = gs->VERTICAL;
-        addAndMakeVisible(gs);
-        gainUI.add(gs);
+        IOChannelUI* channelUI = new IOChannelUI((IOChannel*)processor->channelsCC.controllableContainers[i].get());
+        contentComponents.add(channelUI);
+        channelsUI.add(channelUI);
+        addAndMakeVisible(channelUI);
     }
 
     resized();
 }
 
-void IONodeViewUI::resizedInternalContent(Rectangle<int>& r)
+void IONodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
-    for (int i=0;i<rmsUI.size();i++)
-    {
-        Rectangle<int> trackR = r.removeFromLeft(40).reduced(6);
-        Rectangle<int> btR = trackR.removeFromBottom(20);
-        trackR.removeFromBottom(2);
+    for (auto& ui : channelsUI) ui->setBounds(r.removeFromLeft(45).reduced(6));
+}
 
-        rmsUI[i]->setBounds(trackR.removeFromRight(8));
-        trackR.removeFromRight(2);
-        gainUI[i]->setBounds(trackR);
-    }
+IOChannelUI::IOChannelUI(IOChannel* ioChannel) :
+    ioChannel(ioChannel)
+{
+    gainUI.reset(ioChannel->gain->createSlider());
+    gainUI->orientation = gainUI->VERTICAL;
+    addAndMakeVisible(gainUI.get());
+    rmsUI.reset(new RMSSliderUI(ioChannel->rms));
+    addAndMakeVisible(rmsUI.get());
+    activeUI.reset(ioChannel->active->createButtonToggle());
+    addAndMakeVisible(activeUI.get());
+}
+
+void IOChannelUI::paint(Graphics& g)
+{
+    g.setColour(NORMAL_COLOR);
+    g.drawRoundedRectangle(getLocalBounds().reduced(1).toFloat(), 2, 1);
+}
+
+void IOChannelUI::resized()
+{
+    Rectangle<int> r = getLocalBounds().reduced(2);
+    activeUI->setBounds(r.removeFromBottom(r.getWidth()).reduced(2));
+
+    rmsUI->setBounds(r.removeFromRight(8));
+    r.removeFromRight(2);
+
+    gainUI->setBounds(r);
 }

@@ -12,10 +12,11 @@
 #include "NodeConnector.h"
 #include "Common/ConnectionUIHelper.h"
 
-NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConnector * _sourceConnector, NodeConnector * _destConnector) :
-    BaseItemMinimalUI(connection),
+NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConnector* _sourceConnector, NodeConnector* _destConnector) :
+	BaseItemMinimalUI(connection),
 	sourceConnector(nullptr),
 	destConnector(nullptr),
+	activityLevel(0),
 	sourceHandle(connection != nullptr ? (connection->connectionType == NodeConnection::AUDIO ? BLUE_COLOR : GREEN_COLOR) : NORMAL_COLOR),
 	destHandle(connection != nullptr?(connection->connectionType == NodeConnection::AUDIO?BLUE_COLOR:GREEN_COLOR):NORMAL_COLOR)
 {
@@ -36,6 +37,7 @@ NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConne
 		addAndMakeVisible(&destHandle);
 	}
 
+	startTimerHz(15);
 	if(item != nullptr) item->addAsyncConnectionListener(this);
 }
 
@@ -61,14 +63,18 @@ void NodeConnectionViewUI::paint(Graphics& g)
 		if (item->isSelected) c = HIGHLIGHT_COLOR;
 		else
 		{
-			if (item != nullptr) c = ct == NodeConnection::AUDIO ? BLUE_COLOR : GREEN_COLOR;
+			if (item != nullptr)
+			{
+				c = ct == NodeConnection::AUDIO ? BLUE_COLOR : GREEN_COLOR;
+				c = c.darker().brighter(activityLevel*10);
+			}
 			if (ac != nullptr && ac->channelMap.size() == 0) c = NORMAL_COLOR;
 		}
 	}
 
 	if (isMouseOverOrDragging()) c = c.brighter();
 	g.setColour(c);
-	g.strokePath(path, PathStrokeType(isMouseOverOrDragging()?3:1));
+	g.strokePath(path, PathStrokeType(isMouseOverOrDragging()?3:1+activityLevel*3));
 
 	if (item == nullptr) return;
 
@@ -171,6 +177,21 @@ void NodeConnectionViewUI::componentBeingDeleted(Component& c)
 void NodeConnectionViewUI::newMessage(const NodeConnection::ConnectionEvent& e)
 {
 	if (e.type == e.CHANNELS_CONNECTION_CHANGED) repaint();
+}
+
+void NodeConnectionViewUI::timerCallback()
+{
+	if (item == nullptr)
+	{
+		stopTimer();
+		return;
+	}
+
+	if (activityLevel != item->activityLevel)
+	{
+		activityLevel = item->activityLevel;
+		repaint();
+	}
 }
 
 NodeConnectionViewUI::Handle::Handle(Colour c):

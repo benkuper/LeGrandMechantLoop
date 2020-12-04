@@ -22,17 +22,15 @@ public:
     ContainerProcessor(Node * n);
     ~ContainerProcessor();
 
-    IntParameter* numAudioInputs;
-    IntParameter* numAudioOutputs;
-
-    FloatParameter* outVolume;//needs to be on genericProcessor level
-
     std::unique_ptr<NodeManager> nodeManager;
     AudioProcessorGraph graph;
     AudioProcessorGraph::NodeID inputID;
     AudioProcessorGraph::NodeID outputID;
 
     AudioBuffer<float> graphBuffer;
+
+    void clearProcessor() override;
+    void initInternal() override;
 
     void onContainerParameterChanged(Parameter* p) override;
 

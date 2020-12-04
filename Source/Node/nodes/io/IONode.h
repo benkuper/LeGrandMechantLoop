@@ -12,6 +12,17 @@
 
 #include "../../NodeProcessor.h"
 
+class IOChannel :
+	public ControllableContainer
+{
+public:
+	IOChannel(StringRef name);
+	~IOChannel() {}
+	FloatParameter* gain;
+	FloatParameter* rms;
+	BoolParameter* active;
+};
+
 class IOProcessor :
 	public GenericNodeProcessor
 {
@@ -21,8 +32,7 @@ public:
 
 
 	bool isInput;
-	ControllableContainer rmsCC;
-	ControllableContainer gainCC;
+	ControllableContainer channelsCC;
 	var gainGhostData;
 
 	void updateInputsFromNodeInternal() override;

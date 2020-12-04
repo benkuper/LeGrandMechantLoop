@@ -12,15 +12,24 @@
 #include "../Connection/ui/NodeConnector.h"
 
 NodeViewUI::NodeViewUI(Node* node) :
-	BaseItemUI(node, Direction::ALL)
+	BaseItemUI(node, Direction::ALL, true)
 {
 	dragAndDropEnabled = true;
 	autoHideWhenDragging = false;
 	drawEmptyDragIcon = true;
 
+	if (item->baseProcessor->outGain!= nullptr)
+	{
+		outGainUI.reset(item->baseProcessor->outGain->createSlider());
+		outGainUI->orientation = FloatSliderUI::VERTICAL;
+		contentComponents.add(outGainUI.get());
+		addAndMakeVisible(outGainUI.get());
+	}
+
 	if (item->baseProcessor->outRMS != nullptr)
 	{
 		outRMSUI.reset(new RMSSliderUI(item->baseProcessor->outRMS));
+		contentComponents.add(outRMSUI.get());
 		addAndMakeVisible(outRMSUI.get());
 	}
 
@@ -119,6 +128,16 @@ void NodeViewUI::updateOutputConnectors()
 	}
 }
 
+void NodeViewUI::paint(Graphics& g)
+{
+	BaseItemUI::paint(g);
+	if (outRMSUI != nullptr || outGainUI != nullptr)
+	{
+		g.setColour(bgColor.darker(.2f));
+		g.fillRoundedRectangle(outControlRect.expanded(1).toFloat(), 2);
+	}
+}
+
 void NodeViewUI::paintOverChildren(Graphics& g)
 {
 	BaseItemUI::paintOverChildren(g);
@@ -159,7 +178,14 @@ void NodeViewUI::resized()
 void NodeViewUI::resizedInternalContent(Rectangle<int>& r)
 {
 	BaseItemUI::resizedInternalContent(r);
+
+	outControlRect = Rectangle<int>(r);
+
 	if (outRMSUI != nullptr) outRMSUI->setBounds(r.removeFromRight(10).reduced(2));
+	if (outGainUI != nullptr) outGainUI->setBounds(r.removeFromRight(20).reduced(2));
+	r.removeFromRight(2);
+	outControlRect.setLeft(r.getRight());
+
 	resizedInternalContentNode(r);
 }
 

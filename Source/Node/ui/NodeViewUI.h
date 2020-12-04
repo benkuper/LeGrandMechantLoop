@@ -28,11 +28,14 @@ public:
     std::unique_ptr<NodeConnector> inMIDIConnector;
     std::unique_ptr<NodeConnector> outMIDIConnector;
 
+    Rectangle<int> outControlRect;
+    std::unique_ptr<FloatSliderUI> outGainUI;
     std::unique_ptr<RMSSliderUI> outRMSUI;
 
     void updateInputConnectors();
     void updateOutputConnectors();
 
+    void paint(Graphics& g) override;
     void paintOverChildren(Graphics& g) override;
     virtual void resized() override;
     virtual void resizedInternalContent(Rectangle<int>& r) override;

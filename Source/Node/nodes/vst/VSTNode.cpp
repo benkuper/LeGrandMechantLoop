@@ -17,13 +17,11 @@ VSTProcessor::VSTProcessor(Node* node) :
     currentDevice(nullptr),
     vstNotifier(5)
 {
-
     pluginParam = new VSTPluginParameter("VST", "The VST to use");
     ControllableContainer::addParameter(pluginParam);
 
     midiParam = new MIDIDeviceParameter("MIDI Device", true, false);
     ControllableContainer::addParameter(midiParam);
-
 }
 
 VSTProcessor::~VSTProcessor()

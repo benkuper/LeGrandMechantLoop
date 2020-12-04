@@ -14,11 +14,12 @@
 #include "ui/NodeConnectionEditor.h"
 
 NodeConnection::NodeConnection(NodeManager* nodeManager, Node* sourceNode, Node* destNode, ConnectionType ct) :
-	BaseItem("Connection", true, false),
+	BaseItem("Connection", false, false),
 	nodeManager(nodeManager),
 	connectionType(ct),
 	sourceNode(nullptr),
 	destNode(nullptr),
+	activityLevel(0),
 	connectionNotifier(5)
 {
 	setSourceNode(sourceNode);

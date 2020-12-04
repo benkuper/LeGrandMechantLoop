@@ -17,7 +17,8 @@ class NodeConnector;
 class NodeConnectionViewUI :
     public BaseItemMinimalUI<NodeConnection>,
     public ComponentListener,
-    public NodeConnection::AsyncListener
+    public NodeConnection::AsyncListener,
+    public Timer
 {
 public:
     NodeConnectionViewUI(NodeConnection* connection, NodeConnector * sourceConnector = nullptr, NodeConnector * destConnector = nullptr);
@@ -28,6 +29,8 @@ public:
 
     Path path;
     Path hitPath;
+
+    float activityLevel;
 
     void paint(Graphics& g) override;
 
@@ -57,4 +60,6 @@ public:
 
     Handle sourceHandle;
     Handle destHandle;
+
+    void timerCallback() override;
 };

@@ -31,6 +31,8 @@ public:
     Node * sourceNode;
     Node * destNode;
 
+    float activityLevel;
+
     virtual void setSourceNode(Node* node);
     virtual void setDestNode(Node* node);
 
@@ -42,8 +44,6 @@ public:
     void loadJSONDataItemInternal(var data) override;
     virtual void loadJSONDataConnectionInternal(var data) {}
 
-
-    
     DECLARE_ASYNC_EVENT(NodeConnection, Connection, connection, ENUM_LIST(SOURCE_NODE_CHANGED, DEST_NODE_CHANGED, CHANNELS_CONNECTION_CHANGED))
 };
 
@@ -60,8 +60,10 @@ public:
 
         inline bool operator == (const ChannelMap& c2) const { return sourceChannel == c2.sourceChannel && destChannel == c2.destChannel; }
     };
+
     Array<ChannelMap> channelMap;
     Array<ChannelMap> ghostChannelMap;
+
 
     void clearItem() override;
    
@@ -83,8 +85,8 @@ public:
     var getChannelMapData();
     void loadChannelMapData(var data);
 
-    InspectableEditor* getEditor(bool isRoot) override;
 
+    InspectableEditor* getEditor(bool isRoot) override;
 };
 
 class NodeMIDIConnection :
@@ -95,5 +97,4 @@ public:
     ~NodeMIDIConnection();
 
     void clearItem() override;
-
 };

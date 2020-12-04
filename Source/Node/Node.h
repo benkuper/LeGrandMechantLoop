@@ -47,8 +47,7 @@ public:
     Array<NodeMIDIConnection*> inMidiConnections;
     Array<NodeMIDIConnection*> outMidiConnections;
 
-    FloatParameter* outGain;
-
+    void onContainerParameterChangedInternal(Parameter* p) override;
 
     void setGraph(AudioProcessorGraph* graph);
     void setProcessor(NodeProcessor * processor); //needs to be called from child classes

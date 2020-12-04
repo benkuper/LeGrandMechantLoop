@@ -19,11 +19,9 @@ AudioLooperProcessor::AudioLooperProcessor(Node* n) :
 	trackOutputMode = addEnumParameter("Output Mode", "How to output the channels");
 	trackOutputMode->addOption("Mixed only", MIXED_ONLY)->addOption("Tracks only", SEPARATE_ONLY)->addOption("Mixed and tracks", ALL);
 
-
 	nodeRef->setAudioInputs(numChannelsPerTrack->intValue());
-	updateOutTracks();
 	updateLooperTracks();
-	updateRingBuffer();
+	updateOutTracks();
 
 	AudioManager::getInstance()->addAudioManagerListener(this);
 }
@@ -33,10 +31,16 @@ AudioLooperProcessor::~AudioLooperProcessor()
 	AudioManager::getInstance()->removeAudioManagerListener(this);
 }
 
+void AudioLooperProcessor::initInternal()
+{
+	LooperProcessor::initInternal();
+
+	updateRingBuffer();
+}
+
 void AudioLooperProcessor::updateOutTracks()
 {
 	TrackOutputMode m = trackOutputMode->getValueDataAsEnum<TrackOutputMode>();
-
 	StringArray s;
 
 	if (m == MIXED_ONLY || m == ALL)

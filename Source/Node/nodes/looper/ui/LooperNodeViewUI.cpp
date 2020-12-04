@@ -49,6 +49,8 @@ void LooperNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 
 void LooperNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
+    if (tracksUI.size() == 0) return;
+
     const int maxTracksPerLine = 16;
     const int trackWidth = jmin<int>(floor((r.getWidth()-4)/jmax(jmin(maxTracksPerLine, tracksUI.size()),1)), 40);
     

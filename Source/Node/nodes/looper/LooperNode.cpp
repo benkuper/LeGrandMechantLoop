@@ -13,7 +13,7 @@
 #include "LooperTrack.h"
 
 LooperProcessor::LooperProcessor(Node* node, LooperType looperType) :
-	GenericNodeProcessor(node, looperType == AUDIO, looperType == AUDIO, looperType == AUDIO),
+	GenericNodeProcessor(node, looperType == AUDIO, looperType == AUDIO, false, looperType == AUDIO),
 	looperType(looperType),
 	tracksCC("Tracks"),
 	currentTrack(nullptr)

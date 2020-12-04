@@ -12,14 +12,11 @@
 #include "ui/SpatNodeViewUI.h"
 
 SpatProcessor::SpatProcessor(Node* node) :
-    GenericNodeProcessor(node),
+    GenericNodeProcessor(node, true, true, true, true),
     spatCC("Points"),
 	fadeCurve("Fade Curve",nullptr)
 {
 	nodeRef->viewUISize->setPoint(300, 300);
-
-	numInputs = addIntParameter("Inputs", "Number of inputs", 2, 1, 32);
-	numOutputs = addIntParameter("Outputs", "Number of outputs", 6, 1, 32);
 
 	spatMode = addEnumParameter("Mode", "Mode of the spat");
 	spatMode->addOption("Circle", CIRCLE)->addOption("Free", FREE);
@@ -39,9 +36,6 @@ SpatProcessor::SpatProcessor(Node* node) :
 	circleAngle = addFloatParameter("Circle Angle", "Angle of the circle if in cirlce mode", 0, 0, 360);
 	
 	addChildControllableContainer(&spatCC);
-
-	nodeRef->setAudioInputs(numInputs->intValue());
-	nodeRef->setAudioOutputs(numOutputs->intValue());
 }
 
 void SpatProcessor::updateOutputsFromNodeInternal()
@@ -51,7 +45,7 @@ void SpatProcessor::updateOutputsFromNodeInternal()
 
 void SpatProcessor::updateSpatPoints()
 {
-	while (spatCC.controllableContainers.size() > nodeRef->numOutputs)
+	while (spatCC.controllableContainers.size() > nodeRef->numInputs)
 	{
 		spatCC.removeChildControllableContainer(spatCC.controllableContainers[spatCC.controllableContainers.size() - 1]);
 	}
@@ -101,8 +95,8 @@ void SpatProcessor::updateRadiuses()
 
 void SpatProcessor::onContainerParameterChanged(Parameter* p)
 {
-	if (p == numInputs) nodeRef->setAudioInputs(numInputs->intValue());
-	else if (p == numOutputs) nodeRef->setAudioInputs(numOutputs->intValue());
+	if (p == numAudioInputs) nodeRef->setAudioInputs(numAudioInputs->intValue());
+	else if (p == numAudioOutputs) nodeRef->setAudioInputs(numAudioOutputs->intValue());
 	else if (p == spatMode || p == circleRadius || p == circleAngle)
 	{
 		placeItems();
@@ -116,10 +110,10 @@ void SpatProcessor::onContainerParameterChanged(Parameter* p)
 void SpatProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	int numSamples = buffer.getNumSamples();
-	tmpBuffer.setSize(numOutputs->intValue(), numSamples);
+	tmpBuffer.setSize(numAudioOutputs->intValue(), numSamples);
 	tmpBuffer.clear();
 
-	for (int outputIndex = 0; outputIndex < numOutputs->intValue(); outputIndex++)
+	for (int outputIndex = 0; outputIndex < numAudioOutputs->intValue(); outputIndex++)
 	{
 		SpatItem* si = (SpatItem*)spatCC.controllableContainers[outputIndex].get();
 		float dist = spatPosition->getPoint().getDistanceFrom(si->position->getPoint());
@@ -127,7 +121,7 @@ void SpatProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer&
 		float relDist = jlimit<float>(0, 1, rad == 0 ? 1 : dist / rad);
 		float weight = fadeCurve.getValueAtPosition(relDist);
 
-		for (int inputIndex = 0; inputIndex < numInputs->intValue(); inputIndex++)
+		for (int inputIndex = 0; inputIndex < numAudioInputs->intValue(); inputIndex++)
 		{
 			tmpBuffer.addFrom(outputIndex, 0, buffer.getReadPointer(inputIndex), numSamples, weight);
 		}
@@ -135,7 +129,7 @@ void SpatProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer&
 		si->weight->setValue(weight);
 	}
 
-	for (int outputIndex = 0; outputIndex < numOutputs->intValue(); outputIndex++)
+	for (int outputIndex = 0; outputIndex < numAudioOutputs->intValue(); outputIndex++)
 	{
 		buffer.clear(outputIndex, 0, numSamples);
 		buffer.addFrom(outputIndex, 0, tmpBuffer.getReadPointer(outputIndex), numSamples);

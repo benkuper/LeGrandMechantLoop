@@ -20,21 +20,36 @@ class NodeProcessor :
 	public AudioProcessor
 {
 public:
-	NodeProcessor(Node* n, bool hasInput = true, bool hasOutput = true, bool useOutRMS = true);
+	NodeProcessor(Node* n, bool hasInput = true, bool hasOutput = true, bool userCanSetIO = false, bool useOutControl = true);
+
 	virtual ~NodeProcessor() {}
 
 	WeakReference<Node> nodeRef;
-
+	
 	bool hasAudioInput; //defines if this processor is supposed to get input, even if the number of channels is zero
 	bool hasAudioOutput; //defines if this processor is supposed to provide output, even if the number of channels is zero
 	bool hasMIDIInput;
 	bool hasMIDIOutput;
 
+	IntParameter * numAudioInputs;
+	IntParameter * numAudioOutputs;
+
+	Array<float> connectionsActivityLevels;
+
 	FloatParameter* outRMS;
+	FloatParameter* outGain;
 
 	MidiBuffer inMidiBuffer;
 
 	virtual void clearProcessor() {}
+
+	virtual void init();
+	virtual void initInternal() {}
+
+	virtual void onContainerParameterChanged(Parameter* p) override;
+	
+	virtual void autoSetNumInputs(); //if userCanSetIO
+	virtual void autoSetNumOutputs(); //if userCanSetIO
 
 	virtual void updateInputsFromNode(bool updatePlayConfig = true);
 	virtual void updateInputsFromNodeInternal() {}
@@ -44,7 +59,6 @@ public:
 	virtual void updatePlayConfig();
 
 	void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer);
-
 	virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {}
 
 	/* AudioProcessor */
@@ -73,9 +87,8 @@ class GenericNodeProcessor :
 	public NodeProcessor
 {
 public:
-	GenericNodeProcessor(Node* n, bool hasInput = true, bool hasOutput =true, bool useOutRMS = true);
+	GenericNodeProcessor(Node* n, bool hasInput = true, bool hasOutput = true, bool userCanSetIO = false, bool useOutControl = true);
 	virtual ~GenericNodeProcessor() {}
-
 
 	virtual NodeViewUI* createNodeViewUI(); //to override by children
 };

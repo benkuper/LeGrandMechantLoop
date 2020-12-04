@@ -18,9 +18,6 @@ public:
 	SpatProcessor(Node* node);
 	~SpatProcessor() {}
 
-	IntParameter* numInputs;
-	IntParameter* numOutputs;
-
 	enum SpatMode { FREE, CIRCLE };
 	EnumParameter* spatMode;
 

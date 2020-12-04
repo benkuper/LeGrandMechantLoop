@@ -12,25 +12,18 @@
 #include "ui/MixerNodeViewUI.h"
 
 MixerProcessor::MixerProcessor(Node* node) :
-    GenericNodeProcessor(node),
+    GenericNodeProcessor(node, true, true, true, true),
     rmsCC("RMS"),
     outGainsCC("Out Gains"),
     gainRootCC("Channel Gains")
 {
     nodeRef->viewUISize->setPoint(100, 250);
 
-    numInputs = addIntParameter("Inputs", "Number of inputs", 2, 1, 32);
-    numOutputs = addIntParameter("Outputs", "Number of outputs", 2, 1, 32);
-
     addChildControllableContainer(&rmsCC);
     rmsCC.editorIsCollapsed = true;
     addChildControllableContainer(&outGainsCC);
     outGainsCC.editorIsCollapsed = true;
     addChildControllableContainer(&gainRootCC);
-
-    nodeRef->setAudioInputs(numInputs->intValue());
-    nodeRef->setAudioOutputs(numOutputs->intValue());
-
 }
 
 void MixerProcessor::updateInputsFromNodeInternal()
@@ -97,29 +90,15 @@ FloatParameter * MixerProcessor::getGainParameter(int inputIndex, int outputInde
     return (FloatParameter*)gainRootCC.controllableContainers[inputIndex]->controllables[outputIndex];
 }
 
-void MixerProcessor::onContainerParameterChanged(Parameter* p)
-{
-    GenericNodeProcessor::onContainerParameterChanged(p);
-
-    if (p == numInputs)
-    {
-        nodeRef->setAudioInputs(numInputs->intValue());
-    }
-    else if (p == numOutputs)
-    {
-        nodeRef->setAudioOutputs(numOutputs->intValue());
-    }
-}
-
 void MixerProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     int numSamples = buffer.getNumSamples();
-    tmpBuffer.setSize(numOutputs->intValue(), numSamples);
+    tmpBuffer.setSize(numAudioOutputs->intValue(), numSamples);
     tmpBuffer.clear();
 
-    for (int inputIndex = 0; inputIndex < numInputs->intValue(); inputIndex++)
+    for (int inputIndex = 0; inputIndex < numAudioInputs->intValue(); inputIndex++)
     {
-        for (int outputIndex = 0;  outputIndex < numOutputs->intValue(); outputIndex++)
+        for (int outputIndex = 0;  outputIndex < numAudioOutputs->intValue(); outputIndex++)
         {
             FloatParameter* gp = getGainParameter(inputIndex, outputIndex);
             tmpBuffer.addFrom(outputIndex, 0, buffer.getReadPointer(inputIndex), numSamples, gp->floatValue());
@@ -127,7 +106,7 @@ void MixerProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer
     }
 
 
-    for (int outputIndex = 0; outputIndex < numOutputs->intValue(); outputIndex++)
+    for (int outputIndex = 0; outputIndex < numAudioOutputs->intValue(); outputIndex++)
     {
         FloatParameter* outGainP = (FloatParameter*)outGainsCC.controllables[outputIndex];
 
