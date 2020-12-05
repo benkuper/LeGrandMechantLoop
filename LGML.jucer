@@ -318,7 +318,9 @@
       </MODULEPATHS>
     </VS2019>
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="k24oFh" bigIcon="k24oFh"
-               externalLibraries="Servus" xcodeValidArchs="x86_64">
+               externalLibraries="Servus" xcodeValidArchs="x86_64" microphonePermissionNeeded="1"
+               customPList="&lt;plist&gt;&#10;&lt;dict&gt;&#10;&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;&#9;&lt;dict&gt;&#10;&#9;&#9;&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;&#10;&#9;&#9;&lt;true/&gt;&#10;&#9;&lt;/dict&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
+               documentExtensions="lgml">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="LGML" headerPath="../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/serial/include"
                        libraryPath="../../External/servus/lib/osx/debug"/>
@@ -402,7 +404,9 @@
       </MODULEPATHS>
     </VS2019>
     <XCODE_MAC targetFolder="Builds/MacOSX_CI" smallIcon="k24oFh" bigIcon="k24oFh"
-               externalLibraries="Servus" xcodeValidArchs="x86_64">
+               externalLibraries="Servus" xcodeValidArchs="x86_64" hardenedRuntimeOptions="com.apple.security.cs.allow-jit"
+               customPList="&lt;plist&gt;&#10;&lt;dict&gt;&#10;&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;&#9;&lt;dict&gt;&#10;&#9;&#9;&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;&#10;&#9;&#9;&lt;true/&gt;&#10;&#9;&lt;/dict&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
+               microphonePermissionNeeded="1" documentExtensions="lgml">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="0" name="Release" osxCompatibility="10.8 SDK" libraryPath="../../External/servus/lib/osx/release"
                        headerPath="../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/serial/include"/>
