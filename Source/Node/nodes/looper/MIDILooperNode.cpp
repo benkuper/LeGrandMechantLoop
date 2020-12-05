@@ -21,6 +21,8 @@ MIDILooperProcessor::MIDILooperProcessor(Node* n) :
     ControllableContainer::addParameter(midiParam);
 
     nodeRef->setMIDIIO(false, true);
+
+    updateLooperTracks();
 }
 
 MIDILooperProcessor::~MIDILooperProcessor()
@@ -115,7 +117,7 @@ void MIDILooperProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiB
     MidiBuffer outBuffer;
     cleanupCollector.removeNextBlockOfMessages(outBuffer, blockSize);
 
-    for (int i = 0; i < numTracks->intValue(); i++)
+    for (int i = 0; i < tracksCC.controllableContainers.size(); i++)
     {
         ((MIDILooperTrack*)tracksCC.controllableContainers[i].get())->processBlock(inMidiBuffer, outBuffer, blockSize);
     }

@@ -15,6 +15,7 @@ MIDILooperTrack::MIDILooperTrack(MIDILooperProcessor* looper, int index) :
     LooperTrack(looper, index),
 	midiLooper(looper)
 {
+	
 }
 
 MIDILooperTrack::~MIDILooperTrack()

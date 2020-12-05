@@ -10,10 +10,18 @@
 
 #include "LooperNodeViewUI.h"
 #include "LooperTrackUI.h"
+#include "../MIDILooperNode.h"
 
 LooperNodeViewUI::LooperNodeViewUI(GenericNode<LooperProcessor>* n) :
     GenericNodeViewUI(n)
 {
+    if (MIDILooperProcessor* mlp = dynamic_cast<MIDILooperProcessor*>(processor))
+    {
+        midiParamUI.reset(mlp->midiParam->createMIDIParameterUI());
+        addAndMakeVisible(midiParamUI.get());
+        contentComponents.add(midiParamUI.get());
+    }
+
     updateTracksUI();
 }
 
