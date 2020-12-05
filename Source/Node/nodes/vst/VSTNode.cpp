@@ -76,6 +76,7 @@ void VSTProcessor::setupVST(PluginDescription* description)
 
         if (vst != nullptr)
         {
+            vst->setPlayHead(Transport::getInstance());
             nodeRef->setAudioInputs(description->numInputChannels);
             nodeRef->setAudioOutputs(description->numOutputChannels);
             vst->prepareToPlay(getSampleRate(), getBlockSize());
@@ -127,7 +128,6 @@ void VSTProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& 
             midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
         }
        
-        vst->setPlayHead(Transport::getInstance());
         vst->processBlock(buffer, inMidiBuffer);
     }
 

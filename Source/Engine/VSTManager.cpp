@@ -47,6 +47,7 @@ void VSTManager::updateVSTList()
         }
     }
 
+    LOG("Updating VSTs...");
     idDescriptionMap.clear();
     descriptions.clear();
     for (auto& f : formats)
@@ -54,6 +55,7 @@ void VSTManager::updateVSTList()
         StringArray foundPlugins = f->searchPathsForPlugins(searchPath, true);
         for (auto& fp : foundPlugins)
         {
+            LOG("Scanning " + fp + "...");
             f->findAllTypesForFile(descriptions, fp);
         }
     }

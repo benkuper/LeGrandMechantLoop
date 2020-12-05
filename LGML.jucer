@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b8">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b9">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="fut9ay" name="default.lgmllayout" compile="0" resource="1"
@@ -287,7 +287,7 @@
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" ORGANICUI_USE_WEBSERVER="1"
                JUCE_USE_WINRT_MIDI="1" JUCE_ASIO="1" JUCE_WASAPI="1" JUCE_DIRECTSOUND="1"
                JUCE_ALSA="1" JUCE_JACK="1" JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1"
-               ORGANICUI_USE_SERVUS="1"/>
+               ORGANICUI_USE_SERVUS="1" JUCE_PLUGINHOST_VST="1"/>
   <EXPORTFORMATS>
     <VS2019 targetFolder="Builds/VisualStudio2019" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib"
             smallIcon="k24oFh" bigIcon="k24oFh">

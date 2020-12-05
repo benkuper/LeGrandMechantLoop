@@ -13,6 +13,7 @@
 #include "ui/NodeViewUI.h"
 #include "Engine/AudioManager.h"
 #include "Connection/NodeConnection.h"
+#include "Transport/Transport.h"
 
 NodeProcessor::NodeProcessor(Node* n, bool hasAudioInput, bool hasAudioOutput, bool userCanSetIO, bool useOutControl) :
     ControllableContainer("Processor"),
@@ -47,10 +48,14 @@ NodeProcessor::NodeProcessor(Node* n, bool hasAudioInput, bool hasAudioOutput, b
         outRMS = addFloatParameter("Out RMS", "The general activity of all channels combined after processing", 0, 0, 1);
         outRMS->setControllableFeedbackOnly(true);
     }
+
 }
 
 void NodeProcessor::init()
 {
+    setPlayHead(Transport::getInstance()); //is it interesting ? or should each node take care if it if necessary ?
+
+
     updateInputsFromNode(false);
     updateOutputsFromNode(false);
     initInternal();

@@ -291,7 +291,7 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 	}
 	else if (t == playTrigger)
 	{
-		if (s == STOPPED) trackState->setValue(WILL_PLAY);
+		if (s == STOPPED) trackState->setValueWithData(WILL_PLAY);
 	}
 	else if (t == stopTrigger)
 	{
