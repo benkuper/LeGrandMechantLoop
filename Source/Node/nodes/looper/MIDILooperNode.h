@@ -35,8 +35,6 @@ public:
     };
     Array<NoteInfo> currentNoteOns; //keeping track of onNotes to cleanup good
 
-    void initInternal() override;
-
     void setMIDIDevice(MIDIInputDevice* d);
 
     virtual LooperTrack* createLooperTrack(int index) override;

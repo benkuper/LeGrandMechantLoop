@@ -93,8 +93,9 @@ void Node::setProcessor(NodeProcessor* processor)
         if (graph != nullptr)
         {
             nodeGraphPtr = graph->addNode(std::unique_ptr<NodeProcessor>(baseProcessor), AudioProcessorGraph::NodeID(nodeGraphID));
-            baseProcessor->init();
         }
+        
+        baseProcessor->init();
         addChildControllableContainer(baseProcessor);
     }
 }

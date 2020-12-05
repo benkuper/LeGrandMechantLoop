@@ -34,7 +34,6 @@ AudioLooperProcessor::~AudioLooperProcessor()
 void AudioLooperProcessor::initInternal()
 {
 	LooperProcessor::initInternal();
-
 	updateRingBuffer();
 }
 

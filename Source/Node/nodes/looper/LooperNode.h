@@ -50,6 +50,8 @@ public:
     enum MonitorMode { OFF, ALWAYS, RECORDING_ONLY, ARMED_TRACK };
     EnumParameter* monitorMode;
 
+    void initInternal() override;
+
     virtual void updateLooperTracks();
     virtual LooperTrack* createLooperTrack(int index) { return nullptr; }
 

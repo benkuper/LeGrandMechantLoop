@@ -45,7 +45,6 @@ LooperProcessor::LooperProcessor(Node* node, LooperType looperType) :
 	fadeTimeMS = addIntParameter("Fade Time", "Number of ms to fade between start and end of the loop", 20, 0, 2000);
 	addChildControllableContainer(&tracksCC);
 
-	setCurrentTrack(getTrackForIndex(currentTrackIndex->intValue()-1));
 
 	Transport::getInstance()->addTransportListener(this);
 }
@@ -53,6 +52,12 @@ LooperProcessor::LooperProcessor(Node* node, LooperType looperType) :
 LooperProcessor::~LooperProcessor()
 {
 	Transport::getInstance()->removeTransportListener(this);
+}
+
+void LooperProcessor::initInternal()
+{
+	updateLooperTracks();
+	setCurrentTrack(getTrackForIndex(currentTrackIndex->intValue() - 1));
 }
 
 void LooperProcessor::updateLooperTracks()
@@ -97,6 +102,8 @@ void LooperProcessor::setCurrentTrack(LooperTrack* t)
 
 void LooperProcessor::onContainerTriggerTriggered(Trigger* t)
 {
+	GenericNodeProcessor::onContainerTriggerTriggered(t);
+
 	if (t == recTrigger)
 	{
 		if (currentTrack != nullptr)

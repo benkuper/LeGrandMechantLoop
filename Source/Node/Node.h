@@ -99,7 +99,9 @@ public:
         Node(getTypeString(), params)
     {
         processor = new T(this);
+        processor->suspendProcessing(true);
         setProcessor((GenericNodeProcessor*)processor);
+        processor->suspendProcessing(false);
     }
 
     virtual ~GenericNode() {}
