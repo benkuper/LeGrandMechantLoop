@@ -47,6 +47,12 @@ void LooperNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
     if (c == processor->numTracks) updateTracksUI();
 }
 
+void LooperNodeViewUI::resizedInternalHeader(Rectangle<int>& r)
+{
+    GenericNodeViewUI::resizedInternalHeader(r);
+    if (midiParamUI != nullptr) midiParamUI->setBounds(r.removeFromRight(100).reduced(1));
+}
+
 void LooperNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
     if (tracksUI.size() == 0) return;

@@ -17,6 +17,8 @@ ContainerNodeViewUI::ContainerNodeViewUI(GenericNode<ContainerProcessor> * node)
 {
     editBT.addListener(this);
     addAndMakeVisible(&editBT);
+
+    contentComponents.add(&editBT);
 }
 
 ContainerNodeViewUI::~ContainerNodeViewUI()

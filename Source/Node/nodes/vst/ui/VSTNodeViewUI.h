@@ -56,7 +56,7 @@ public:
     std::unique_ptr<PluginWindow> pluginEditor;
     std::unique_ptr<MIDIDeviceParameterUI> midiParamUI;
 
-    void resizedHeader(Rectangle<int>& r) override;
+    void resizedInternalContentNode(Rectangle<int>& r) override;
     void controllableFeedbackUpdateInternal(Controllable* c) override;
     void buttonClicked(Button* b) override;
 

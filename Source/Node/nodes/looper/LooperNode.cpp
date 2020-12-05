@@ -28,12 +28,14 @@ LooperProcessor::LooperProcessor(Node* node, LooperType looperType) :
 	freeFillMode = addEnumParameter("Fill Mode", "In free mode, allows to fill the buffer with empty data to complete a bar or a beat.", getQuantization() == Transport::FREE);
 	freeFillMode->addOption("From Quantization", Transport::DEFAULT)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Direct", Transport::FREE);
 
-
 	recTrigger = addTrigger("Rec", "Record to the current track");
 	clearCurrentTrigger = addTrigger("Clear","Clear the current track if not empty, otherwise clear the past one");
-	clearAllTrigger = addTrigger("Clear All","Clear all the tracks");
 	currentTrackIndex = addIntParameter("Current Track", "Index of the current track", 1, 1, defaultNumTracks);
 	
+	playAllTrigger = addTrigger("Play All", "Stop all tracks");
+	stopAllTrigger = addTrigger("Stop All", "Stop all tracks");
+	clearAllTrigger = addTrigger("Clear All", "Clear all the tracks");
+
 	numTracks = addIntParameter("Track Count", "Number of tracks to use for this looper", defaultNumTracks, 1, 32);
 	autoNext = addBoolParameter("Auto Next", "If checked, will automatically select the next track to record", true);
 	
@@ -132,6 +134,14 @@ void LooperProcessor::onContainerTriggerTriggered(Trigger* t)
 			((LooperTrack*)cc.get())->clearTrigger->trigger();
 			currentTrackIndex->setValue(1);
 		}
+	}
+	else if (t == playAllTrigger)
+	{
+		for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->playTrigger->trigger();
+	}
+	else if (t == stopAllTrigger)
+	{
+		for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->stopTrigger->trigger();
 	}
 }
 

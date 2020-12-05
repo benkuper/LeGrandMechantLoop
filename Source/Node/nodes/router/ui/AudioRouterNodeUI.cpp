@@ -18,6 +18,8 @@ AudioRouterNodeViewUI::AudioRouterNodeViewUI(GenericNode<AudioRouterProcessor>* 
 
     currentOutputUI.reset((ParameterEditor *)processor->currentOutput->getEditor(false));
     addAndMakeVisible(currentOutputUI.get());
+    
+    contentComponents.add(currentOutputUI.get());
 }
 
 AudioRouterNodeViewUI::~AudioRouterNodeViewUI()

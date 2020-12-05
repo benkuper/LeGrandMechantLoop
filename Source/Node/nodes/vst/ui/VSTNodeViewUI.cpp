@@ -20,18 +20,19 @@ VSTNodeViewUI::VSTNodeViewUI(GenericNode<VSTProcessor>* n) :
 
     midiParamUI.reset(processor->midiParam->createMIDIParameterUI());
     addAndMakeVisible(midiParamUI.get());
+
+    contentComponents.add(&editBT);
+    contentComponents.add(midiParamUI.get());
 }
 
 VSTNodeViewUI::~VSTNodeViewUI()
 {
 }
 
-
-void VSTNodeViewUI::resizedHeader(Rectangle<int>& r)
+void VSTNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
-    GenericNodeViewUI::resizedHeader(r);
-    editBT.setBounds(r.removeFromRight(100).reduced(1));
-    midiParamUI->setBounds(r.reduced(1));
+    midiParamUI->setBounds(r.removeFromTop(20).reduced(1));
+    editBT.setBounds(r.removeFromTop(20).reduced(1));
 }
 
 void VSTNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
@@ -47,10 +48,11 @@ void VSTNodeViewUI::buttonClicked(Button* b)
     {
         if (processor->vst != nullptr && processor->vst->hasEditor())
         {
-            if (pluginEditor == nullptr)
+            if (pluginEditor.get() == nullptr)
             {
                 pluginEditor.reset(new PluginWindow(processor));
                 pluginEditor->addPluginWindowListener(this);
+                editBT.setEnabled(false);
             }
             else
             {
@@ -63,6 +65,7 @@ void VSTNodeViewUI::buttonClicked(Button* b)
 void VSTNodeViewUI::windowClosed()
 {
     pluginEditor.reset();
+    editBT.setEnabled(true);
 }
 
 PluginWindow::PluginWindow(VSTProcessor* processor) :
@@ -77,7 +80,7 @@ PluginWindow::PluginWindow(VSTProcessor* processor) :
     setResizable(true, true);
     setDraggable(true);
 
-    setAlwaysOnTop(true);
+    //setAlwaysOnTop(true);
 
     processor->addAsyncVSTListener(this);
 }

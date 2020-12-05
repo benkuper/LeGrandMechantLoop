@@ -12,6 +12,7 @@
 
 #include "../LooperNode.h"
 #include "../../../ui/NodeViewUI.h"
+#include "Common/MIDI/ui/MIDIDeviceParameterUI.h"
 
 class LooperTrackUI;
 
@@ -24,9 +25,11 @@ public:
 
     void updateTracksUI();
 
+    std::unique_ptr<MIDIDeviceParameterUI> midiParamUI;
     OwnedArray<LooperTrackUI> tracksUI;
 
     void controllableFeedbackUpdateInternal(Controllable* c) override;
 
+    void resizedInternalHeader(Rectangle<int>& r) override;
     void resizedInternalContentNode(Rectangle<int> &r) override;
 };

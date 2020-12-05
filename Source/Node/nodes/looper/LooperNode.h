@@ -35,7 +35,11 @@ public:
 
     Trigger* recTrigger;
     Trigger* clearCurrentTrigger;
+
+    Trigger* playAllTrigger;
+    Trigger* stopAllTrigger;
     Trigger* clearAllTrigger;
+
     BoolParameter* autoNext;
     IntParameter* currentTrackIndex;
 

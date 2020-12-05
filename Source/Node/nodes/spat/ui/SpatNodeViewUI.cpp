@@ -15,6 +15,7 @@ SpatNodeViewUI::SpatNodeViewUI(GenericNode<SpatProcessor>* n) :
     spatView(processor)
 {
     addAndMakeVisible(&spatView);
+    contentComponents.add(&spatView);
 }
 
 SpatNodeViewUI::~SpatNodeViewUI()
