@@ -13,16 +13,16 @@
 
 #include "LooperTrack.h"
 
-class MIDILooperProcessor;
+class MIDILooperNode;
 
 class MIDILooperTrack :
     public LooperTrack
 {
 public:
-    MIDILooperTrack(MIDILooperProcessor* looper, int index);
+    MIDILooperTrack(MIDILooperNode* looper, int index);
     ~MIDILooperTrack();
 
-    MIDILooperProcessor* midiLooper;
+    MIDILooperNode* midiLooper;
 
     MidiBuffer buffer;
    

@@ -10,8 +10,8 @@
 
 #include "IONodeViewUI.h"
 
-IONodeViewUI::IONodeViewUI(GenericNode<IOProcessor>* n) :
-    GenericNodeViewUI(n)
+IONodeViewUI::IONodeViewUI(IONode * n) :
+    NodeViewUI(n)
 {
     updateUI();
 }
@@ -23,13 +23,13 @@ IONodeViewUI::~IONodeViewUI()
 void IONodeViewUI::nodeInputsChanged()
 {
     NodeViewUI::nodeInputsChanged();
-    if (!processor->isInput) updateUI();
+    if (!node->isInput) updateUI();
 }
 
 void IONodeViewUI::nodeOutputsChanged()
 {
     NodeViewUI::nodeOutputsChanged();
-    if(processor->isInput) updateUI();
+    if(node->isInput) updateUI();
 }
 
 void IONodeViewUI::updateUI()
@@ -41,11 +41,11 @@ void IONodeViewUI::updateUI()
     }
     channelsUI.clear();
 
-    int numChannels = processor->isInput ? audioNode->numOutputs : audioNode->numInputs;
+    int numChannels = node->isInput ? node->getNumAudioOutputs() : node->getNumAudioInputs();
 
     for (int i = 0; i < numChannels; i++)
     {
-        IOChannelUI* channelUI = new IOChannelUI((IOChannel*)processor->channelsCC.controllableContainers[i].get());
+        IOChannelUI* channelUI = new IOChannelUI((IOChannel*)node->channelsCC.controllableContainers[i].get());
         contentComponents.add(channelUI);
         channelsUI.add(channelUI);
         addAndMakeVisible(channelUI);

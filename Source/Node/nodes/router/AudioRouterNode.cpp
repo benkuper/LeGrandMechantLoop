@@ -11,8 +11,8 @@
 #include "AudioRouterNode.h"
 #include "ui/AudioRouterNodeUI.h"
 
-AudioRouterProcessor::AudioRouterProcessor(Node * n) :
-    GenericNodeProcessor(n, true, true, true, true),
+AudioRouterNode::AudioRouterNode(var params) :
+    Node(getTypeString(), params, true, true, true, true),
     timeAtTransition(0)
 {
     numChannelsPerGroup = addIntParameter("Channels Per Group", "Each input and output is a group of that many channels", 1, 1, 32);
@@ -24,11 +24,11 @@ AudioRouterProcessor::AudioRouterProcessor(Node * n) :
     previousOutput = currentOutput->intValue();
 }
 
-AudioRouterProcessor::~AudioRouterProcessor()
+AudioRouterNode::~AudioRouterNode()
 {
 }
 
-void AudioRouterProcessor::autoSetNumInputs()
+void AudioRouterNode::autoSetNumAudioInputs()
 {
     StringArray inputNames;
     for (int i = 0; i < numAudioInputs->intValue(); i++)
@@ -38,10 +38,11 @@ void AudioRouterProcessor::autoSetNumInputs()
             inputNames.add("Input "+String(i + 1) + ":" + String(j + 1));
         }
     }
-    nodeRef->setAudioInputs(inputNames);
+    
+    setAudioInputs(inputNames);
 }
 
-void AudioRouterProcessor::autoSetNumOutputs()
+void AudioRouterNode::autoSetNumAudioOutputs()
 {
     StringArray outputNames;
 
@@ -53,26 +54,26 @@ void AudioRouterProcessor::autoSetNumOutputs()
         }
     }
 
-    nodeRef->setAudioOutputs(outputNames);
+    setAudioOutputs(outputNames);
 }
 
-void AudioRouterProcessor::updateInputsFromNodeInternal()
+void AudioRouterNode::updateAudioInputsInternal()
 {
     currentInput->setRange(1, numAudioInputs->intValue());
 }
 
-void AudioRouterProcessor::updateOutputsFromNodeInternal()
+void AudioRouterNode::updateAudioOutputsInternal()
 {
     currentOutput->setRange(1, numAudioOutputs->intValue());
 }
 
-void AudioRouterProcessor::onContainerParameterChanged(Parameter* p)
+void AudioRouterNode::onContainerParameterChangedInternal(Parameter* p)
 {
-    GenericNodeProcessor::onContainerParameterChanged(p);
+    Node::onContainerParameterChangedInternal(p);
     if (p == numChannelsPerGroup)
     {
-        autoSetNumInputs();
-        autoSetNumOutputs();
+        autoSetNumAudioInputs();
+        autoSetNumAudioOutputs();
     }
     else if (p == currentInput || p == currentOutput)
     {
@@ -80,7 +81,7 @@ void AudioRouterProcessor::onContainerParameterChanged(Parameter* p)
     }
 }
 
-void AudioRouterProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void AudioRouterNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     int channelsPerGroup = numChannelsPerGroup->intValue();
     int startInputChannel = (currentInput->intValue()-1) * channelsPerGroup;
@@ -129,12 +130,9 @@ void AudioRouterProcessor::processBlockInternal(AudioBuffer<float>& buffer, Midi
             if (i < startOutputChannel || i >= startOutputChannel + channelsPerGroup) buffer.clear(i, 0, buffer.getNumSamples());
         }
     }
-    
-
-    
 }
 
-NodeViewUI* AudioRouterProcessor::createNodeViewUI()
+BaseNodeViewUI* AudioRouterNode::createViewUI()
 {
-    return new AudioRouterNodeViewUI((GenericNode<AudioRouterProcessor> *)nodeRef.get());
+    return new AudioRouterNodeViewUI(this);
 }

@@ -11,7 +11,6 @@
 #pragma once
 #include "../NodeConnection.h"
 
-class NodeViewUI;
 class NodeConnector;
 
 class NodeConnectionViewUI :

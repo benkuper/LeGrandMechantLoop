@@ -12,13 +12,13 @@
 #include "ui/LooperNodeViewUI.h"
 #include "LooperTrack.h"
 
-LooperProcessor::LooperProcessor(Node* node, LooperType looperType) :
-	GenericNodeProcessor(node, looperType == AUDIO, looperType == AUDIO, false, looperType == AUDIO),
+LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
+	Node(name, params, looperType == AUDIO, looperType == AUDIO, false, looperType == AUDIO),
 	looperType(looperType),
 	tracksCC("Tracks"),
 	currentTrack(nullptr)
 {
-	nodeRef->viewUISize->setPoint(350, 220);
+	viewUISize->setPoint(350, 220);
 
 	const int defaultNumTracks = 8;
 
@@ -49,21 +49,21 @@ LooperProcessor::LooperProcessor(Node* node, LooperType looperType) :
 	Transport::getInstance()->addTransportListener(this);
 }
 
-LooperProcessor::~LooperProcessor()
+LooperNode::~LooperNode()
 {
 	Transport::getInstance()->removeTransportListener(this);
 }
 
-void LooperProcessor::initInternal()
+void LooperNode::initInternal()
 {
 	updateLooperTracks();
 	setCurrentTrack(getTrackForIndex(currentTrackIndex->intValue() - 1));
 }
 
-void LooperProcessor::updateLooperTracks()
+void LooperNode::updateLooperTracks()
 {
-	bool shouldResume = !isSuspended();
-	suspendProcessing(true);
+	bool shouldResume = !processor->isSuspended();
+	processor->suspendProcessing(true);
 
 	while (tracksCC.controllableContainers.size() > numTracks->intValue())
 	{
@@ -79,10 +79,10 @@ void LooperProcessor::updateLooperTracks()
 		tracksCC.addChildControllableContainer(createLooperTrack(i), true);
 	}
 
-	if (shouldResume) suspendProcessing(false);
+	if (shouldResume) processor->suspendProcessing(false);
 }
 
-void LooperProcessor::setCurrentTrack(LooperTrack* t)
+void LooperNode::setCurrentTrack(LooperTrack* t)
 {
 	if (currentTrack == t) return;
 
@@ -100,9 +100,9 @@ void LooperProcessor::setCurrentTrack(LooperTrack* t)
 }
 
 
-void LooperProcessor::onContainerTriggerTriggered(Trigger* t)
+void LooperNode::onContainerTriggerTriggered(Trigger* t)
 {
-	GenericNodeProcessor::onContainerTriggerTriggered(t);
+	Node::onContainerTriggerTriggered(t);
 
 	if (t == recTrigger)
 	{
@@ -152,9 +152,9 @@ void LooperProcessor::onContainerTriggerTriggered(Trigger* t)
 	}
 }
 
-void LooperProcessor::onContainerParameterChanged(Parameter* p)
+void LooperNode::onContainerParameterChangedInternal(Parameter* p)
 {
-	if (nodeRef.wasObjectDeleted()) return;
+	Node::onContainerParameterChangedInternal(p);
 
 	if (p == numTracks)
 	{
@@ -171,30 +171,30 @@ void LooperProcessor::onContainerParameterChanged(Parameter* p)
 	}
 }
 
-void LooperProcessor::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
+void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
 {
-	GenericNodeProcessor::onControllableFeedbackUpdate(cc, c);
+	Node::onControllableFeedbackUpdateInternal(cc, c);
 	if (LooperTrack* t = c->getParentAs<LooperTrack>())
 	{
 		if (c == t->trackState)
 		{
-			nodeRef->isNodePlaying->setValue(hasContent());
+			isNodePlaying->setValue(hasContent());
 		}
 	}
 }
 
 
-void LooperProcessor::beatChanged(bool isNewBar)
+void LooperNode::beatChanged(bool isNewBar)
 {
 	for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->handleBeatChanged(isNewBar);
 }
 
-void LooperProcessor::playStateChanged(bool isPlaying)
+void LooperNode::playStateChanged(bool isPlaying)
 {
 	if (!isPlaying) for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->stopPlaying();
 }
 
-bool LooperProcessor::hasContent()
+bool LooperNode::hasContent()
 {
 	for (auto& cc : tracksCC.controllableContainers)
 	{
@@ -203,7 +203,7 @@ bool LooperProcessor::hasContent()
 	return false;
 }
 
-bool LooperProcessor::isOneTrackRecording(bool includeWillRecord)
+bool LooperNode::isOneTrackRecording(bool includeWillRecord)
 {
 	for (auto& cc : tracksCC.controllableContainers)
 	{
@@ -212,27 +212,27 @@ bool LooperProcessor::isOneTrackRecording(bool includeWillRecord)
 	return false;
 }
 
-LooperTrack* LooperProcessor::getTrackForIndex(int index)
+LooperTrack* LooperNode::getTrackForIndex(int index)
 {
 	if (index >= tracksCC.controllableContainers.size()) return nullptr;
 	return (LooperTrack*)tracksCC.controllableContainers[index].get();
 }
 
-Transport::Quantization LooperProcessor::getQuantization()
+Transport::Quantization LooperNode::getQuantization()
 {
 	Transport::Quantization q = quantization->getValueDataAsEnum<Transport::Quantization>();
 	if (q == Transport::DEFAULT) q = Transport::getInstance()->quantization->getValueDataAsEnum<Transport::Quantization>();
 	return q;
 }
 
-Transport::Quantization LooperProcessor::getFreeFillMode()
+Transport::Quantization LooperNode::getFreeFillMode()
 {
 	Transport::Quantization q = freeFillMode->getValueDataAsEnum<Transport::Quantization>();
 	if (q == Transport::DEFAULT) q = getQuantization();
 	return q;
 }
 
-NodeViewUI* LooperProcessor::createNodeViewUI()
+BaseNodeViewUI* LooperNode::createViewUI()
 {
-	return new LooperNodeViewUI((GenericNode<LooperProcessor>*)nodeRef.get());
+	return new LooperNodeViewUI(this);
 }

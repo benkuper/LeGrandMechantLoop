@@ -11,15 +11,16 @@
 #pragma once
 
 #include "SpatItemUI.h"
+#include "../SpatNode.h"
 
 class SpatView :
     public Component
 {
 public:
-    SpatView(SpatProcessor * item);
+    SpatView(SpatNode * item);
     ~SpatView();
 
-    SpatProcessor * proc;
+    SpatNode* node;
     class SpatTarget :
         public Component
     {

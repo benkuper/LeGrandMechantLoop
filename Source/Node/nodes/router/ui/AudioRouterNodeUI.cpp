@@ -10,13 +10,13 @@
 
 #include "AudioRouterNodeUI.h"
 
-AudioRouterNodeViewUI::AudioRouterNodeViewUI(GenericNode<AudioRouterProcessor>* n) :
-    GenericNodeViewUI(n)
+AudioRouterNodeViewUI::AudioRouterNodeViewUI(AudioRouterNode * n) :
+    NodeViewUI(n)
 {
-    currentInputUI.reset((ParameterEditor *)processor->currentInput->getEditor(false));
+    currentInputUI.reset((ParameterEditor *)node->currentInput->getEditor(false));
     addAndMakeVisible(currentInputUI.get());
 
-    currentOutputUI.reset((ParameterEditor *)processor->currentOutput->getEditor(false));
+    currentOutputUI.reset((ParameterEditor *)node->currentOutput->getEditor(false));
     addAndMakeVisible(currentOutputUI.get());
     
     contentComponents.add(currentOutputUI.get());

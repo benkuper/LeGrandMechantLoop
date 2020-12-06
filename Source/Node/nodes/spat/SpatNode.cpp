@@ -11,12 +11,12 @@
 #include "SpatNode.h"
 #include "ui/SpatNodeViewUI.h"
 
-SpatProcessor::SpatProcessor(Node* node) :
-    GenericNodeProcessor(node, true, true, true, true),
+SpatNode::SpatNode(var params) :
+    Node(getTypeString(), params, true, true, true, true),
     spatCC("Points"),
 	fadeCurve("Fade Curve",nullptr)
 {
-	nodeRef->viewUISize->setPoint(300, 300);
+	viewUISize->setPoint(300, 300);
 
 	spatMode = addEnumParameter("Mode", "Mode of the spat");
 	spatMode->addOption("Circle", CIRCLE)->addOption("Free", FREE);
@@ -38,22 +38,22 @@ SpatProcessor::SpatProcessor(Node* node) :
 	addChildControllableContainer(&spatCC);
 }
 
-void SpatProcessor::updateOutputsFromNodeInternal()
+void SpatNode::updateAudioOutputsInternal()
 {
     updateSpatPoints();
 }
 
-void SpatProcessor::updateSpatPoints()
+void SpatNode::updateSpatPoints()
 {
-	while (spatCC.controllableContainers.size() > nodeRef->numInputs)
+	while (spatCC.controllableContainers.size() > getNumAudioInputs())
 	{
 		spatCC.removeChildControllableContainer(spatCC.controllableContainers[spatCC.controllableContainers.size() - 1]);
 	}
 
-	while (spatCC.controllableContainers.size() < nodeRef->numOutputs)
+	while (spatCC.controllableContainers.size() < getNumAudioOutputs())
 	{
 		int index = spatCC.controllableContainers.size();
-		SpatItem* si = new SpatItem(this, index);
+		SpatItem* si = new SpatItem(index);
 		spatCC.addChildControllableContainer(si, true);
 	}
 
@@ -61,7 +61,7 @@ void SpatProcessor::updateSpatPoints()
 	updateRadiuses();
 }
 
-void SpatProcessor::placeItems()
+void SpatNode::placeItems()
 {
 	SpatMode m = spatMode->getValueDataAsEnum<SpatMode>();
 	switch (m)
@@ -82,7 +82,7 @@ void SpatProcessor::placeItems()
 
 }
 
-void SpatProcessor::updateRadiuses()
+void SpatNode::updateRadiuses()
 {
 	int numItems = spatCC.controllableContainers.size();
 	for (int i = 0; i < numItems; i++)
@@ -93,10 +93,12 @@ void SpatProcessor::updateRadiuses()
 	}
 }
 
-void SpatProcessor::onContainerParameterChanged(Parameter* p)
+void SpatNode::onContainerParameterChangedInternal(Parameter* p)
 {
-	if (p == numAudioInputs) nodeRef->setAudioInputs(numAudioInputs->intValue());
-	else if (p == numAudioOutputs) nodeRef->setAudioInputs(numAudioOutputs->intValue());
+	Node::onContainerParameterChangedInternal(p);
+
+	if (p == numAudioInputs) setAudioInputs(numAudioInputs->intValue());
+	else if (p == numAudioOutputs) setAudioInputs(numAudioOutputs->intValue());
 	else if (p == spatMode || p == circleRadius || p == circleAngle)
 	{
 		placeItems();
@@ -107,7 +109,7 @@ void SpatProcessor::onContainerParameterChanged(Parameter* p)
 	}
 }
 
-void SpatProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void SpatNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	int numSamples = buffer.getNumSamples();
 	tmpBuffer.setSize(numAudioOutputs->intValue(), numSamples);
@@ -142,7 +144,7 @@ void SpatProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer&
 	}
 }
 
-NodeViewUI* SpatProcessor::createNodeViewUI()
+BaseNodeViewUI* SpatNode::createViewUI()
 {
-    return new SpatNodeViewUI((GenericNode<SpatProcessor>*)nodeRef.get());
+    return new SpatNodeViewUI(this);
 }

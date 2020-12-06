@@ -10,8 +10,8 @@
 
 #include "MixerNodeViewUI.h"
 
-MixerNodeViewUI::MixerNodeViewUI(GenericNode<MixerProcessor>* n) :
-    GenericNodeViewUI(n)
+MixerNodeViewUI::MixerNodeViewUI(MixerNode* n) :
+    NodeViewUI(n)
 {
     updateLines();
     rebuildOutLine();
@@ -35,7 +35,7 @@ void MixerNodeViewUI::nodeOutputsChanged()
 
 void MixerNodeViewUI::updateLines()
 {
-    int numCC = processor->gainRootCC.controllableContainers.size();
+    int numCC = node->gainRootCC.controllableContainers.size();
     while (gainLines.size() > numCC)
     {
         removeChildComponent(gainLines[gainLines.size() - 1]);
@@ -44,7 +44,7 @@ void MixerNodeViewUI::updateLines()
 
     while (gainLines.size() < numCC)
     {
-        InputGainLine* line = new InputGainLine(processor->gainRootCC.controllableContainers[gainLines.size()], gainLines.size());
+        InputGainLine* line = new InputGainLine(node->gainRootCC.controllableContainers[gainLines.size()], gainLines.size());
         addAndMakeVisible(line);
         gainLines.add(line);
     }
@@ -59,14 +59,14 @@ void MixerNodeViewUI::rebuildOutLine()
     outGainsUI.clear();
     rmsUI.clear();
 
-    for (int i = 0; i < processor->outGainsCC.controllables.size(); i++)
+    for (int i = 0; i < node->outGainsCC.controllables.size(); i++)
     {
-        FloatSliderUI* gui = ((FloatParameter*)processor->outGainsCC.controllables[i])->createSlider();
+        FloatSliderUI* gui = ((FloatParameter*)node->outGainsCC.controllables[i])->createSlider();
         gui->orientation = gui->VERTICAL;
         addAndMakeVisible(gui);
         outGainsUI.add(gui);
 
-        FloatSliderUI* rui = (new RMSSliderUI((FloatParameter*)processor->rmsCC.controllables[i]));
+        FloatSliderUI* rui = (new RMSSliderUI((FloatParameter*)node->rmsCC.controllables[i]));
         addAndMakeVisible(rui);
         rmsUI.add(rui);
     }

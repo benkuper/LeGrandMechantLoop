@@ -14,13 +14,13 @@
 #include "Common/MIDI/MIDIDeviceParameter.h"
 class MIDILooperTrack;
 
-class MIDILooperProcessor :
-    public LooperProcessor,
+class MIDILooperNode :
+    public LooperNode,
     public MIDIInputDevice::MIDIInputListener
 {
 public:
-    MIDILooperProcessor(Node* n);
-    ~MIDILooperProcessor();
+    MIDILooperNode(var params= var());
+    ~MIDILooperNode();
 
     MIDIDeviceParameter* midiParam;
     MIDIInputDevice* currentDevice;
@@ -40,12 +40,14 @@ public:
     virtual LooperTrack* createLooperTrack(int index) override;
 
     void midiMessageReceived(const MidiMessage& m) override;
-    void onContainerParameterChanged(Parameter* p) override;
+    void onContainerParameterChangedInternal(Parameter* p) override;
 
-    void onControllableFeedbackUpdate(ControllableContainer * cc, Controllable *c) override;
+    void onControllableFeedbackUpdateInternal(ControllableContainer * cc, Controllable *c) override;
 
     void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
 
     virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    
+    String getTypeString() const override { return getTypeStringStatic(); }
     static String getTypeStringStatic() { return "MIDI Looper"; }
 };

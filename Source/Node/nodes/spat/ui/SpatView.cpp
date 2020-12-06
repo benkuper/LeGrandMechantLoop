@@ -11,8 +11,8 @@
 #include "SpatView.h"
 #include "../SpatNode.h"
 
-SpatView::SpatView(SpatProcessor* proc) :
-	proc(proc)
+SpatView::SpatView(SpatNode* node) :
+	node(node)
 {
 	updateItemsUI();
 	addAndMakeVisible(&target);
@@ -39,7 +39,7 @@ void SpatView::paint(Graphics& g)
 
 void SpatView::resized()
 {
-	Point<int> centre = getLocalBounds().getRelativePoint(proc->spatPosition->x, proc->spatPosition->y);
+	Point<int> centre = getLocalBounds().getRelativePoint(node->spatPosition->x, node->spatPosition->y);
 	target.setBounds(Rectangle<int>(30, 30).withCentre(centre));
 
 	for (auto& s : itemsUI)
@@ -50,7 +50,7 @@ void SpatView::resized()
 
 void SpatView::updateItemsUI()
 {
-	int numOutputs = proc->spatCC.controllableContainers.size();
+	int numOutputs = node->spatCC.controllableContainers.size();
 	while (itemsUI.size() > numOutputs)
 	{
 		removeChildComponent(itemsUI[itemsUI.size()]);
@@ -59,7 +59,7 @@ void SpatView::updateItemsUI()
 
 	while (itemsUI.size() < numOutputs)
 	{
-		SpatItemUI* si = new SpatItemUI((SpatItem*)proc->spatCC.controllableContainers[itemsUI.size()].get());
+		SpatItemUI* si = new SpatItemUI((SpatItem*)node->spatCC.controllableContainers[itemsUI.size()].get());
 		addAndMakeVisible(si);
 		itemsUI.add(si);
 	}
@@ -72,7 +72,7 @@ void SpatView::mouseDown(const MouseEvent& e)
 {
 	if (SpatTarget* st = dynamic_cast<SpatTarget*>(e.eventComponent))
 	{
-		posAtMouseDown = proc->spatPosition->getPoint();
+		posAtMouseDown = node->spatPosition->getPoint();
 	}
 }
 
@@ -82,14 +82,14 @@ void SpatView::mouseDrag(const MouseEvent& e)
 	Point<float> pos = getMouseXYRelative().toFloat() / Point<float>(getWidth(), getHeight());
 	if (SpatItemUI* si = dynamic_cast<SpatItemUI*>(e.eventComponent))
 	{
-		if (proc->spatMode->getValueDataAsEnum<SpatProcessor::SpatMode>() == SpatProcessor::FREE)
+		if (node->spatMode->getValueDataAsEnum<SpatNode::SpatMode>() == SpatNode::FREE)
 		{
 			si->item->position->setPoint(pos);
 		}
 	}
 	else if (SpatTarget* st = dynamic_cast<SpatTarget*>(e.eventComponent))
 	{
-		proc->spatPosition->setPoint(pos);
+		node->spatPosition->setPoint(pos);
 	}
 }
 
@@ -98,7 +98,7 @@ void SpatView::mouseUp(const MouseEvent& e)
 
 	if (SpatItemUI* si = dynamic_cast<SpatItemUI*>(e.eventComponent))
 	{
-		if (proc->spatMode->getValueDataAsEnum<SpatProcessor::SpatMode>() == SpatProcessor::FREE)
+		if (node->spatMode->getValueDataAsEnum<SpatNode::SpatMode>() == SpatNode::FREE)
 		{
 			if (si->posAtMouseDown != si->item->position->getPoint())
 			{
@@ -108,7 +108,7 @@ void SpatView::mouseUp(const MouseEvent& e)
 	}
 	else if (SpatTarget* st = dynamic_cast<SpatTarget*>(e.eventComponent))
 	{
-		proc->spatPosition->setUndoablePoint(posAtMouseDown, proc->spatPosition->getPoint());
+		node->spatPosition->setUndoablePoint(posAtMouseDown, node->spatPosition->getPoint());
 	}
 }
 

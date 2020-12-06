@@ -11,8 +11,8 @@
 #include "ContainerNodeUI.h"
 #include "Node/ui/NodeManagerViewUI.h"
 
-ContainerNodeViewUI::ContainerNodeViewUI(GenericNode<ContainerProcessor> * node) :
-    GenericNodeViewUI(node),
+ContainerNodeViewUI::ContainerNodeViewUI(ContainerNode* node) :
+    NodeViewUI(node),
     editBT("Edit")
 {
     editBT.addListener(this);
@@ -32,12 +32,12 @@ void ContainerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 
 void ContainerNodeViewUI::buttonClicked(Button* b)
 {
-    GenericNodeViewUI::buttonClicked(b);
+    NodeViewUI::buttonClicked(b);
     if (b == &editBT)
     {
         if (NodeManagerViewPanel* mui = ShapeShifterManager::getInstance()->getContentForType<NodeManagerViewPanel>())
         {
-            mui->setManager(processor->nodeManager.get());
+            mui->setManager(node->nodeManager.get());
         }
     }
 }

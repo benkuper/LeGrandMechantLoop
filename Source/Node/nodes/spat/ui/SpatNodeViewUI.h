@@ -15,10 +15,10 @@
 #include "SpatView.h"
 
 class SpatNodeViewUI :
-    public GenericNodeViewUI<SpatProcessor>
+    public NodeViewUI<SpatNode>
 {
 public:
-    SpatNodeViewUI(GenericNode<SpatProcessor>* n);
+    SpatNodeViewUI(SpatNode * n);
     ~SpatNodeViewUI();
 
     SpatView spatView;

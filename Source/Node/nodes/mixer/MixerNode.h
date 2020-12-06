@@ -9,14 +9,15 @@
 */
 
 #pragma once
-#include "../../NodeProcessor.h"
 
-class MixerProcessor :
-	public GenericNodeProcessor
+#include "../../Node.h"
+
+class MixerNode :
+	public Node
 {
 public:
-	MixerProcessor(Node * node);
-	~MixerProcessor() {}
+	MixerNode(var params = var());
+	~MixerNode() {}
 
 	ControllableContainer rmsCC;
 	ControllableContainer outGainsCC;
@@ -24,8 +25,8 @@ public:
 
 	AudioBuffer<float> tmpBuffer;
 	
-	void updateInputsFromNodeInternal() override;
-	void updateOutputsFromNodeInternal() override;
+	void updateAudioInputsInternal() override;
+	void updateAudioOutputsInternal() override;
 
 	void addGainCC();
 	void updateGainCC(ControllableContainer* cc);
@@ -33,7 +34,9 @@ public:
 	FloatParameter * getGainParameter(int inputIndex, int outputIndex);
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	
+	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "Mixer"; }
 
-	NodeViewUI* createNodeViewUI() override;
+	BaseNodeViewUI* createViewUI() override;
 };

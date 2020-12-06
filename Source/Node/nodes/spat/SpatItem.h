@@ -10,18 +10,14 @@
 
 #pragma once
 
-#include "../../NodeProcessor.h"
-
-class SpatProcessor;
+#include "JuceHeader.h"
 
 class SpatItem :
 	public ControllableContainer
 {
 public:
-	SpatItem(SpatProcessor* processor, int index);
+	SpatItem(int index);
 	~SpatItem();
-
-	SpatProcessor* processor;
 
 	int index;
 

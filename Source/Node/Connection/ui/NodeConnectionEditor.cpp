@@ -122,14 +122,17 @@ void NodeAudioConnectionEditor::buildSlots()
 
     clearSlots();
 
-    for (int i = 0; i < connection->sourceNode->numOutputs; i++)
+    int numOutputs = connection->sourceNode->getNumAudioOutputs();
+    int numInputs = connection->destNode->getNumAudioInputs();
+
+    for (int i = 0; i < numOutputs; i++)
     {
         ChannelSlot* s = new ChannelSlot(connection->sourceNode->audioOutputNames[i], i, true);
         sourceSlots.add(s);
         addAndMakeVisible(s);
     }
 
-    for (int i = 0; i < connection->destNode->numInputs; i++)
+    for (int i = 0; i < numInputs; i++)
     {
         ChannelSlot* s = new ChannelSlot(connection->destNode->audioInputNames[i], i, false);
         destSlots.add(s);

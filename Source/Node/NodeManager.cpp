@@ -74,46 +74,56 @@ void NodeManager::setAudioOutputs(const StringArray& outputNames)
 }
 
 
-void NodeManager::updateAudioInputNode(Node* n)
+void NodeManager::updateAudioInputNode(AudioInputNode* n)
 {
-	if (AudioInputProcessor* p = n->getProcessor<AudioInputProcessor>())
+	for (int i = 0; i < n->audioInputNames.size(); i++)
 	{
-		for (int i = 0; i < n->audioInputNames.size(); i++) graph->removeConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight channel 
-		n->setAudioOutputs(audioInputNames); //inverse to get good connector names
-		for (int i = 0; i < audioInputNames.size(); i++) graph->addConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight 
+		graph->removeConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight channel 
+	}
+	
+	n->setAudioOutputs(audioInputNames); //inverse to get good connector names
+
+	for (int i = 0; i < audioInputNames.size(); i++)
+	{
+		graph->addConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight 
 	}
 }
 
-void NodeManager::updateAudioOutputNode(Node* n)
+void NodeManager::updateAudioOutputNode(AudioOutputNode* n)
 {
-	if (AudioOutputProcessor* p = n->getProcessor<AudioOutputProcessor>())
+	for (int i = 0; i < n->audioOutputNames.size(); i++)
 	{
-		for (int i = 0; i < n->audioOutputNames.size(); i++) graph->removeConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight channel 
-		n->setAudioInputs(audioOutputNames); //inverse to get good connector names
-		for (int i = 0; i < audioOutputNames.size(); i++) graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight 
+		graph->removeConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight channel 
+	}
+
+	n->setAudioInputs(audioOutputNames); //inverse to get good connector names
+	
+	for (int i = 0; i < audioOutputNames.size(); i++) 
+	{
+		graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight 
 	}
 }
 
 void NodeManager::addItemInternal(Node* n, var data)
 {
-	n->setGraph(graph);
+	n->init(graph);
 
-	if (AudioInputProcessor* p = n->getProcessor<AudioInputProcessor>())
+	if (AudioInputNode* in = dynamic_cast<AudioInputNode *>(n))
 	{
-		audioInputNodes.add(n);
-		updateAudioInputNode(n);
+		audioInputNodes.add(in);
+		updateAudioInputNode(in);
 	}
-	else if (AudioOutputProcessor* p = n->getProcessor<AudioOutputProcessor>())
+	else if (AudioOutputNode* on = dynamic_cast<AudioOutputNode*>(n))
 	{
-		audioOutputNodes.add(n);
-		updateAudioOutputNode(n);
+		audioOutputNodes.add(on);
+		updateAudioOutputNode(on);
 	}
 }
 
 void NodeManager::removeItemInternal(Node* n)
 {
-	if (AudioInputProcessor* p = n->getProcessor<AudioInputProcessor>())  audioInputNodes.removeAllInstancesOf(n);
-	else if (AudioOutputProcessor* p = n->getProcessor<AudioOutputProcessor>()) audioOutputNodes.removeAllInstancesOf(n);
+	if (AudioInputNode* in = dynamic_cast<AudioInputNode*>(n))  audioInputNodes.removeAllInstancesOf(in);
+	else if (AudioOutputNode* on = dynamic_cast<AudioOutputNode*>(n)) audioOutputNodes.removeAllInstancesOf(on);
 }
 
 Array<UndoableAction*> NodeManager::getRemoveItemUndoableAction(Node* item)
@@ -210,7 +220,7 @@ void RootNodeManager::addItemInternal(Node* n, var data)
 {
 	NodeManager::addItemInternal(n, data);
 	n->addNodeListener(this);
-	AudioManager::getInstance()->updateGraph();
+	if (!isCurrentlyLoadingData) AudioManager::getInstance()->updateGraph();
 }
 
 void RootNodeManager::removeItemInternal(Node* n)
@@ -221,10 +231,11 @@ void RootNodeManager::removeItemInternal(Node* n)
 
 void RootNodeManager::nodePlayConfigUpdated(Node* n)
 {
-	AudioManager::getInstance()->updateGraph();
+	if(!isCurrentlyLoadingData) AudioManager::getInstance()->updateGraph();
 }
 
 void RootNodeManager::endLoadFile()
 {
-	for (auto& i : items) i->baseProcessor->updatePlayConfig();
+	for (auto& i : items) i->updatePlayConfig(false);
+	AudioManager::getInstance()->updateGraph();
 }

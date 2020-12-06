@@ -15,13 +15,13 @@
 
 class NodeConnector;
 
-class NodeViewUI :
+class BaseNodeViewUI:
     public BaseItemUI<Node>,
     public Node::AsyncListener
 {
 public:
-    NodeViewUI(Node* node);
-    virtual ~NodeViewUI();
+    BaseNodeViewUI(Node* node);
+    virtual ~BaseNodeViewUI();
 
     std::unique_ptr<NodeConnector> inAudioConnector;
     std::unique_ptr<NodeConnector> outAudioConnector;
@@ -50,13 +50,11 @@ public:
 };
 
 template<class T>
-class GenericNodeViewUI :
-    public NodeViewUI
+class NodeViewUI :
+    public BaseNodeViewUI
 {
 public:
-    GenericNodeViewUI(GenericNode<T>* audioNode) : NodeViewUI(audioNode), audioNode(audioNode), processor(audioNode->processor) {}
-    ~GenericNodeViewUI() {}
-
-    GenericNode<T> *  audioNode;
-    T* processor;
+    NodeViewUI(T *node) : BaseNodeViewUI(node), node(node) {}
+    ~NodeViewUI() {}
+    T* node;
 };

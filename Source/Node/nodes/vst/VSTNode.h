@@ -9,17 +9,17 @@
 */
 
 #pragma once
-#include "../../NodeProcessor.h"
+#include "../../Node.h"
 #include "Engine/VSTManager.h"
 #include "Common/MIDI/MIDIDeviceParameter.h"
 
-class VSTProcessor :
-	public GenericNodeProcessor,
+class VSTNode :
+	public Node,
 	public MIDIInputDevice::MIDIInputListener
 {
 public:
-	VSTProcessor(Node* node);
-	~VSTProcessor();
+	VSTNode(var params = var());
+	~VSTNode();
 
 	VSTPluginParameter* pluginParam;
 	Array<Parameter *> VSTParameters;
@@ -31,16 +31,19 @@ public:
 
 	void setMIDIDevice(MIDIInputDevice* d);
 	void setupVST(PluginDescription* description);
-	void updatePlayConfig() override;
+	void updatePlayConfigInternal() override;
 
-	void onContainerParameterChanged(Parameter* p) override;
+	void onContainerParameterChangedInternal(Parameter* p) override;
 
 	void midiMessageReceived(const MidiMessage& m) override;
 
 	void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	
+	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "VST"; }
-	NodeViewUI* createNodeViewUI() override;
+	
+	BaseNodeViewUI* createViewUI() override;
 
-	DECLARE_ASYNC_EVENT(VSTProcessor, VST, vst, ENUM_LIST(VST_REMOVED, VST_SET))
+	DECLARE_ASYNC_EVENT(VSTNode, VST, vst, ENUM_LIST(VST_REMOVED, VST_SET))
 };

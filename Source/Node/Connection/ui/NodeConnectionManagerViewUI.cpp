@@ -36,8 +36,8 @@ NodeConnectionManagerViewUI::~NodeConnectionManagerViewUI()
 
  NodeConnectionViewUI* NodeConnectionManagerViewUI::createUIForItem(NodeConnection* item)
 {
-	NodeViewUI* sourceUI = nodeManagerUI->getUIForItem(item->sourceNode);
-	NodeViewUI* destUI = nodeManagerUI->getUIForItem(item->destNode);
+	BaseNodeViewUI* sourceUI = nodeManagerUI->getUIForItem(item->sourceNode);
+	BaseNodeViewUI* destUI = nodeManagerUI->getUIForItem(item->destNode);
 	NodeConnector* sourceConnector = item->connectionType == NodeConnection::AUDIO ? sourceUI->outAudioConnector.get() : sourceUI->outMIDIConnector.get();
 	NodeConnector* destConnector = item->connectionType == NodeConnection::AUDIO ? destUI->inAudioConnector.get() : destUI->inMIDIConnector.get();
 

@@ -12,19 +12,19 @@
 
 #include "../NodeConnection.h"
 
-class NodeViewUI;
+class BaseNodeViewUI;
 
 class NodeConnector :
     public Component,
     public SettableTooltipClient
 {
 public:
-    NodeConnector(NodeViewUI * n, bool isInput, NodeConnection::ConnectionType connectionType);
+    NodeConnector(BaseNodeViewUI* n, bool isInput, NodeConnection::ConnectionType connectionType);
     ~NodeConnector();
 
     NodeConnection::ConnectionType connectionType;
     bool isInput;
-    NodeViewUI * nodeViewUI;
+    BaseNodeViewUI* nodeViewUI;
 
     void paint(Graphics& g) override;
     void update();

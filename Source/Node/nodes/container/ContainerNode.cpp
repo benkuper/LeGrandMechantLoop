@@ -12,114 +12,99 @@
 #include "../../NodeManager.h"
 #include "ui/ContainerNodeUI.h"
 
-ContainerProcessor::ContainerProcessor(Node* n) :
-    GenericNodeProcessor(n, true, true, true, true),
+ContainerNode::ContainerNode(var params) :
+    Node(getTypeString(), params, true, true, true, true),
     inputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),
     outputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID()))
 {
     std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procIn(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioInputNode));
     std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procOut(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode));
 
-    graph.addNode(std::move(procIn), inputID);
-    graph.addNode(std::move(procOut), outputID);
+    containerGraph.addNode(std::move(procIn), inputID);
+    containerGraph.addNode(std::move(procOut), outputID);
 
-    nodeManager.reset(new NodeManager(&graph, inputID, outputID));
+    nodeManager.reset(new NodeManager(&containerGraph, inputID, outputID));
     addChildControllableContainer(nodeManager.get());
 
     nodeManager->addBaseManagerListener(this);
 }
 
-ContainerProcessor::~ContainerProcessor()
+ContainerNode::~ContainerNode()
 {
 }
 
-void ContainerProcessor::clearProcessor()
+void ContainerNode::clearItem()
 {
+    Node::clearItem();
     nodeManager->clear();
 }
 
-void ContainerProcessor::initInternal()
-{
-    updateGraph();
-}
-
-void ContainerProcessor::onContainerParameterChanged(Parameter* p)
-{
-    if(p == numAudioInputs) nodeRef->setAudioInputs(numAudioInputs->intValue());
-    else if(p == numAudioOutputs) nodeRef->setAudioOutputs(numAudioOutputs->intValue());
-    GenericNodeProcessor::onContainerParameterChanged(p);
-}
-
-void ContainerProcessor::itemAdded(Node* n)
+void ContainerNode::itemAdded(Node* n)
 {
     n->addNodeListener(this);
-    updateGraph();
+    if (!isCurrentlyLoadingData) updateGraph();
 }
 
-void ContainerProcessor::itemRemoved(Node* n)
+void ContainerNode::itemRemoved(Node* n)
 {
     n->removeNodeListener(this);
 }
 
-void ContainerProcessor::updateGraph()
+void ContainerNode::updateGraph()
 {
-    graph.suspendProcessing(true);
-    graph.setPlayConfigDetails(nodeRef->numInputs, nodeRef->numOutputs, getSampleRate(), getBlockSize());
-    graph.prepareToPlay(getSampleRate(), getBlockSize());
-    graph.suspendProcessing(false);
+    containerGraph.suspendProcessing(true);
+    containerGraph.setPlayConfigDetails(getNumAudioInputs(), getNumAudioOutputs(), graph->getSampleRate(), graph->getBlockSize());
+    containerGraph.prepareToPlay(graph->getSampleRate(), graph->getBlockSize());
+    containerGraph.suspendProcessing(false);
 }
 
-
-void ContainerProcessor::updateInputsFromNodeInternal()
+void ContainerNode::updateAudioInputsInternal()
 {
-    nodeManager->setAudioInputs(nodeRef->audioInputNames);
+    nodeManager->setAudioInputs(audioInputNames);
 }
 
-void ContainerProcessor::updateOutputsFromNodeInternal()
+void ContainerNode::updateAudioOutputsInternal()
 {
-    nodeManager->setAudioOutputs(nodeRef->audioOutputNames);
+    nodeManager->setAudioOutputs(audioOutputNames);
 }
 
-void ContainerProcessor::nodePlayConfigUpdated(Node* n)
+void ContainerNode::nodePlayConfigUpdated(Node* n)
 {
+    if (!isCurrentlyLoadingData) updateGraph();
+}
+
+void ContainerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
+{
+    if (c == nodeManager->isPlaying) isNodePlaying->setValue(nodeManager->isPlaying->boolValue());
+    Node::onControllableFeedbackUpdateInternal(cc, c);
+}
+
+void ContainerNode::updatePlayConfigInternal()
+{
+    Node::updatePlayConfigInternal();
     updateGraph();
 }
 
-void ContainerProcessor::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
+
+void ContainerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    if (c == nodeManager->isPlaying) nodeRef->isNodePlaying->setValue(nodeManager->isPlaying->boolValue());
-    GenericNodeProcessor::onControllableFeedbackUpdate(cc, c);
+    containerGraph.processBlock(buffer, midiMessages);
 }
 
-void ContainerProcessor::updatePlayConfig()
+var ContainerNode::getJSONData()
 {
-    updateGraph();
-    GenericNodeProcessor::updatePlayConfig();
-}
-
-void ContainerProcessor::prepareToPlay(double sampleRate, int maxBlockSize)
-{
-}
-
-void ContainerProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
-{
-    graph.processBlock(buffer, midiMessages);
-}
-
-var ContainerProcessor::getJSONData()
-{
-    var data = GenericNodeProcessor::getJSONData();
+    var data = Node::getJSONData();
     data.getDynamicObject()->setProperty("manager", nodeManager->getJSONData());
     return data;
 }
 
-void ContainerProcessor::loadJSONDataInternal(var data)
+void ContainerNode::loadJSONDataInternal(var data)
 {
     nodeManager->loadJSONData(data.getProperty("manager", var()));
-    GenericNodeProcessor::loadJSONDataInternal(data);
+    Node::loadJSONDataInternal(data);
 }
 
-NodeViewUI* ContainerProcessor::createNodeViewUI()
+BaseNodeViewUI* ContainerNode::createViewUI()
 {
-    return new ContainerNodeViewUI(((GenericNode<ContainerProcessor>*)nodeRef.get()));
+    return new ContainerNodeViewUI(this);
 }

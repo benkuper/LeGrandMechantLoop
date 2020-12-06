@@ -11,14 +11,14 @@
 #include "VSTNodeViewUI.h"
 #include "Common/MIDI/ui/MIDIDeviceParameterUI.h"
 
-VSTNodeViewUI::VSTNodeViewUI(GenericNode<VSTProcessor>* n) :
-    GenericNodeViewUI(n),
+VSTNodeViewUI::VSTNodeViewUI(VSTNode * n) :
+    NodeViewUI(n),
     editBT("Edit VST")
 {
     editBT.addListener(this);
     addAndMakeVisible(&editBT);
 
-    midiParamUI.reset(processor->midiParam->createMIDIParameterUI());
+    midiParamUI.reset(node->midiParam->createMIDIParameterUI());
     addAndMakeVisible(midiParamUI.get());
 
     contentComponents.add(&editBT);
@@ -37,20 +37,20 @@ void VSTNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 
 void VSTNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
-    GenericNodeViewUI::controllableFeedbackUpdateInternal(c);
-   // if (c == processor->pluginParam) updateVSTEditor();
+    NodeViewUI::controllableFeedbackUpdateInternal(c);
+   // if (c == node->pluginParam) updateVSTEditor();
 }
 
 void VSTNodeViewUI::buttonClicked(Button* b)
 {
-    GenericNodeViewUI::buttonClicked(b);
+    NodeViewUI::buttonClicked(b);
     if (b == &editBT)
     {
-        if (processor->vst != nullptr && processor->vst->hasEditor())
+        if (node->vst != nullptr && node->vst->hasEditor())
         {
             if (pluginEditor.get() == nullptr)
             {
-                pluginEditor.reset(new PluginWindow(processor));
+                pluginEditor.reset(new PluginWindow(node));
                 pluginEditor->addPluginWindowListener(this);
                 editBT.setEnabled(false);
             }
@@ -68,12 +68,12 @@ void VSTNodeViewUI::windowClosed()
     editBT.setEnabled(true);
 }
 
-PluginWindow::PluginWindow(VSTProcessor* processor) :
-    DocumentWindow(processor->vst->getName(), BG_COLOR.darker(.1f), DocumentWindow::closeButton, true),
-    inspectable(processor),
-    processor(processor)
+PluginWindow::PluginWindow(VSTNode* node) :
+    DocumentWindow(node->vst->getName(), BG_COLOR.darker(.1f), DocumentWindow::closeButton, true),
+    inspectable(node),
+    node(node)
 {
-    setVSTEditor(processor->vst.get());
+    setVSTEditor(node->vst.get());
     const Displays::Display* d = Desktop::getInstance().getDisplays().getDisplayForRect(getScreenBounds());
     if(d != nullptr) setCentrePosition(d->userArea.getCentre());
 
@@ -82,12 +82,12 @@ PluginWindow::PluginWindow(VSTProcessor* processor) :
 
     //setAlwaysOnTop(true);
 
-    processor->addAsyncVSTListener(this);
+    node->addAsyncVSTListener(this);
 }
 
 PluginWindow::~PluginWindow()
 {
-    if(!inspectable.wasObjectDeleted()) processor->removeAsyncVSTListener(this);
+    if(!inspectable.wasObjectDeleted()) node->removeAsyncVSTListener(this);
 }
 
 void PluginWindow::resized()
@@ -95,10 +95,10 @@ void PluginWindow::resized()
     DocumentWindow::resized();
 }
 
-void PluginWindow::newMessage(const VSTProcessor::VSTEvent& e)
+void PluginWindow::newMessage(const VSTNode::VSTEvent& e)
 {
     if (e.type == e.VST_REMOVED) setVSTEditor(nullptr);
-    else if (e.type == e.VST_SET) setVSTEditor(processor->vst.get());
+    else if (e.type == e.VST_SET) setVSTEditor(node->vst.get());
 }
 
 void PluginWindow::setVSTEditor(AudioPluginInstance* vstInstance)

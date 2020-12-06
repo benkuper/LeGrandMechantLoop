@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include "../../NodeProcessor.h"
+#include "../../Node.h"
 
-class AudioRouterProcessor :
-    public GenericNodeProcessor
+class AudioRouterNode :
+    public Node
 {
 public:
-    AudioRouterProcessor(Node * n);
-    ~AudioRouterProcessor();
+    AudioRouterNode(var params = var());
+    ~AudioRouterNode();
 
     IntParameter* numChannelsPerGroup;
     
@@ -32,16 +32,18 @@ public:
 
     AudioBuffer<float> tmpBuffer;
 
-    void autoSetNumInputs() override;
-    void autoSetNumOutputs() override;
+    void autoSetNumAudioInputs() override;
+    void autoSetNumAudioOutputs() override;
 
-    void updateInputsFromNodeInternal() override;
-    void updateOutputsFromNodeInternal() override;
+    void updateAudioInputsInternal() override;
+    void updateAudioOutputsInternal() override;
     
-    void onContainerParameterChanged(Parameter* p) override;
+    void onContainerParameterChangedInternal(Parameter* p) override;
 
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    
+    String getTypeString() const override { return getTypeStringStatic(); }
     static const String getTypeStringStatic() { return "Audio Router"; }
 
-    NodeViewUI* createNodeViewUI() override;
+    BaseNodeViewUI* createViewUI() override;
 };

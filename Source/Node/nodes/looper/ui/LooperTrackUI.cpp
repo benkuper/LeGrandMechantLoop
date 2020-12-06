@@ -26,8 +26,8 @@ LooperTrackUI::LooperTrackUI(LooperTrack* t) :
 
     activeUI.reset(track->active->createButtonToggle());
     
-    LooperProcessor::LooperType looperType = track->looper->looperType;
-    if (looperType == LooperProcessor::AUDIO)
+    LooperNode::LooperType looperType = track->looper->looperType;
+    if (looperType == LooperNode::AUDIO)
     {
         AudioLooperTrack* audioTrack = (AudioLooperTrack*)track;
         volumeUI.reset(audioTrack->volume->createSlider());

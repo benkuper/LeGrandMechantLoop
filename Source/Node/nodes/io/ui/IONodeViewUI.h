@@ -12,6 +12,7 @@
 #include "../IONode.h"
 #include "../../../ui/NodeViewUI.h"
 #include "Common/AudioUIHelpers.h"
+
 class IOChannelUI :
     public Component
 {
@@ -30,10 +31,10 @@ public:
 };
 
 class IONodeViewUI :
-    public GenericNodeViewUI<IOProcessor>
+    public NodeViewUI<IONode>
 {
 public:
-    IONodeViewUI(GenericNode<IOProcessor> * n);
+    IONodeViewUI(IONode * n);
     virtual ~IONodeViewUI();
 
     OwnedArray<IOChannelUI> channelsUI;

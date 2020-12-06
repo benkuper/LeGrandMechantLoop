@@ -14,16 +14,16 @@
 #include "Common/RingBuffer.h"
 #include "Transport/Transport.h"
 
-class LooperProcessor;
+class LooperNode;
 
 class LooperTrack :
 	public ControllableContainer
 {
 public:
-	LooperTrack(LooperProcessor * looper, int index);
+	LooperTrack(LooperNode * looper, int index);
 	virtual ~LooperTrack();
 
-	LooperProcessor* looper; //to get the ringbuffer
+	LooperNode* looper; //to get the ringbuffer
 
 	enum TrackState { IDLE, WILL_RECORD, RECORDING, FINISH_RECORDING, PLAYING, WILL_STOP, STOPPED, WILL_PLAY, STATES_MAX };
 	static String trackStateNames[STATES_MAX];

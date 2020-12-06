@@ -11,7 +11,7 @@
 #include "MIDILooperTrack.h"
 #include "MIDILooperNode.h"
 
-MIDILooperTrack::MIDILooperTrack(MIDILooperProcessor* looper, int index) :
+MIDILooperTrack::MIDILooperTrack(MIDILooperNode* looper, int index) :
     LooperTrack(looper, index),
 	midiLooper(looper)
 {

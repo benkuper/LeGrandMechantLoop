@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-	NodeViewUI.cpp
+	BaseNodeViewUI.cpp
 	Created: 15 Nov 2020 9:26:57am
 	Author:  bkupe
 
@@ -11,24 +11,24 @@
 #include "NodeViewUI.h"
 #include "../Connection/ui/NodeConnector.h"
 
-NodeViewUI::NodeViewUI(Node* node) :
+BaseNodeViewUI::BaseNodeViewUI(Node* node) :
 	BaseItemUI(node, Direction::ALL, true)
 {
 	dragAndDropEnabled = true;
 	autoHideWhenDragging = false;
 	drawEmptyDragIcon = true;
 
-	if (item->baseProcessor->outGain!= nullptr)
+	if (item->outGain!= nullptr)
 	{
-		outGainUI.reset(item->baseProcessor->outGain->createSlider());
+		outGainUI.reset(item->outGain->createSlider());
 		outGainUI->orientation = FloatSliderUI::VERTICAL;
 		contentComponents.add(outGainUI.get());
 		addAndMakeVisible(outGainUI.get());
 	}
 
-	if (item->baseProcessor->outRMS != nullptr)
+	if (item->outRMS != nullptr)
 	{
-		outRMSUI.reset(new RMSSliderUI(item->baseProcessor->outRMS));
+		outRMSUI.reset(new RMSSliderUI(item->outRMS));
 		contentComponents.add(outRMSUI.get());
 		addAndMakeVisible(outRMSUI.get());
 	}
@@ -40,15 +40,15 @@ NodeViewUI::NodeViewUI(Node* node) :
 
 }
 
-NodeViewUI::~NodeViewUI()
+BaseNodeViewUI::~BaseNodeViewUI()
 {
 	if(!inspectable.wasObjectDeleted()) item->removeAsyncNodeListener(this);
 }
 
-void NodeViewUI::updateInputConnectors()
+void BaseNodeViewUI::updateInputConnectors()
 {
 	//AUDIO
-	if (item->baseProcessor->hasAudioInput)
+	if (item->hasAudioInput)
 	{
 		if (inAudioConnector == nullptr)
 		{
@@ -87,9 +87,9 @@ void NodeViewUI::updateInputConnectors()
 	}
 }
 
-void NodeViewUI::updateOutputConnectors()
+void BaseNodeViewUI::updateOutputConnectors()
 {
-	if (item->baseProcessor->hasAudioOutput)
+	if (item->hasAudioOutput)
 	{
 		if (outAudioConnector == nullptr)
 		{
@@ -128,7 +128,7 @@ void NodeViewUI::updateOutputConnectors()
 	}
 }
 
-void NodeViewUI::paint(Graphics& g)
+void BaseNodeViewUI::paint(Graphics& g)
 {
 	BaseItemUI::paint(g);
 	if (outRMSUI != nullptr || outGainUI != nullptr)
@@ -138,7 +138,7 @@ void NodeViewUI::paint(Graphics& g)
 	}
 }
 
-void NodeViewUI::paintOverChildren(Graphics& g)
+void BaseNodeViewUI::paintOverChildren(Graphics& g)
 {
 	BaseItemUI::paintOverChildren(g);
 	if (!item->enabled->boolValue())
@@ -151,7 +151,7 @@ void NodeViewUI::paintOverChildren(Graphics& g)
 	}
 }
 
-void NodeViewUI::resized()
+void BaseNodeViewUI::resized()
 {
 	BaseItemUI::resized();
 
@@ -175,7 +175,7 @@ void NodeViewUI::resized()
 	if (outMIDIConnector != nullptr) outMIDIConnector->setBounds(outR.removeFromTop(w));
 }
 
-void NodeViewUI::resizedInternalContent(Rectangle<int>& r)
+void BaseNodeViewUI::resizedInternalContent(Rectangle<int>& r)
 {
 	BaseItemUI::resizedInternalContent(r);
 
@@ -189,22 +189,22 @@ void NodeViewUI::resizedInternalContent(Rectangle<int>& r)
 	resizedInternalContentNode(r);
 }
 
-Rectangle<int> NodeViewUI::getMainBounds()
+Rectangle<int> BaseNodeViewUI::getMainBounds()
 {
 	return getLocalBounds().reduced(10, 0);
 }
 
-void NodeViewUI::nodeInputsChanged()
+void BaseNodeViewUI::nodeInputsChanged()
 {
 	updateInputConnectors();
 }
 
-void NodeViewUI::nodeOutputsChanged()
+void BaseNodeViewUI::nodeOutputsChanged()
 {
 	updateOutputConnectors();
 }
 
-void NodeViewUI::newMessage(const Node::NodeEvent& e)
+void BaseNodeViewUI::newMessage(const Node::NodeEvent& e)
 {
 	if (e.type == e.INPUTS_CHANGED || e.type == e.MIDI_INPUT_CHANGED) nodeInputsChanged();
 	else if (e.type == e.OUTPUTS_CHANGED || e.type == e.MIDI_OUTPUT_CHANGED) nodeOutputsChanged();

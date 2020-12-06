@@ -13,10 +13,10 @@
 #include "../../../ui/NodeViewUI.h"
 
 class ContainerNodeViewUI :
-    public GenericNodeViewUI<ContainerProcessor>
+    public NodeViewUI<ContainerNode>
 {
 public:
-    ContainerNodeViewUI(GenericNode<ContainerProcessor> * node);
+    ContainerNodeViewUI(ContainerNode * node);
     ~ContainerNodeViewUI();
 
     TextButton editBT;

@@ -11,9 +11,8 @@
 #include "SpatItem.h"
 #include "SpatNode.h"
 
-SpatItem::SpatItem(SpatProcessor* processor, int index) :
+SpatItem::SpatItem(int index) :
 	ControllableContainer("Point " + String(index + 1)),
-	processor(processor),
 	index(index)
 {
 	position = addPoint2DParameter("Position", "Position of this point");

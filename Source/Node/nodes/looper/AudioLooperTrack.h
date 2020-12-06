@@ -12,16 +12,16 @@
 
 #include "LooperTrack.h"
 
-class AudioLooperProcessor;
+class AudioLooperNode;
 
 class AudioLooperTrack :
     public LooperTrack
 {
 public:
-    AudioLooperTrack(AudioLooperProcessor* looper, int index, int numChannels);
+    AudioLooperTrack(AudioLooperNode* looper, int index, int numChannels);
     ~AudioLooperTrack();
 
-    AudioLooperProcessor* audioLooper;
+    AudioLooperNode* audioLooper;
 
     FloatParameter* volume;
     FloatParameter* rms;
