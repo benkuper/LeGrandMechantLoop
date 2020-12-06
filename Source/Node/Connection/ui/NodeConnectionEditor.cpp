@@ -211,7 +211,7 @@ void NodeAudioConnectionEditor::addConnection(ChannelSlot* source, ChannelSlot* 
         return;
     }
 
-    if (ChannelConnection* c = getConnectionWithDest(dest))  removeConnection(c, false);
+    //if (ChannelConnection* c = getConnectionWithDest(dest))  removeConnection(c, false);
 
     connection->connectChannels(source->channel, dest->channel);
 
