@@ -14,18 +14,19 @@
 #include "Connection/NodeConnection.h"
 #include "Transport/Transport.h"
 
-Node::Node(StringRef name, var params, bool hasInput, bool hasOutput, bool userCanSetIO, bool useOutControl) :
+Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, bool userCanSetIO, bool useOutControl) :
 	BaseItem(name, true),
 	graph(nullptr),
 	nodeGraphID(AudioManager::getInstance()->getNewGraphID()),
-	hasMIDIInput(false),
-	hasMIDIOutput(false),
 	hasAudioInput(hasAudioInput),
 	hasAudioOutput(hasAudioOutput),
-	numAudioInputs(nullptr),
+    hasMIDIInput(false),
+    hasMIDIOutput(false),
+    numAudioInputs(nullptr),
 	numAudioOutputs(nullptr),
-	outGain(nullptr),
-	outRMS(nullptr),
+    outRMS(nullptr),
+    outGain(nullptr),
+    prevGain(0),
 	nodeNotifier(5)
 {
 	processor = new NodeAudioProcessor(this);
