@@ -98,7 +98,6 @@ public:
     //MIDI
     void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer);
 
-
     //AudioProcessor calls
     virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) {}
     virtual void releaseResources() {}

@@ -151,6 +151,14 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperNodeViewUI.cpp"/>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperTrackUI.cpp"/>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\AudioLooperNode.cpp"/>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\AudioLooperTrack.cpp"/>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\LooperNode.cpp"/>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\LooperTrack.cpp"/>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\MIDILooperNode.cpp"/>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\MIDILooperTrack.cpp"/>
     <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.cpp"/>
     <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceParameterUI.cpp"/>
     <ClCompile Include="..\..\Source\Common\MIDI\MIDIDevice.cpp"/>
@@ -205,14 +213,6 @@
     <ClCompile Include="..\..\Source\Node\nodes\mixer\MixerNode.cpp"/>
     <ClCompile Include="..\..\Source\Node\nodes\io\ui\IONodeViewUI.cpp"/>
     <ClCompile Include="..\..\Source\Node\nodes\io\IONode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperNodeViewUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperTrackUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\AudioLooperNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\AudioLooperTrack.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\LooperNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\LooperTrack.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\MIDILooperNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\MIDILooperTrack.cpp"/>
     <ClCompile Include="..\..\Source\Node\Node.cpp"/>
     <ClCompile Include="..\..\Source\Node\NodeManager.cpp"/>
     <ClCompile Include="..\..\Source\Node\NodeFactory.cpp"/>
@@ -2955,6 +2955,14 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_timeline.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\ui\LooperNodeViewUI.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\ui\LooperTrackUI.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\AudioLooperNode.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\AudioLooperTrack.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\LooperNode.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\LooperTrack.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\MIDILooperNode.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\looper\MIDILooperTrack.h"/>
     <ClInclude Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.h"/>
     <ClInclude Include="..\..\Source\Common\MIDI\ui\MIDIDeviceParameterUI.h"/>
     <ClInclude Include="..\..\Source\Common\MIDI\MIDIDevice.h"/>
@@ -3004,14 +3012,6 @@
     <ClInclude Include="..\..\Source\Node\nodes\mixer\MixerNode.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\io\ui\IONodeViewUI.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\io\IONode.h"/>
-    <ClInclude Include="..\..\Source\Node\nodes\looper\ui\LooperNodeViewUI.h"/>
-    <ClInclude Include="..\..\Source\Node\nodes\looper\ui\LooperTrackUI.h"/>
-    <ClInclude Include="..\..\Source\Node\nodes\looper\AudioLooperNode.h"/>
-    <ClInclude Include="..\..\Source\Node\nodes\looper\AudioLooperTrack.h"/>
-    <ClInclude Include="..\..\Source\Node\nodes\looper\LooperNode.h"/>
-    <ClInclude Include="..\..\Source\Node\nodes\looper\LooperTrack.h"/>
-    <ClInclude Include="..\..\Source\Node\nodes\looper\MIDILooperNode.h"/>
-    <ClInclude Include="..\..\Source\Node\nodes\looper\MIDILooperTrack.h"/>
     <ClInclude Include="..\..\Source\Node\Node.h"/>
     <ClInclude Include="..\..\Source\Node\NodeManager.h"/>
     <ClInclude Include="..\..\Source\Node\NodeFactory.h"/>

@@ -68,6 +68,14 @@ ifeq ($(CONFIG),Release)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/LooperNodeViewUI_1c96a535.o \
+  $(JUCE_OBJDIR)/LooperTrackUI_322d1b0f.o \
+  $(JUCE_OBJDIR)/AudioLooperNode_959be8f7.o \
+  $(JUCE_OBJDIR)/AudioLooperTrack_30464540.o \
+  $(JUCE_OBJDIR)/LooperNode_c6b8472f.o \
+  $(JUCE_OBJDIR)/LooperTrack_22b5ae08.o \
+  $(JUCE_OBJDIR)/MIDILooperNode_638e8910.o \
+  $(JUCE_OBJDIR)/MIDILooperTrack_20a7a847.o \
   $(JUCE_OBJDIR)/MIDIDeviceChooser_959781bc.o \
   $(JUCE_OBJDIR)/MIDIDeviceParameterUI_bf16f57e.o \
   $(JUCE_OBJDIR)/MIDIDevice_3c053f6a.o \
@@ -122,14 +130,6 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/MixerNode_83b55be3.o \
   $(JUCE_OBJDIR)/IONodeViewUI_ba78daff.o \
   $(JUCE_OBJDIR)/IONode_620212ef.o \
-  $(JUCE_OBJDIR)/LooperNodeViewUI_1c96a535.o \
-  $(JUCE_OBJDIR)/LooperTrackUI_322d1b0f.o \
-  $(JUCE_OBJDIR)/AudioLooperNode_959be8f7.o \
-  $(JUCE_OBJDIR)/AudioLooperTrack_30464540.o \
-  $(JUCE_OBJDIR)/LooperNode_c6b8472f.o \
-  $(JUCE_OBJDIR)/LooperTrack_22b5ae08.o \
-  $(JUCE_OBJDIR)/MIDILooperNode_638e8910.o \
-  $(JUCE_OBJDIR)/MIDILooperTrack_20a7a847.o \
   $(JUCE_OBJDIR)/Node_65f22bf0.o \
   $(JUCE_OBJDIR)/NodeManager_772dfa27.o \
   $(JUCE_OBJDIR)/NodeFactory_79762504.o \
@@ -171,6 +171,46 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_APP) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OBJDIR)/LooperNodeViewUI_1c96a535.o: ../../Source/Node/nodes/looper/ui/LooperNodeViewUI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling LooperNodeViewUI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/LooperTrackUI_322d1b0f.o: ../../Source/Node/nodes/looper/ui/LooperTrackUI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling LooperTrackUI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/AudioLooperNode_959be8f7.o: ../../Source/Node/nodes/looper/AudioLooperNode.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling AudioLooperNode.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/AudioLooperTrack_30464540.o: ../../Source/Node/nodes/looper/AudioLooperTrack.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling AudioLooperTrack.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/LooperNode_c6b8472f.o: ../../Source/Node/nodes/looper/LooperNode.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling LooperNode.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/LooperTrack_22b5ae08.o: ../../Source/Node/nodes/looper/LooperTrack.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling LooperTrack.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/MIDILooperNode_638e8910.o: ../../Source/Node/nodes/looper/MIDILooperNode.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling MIDILooperNode.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/MIDILooperTrack_20a7a847.o: ../../Source/Node/nodes/looper/MIDILooperTrack.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling MIDILooperTrack.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/MIDIDeviceChooser_959781bc.o: ../../Source/Common/MIDI/ui/MIDIDeviceChooser.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
@@ -440,46 +480,6 @@ $(JUCE_OBJDIR)/IONodeViewUI_ba78daff.o: ../../Source/Node/nodes/io/ui/IONodeView
 $(JUCE_OBJDIR)/IONode_620212ef.o: ../../Source/Node/nodes/io/IONode.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling IONode.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/LooperNodeViewUI_1c96a535.o: ../../Source/Node/nodes/looper/ui/LooperNodeViewUI.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling LooperNodeViewUI.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/LooperTrackUI_322d1b0f.o: ../../Source/Node/nodes/looper/ui/LooperTrackUI.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling LooperTrackUI.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/AudioLooperNode_959be8f7.o: ../../Source/Node/nodes/looper/AudioLooperNode.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling AudioLooperNode.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/AudioLooperTrack_30464540.o: ../../Source/Node/nodes/looper/AudioLooperTrack.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling AudioLooperTrack.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/LooperNode_c6b8472f.o: ../../Source/Node/nodes/looper/LooperNode.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling LooperNode.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/LooperTrack_22b5ae08.o: ../../Source/Node/nodes/looper/LooperTrack.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling LooperTrack.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/MIDILooperNode_638e8910.o: ../../Source/Node/nodes/looper/MIDILooperNode.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling MIDILooperNode.cpp"
-	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
-
-$(JUCE_OBJDIR)/MIDILooperTrack_20a7a847.o: ../../Source/Node/nodes/looper/MIDILooperTrack.cpp
-	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
-	@echo "Compiling MIDILooperTrack.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/Node_65f22bf0.o: ../../Source/Node/Node.cpp
