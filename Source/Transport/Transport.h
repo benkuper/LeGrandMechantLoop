@@ -53,7 +53,7 @@ public:
 
 	double timeAtStart;
 
-	void clear(); // override here to avoid deleting parameters
+    void clear() override; // override here to avoid deleting parameters
 
 	//Controls
 	void play(bool startTempoSet = false);

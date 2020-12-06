@@ -13,8 +13,8 @@
 
 IONode::IONode(StringRef name, var params, bool isInput) :
 	Node(name, params, !isInput, isInput),
-	channelsCC("Channels"),
-	isInput(isInput)
+    isInput(isInput),
+	channelsCC("Channels")
 {
 	viewUISize->setPoint(150, 180);
 

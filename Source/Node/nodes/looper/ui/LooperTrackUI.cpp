@@ -159,6 +159,9 @@ void LooperTrackUI::Feedback::updateContourColor()
     case LooperTrack::STOPPED:
         contourColor = NORMAL_COLOR.brighter();
         break;
+        
+    default:
+        break;
     }
 
 }
@@ -180,6 +183,8 @@ void LooperTrackUI::Feedback::paint(Graphics& g)
     case LooperTrack::PLAYING: fillColor = GREEN_COLOR; break;
     case LooperTrack::WILL_STOP: fillColor = BLUE_COLOR; break;
     case LooperTrack::STOPPED: fillColor = fillColor.brighter();  break;
+        default:
+            break;
     }
 
     if (track->isPlaying(false))

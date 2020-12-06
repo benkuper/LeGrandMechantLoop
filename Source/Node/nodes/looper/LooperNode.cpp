@@ -15,8 +15,8 @@
 LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	Node(name, params, looperType == AUDIO, looperType == AUDIO, false, looperType == AUDIO),
 	looperType(looperType),
-	tracksCC("Tracks"),
-	currentTrack(nullptr)
+    currentTrack(nullptr),
+    tracksCC("Tracks")
 {
 	viewUISize->setPoint(350, 220);
 
@@ -111,7 +111,7 @@ void LooperNode::onContainerTriggerTriggered(Trigger* t)
 			
 			LooperTrack::TrackState s = currentTrack->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
 			
-			if (s == LooperTrack::FINISH_RECORDING || currentTrack->isPlaying(true) && autoNext->boolValue())
+			if ((s == LooperTrack::FINISH_RECORDING || currentTrack->isPlaying(true)) && autoNext->boolValue())
 			{
 				currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
 			}

@@ -18,14 +18,15 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 	ControllableContainer("Track " + String(index + 1)),
 	looper(looper),
 	index(index),
-	freeRecStartOffset(0),
-	curSample(0),
-	bufferNumSamples(0),
+    curSample(0),
+    bufferNumSamples(0),
+    freeRecStartOffset(0),
+    timeAtStateChange(0),
+    finishRecordLock(false),
 	globalBeatAtStart(0),
 	freePlaySample(0),
 	curReadSample(0),
-	numBeats(0),
-	finishRecordLock(false)
+	numBeats(0)
 {
 	editorIsCollapsed = true;
 	isSelectable = false; 
@@ -137,6 +138,9 @@ void LooperTrack::stateChanged()
 		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) Transport::getInstance()->play();
 		if (playQuantization == Transport::FREE) startPlaying();
 		break;
+            
+        default:
+            break;
 	}
 }
 

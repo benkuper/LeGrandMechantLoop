@@ -76,8 +76,8 @@ void TransportUI::newMessage(const ContainerAsyncEvent& e)
 }
 
 TransportUI::BeatViz::BeatViz(int index) :
-	transport(Transport::getInstance()),
-	index(index)
+    index(index),
+    transport(Transport::getInstance())
 {
 }
 

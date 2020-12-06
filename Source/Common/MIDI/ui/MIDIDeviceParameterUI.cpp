@@ -12,8 +12,8 @@
 
 MIDIDeviceParameterUI::MIDIDeviceParameterUI(MIDIDeviceParameter * _midiParam) :
 	ParameterUI(_midiParam),
-	chooser(_midiParam->canHaveInput, _midiParam->canHaveOutput),
-	midiParam(_midiParam)
+    midiParam(_midiParam),
+    chooser(_midiParam->canHaveInput, _midiParam->canHaveOutput)
 {
 	addAndMakeVisible(&chooser);
 	chooser.addMIDIChooserListener(this);

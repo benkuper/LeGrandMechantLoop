@@ -13,8 +13,8 @@
 
 SpatNode::SpatNode(var params) :
     Node(getTypeString(), params, true, true, true, true),
-    spatCC("Points"),
-	fadeCurve("Fade Curve",nullptr)
+    fadeCurve("Fade Curve",nullptr),
+    spatCC("Points")
 {
 	viewUISize->setPoint(300, 300);
 
@@ -75,17 +75,22 @@ void SpatNode::placeItems()
 	switch (m)
 	{
 	case CIRCLE:
-		int numItems = spatCC.controllableContainers.size();
-		for (int i = 0; i < numItems; i++)
-		{
-			float rel = i * 1.0f / numItems;
-			float rad = circleRadius->floatValue();
+    {
+        int numItems = spatCC.controllableContainers.size();
+        for (int i = 0; i < numItems; i++)
+        {
+            float rel = i * 1.0f / numItems;
+            float rad = circleRadius->floatValue();
 
-			float angle = (circleAngle->floatValue() + rel * 360 + 180) * float_Pi / 180;
-			SpatItem* si = (SpatItem*)spatCC.controllableContainers[i].get();
-			si->position->setPoint(.5f + cosf(angle) * .5f * rad, .5f + sinf(angle) * .5f * rad);
-		}
-		break;
+            float angle = (circleAngle->floatValue() + rel * 360 + 180) * float_Pi / 180;
+            SpatItem* si = (SpatItem*)spatCC.controllableContainers[i].get();
+            si->position->setPoint(.5f + cosf(angle) * .5f * rad, .5f + sinf(angle) * .5f * rad);
+        }
+    }
+	break;
+            
+    default:
+        break;
 	}
 
 }

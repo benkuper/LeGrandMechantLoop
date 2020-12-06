@@ -108,8 +108,8 @@ void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 // INPUT GAIN LINE
 
 MixerNodeViewUI::InputGainLine::InputGainLine(ControllableContainer* gainsCC, int index) :
-    gainsCC(gainsCC),
-    index(index)
+    index(index),
+    gainsCC(gainsCC)
 {
     rebuild();
 }

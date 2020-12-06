@@ -13,8 +13,8 @@
 
 AudioLooperTrack::AudioLooperTrack(AudioLooperNode * looper, int index, int numChannels) :
 	LooperTrack(looper, index),
-	numChannels(numChannels),
-	audioLooper(looper)
+    audioLooper(looper),
+    numChannels(numChannels)
 {
 	volume = addFloatParameter("Gain", "The gain for this track", 1, 0, 2);
 	rms = addFloatParameter("RMS", "RMS for this track, for feedback", 0, 0, 1);
