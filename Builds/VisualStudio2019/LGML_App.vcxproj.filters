@@ -1081,9 +1081,6 @@
     <ClCompile Include="..\..\Source\Node\Node.cpp">
       <Filter>LGML\Source\Node</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Node\NodeProcessor.cpp">
-      <Filter>LGML\Source\Node</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Node\NodeManager.cpp">
       <Filter>LGML\Source\Node</Filter>
     </ClCompile>
@@ -4207,9 +4204,6 @@
       <Filter>LGML\Source\Node\nodes\looper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\Node.h">
-      <Filter>LGML\Source\Node</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Node\NodeProcessor.h">
       <Filter>LGML\Source\Node</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\NodeManager.h">

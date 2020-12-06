@@ -16,13 +16,13 @@
 
 class AudioLooperTrack;
 
-class AudioLooperProcessor :
-    public LooperProcessor,
+class AudioLooperNode :
+    public LooperNode,
     public AudioManager::AudioManagerListener
 {
 public:
-    AudioLooperProcessor(Node * n);
-    ~AudioLooperProcessor();
+    AudioLooperNode(var params = var());
+    ~AudioLooperNode();
 
     IntParameter* numChannelsPerTrack;
     std::unique_ptr<RingBuffer<float>> ringBuffer;
@@ -30,8 +30,7 @@ public:
     enum TrackOutputMode { MIXED_ONLY, SEPARATE_ONLY, ALL };
     EnumParameter* trackOutputMode;
 
-
-    virtual void initInternal() override;
+    void initInternal() override;
 
     virtual void updateOutTracks();
     virtual LooperTrack * createLooperTrack(int index) override;
@@ -40,9 +39,10 @@ public:
 
     virtual void audioSetupChanged() override;
 
-    void onContainerParameterChanged(Parameter* p) override;
+    void onContainerParameterChangedInternal(Parameter* p) override;
 
     virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
+    String getTypeString() const override { return getTypeStringStatic(); }
     static String getTypeStringStatic() { return "Audio Looper"; }
 };

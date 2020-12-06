@@ -13,49 +13,44 @@
 #include "../../Node.h"
 class NodeManager;
 
-class ContainerProcessor :
-    public GenericNodeProcessor,
+class ContainerNode :
+    public Node,
     public BaseManager<Node>::ManagerListener,
     public Node::NodeListener
 {
 public:
-    ContainerProcessor(Node * n);
-    ~ContainerProcessor();
+    ContainerNode(var params = var());
+    ~ContainerNode();
 
     std::unique_ptr<NodeManager> nodeManager;
-    AudioProcessorGraph graph;
+    AudioProcessorGraph containerGraph;
     AudioProcessorGraph::NodeID inputID;
     AudioProcessorGraph::NodeID outputID;
 
     AudioBuffer<float> graphBuffer;
 
-    void clearProcessor() override;
-    void initInternal() override;
-
-    void onContainerParameterChanged(Parameter* p) override;
+    void clearItem() override;
 
     void itemAdded(Node* n) override;
     void itemRemoved(Node* n) override;
 
     void updateGraph();
 
-    void updateInputsFromNodeInternal() override;
-    void updateOutputsFromNodeInternal() override;
+    void updateAudioInputsInternal() override;
+    void updateAudioOutputsInternal() override;
 
     void nodePlayConfigUpdated(Node* n) override;
     
-    void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
+    void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
-    void updatePlayConfig() override;
-    void prepareToPlay(double sampleRate, int maxBlockSize) override;
+    void updatePlayConfigInternal() override;
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
     
-    
-
     var getJSONData() override;
     void loadJSONDataInternal(var data) override;
 
+    String getTypeString() const override { return getTypeStringStatic(); }
     static const String getTypeStringStatic() { return "Container"; }
 
-    NodeViewUI* createNodeViewUI() override;
+    BaseNodeViewUI* createViewUI() override;
 };

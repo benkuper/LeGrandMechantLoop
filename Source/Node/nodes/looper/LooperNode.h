@@ -10,20 +10,20 @@
 
 #pragma once
 
-#include "../../NodeProcessor.h"
+#include "../../Node.h"
 #include "Transport/Transport.h"
 
 class LooperTrack;
 
-class LooperProcessor :
-        public GenericNodeProcessor,
+class LooperNode :
+        public Node,
         public Transport::TransportListener
 {
 public:
     enum LooperType { AUDIO, MIDI };
 
-    LooperProcessor(Node * node, LooperType looperType);
-    virtual ~LooperProcessor();
+    LooperNode(StringRef name, var params, LooperType looperType);
+    virtual ~LooperNode();
 
     LooperType looperType;
 
@@ -50,7 +50,7 @@ public:
     enum MonitorMode { OFF, ALWAYS, RECORDING_ONLY, ARMED_TRACK };
     EnumParameter* monitorMode;
 
-    void initInternal() override;
+    virtual void initInternal();
 
     virtual void updateLooperTracks();
     virtual LooperTrack* createLooperTrack(int index) { return nullptr; }
@@ -58,8 +58,8 @@ public:
     virtual void setCurrentTrack(LooperTrack* t);
 
     virtual void onContainerTriggerTriggered(Trigger* t) override;
-    virtual void onContainerParameterChanged(Parameter* p) override;
-    virtual void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
+    virtual void onContainerParameterChangedInternal(Parameter* p) override;
+    virtual void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
     virtual void beatChanged(bool isNewBar) override;
     virtual void playStateChanged(bool isPlaying) override;
@@ -72,6 +72,5 @@ public:
     Transport::Quantization getQuantization();
     Transport::Quantization getFreeFillMode();
 
-    static String getTypeStringStatic() { jassertfalse;  return "Looper"; }
-    NodeViewUI* createNodeViewUI() override;
+    BaseNodeViewUI* createViewUI() override;
 };

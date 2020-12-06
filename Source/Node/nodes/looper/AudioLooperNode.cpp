@@ -12,32 +12,30 @@
 #include "AudioLooperTrack.h"
 #include "Node/Node.h"
 
-AudioLooperProcessor::AudioLooperProcessor(Node* n) :
-    LooperProcessor(n, AUDIO)
+AudioLooperNode::AudioLooperNode(var params) :
+    LooperNode(getTypeString(), params, AUDIO)
 {
 	numChannelsPerTrack = addIntParameter("Channel Per Track", "Number of channel to use for each track", 2, 1, 8);
 	trackOutputMode = addEnumParameter("Output Mode", "How to output the channels");
 	trackOutputMode->addOption("Mixed only", MIXED_ONLY)->addOption("Tracks only", SEPARATE_ONLY)->addOption("Mixed and tracks", ALL);
 
-	nodeRef->setAudioInputs(numChannelsPerTrack->intValue());
-	updateLooperTracks();
-	updateOutTracks();
-
+	setAudioInputs(numChannelsPerTrack->intValue());
 	AudioManager::getInstance()->addAudioManagerListener(this);
 }
 
-AudioLooperProcessor::~AudioLooperProcessor()
+AudioLooperNode::~AudioLooperNode()
 {
 	AudioManager::getInstance()->removeAudioManagerListener(this);
 }
 
-void AudioLooperProcessor::initInternal()
+void AudioLooperNode::initInternal()
 {
-	LooperProcessor::initInternal();
+	LooperNode::initInternal();
+	updateOutTracks();
 	updateRingBuffer();
 }
 
-void AudioLooperProcessor::updateOutTracks()
+void AudioLooperNode::updateOutTracks()
 {
 	TrackOutputMode m = trackOutputMode->getValueDataAsEnum<TrackOutputMode>();
 	StringArray s;
@@ -58,35 +56,33 @@ void AudioLooperProcessor::updateOutTracks()
 		}
 	}
 
-	nodeRef->setAudioOutputs(s);
+	setAudioOutputs(s);
 }
 
-LooperTrack * AudioLooperProcessor::createLooperTrack(int index)
+LooperTrack * AudioLooperNode::createLooperTrack(int index)
 {
 	return new AudioLooperTrack(this, index, numChannelsPerTrack->intValue());
 }
 
-void AudioLooperProcessor::updateRingBuffer()
+void AudioLooperNode::updateRingBuffer()
 {
 	ringBuffer.reset(new RingBuffer<float>(numChannelsPerTrack->intValue(), getFadeNumSamples() * 2)); //double to not have overlapping read and write
 }
 
 
-int AudioLooperProcessor::getFadeNumSamples()
+int AudioLooperNode::getFadeNumSamples()
 {
 	return fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000;
 }
 
-void AudioLooperProcessor::audioSetupChanged()
+void AudioLooperNode::audioSetupChanged()
 {
 	updateRingBuffer();
 }
 
-void AudioLooperProcessor::onContainerParameterChanged(Parameter* p)
+void AudioLooperNode::onContainerParameterChangedInternal(Parameter* p)
 {
-	LooperProcessor::onContainerParameterChanged(p);
-
-	if (nodeRef.wasObjectDeleted()) return;
+	LooperNode::onContainerParameterChangedInternal(p);
 
 	if (p == trackOutputMode)
 	{
@@ -96,7 +92,7 @@ void AudioLooperProcessor::onContainerParameterChanged(Parameter* p)
 	}
 	else if (p == numChannelsPerTrack)
 	{
-		nodeRef->setAudioInputs(numChannelsPerTrack->intValue());
+		setAudioInputs(numChannelsPerTrack->intValue());
 
 		TrackOutputMode tom = trackOutputMode->getValueDataAsEnum<TrackOutputMode>();
 		if (tom == MIXED_ONLY || tom == ALL) updateOutTracks();
@@ -109,7 +105,7 @@ void AudioLooperProcessor::onContainerParameterChanged(Parameter* p)
 	else if (p == fadeTimeMS) updateRingBuffer();
 }
 
-void AudioLooperProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void AudioLooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	TrackOutputMode tom = trackOutputMode->getValueDataAsEnum<TrackOutputMode>();
 	MonitorMode mm = monitorMode->getValueDataAsEnum<MonitorMode>();

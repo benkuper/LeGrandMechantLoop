@@ -14,7 +14,7 @@
 
 String LooperTrack::trackStateNames[LooperTrack::STATES_MAX] = { "Idle", "Will Record", "Recording", "Finish Recording", "Playing", "Will Stop", "Stopped", "Will Play" };
 
-LooperTrack::LooperTrack(LooperProcessor * looper, int index) :
+LooperTrack::LooperTrack(LooperNode * looper, int index) :
 	ControllableContainer("Track " + String(index + 1)),
 	looper(looper),
 	index(index),
@@ -190,7 +190,7 @@ void LooperTrack::finishRecordingAndPlay()
 
 	if (numBeats == 0)
 	{
-		NLOGWARNING(looper->nodeRef->niceName, "Error recording loop");
+		NLOGWARNING(looper->niceName, "Error recording loop");
 		clearBuffer();
 		return;
 	}

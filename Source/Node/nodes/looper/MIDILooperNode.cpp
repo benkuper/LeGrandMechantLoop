@@ -13,22 +13,21 @@
 #include "Node/Node.h"
 #include "Node/Connection/NodeConnection.h"
 
-MIDILooperProcessor::MIDILooperProcessor(Node* n) :
-    LooperProcessor(n, MIDI),
+MIDILooperNode::MIDILooperNode(var params) :
+    LooperNode(getTypeString(), params, MIDI),
     currentDevice(nullptr)
 {
     midiParam = new MIDIDeviceParameter("MIDI Device", true, false);
     ControllableContainer::addParameter(midiParam);
-    nodeRef->setMIDIIO(false, true);
-
+    setMIDIIO(false, true);
 }
 
-MIDILooperProcessor::~MIDILooperProcessor()
+MIDILooperNode::~MIDILooperNode()
 {
 
 }
 
-void MIDILooperProcessor::setMIDIDevice(MIDIInputDevice* d)
+void MIDILooperNode::setMIDIDevice(MIDIInputDevice* d)
 {
     if (currentDevice == d) return;
     if (currentDevice != nullptr)
@@ -44,12 +43,12 @@ void MIDILooperProcessor::setMIDIDevice(MIDIInputDevice* d)
     }
 }
 
-LooperTrack* MIDILooperProcessor::createLooperTrack(int index)
+LooperTrack* MIDILooperNode::createLooperTrack(int index)
 {
     return new MIDILooperTrack(this, index);
 }
 
-void MIDILooperProcessor::midiMessageReceived(const MidiMessage& m)
+void MIDILooperNode::midiMessageReceived(const MidiMessage& m)
 {
     collector.addMessageToQueue(m);
     if (m.isNoteOnOrOff())
@@ -60,14 +59,16 @@ void MIDILooperProcessor::midiMessageReceived(const MidiMessage& m)
     }
 }
 
-void MIDILooperProcessor::onContainerParameterChanged(Parameter* p)
+void MIDILooperNode::onContainerParameterChangedInternal(Parameter* p)
 {
-    LooperProcessor::onContainerParameterChanged(p);
+    LooperNode::onContainerParameterChangedInternal(p);
     if (p == midiParam) setMIDIDevice(midiParam->inputDevice);
 }
 
-void MIDILooperProcessor::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
+void MIDILooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
 {
+    LooperNode::onControllableFeedbackUpdateInternal(cc, c);
+    
     if (MIDILooperTrack* mt = c->getParentAs<MIDILooperTrack>())
     {
         bool shouldClearNotes = c == mt->active;
@@ -83,21 +84,20 @@ void MIDILooperProcessor::onControllableFeedbackUpdate(ControllableContainer* cc
         if (shouldClearNotes)
         {
             Array<MIDILooperTrack::SampledNoteInfo> notes = mt->getNoteOnsAtSample(mt->curReadSample);
-            for (auto& info : notes) cleanupCollector.addMessageToQueue(MidiMessage(MidiMessage::noteOff(info.channel, info.noteNumber), getBlockSize() - 1));
+            for (auto& info : notes) cleanupCollector.addMessageToQueue(MidiMessage(MidiMessage::noteOff(info.channel, info.noteNumber), processor->getBlockSize() - 1));
         }
     }
 
-    LooperProcessor::onControllableFeedbackUpdate(cc, c);
 }
 
-void MIDILooperProcessor::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
+void MIDILooperNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
-    LooperProcessor::prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock);
+    LooperNode::prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock);
     collector.reset(sampleRate);
     cleanupCollector.reset(sampleRate);
 }
 
-void MIDILooperProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void MIDILooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     MonitorMode mm = monitorMode->getValueDataAsEnum<MonitorMode>();
 
@@ -124,9 +124,9 @@ void MIDILooperProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiB
 
     if (!outBuffer.isEmpty())
     {
-        for (auto& c : nodeRef->outMidiConnections)
+        for (auto& c : outMidiConnections)
         {
-            c->destNode->baseProcessor->receiveMIDIFromInput(nodeRef, outBuffer);
+            c->destNode->receiveMIDIFromInput(this, outBuffer);
         }
     }
 }

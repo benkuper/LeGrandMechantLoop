@@ -35,7 +35,7 @@ NodeManagerViewUI::~NodeManagerViewUI()
 {
 }
 
-NodeViewUI* NodeManagerViewUI::createUIForItem(Node* n)
+BaseNodeViewUI* NodeManagerViewUI::createUIForItem(Node* n)
 {
     return n->createViewUI();
 }
@@ -71,7 +71,7 @@ void NodeManagerViewUI::mouseUp(const MouseEvent& e)
     else if(e.eventComponent == this) BaseManagerViewUI::mouseUp(e);
 }
 
-NodeConnector* NodeManagerViewUI::getCandidateConnector(bool lookForInput, NodeConnection::ConnectionType connectionType, NodeViewUI* excludeUI)
+NodeConnector* NodeManagerViewUI::getCandidateConnector(bool lookForInput, NodeConnection::ConnectionType connectionType, BaseNodeViewUI* excludeUI)
 {
     for (auto& ui : itemsUI)
     {

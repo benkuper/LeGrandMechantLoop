@@ -15,6 +15,9 @@
 class NodeConnectionManager;
 class NodeManagerAudioProcessor;
 
+class AudioInputNode;
+class AudioOutputNode;
+
 class NodeManager :
     public BaseManager<Node>
 {
@@ -31,8 +34,8 @@ public:
     StringArray audioInputNames;
     StringArray audioOutputNames;
 
-    Array<Node*> audioInputNodes;
-    Array<Node*> audioOutputNodes;
+    Array<AudioInputNode*> audioInputNodes;
+    Array<AudioOutputNode*> audioOutputNodes;
 
     std::unique_ptr<NodeConnectionManager> connectionManager;
 
@@ -43,8 +46,8 @@ public:
     void setAudioOutputs(const int& numOutputs); //auto naming
     void setAudioOutputs(const StringArray& outputNames);
 
-    void updateAudioInputNode(Node * n);
-    void updateAudioOutputNode(Node *n);
+    void updateAudioInputNode(AudioInputNode * n);
+    void updateAudioOutputNode(AudioOutputNode *n);
 
     virtual void addItemInternal(Node* n, var data) override;
     virtual void removeItemInternal(Node* n) override;

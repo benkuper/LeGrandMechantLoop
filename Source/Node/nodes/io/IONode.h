@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "../../NodeProcessor.h"
+#include "../../Node.h"
 
 class IOChannel :
 	public ControllableContainer
@@ -23,50 +23,51 @@ public:
 	BoolParameter* active;
 };
 
-class IOProcessor :
-	public GenericNodeProcessor
+class IONode :
+	public Node
 {
 public:
-	IOProcessor(Node* n, bool isInput);
-	virtual ~IOProcessor() {}
+	IONode(var params = var(), bool isInput = true);
+	virtual ~IONode() {}
 
 
 	bool isInput;
 	ControllableContainer channelsCC;
 	var gainGhostData;
 
-	void updateInputsFromNodeInternal() override;
-	void updateOutputsFromNodeInternal() override;
-	void updateIOFromNode();
+	void updateAudioInputsInternal() override;
+	void updateAudioOutputsInternal() override;
+	void updateIO();
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
-	static const String getTypeStringStatic() { return "Audio IO"; }
-
 	var getJSONData() override;
 	void loadJSONDataInternal(var data) override;
 
-	NodeViewUI* createNodeViewUI() override;
+	BaseNodeViewUI* createViewUI() override;
 };
 
-class AudioInputProcessor :
-	public IOProcessor
+class AudioInputNode :
+	public IONode
 {
 public:
-	AudioInputProcessor(Node* node) : IOProcessor(node, true) {}
+	AudioInputNode(var params = var()) : IONode(params, true) {}
+
+	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "Audio Input"; }
 
-	void updatePlayConfig() override;
+	void updatePlayConfigInternal() override;
 };
 
-class AudioOutputProcessor :
-	public IOProcessor
+class AudioOutputNode :
+	public IONode
 {
 public:
-	AudioOutputProcessor(Node* node) : IOProcessor(node, false) {}
+	AudioOutputNode(var params = var()) : IONode(params, false) {}
+	
+	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "Audio Output"; }
 
-	void updatePlayConfig() override;
-
+	void updatePlayConfigInternal() override;
 };

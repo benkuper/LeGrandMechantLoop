@@ -11,31 +11,31 @@
 #include "IONode.h"
 #include "ui/IONodeViewUI.h"
 
-IOProcessor::IOProcessor(Node* n, bool isInput) :
-	GenericNodeProcessor(n, !isInput, isInput),
+IONode::IONode(var params, bool isInput) :
+	Node(getTypeString(), params, !isInput, isInput),
 	channelsCC("Channels"),
 	isInput(isInput)
 {
-	nodeRef->viewUISize->setPoint(150, 180);
+	viewUISize->setPoint(150, 180);
 
 	channelsCC.saveAndLoadRecursiveData = true;
 	addChildControllableContainer(&channelsCC);
 }
 
-void IOProcessor::updateInputsFromNodeInternal()
+void IONode::updateAudioInputsInternal()
 {
-	if (!isInput) updateIOFromNode();
+	if (!isInput) updateIO();
 }
 
-void IOProcessor::updateOutputsFromNodeInternal()
+void IONode::updateAudioOutputsInternal()
 {
-	if (isInput) updateIOFromNode();
+	if (isInput) updateIO();
 }
 
-void IOProcessor::updateIOFromNode()
+void IONode::updateIO()
 {
-	int numChannels = isInput ? nodeRef->numOutputs : nodeRef->numInputs;
-	StringArray names = isInput ? nodeRef->audioOutputNames : nodeRef->audioInputNames;
+	int numChannels = isInput ? getNumAudioOutputs() : getNumAudioInputs();
+	StringArray names = isInput ? audioOutputNames : audioInputNames;
 
 	//remove surplus
 	while (channelsCC.controllableContainers.size() > numChannels)
@@ -59,12 +59,10 @@ void IOProcessor::updateIOFromNode()
 		IOChannel* channel = new IOChannel(s);
 		channelsCC.addChildControllableContainer(channel, true);
 		if (index < gainGhostData.size()) channel->gain->setValue(gainGhostData[index]);
-
 	}
-
 }
 
-void IOProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void IONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	for (int i = 0; i < channelsCC.controllableContainers.size() && i < buffer.getNumChannels(); i++)
 	{
@@ -82,39 +80,39 @@ void IOProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 	}
 }
 
-void IOProcessor::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void IONode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	buffer.clear();
 }
 
-var IOProcessor::getJSONData()
+var IONode::getJSONData()
 {
-	var data = GenericNodeProcessor::getJSONData();
+	var data = Node::getJSONData();
 	var gainData;
 	for (auto& cc : channelsCC.controllableContainers) gainData.append(((IOChannel*)cc.get())->gain->floatValue());
 	data.getDynamicObject()->setProperty("gains", gainData);
 	return data;
 }
 
-void IOProcessor::loadJSONDataInternal(var data)
+void IONode::loadJSONDataInternal(var data)
 {
-	GenericNodeProcessor::loadJSONDataInternal(data);
+	Node::loadJSONDataInternal(data);
 	gainGhostData = data.getProperty("gains", var());
 }
 
-NodeViewUI* IOProcessor::createNodeViewUI()
+BaseNodeViewUI* IONode::createViewUI()
 {
-	return new IONodeViewUI((GenericNode<IOProcessor>*)nodeRef.get());
+	return new IONodeViewUI(this);
 }
 
-void AudioInputProcessor::updatePlayConfig()
+void AudioInputNode::updatePlayConfigInternal()
 {
-	setPlayConfigDetails(nodeRef->numOutputs, nodeRef->numOutputs, getSampleRate(), getBlockSize());
+	processor->setPlayConfigDetails(getNumAudioOutputs(), getNumAudioOutputs(), graph->getSampleRate(), graph->getBlockSize());
 }
 
-void AudioOutputProcessor::updatePlayConfig()
+void AudioOutputNode::updatePlayConfigInternal()
 {
-	setPlayConfigDetails(nodeRef->numInputs, nodeRef->numInputs, getSampleRate(), getBlockSize());
+	processor->setPlayConfigDetails(getNumAudioInputs(), getNumAudioInputs(), graph->getSampleRate(), graph->getBlockSize());
 }
 
 IOChannel::IOChannel(StringRef name) :

@@ -12,10 +12,10 @@
 #include "LooperTrackUI.h"
 #include "../MIDILooperNode.h"
 
-LooperNodeViewUI::LooperNodeViewUI(GenericNode<LooperProcessor>* n) :
-    GenericNodeViewUI(n)
+LooperNodeViewUI::LooperNodeViewUI(LooperNode * n) :
+    NodeViewUI(n)
 {
-    if (MIDILooperProcessor* mlp = dynamic_cast<MIDILooperProcessor*>(processor))
+    if (MIDILooperNode * mlp = dynamic_cast<MIDILooperNode*>(node))
     {
         midiParamUI.reset(mlp->midiParam->createMIDIParameterUI());
         addAndMakeVisible(midiParamUI.get());
@@ -31,7 +31,7 @@ LooperNodeViewUI::~LooperNodeViewUI()
 
 void LooperNodeViewUI::updateTracksUI()
 {
-    int numTracks = processor->tracksCC.controllableContainers.size();
+    int numTracks = node->tracksCC.controllableContainers.size();
 
     while (tracksUI.size() > numTracks)
     {
@@ -41,7 +41,7 @@ void LooperNodeViewUI::updateTracksUI()
     
     while (tracksUI.size() < numTracks)
     {
-        LooperTrackUI* ui = new LooperTrackUI((LooperTrack *)processor->tracksCC.controllableContainers[tracksUI.size()].get());
+        LooperTrackUI* ui = new LooperTrackUI((LooperTrack *)node->tracksCC.controllableContainers[tracksUI.size()].get());
         addAndMakeVisible(ui);
         tracksUI.add(ui);
     }
@@ -51,13 +51,13 @@ void LooperNodeViewUI::updateTracksUI()
 
 void LooperNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
-    GenericNodeViewUI::controllableFeedbackUpdateInternal(c);
-    if (c == processor->numTracks) updateTracksUI();
+    NodeViewUI::controllableFeedbackUpdateInternal(c);
+    if (c == node->numTracks) updateTracksUI();
 }
 
 void LooperNodeViewUI::resizedInternalHeader(Rectangle<int>& r)
 {
-    GenericNodeViewUI::resizedInternalHeader(r);
+    NodeViewUI::resizedInternalHeader(r);
     if (midiParamUI != nullptr) midiParamUI->setBounds(r.removeFromRight(100).reduced(1));
 }
 

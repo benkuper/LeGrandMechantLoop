@@ -10,35 +10,39 @@
 
 #pragma once
 
-#include "NodeProcessor.h"
+#include "JuceHeader.h"
 
 class NodeConnection;
 class NodeAudioConnection;
 class NodeMIDIConnection;
-class NodeViewUI;
+class BaseNodeViewUI;
+
+class NodeAudioProcessor;
 
 class Node :
     public BaseItem
 {
 public:
-    Node(StringRef name = "Node", var params = var());
-    virtual ~Node();
+    Node(StringRef name = "Node",
+        var params = var(),
+        bool hasInput = true, bool hasOutput = true,
+        bool userCanSetIO = false,
+        bool useOutControl = true);
 
+    virtual ~Node();
     virtual void clearItem() override;
 
     AudioProcessorGraph* graph;
-
-    BoolParameter* isNodePlaying;
+    NodeAudioProcessor* processor;
 
     AudioProcessorGraph::NodeID nodeGraphID;
-    NodeProcessor * baseProcessor;
     AudioProcessorGraph::Node::Ptr nodeGraphPtr;
 
     StringArray audioInputNames;
     StringArray audioOutputNames;
 
-    int numInputs;
-    int numOutputs;
+    bool hasAudioInput; //defines if this processor is supposed to get input, even if the number of channels is zero
+    bool hasAudioOutput; //defines if this processor is supposed to provide output, even if the number of channels is zero
     bool hasMIDIInput;
     bool hasMIDIOutput;
 
@@ -46,16 +50,37 @@ public:
     Array<NodeAudioConnection*> outAudioConnections;
     Array<NodeMIDIConnection*> inMidiConnections;
     Array<NodeMIDIConnection*> outMidiConnections;
+    Array<float> connectionsActivityLevels;
+
+    MidiBuffer inMidiBuffer;
+
+    BoolParameter* isNodePlaying;
+    IntParameter* numAudioInputs; //if userCanSetIO
+    IntParameter* numAudioOutputs; //if userCanSetIO
+    FloatParameter* outRMS;
+    FloatParameter* outGain;
+
+    virtual void init(AudioProcessorGraph* graph);
+    virtual void initInternal() {}
 
     void onContainerParameterChangedInternal(Parameter* p) override;
 
-    void setGraph(AudioProcessorGraph* graph);
-    void setProcessor(NodeProcessor * processor); //needs to be called from child classes
-
     void setAudioInputs(const int& numInputs); //auto naming
-    void setAudioInputs(const StringArray & inputNames);
+    void setAudioInputs(const StringArray& inputNames);
     void setAudioOutputs(const int& numOutputs); //auto naming
     void setAudioOutputs(const StringArray& outputNames);
+    virtual void autoSetNumAudioInputs(); //if userCanSetIO
+    virtual void autoSetNumAudioOutputs(); //if userCanSetIO
+
+    //helpers
+    int getNumAudioInputs() const { return audioInputNames.size(); }
+    int getNumAudioOutputs() const { return audioOutputNames.size(); }
+
+    //handle after audio io has been set
+    virtual void updateAudioInputs(bool updateConfig = true);
+    virtual void updateAudioInputsInternal() {}
+    virtual void updateAudioOutputs(bool updateConfig = true);
+    virtual void updateAudioOutputsInternal() {}
 
     void addInConnection(NodeConnection* c);
     void removeInConnection(NodeConnection* c);
@@ -64,11 +89,22 @@ public:
 
     void setMIDIIO(bool hasInput, bool hasOutput);
 
-    void notifyPlayConfigUpdated();
+    //Audio and IO handling
+    virtual void updatePlayConfig(bool notify = true);
+    virtual void updatePlayConfigInternal();
 
-    template<class T>
-    T* getProcessor() { return dynamic_cast<T*>(baseProcessor); }
+    //MIDI
+    void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer);
 
+
+    //AudioProcessor calls
+    virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) {}
+    virtual void releaseResources() {}
+    virtual void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);
+    virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {}
+    virtual void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {}
+
+ 
     class NodeListener
     {
     public:
@@ -86,34 +122,41 @@ public:
 
     DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED, MIDI_INPUT_CHANGED, MIDI_OUTPUT_CHANGED))
 
-    virtual NodeViewUI* createViewUI();
+    virtual BaseNodeViewUI* createViewUI();
+
     WeakReference<Node>::Master masterReference;
 };
 
-template<class T>
-class GenericNode :
-    public Node
+
+
+
+/* AudioProcessor */
+class NodeAudioProcessor :
+    public AudioProcessor
 {
 public:
-    GenericNode(var params = var()) :
-        Node(getTypeString(), params)
-    {
-        processor = new T(this);
-        processor->suspendProcessing(true);
-        setProcessor((GenericNodeProcessor*)processor);
-        processor->suspendProcessing(false);
-    }
+    NodeAudioProcessor(Node* n) : node(n) {}
+    ~NodeAudioProcessor() {}
 
-    virtual ~GenericNode() {}
+    Node* node;
+    
+    virtual const String getName() const override { return node->getTypeString(); }
+    virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override { node->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock); }
+    virtual void releaseResources() override {}
+    virtual void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override { return node->processBlock(buffer, midiMessages); }
+    virtual void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override { return node->processBlockBypassed(buffer, midiMessages); }
+    virtual double getTailLengthSeconds() const override { return 0; }
+    virtual bool acceptsMidi() const override { return false; }
+    virtual bool producesMidi() const override { return false; }
 
-    T* processor;
-
-    virtual NodeViewUI* createViewUI() override 
-    {
-        return processor != nullptr ? ((GenericNodeProcessor*)processor)->createNodeViewUI() : nullptr;
-    }
-
-    String getTypeString() const override { return T::getTypeStringStatic(); }
-    static GenericNode<T>* create(var params) { return new GenericNode<T>(params); }
+    virtual AudioProcessorEditor* createEditor() override { return nullptr; }
+    virtual bool hasEditor() const override { return false; }
+    virtual int getNumPrograms() override { return 0; }
+    virtual int getCurrentProgram() override { return 0; }
+    virtual void setCurrentProgram(int index) override {}
+    virtual const String getProgramName(int index) override { return "[NoProgram]"; }
+    virtual void changeProgramName(int index, const String& newName) override {}
+    virtual void getStateInformation(juce::MemoryBlock& destData) override {}
+    virtual void setStateInformation(const void* data, int sizeInBytes) override {}
 };
 

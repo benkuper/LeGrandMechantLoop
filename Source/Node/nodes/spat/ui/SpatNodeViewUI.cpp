@@ -10,9 +10,9 @@
 
 #include "SpatNodeViewUI.h"
 
-SpatNodeViewUI::SpatNodeViewUI(GenericNode<SpatProcessor>* n) :
-    GenericNodeViewUI(n),
-    spatView(processor)
+SpatNodeViewUI::SpatNodeViewUI(SpatNode * n) :
+    NodeViewUI(n),
+    spatView(n)
 {
     addAndMakeVisible(&spatView);
     contentComponents.add(&spatView);
@@ -36,8 +36,8 @@ void SpatNodeViewUI::resizedInternalContentNode(Rectangle<int> &r)
 
 void SpatNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
-    GenericNodeViewUI::controllableFeedbackUpdateInternal(c);
-    if (c == processor->spatPosition || c == processor->circleRadius || c == processor->circleAngle || c == processor->spatRadius)
+    NodeViewUI::controllableFeedbackUpdateInternal(c);
+    if (c == node->spatPosition || c == node->circleRadius || c == node->circleAngle || c == node->spatRadius)
     {
         spatView.resized();
     }

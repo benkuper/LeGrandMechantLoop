@@ -16,7 +16,7 @@
 class NodeConnectionManagerViewUI;
 
 class NodeManagerViewUI :
-    public BaseManagerViewUI<NodeManager, Node, NodeViewUI>
+    public BaseManagerViewUI<NodeManager, Node, BaseNodeViewUI>
 {
 public:
     NodeManagerViewUI(NodeManager * manager);
@@ -24,7 +24,7 @@ public:
 
     std::unique_ptr< NodeConnectionManagerViewUI> connectionManagerUI;
 
-    NodeViewUI* createUIForItem(Node * n) override;
+    BaseNodeViewUI* createUIForItem(Node * n) override;
 
     void resized() override;
 
@@ -32,7 +32,7 @@ public:
     void mouseDrag(const MouseEvent& e) override;
     void mouseUp(const MouseEvent& e) override;
 
-    NodeConnector * getCandidateConnector(bool lookForInput, NodeConnection::ConnectionType connectionType, NodeViewUI* excludeUI = nullptr);
+    NodeConnector * getCandidateConnector(bool lookForInput, NodeConnection::ConnectionType connectionType, BaseNodeViewUI* excludeUI = nullptr);
 
 };
 

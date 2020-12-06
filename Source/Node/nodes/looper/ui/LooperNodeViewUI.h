@@ -17,10 +17,10 @@
 class LooperTrackUI;
 
 class LooperNodeViewUI :
-    public GenericNodeViewUI<LooperProcessor>
+    public NodeViewUI<LooperNode>
 {
 public:
-    LooperNodeViewUI(GenericNode<LooperProcessor>* n);
+    LooperNodeViewUI(LooperNode * n);
     ~LooperNodeViewUI();
 
     void updateTracksUI();

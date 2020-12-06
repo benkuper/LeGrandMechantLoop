@@ -22,15 +22,14 @@ juce_ImplementSingleton(NodeFactory)
 
 NodeFactory::NodeFactory()
 {
-    defs.add(Definition::createDef("", ContainerProcessor::getTypeStringStatic(), &GenericNode<ContainerProcessor>::create));
+    defs.add(Definition::createDef<ContainerNode>("", ContainerNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<AudioInputNode>("Audio", AudioInputNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<AudioOutputNode>("Audio", AudioOutputNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<AudioLooperNode>("Audio", AudioLooperNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<VSTNode>("Audio", VSTNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<MixerNode>("Audio", MixerNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<SpatNode>("Audio", SpatNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<AudioRouterNode>("Audio", AudioRouterNode::getTypeStringStatic()));
 
-    defs.add(Definition::createDef("Audio", AudioInputProcessor::getTypeStringStatic(), &GenericNode<AudioInputProcessor>::create));
-    defs.add(Definition::createDef("Audio", AudioOutputProcessor::getTypeStringStatic(), &GenericNode<AudioOutputProcessor>::create));
-    defs.add(Definition::createDef("Audio", AudioLooperProcessor::getTypeStringStatic(), &GenericNode<AudioLooperProcessor>::create));
-    defs.add(Definition::createDef("Audio", VSTProcessor::getTypeStringStatic(), &GenericNode<VSTProcessor>::create));
-    defs.add(Definition::createDef("Audio", MixerProcessor::getTypeStringStatic(), &GenericNode<MixerProcessor>::create));
-    defs.add(Definition::createDef("Audio", SpatProcessor::getTypeStringStatic(), &GenericNode<SpatProcessor>::create));
-    defs.add(Definition::createDef("Audio", AudioRouterProcessor::getTypeStringStatic(), &GenericNode<AudioRouterProcessor>::create));
-
-    defs.add(Definition::createDef("MIDI", MIDILooperProcessor::getTypeStringStatic(), &GenericNode<MIDILooperProcessor>::create));
+    defs.add(Definition::createDef<MIDILooperNode>("MIDI", MIDILooperNode::getTypeStringStatic()));
 }

@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b9">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b10">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="fut9ay" name="default.lgmllayout" compile="0" resource="1"
@@ -258,9 +258,6 @@
         </GROUP>
         <FILE id="YMfktw" name="Node.cpp" compile="1" resource="0" file="Source/Node/Node.cpp"/>
         <FILE id="TfcTHt" name="Node.h" compile="0" resource="0" file="Source/Node/Node.h"/>
-        <FILE id="jIqX1t" name="NodeProcessor.cpp" compile="1" resource="0"
-              file="Source/Node/NodeProcessor.cpp"/>
-        <FILE id="hDnJ23" name="NodeProcessor.h" compile="0" resource="0" file="Source/Node/NodeProcessor.h"/>
         <FILE id="PkUUJk" name="NodeManager.cpp" compile="1" resource="0" file="Source/Node/NodeManager.cpp"/>
         <FILE id="Tonclt" name="NodeManager.h" compile="0" resource="0" file="Source/Node/NodeManager.h"/>
         <FILE id="gA65mU" name="NodeFactory.cpp" compile="1" resource="0" file="Source/Node/NodeFactory.cpp"/>

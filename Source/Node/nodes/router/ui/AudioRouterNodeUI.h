@@ -13,10 +13,10 @@
 #include "../AudioRouterNode.h"
 
 class AudioRouterNodeViewUI :
-    public GenericNodeViewUI<AudioRouterProcessor>
+    public NodeViewUI<AudioRouterNode>
 {
 public:
-    AudioRouterNodeViewUI(GenericNode<AudioRouterProcessor>* n);
+    AudioRouterNodeViewUI(AudioRouterNode * n);
     ~AudioRouterNodeViewUI();
 
     std::unique_ptr<ParameterEditor> currentInputUI;

@@ -163,7 +163,7 @@ void NodeAudioConnection::connectChannels(int sourceChannel, int destChannel)
 	}
 
 
-	if (sourceChannel >= sourceNode->numOutputs || destChannel >= destNode->numInputs)
+	if (sourceChannel >= sourceNode->getNumAudioOutputs() || destChannel >= destNode->getNumAudioInputs())
 	{
 		LOGWARNING("Wrong connection, not connecting");
 		return;
@@ -191,7 +191,7 @@ void NodeAudioConnection::createDefaultConnections()
 	if (sourceNode == nullptr || destNode == nullptr) return;
 
 	clearConnections();
-	int defaultConnections = jmin(sourceNode->numOutputs, destNode->numInputs);
+	int defaultConnections = jmin(sourceNode->getNumAudioOutputs(), destNode->getNumAudioInputs());
 	for (int i = 0; i < defaultConnections; i++) connectChannels(i, i);
 }
 
@@ -207,7 +207,7 @@ void NodeAudioConnection::updateConnections()
 	Array<ChannelMap> toRemove;
 
 	//Remove phase
-	for (auto& cm : channelMap) if (cm.destChannel > destNode->numInputs - 1 || cm.sourceChannel > sourceNode->numOutputs - 1) toRemove.add(cm);
+	for (auto& cm : channelMap) if (cm.destChannel > destNode->getNumAudioInputs() - 1 || cm.sourceChannel > sourceNode->getNumAudioOutputs() - 1) toRemove.add(cm);
 	for (auto& rm : toRemove)
 	{
 		ghostChannelMap.addIfNotAlreadyThere({ rm.sourceChannel, rm.destChannel });
@@ -216,7 +216,7 @@ void NodeAudioConnection::updateConnections()
 
 	//Add ghost phase
 	Array<ChannelMap> toAdd;
-	for (auto& cm : ghostChannelMap)  if (cm.destChannel <= destNode->numInputs - 1 && cm.sourceChannel <= sourceNode->numOutputs - 1) toAdd.add(cm);
+	for (auto& cm : ghostChannelMap)  if (cm.destChannel <= destNode->getNumAudioInputs() - 1 && cm.sourceChannel <= sourceNode->getNumAudioOutputs() - 1) toAdd.add(cm);
 	for (auto& am : toAdd)
 	{
 		connectChannels(am.sourceChannel, am.destChannel);
@@ -317,6 +317,6 @@ void NodeMIDIConnection::clearItem()
 	{
 		MidiBuffer clearBuffer;
 		for (int i = 1; i <= 16; i++) clearBuffer.addEvent(MidiMessage::allNotesOff(i), 1);
-		destNode->baseProcessor->receiveMIDIFromInput(sourceNode, clearBuffer);
+		destNode->receiveMIDIFromInput(sourceNode, clearBuffer);
 	}
 }

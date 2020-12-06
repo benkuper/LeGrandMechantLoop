@@ -13,10 +13,10 @@
 #include "../../../ui/NodeViewUI.h"
 
 class MixerNodeViewUI :
-    public GenericNodeViewUI<MixerProcessor>
+    public NodeViewUI<MixerNode>
 {
 public:
-    MixerNodeViewUI(GenericNode<MixerProcessor>* n);
+    MixerNodeViewUI(MixerNode* n);
     ~MixerNodeViewUI();
 
     class InputGainLine :

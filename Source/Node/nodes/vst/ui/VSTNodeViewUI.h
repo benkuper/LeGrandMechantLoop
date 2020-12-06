@@ -15,14 +15,14 @@
 
 class PluginWindow :
     public DocumentWindow,
-    public VSTProcessor::AsyncListener
+    public VSTNode::AsyncListener
 {
 public:
-    PluginWindow(VSTProcessor* processor);
+    PluginWindow(VSTNode* processor);
     ~PluginWindow();
 
     WeakReference<Inspectable> inspectable;
-    VSTProcessor* processor;
+    VSTNode* node;
     std::unique_ptr<AudioProcessorEditor> editor;
 
     void setVSTEditor(AudioPluginInstance * vstInstance);
@@ -30,7 +30,7 @@ public:
     void closeButtonPressed() override;
     void resized() override;
 
-    void newMessage(const VSTProcessor::VSTEvent& e) override;
+    void newMessage(const VSTNode::VSTEvent& e) override;
 
     class PluginWindowListener
     {
@@ -45,11 +45,11 @@ public:
 };
 
 class VSTNodeViewUI :
-    public GenericNodeViewUI<VSTProcessor>,
+    public NodeViewUI<VSTNode>,
     public PluginWindow::PluginWindowListener
 {
 public:
-    VSTNodeViewUI(GenericNode<VSTProcessor>* n);
+    VSTNodeViewUI(VSTNode * n);
     ~VSTNodeViewUI();
 
     TextButton editBT;

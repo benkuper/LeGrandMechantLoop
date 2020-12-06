@@ -325,10 +325,6 @@
 			isa = PBXBuildFile;
 			fileRef = 4647F2C3AE98B4565DA5939F;
 		};
-		610A0CFE3C8021FFF5287096 = {
-			isa = PBXBuildFile;
-			fileRef = FD7F3A1181BAA95675BD5EF5;
-		};
 		8DC102E307EF75EE0CFFAAA7 = {
 			isa = PBXBuildFile;
 			fileRef = 5E55B89A27AC99BF159D09D9;
@@ -953,13 +949,6 @@
 			lastKnownFileType = sourcecode.cpp.cpp;
 			name = MIDIManager.cpp;
 			path = ../../Source/Common/MIDI/MIDIManager.cpp;
-			sourceTree = "SOURCE_ROOT";
-		};
-		56EDA0081CEF199BEC8A0791 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.c.h;
-			name = NodeProcessor.h;
-			path = ../../Source/Node/NodeProcessor.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		5AD384D4D6F8086C677B641A = {
@@ -1767,13 +1756,6 @@
 			path = "../../JuceLibraryCode/include_juce_audio_basics.mm";
 			sourceTree = "SOURCE_ROOT";
 		};
-		FD7F3A1181BAA95675BD5EF5 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.cpp.cpp;
-			name = NodeProcessor.cpp;
-			path = ../../Source/Node/NodeProcessor.cpp;
-			sourceTree = "SOURCE_ROOT";
-		};
 		FE20A325656D2383B83A86BE = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -2180,8 +2162,6 @@
 				9BBA54FAAB2B58725091A8EB,
 				4647F2C3AE98B4565DA5939F,
 				A8FF7EA1FDC144D4C0EE2DFF,
-				FD7F3A1181BAA95675BD5EF5,
-				56EDA0081CEF199BEC8A0791,
 				5E55B89A27AC99BF159D09D9,
 				33C19109F622D4DCB2C7A883,
 				E58E95BFB7B15AF49F22719A,
@@ -2391,7 +2371,7 @@
 					"JUCE_STANDALONE_APPLICATION=1",
 					"VST_LOGGING=0",
 					"JUCER_XCODE_MAC_2F3811D6=1",
-					"JUCE_APP_VERSION=1.0.0b9",
+					"JUCE_APP_VERSION=1.0.0b10",
 					"JUCE_APP_VERSION_HEX=0x10000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
@@ -2591,7 +2571,6 @@
 				F6F83967BE7C09A27F169D3D,
 				BF40A91990E1FB1CC4CF28D3,
 				B04647E3F99DBD999C1EDA37,
-				610A0CFE3C8021FFF5287096,
 				8DC102E307EF75EE0CFFAAA7,
 				51B8E3F3726ADC750BCFCB40,
 				B77D7F3C8C472791B2EBCA49,

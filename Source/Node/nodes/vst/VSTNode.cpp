@@ -12,8 +12,8 @@
 #include "ui/VSTNodeViewUI.h"
 #include "Transport/Transport.h"
 
-VSTProcessor::VSTProcessor(Node* node) :
-    GenericNodeProcessor(node),
+VSTNode::VSTNode(var params) :
+    Node(getTypeString(), params),
     currentDevice(nullptr),
     vstNotifier(5)
 {
@@ -24,13 +24,13 @@ VSTProcessor::VSTProcessor(Node* node) :
     ControllableContainer::addParameter(midiParam);
 }
 
-VSTProcessor::~VSTProcessor()
+VSTNode::~VSTNode()
 {
     setMIDIDevice(nullptr);
     setupVST(nullptr);
 }
 
-void VSTProcessor::setMIDIDevice(MIDIInputDevice* d)
+void VSTNode::setMIDIDevice(MIDIInputDevice* d)
 {
     if (currentDevice == d) return;
     if (currentDevice != nullptr)
@@ -46,10 +46,10 @@ void VSTProcessor::setMIDIDevice(MIDIInputDevice* d)
     }
 }
 
-void VSTProcessor::setupVST(PluginDescription* description)
+void VSTNode::setupVST(PluginDescription* description)
 {
-    bool shouldResume = !isSuspended();
-    suspendProcessing(true);
+    bool shouldResume = !processor->isSuspended();
+    processor->suspendProcessing(true);
 
     if (vst != nullptr)
     {
@@ -67,7 +67,7 @@ void VSTProcessor::setupVST(PluginDescription* description)
     {
 
         String errorMessage;
-        vst = VSTManager::getInstance()->formatManager.createPluginInstance(*description, getSampleRate(), getBlockSize(), errorMessage);
+        vst = VSTManager::getInstance()->formatManager.createPluginInstance(*description, processor->getSampleRate(), processor->getBlockSize(), errorMessage);
 
         if (errorMessage.isNotEmpty())
         {
@@ -77,47 +77,46 @@ void VSTProcessor::setupVST(PluginDescription* description)
         if (vst != nullptr)
         {
             vst->setPlayHead(Transport::getInstance());
-            nodeRef->setAudioInputs(description->numInputChannels);
-            nodeRef->setAudioOutputs(description->numOutputChannels);
-            vst->prepareToPlay(getSampleRate(), getBlockSize());
+            setAudioInputs(description->numInputChannels);
+            setAudioOutputs(description->numOutputChannels);
+            vst->prepareToPlay(processor->getSampleRate(), processor->getBlockSize());
             vstNotifier.addMessage(new VSTEvent(VSTEvent::VST_SET, this));
 
-            nodeRef->setMIDIIO(vst->acceptsMidi(), false);
+            setMIDIIO(vst->acceptsMidi(), false);
         }
         else
         {
-            nodeRef->setMIDIIO(false, false);
+            setMIDIIO(false, false);
         }
     }
 
-    if(shouldResume) suspendProcessing(false);
+    if(shouldResume) processor->suspendProcessing(false);
 }
 
-void VSTProcessor::updatePlayConfig()
+void VSTNode::updatePlayConfigInternal()
 {
-    if(vst != nullptr) vst->setPlayConfigDetails(nodeRef->numInputs, nodeRef->numOutputs, getSampleRate(), getBlockSize());
-    GenericNodeProcessor::updatePlayConfig();
+    if (vst != nullptr) vst->setPlayConfigDetails(getNumAudioInputs(), getNumAudioOutputs(), processor->getSampleRate(), processor->getBlockSize());
 }
 
-void VSTProcessor::onContainerParameterChanged(Parameter* p)
+void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 {
-    GenericNodeProcessor::onContainerParameterChanged(p);
+    Node::onContainerParameterChangedInternal(p);
     if (p == pluginParam) setupVST(pluginParam->getPluginDescription());
     if (p == midiParam) setMIDIDevice(midiParam->inputDevice);
 }
 
-void VSTProcessor::midiMessageReceived(const MidiMessage& m)
+void VSTNode::midiMessageReceived(const MidiMessage& m)
 {
     midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
 }
 
-void VSTProcessor::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
+void VSTNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
     if (vst != nullptr) vst->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock);
     if(sampleRate != 0) midiCollector.reset(sampleRate);
 }
 
-void VSTProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     if (vst != nullptr)
     {
@@ -134,7 +133,7 @@ void VSTProcessor::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& 
     inMidiBuffer.clear();
 }
 
-NodeViewUI* VSTProcessor::createNodeViewUI()
+BaseNodeViewUI* VSTNode::createViewUI()
 {
-    return new VSTNodeViewUI((GenericNode<VSTProcessor>*)nodeRef.get());
+    return new VSTNodeViewUI(this);
 }

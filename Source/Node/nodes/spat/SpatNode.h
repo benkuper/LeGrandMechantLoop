@@ -9,14 +9,15 @@
 */
 
 #pragma once
+#include "../../Node.h"
 #include "SpatItem.h"
 
-class SpatProcessor :
-	public GenericNodeProcessor
+class SpatNode :
+	public Node
 {
 public:
-	SpatProcessor(Node* node);
-	~SpatProcessor() {}
+	SpatNode(var params = var());
+	~SpatNode() {}
 
 	enum SpatMode { FREE, CIRCLE };
 	EnumParameter* spatMode;
@@ -33,17 +34,19 @@ public:
 
 	AudioBuffer<float> tmpBuffer;
 
-	void updateOutputsFromNodeInternal() override;
+	void updateAudioOutputsInternal() override;
 
 	void updateSpatPoints();
 
 	void placeItems();
 	void updateRadiuses();
 
-	void onContainerParameterChanged(Parameter* p) override;
+	void onContainerParameterChangedInternal(Parameter* p) override;
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	
+	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "Spat"; }
 
-	NodeViewUI* createNodeViewUI() override;
+	BaseNodeViewUI* createViewUI() override;
 };

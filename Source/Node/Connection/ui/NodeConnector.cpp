@@ -11,7 +11,7 @@
 #include "NodeConnector.h"
 #include "../../ui//NodeViewUI.h"
 
-NodeConnector::NodeConnector(NodeViewUI * nodeViewUI, bool isInput, NodeConnection::ConnectionType connectionType) :
+NodeConnector::NodeConnector(BaseNodeViewUI* nodeViewUI, bool isInput, NodeConnection::ConnectionType connectionType) :
     connectionType(connectionType),
     isInput(isInput),
     nodeViewUI(nodeViewUI)

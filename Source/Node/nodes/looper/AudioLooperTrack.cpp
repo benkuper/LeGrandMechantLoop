@@ -11,7 +11,7 @@
 #include "AudioLooperTrack.h"
 #include "AudioLooperNode.h"
 
-AudioLooperTrack::AudioLooperTrack(AudioLooperProcessor* looper, int index, int numChannels) :
+AudioLooperTrack::AudioLooperTrack(AudioLooperNode * looper, int index, int numChannels) :
 	LooperTrack(looper, index),
 	numChannels(numChannels),
 	audioLooper(looper)
@@ -47,7 +47,7 @@ void AudioLooperTrack::clearBuffer()
 
 void AudioLooperTrack::startRecordingInternal()
 {
-	int recNumSamples = looper->getSampleRate() * 60; // 1 min rec samples
+	int recNumSamples = looper->processor->getSampleRate() * 60; // 1 min rec samples
 
 	updateBufferSize(recNumSamples);
 
