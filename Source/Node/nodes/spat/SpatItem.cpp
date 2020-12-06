@@ -15,6 +15,7 @@ SpatItem::SpatItem(int index) :
 	ControllableContainer("Point " + String(index + 1)),
 	index(index)
 {
+	hideInEditor = true;
 	position = addPoint2DParameter("Position", "Position of this point");
 	position->setBounds(0, 0, 1, 1);
 

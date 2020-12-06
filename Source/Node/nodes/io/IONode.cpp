@@ -11,8 +11,8 @@
 #include "IONode.h"
 #include "ui/IONodeViewUI.h"
 
-IONode::IONode(var params, bool isInput) :
-	Node(getTypeString(), params, !isInput, isInput),
+IONode::IONode(StringRef name, var params, bool isInput) :
+	Node(name, params, !isInput, isInput),
 	channelsCC("Channels"),
 	isInput(isInput)
 {
@@ -70,8 +70,9 @@ void IONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMe
 
 		if (chan->rms == nullptr || chan->gain == nullptr) return;
 
-		float gain = chan->active->boolValue() ? chan->gain->floatValue() : 0;
-		buffer.applyGain(i, 0, buffer.getNumSamples(), gain);
+		float gain = chan->getGain();
+		buffer.applyGainRamp(i, 0, buffer.getNumSamples(), prevGain, gain);
+		chan->prevGain = gain;
 
 		float rms = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
 		float curVal = chan->rms->floatValue();
@@ -122,4 +123,10 @@ IOChannel::IOChannel(StringRef name) :
 	rms = addFloatParameter("RMS", "RMS for this channel", 0, 0, 1);
 	rms->setControllableFeedbackOnly(true);
 	active = addBoolParameter("Active", "Fast way to mute a channel", true);
+	prevGain = getGain();
+}
+
+float IOChannel::getGain() const
+{
+	return active->boolValue() ? gain->floatValue() : 0;
 }

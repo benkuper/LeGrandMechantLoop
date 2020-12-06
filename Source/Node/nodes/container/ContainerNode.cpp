@@ -52,10 +52,9 @@ void ContainerNode::itemRemoved(Node* n)
 
 void ContainerNode::updateGraph()
 {
-    containerGraph.suspendProcessing(true);
+    ScopedSuspender sp(processor);
     containerGraph.setPlayConfigDetails(getNumAudioInputs(), getNumAudioOutputs(), graph->getSampleRate(), graph->getBlockSize());
     containerGraph.prepareToPlay(graph->getSampleRate(), graph->getBlockSize());
-    containerGraph.suspendProcessing(false);
 }
 
 void ContainerNode::updateAudioInputsInternal()

@@ -29,6 +29,10 @@ public:
 	std::unique_ptr<AudioPluginInstance> vst;
 	MidiMessageCollector midiCollector;
 
+	bool isSettingVST; //avoid updating vst's playconfig while setting it
+
+	void clearItem() override;
+
 	void setMIDIDevice(MIDIInputDevice* d);
 	void setupVST(PluginDescription* description);
 	void updatePlayConfigInternal() override;

@@ -69,6 +69,7 @@ void TransportUI::newMessage(const ContainerAsyncEvent& e)
 {
 	if (e.type == e.ControllableFeedbackUpdate)
 	{
+		if (e.targetControllable.wasObjectDeleted()) return;
 		if (e.targetControllable == transport->beatsPerBar) barViz.rebuild();
 		else if (e.targetControllable == transport->isCurrentlyPlaying) barViz.repaint();
 	}

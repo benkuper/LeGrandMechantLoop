@@ -60,15 +60,17 @@ public:
     FloatParameter* outRMS;
     FloatParameter* outGain;
 
+    float prevGain; //for smooth outGain
+
     virtual void init(AudioProcessorGraph* graph);
     virtual void initInternal() {}
 
     void onContainerParameterChangedInternal(Parameter* p) override;
 
-    void setAudioInputs(const int& numInputs); //auto naming
-    void setAudioInputs(const StringArray& inputNames);
-    void setAudioOutputs(const int& numOutputs); //auto naming
-    void setAudioOutputs(const StringArray& outputNames);
+    void setAudioInputs(const int& numInputs, bool updateConfig = true); //auto naming
+    void setAudioInputs(const StringArray& inputNames, bool updateConfig = true);
+    void setAudioOutputs(const int& numOutputs, bool updateConfig = true); //auto naming
+    void setAudioOutputs(const StringArray& outputNames, bool updateConfig = true);
     virtual void autoSetNumAudioInputs(); //if userCanSetIO
     virtual void autoSetNumAudioOutputs(); //if userCanSetIO
 
@@ -135,10 +137,23 @@ class NodeAudioProcessor :
     public AudioProcessor
 {
 public:
-    NodeAudioProcessor(Node* n) : node(n) {}
+    NodeAudioProcessor(Node* n) : node(n), suspendCount(0) {}
     ~NodeAudioProcessor() {}
 
     Node* node;
+    int suspendCount;
+    
+    //Helpers
+    void suspend();
+    void resume();
+
+    class Suspender
+    {
+    public:
+        Suspender(NodeAudioProcessor* proc);
+        NodeAudioProcessor* proc;
+        ~Suspender();
+    };
     
     virtual const String getName() const override { return node->getTypeString(); }
     virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override { node->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock); }
@@ -160,3 +175,4 @@ public:
     virtual void setStateInformation(const void* data, int sizeInBytes) override {}
 };
 
+typedef NodeAudioProcessor::Suspender ScopedSuspender;

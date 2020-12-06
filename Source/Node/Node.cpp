@@ -53,6 +53,7 @@ Node::Node(StringRef name, var params, bool hasInput, bool hasOutput, bool userC
 	if (useOutControl)
 	{
 		outGain = addFloatParameter("Out Gain", "Gain to apply to all channels after processing", 1, 0, 2);
+		prevGain = outGain->floatValue();
 		outRMS = addFloatParameter("Out RMS", "The general activity of all channels combined after processing", 0, 0, 1);
 		outRMS->setControllableFeedbackOnly(true);
 	}
@@ -75,7 +76,7 @@ void Node::init(AudioProcessorGraph* _graph)
 	jassert(graph == nullptr);
 	graph = _graph;
 
-	processor->suspendProcessing(true);
+	ScopedSuspender sp(processor);
 
 	nodeGraphPtr = graph->addNode(std::unique_ptr<NodeAudioProcessor>(processor), AudioProcessorGraph::NodeID(nodeGraphID));
 
@@ -89,7 +90,6 @@ void Node::init(AudioProcessorGraph* _graph)
 
 	updatePlayConfig();
 
-	processor->suspendProcessing(false);
 }
 
 void Node::onContainerParameterChangedInternal(Parameter* p)
@@ -109,34 +109,40 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 }
 
 
-void Node::setAudioInputs(const int& numInputs)
+void Node::setAudioInputs(const int& numInputs, bool updateConfig)
 {
 	StringArray s;
 	for (int i = 0; i < numInputs; i++) s.add("Input " + String(i + 1));
-	setAudioInputs(s);
+	setAudioInputs(s, updateConfig);
 }
 
-void Node::setAudioInputs(const StringArray& inputNames)
+void Node::setAudioInputs(const StringArray& inputNames, bool updateConfig)
 {
 	if (audioInputNames == inputNames) return;
+	ScopedSuspender sp(processor);
+
 	audioInputNames = inputNames;
-	updateAudioInputs();
+	updateAudioInputs(updateConfig);
 	nodeListeners.call(&NodeListener::audioInputsChanged, this);
 	nodeNotifier.addMessage(new NodeEvent(NodeEvent::INPUTS_CHANGED, this));
+	processor->suspendProcessing(true);
 }
 
-void Node::setAudioOutputs(const int& numOutputs)
+void Node::setAudioOutputs(const int& numOutputs, bool updateConfig)
 {
 	StringArray s;
 	for (int i = 0; i < numOutputs; i++) s.add("Output " + String(i + 1));
-	setAudioOutputs(s);
+	setAudioOutputs(s, updateConfig);
 }
 
-void Node::setAudioOutputs(const StringArray& outputNames)
+void Node::setAudioOutputs(const StringArray& outputNames, bool updateConfig)
 {
 	if (audioOutputNames == outputNames) return;
+	
+	ScopedSuspender sp(processor);
+
 	audioOutputNames = outputNames;
-	updateAudioOutputs();
+	updateAudioOutputs(updateConfig);
 	nodeListeners.call(&NodeListener::audioOutputsChanged, this);
 	nodeNotifier.addMessage(new NodeEvent(NodeEvent::OUTPUTS_CHANGED, this));
 }
@@ -148,56 +154,48 @@ void Node::autoSetNumAudioInputs()
 
 void Node::autoSetNumAudioOutputs()
 {
-	setAudioOutputs(numAudioInputs->intValue());
+	setAudioOutputs(numAudioOutputs->intValue());
 }
 void Node::updateAudioInputs(bool updateConfig)
 {
-	bool shouldResume = !processor->isSuspended();
-	processor->suspendProcessing(true);
+	ScopedSuspender sp(processor);
 	updateAudioInputsInternal();
 	if (updateConfig) updatePlayConfig();
-	if (shouldResume) processor->suspendProcessing(false);
 }
 
 void Node::updateAudioOutputs(bool updateConfig)
 {
-	bool shouldResume = !processor->isSuspended();
-	processor->suspendProcessing(true);
+	ScopedSuspender sp(processor);
 	updateAudioOutputsInternal();
 	if (updateConfig)  updatePlayConfig();
-	if (shouldResume) processor->suspendProcessing(false);
 }
 
 void Node::addInConnection(NodeConnection* c)
 {
-	processor->suspendProcessing(true);
+	ScopedSuspender sp(processor);
 	if (c->connectionType == NodeConnection::AUDIO) inAudioConnections.addIfNotAlreadyThere((NodeAudioConnection*)c);
 	else if (c->connectionType == NodeConnection::MIDI) inMidiConnections.addIfNotAlreadyThere((NodeMIDIConnection*)c);
-	processor->suspendProcessing(false);
 }
 
 void Node::removeInConnection(NodeConnection* c)
 {
-	processor->suspendProcessing(true);
+	ScopedSuspender sp(processor);
 	if (c->connectionType == NodeConnection::AUDIO) inAudioConnections.removeAllInstancesOf((NodeAudioConnection*)c);
 	else if (c->connectionType == NodeConnection::MIDI) inMidiConnections.removeAllInstancesOf((NodeMIDIConnection*)c);
-	processor->suspendProcessing(false);
 }
 
 void Node::addOutConnection(NodeConnection* c)
 {
-	processor->suspendProcessing(true);
+	ScopedSuspender sp(processor);
 	if (c->connectionType == NodeConnection::AUDIO) outAudioConnections.addIfNotAlreadyThere((NodeAudioConnection*)c);
 	else if (c->connectionType == NodeConnection::MIDI) outMidiConnections.addIfNotAlreadyThere((NodeMIDIConnection*)c);
-	processor->suspendProcessing(false);
 }
 
 void Node::removeOutConnection(NodeConnection* c)
 {
-	processor->suspendProcessing(true);
+	ScopedSuspender sp(processor);
 	if (c->connectionType == NodeConnection::AUDIO) outAudioConnections.removeAllInstancesOf((NodeAudioConnection*)c);
 	else if (c->connectionType == NodeConnection::MIDI) outMidiConnections.removeAllInstancesOf((NodeMIDIConnection*)c);
-	processor->suspendProcessing(false);
 }
 
 void Node::setMIDIIO(bool hasInput, bool hasOutput)
@@ -226,13 +224,10 @@ void Node::updatePlayConfig(bool notify)
 		return;
 	}
 
-	bool shouldResume = !processor->isSuspended();
-	processor->suspendProcessing(true);
-
+	ScopedSuspender sp(processor);
+	
 	updatePlayConfigInternal();
 	if (notify && !isCurrentlyLoadingData) nodeListeners.call(&NodeListener::nodePlayConfigUpdated, this);
-
-	if (shouldResume) processor->suspendProcessing(false);
 }
 
 void Node::updatePlayConfigInternal()
@@ -255,6 +250,14 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		return;
 	}
 
+	if (processor->isSuspended())
+	{
+		LOGWARNING("Processor should be suspended, should not be here...");
+		return;
+	}
+
+	ScopedLock sl(processor->getCallbackLock());
+
 	int numInputs = getNumAudioInputs();
 	int numOutputs = getNumAudioOutputs();
 
@@ -268,7 +271,8 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 
 	if (outGain != nullptr)
 	{
-		buffer.applyGain(outGain->floatValue());
+		buffer.applyGainRamp(0, buffer.getNumSamples(), prevGain, outGain->floatValue());
+		prevGain = outGain->floatValue();
 	}
 
 	float rms = 0;
@@ -309,3 +313,27 @@ BaseNodeViewUI* Node::createViewUI()
 {
 	return new BaseNodeViewUI(this);
 }
+
+inline NodeAudioProcessor::Suspender::Suspender(NodeAudioProcessor* proc) : proc(proc)
+{
+	proc->suspend();
+}
+
+inline NodeAudioProcessor::Suspender::~Suspender() {
+	proc->resume(); 
+}
+
+void NodeAudioProcessor::suspend()
+{
+	suspendCount++;
+	if (suspendCount == 1) suspendProcessing(true);
+}
+
+
+void NodeAudioProcessor::resume()
+{
+	suspendCount --;
+	jassert(suspendCount >= 0);
+	if (suspendCount == 0) suspendProcessing(false);
+}
+

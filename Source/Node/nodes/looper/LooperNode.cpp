@@ -62,8 +62,7 @@ void LooperNode::initInternal()
 
 void LooperNode::updateLooperTracks()
 {
-	bool shouldResume = !processor->isSuspended();
-	processor->suspendProcessing(true);
+	ScopedSuspender sp(processor);
 
 	while (tracksCC.controllableContainers.size() > numTracks->intValue())
 	{
@@ -78,8 +77,6 @@ void LooperNode::updateLooperTracks()
 	{
 		tracksCC.addChildControllableContainer(createLooperTrack(i), true);
 	}
-
-	if (shouldResume) processor->suspendProcessing(false);
 }
 
 void LooperNode::setCurrentTrack(LooperTrack* t)

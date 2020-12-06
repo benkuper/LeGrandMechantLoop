@@ -82,7 +82,9 @@ void MixerNodeViewUI::paint(Graphics& g)
 
 void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
-    outRect = r.removeFromTop(100).reduced(2);
+    if (outGainsUI.size() == 0) return;
+
+    outRect = r.removeFromBottom(100).reduced(2);
     Rectangle<int> outR(outRect);
     
     int sizePerGain = jmin(outR.getWidth() / outGainsUI.size(), 30);
@@ -95,6 +97,8 @@ void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
     }
 
     r.removeFromTop(6);
+
+    if (gainLines.size() == 0) return;
 
     int lineHeight = jmin(r.getHeight() / gainLines.size(),80);
     for (auto& line : gainLines) line->setBounds(r.removeFromTop(lineHeight).reduced(2));

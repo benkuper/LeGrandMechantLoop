@@ -35,6 +35,8 @@ VSTManager::~VSTManager()
 
 void VSTManager::updateVSTList()
 {
+    LOG("Updating VSTs...");
+   
     Array<AudioPluginFormat*> formats = formatManager.getFormats();
     FileSearchPath searchPath;
 
@@ -47,7 +49,6 @@ void VSTManager::updateVSTList()
         }
     }
 
-    LOG("Updating VSTs...");
     idDescriptionMap.clear();
     descriptions.clear();
     for (auto& f : formats)
@@ -85,6 +86,7 @@ void VSTManager::onControllableAdded(Controllable* c)
     {
         if(!isCurrentlyLoadingData) fp->setNiceName(getUniqueNameInContainer("Path"));
         fp->directoryMode = true;
+        fp->forceAbsolutePath = true;
     }
 }
 
@@ -98,26 +100,45 @@ void VSTManager::onControllableRemoved(Controllable* c)
 var VSTManager::getJSONData()
 {
     var data = ControllableContainer::getJSONData();
+    var descData;
+    for (auto& d : descriptions) descData.append(d->createXml()->toString());
+    data.getDynamicObject()->setProperty("descriptions", descData);
     return data;
 }
 
 void VSTManager::loadJSONDataInternal(var data)
 {
+    var descData = data.getProperty("descriptions", var());
+    for (int i = 0; i < descData.size();i++)
+    {
+        PluginDescription* d = new PluginDescription();
+        std::unique_ptr<XmlElement> xml = parseXML(descData[i].toString());
+
+        if (d->loadFromXml(*xml))
+        {
+            idDescriptionMap.set(d->fileOrIdentifier, d);
+            descriptions.add(d);
+        }
+        else  LOGWARNING("Could not load VST from cache.");
+    }
 }
 
 void VSTManager::afterLoadJSONDataInternal()
 {
-    updateVSTList(); //not async to ensure file is loaded after first listing. Can be improved by handling async load in VST Nodes and connections
+    if (descriptions.isEmpty())
+    {
+        LOG("No VST loaded from cache, try to scan");
+        startThread(); //not async to ensure file is loaded after first listing. Can be improved by handling async load in VST Nodes and connections
+    }
 }
 
 void VSTManager::onContainerTriggerTriggered(Trigger* t)
 {
-    if (t == rescan) updateVSTList();
+    if (t == rescan) startThread();
 }
 
 void VSTManager::run()
 {
-    sleep(500);
     updateVSTList();
 }
 

@@ -15,6 +15,7 @@
 VSTNode::VSTNode(var params) :
     Node(getTypeString(), params),
     currentDevice(nullptr),
+    isSettingVST(false),
     vstNotifier(5)
 {
     pluginParam = new VSTPluginParameter("VST", "The VST to use");
@@ -22,10 +23,19 @@ VSTNode::VSTNode(var params) :
 
     midiParam = new MIDIDeviceParameter("MIDI Device", true, false);
     ControllableContainer::addParameter(midiParam);
+
+    setAudioInputs(2);
+    setAudioOutputs(2);
 }
 
 VSTNode::~VSTNode()
 {
+    
+}
+
+void VSTNode::clearItem()
+{
+    Node::clearItem();
     setMIDIDevice(nullptr);
     setupVST(nullptr);
 }
@@ -48,8 +58,9 @@ void VSTNode::setMIDIDevice(MIDIInputDevice* d)
 
 void VSTNode::setupVST(PluginDescription* description)
 {
-    bool shouldResume = !processor->isSuspended();
-    processor->suspendProcessing(true);
+    ScopedSuspender sp(processor);
+
+    isSettingVST = true;
 
     if (vst != nullptr)
     {
@@ -65,7 +76,6 @@ void VSTNode::setupVST(PluginDescription* description)
     }
     else
     {
-
         String errorMessage;
         vst = VSTManager::getInstance()->formatManager.createPluginInstance(*description, processor->getSampleRate(), processor->getBlockSize(), errorMessage);
 
@@ -78,11 +88,9 @@ void VSTNode::setupVST(PluginDescription* description)
         {
             vst->setPlayHead(Transport::getInstance());
             setAudioInputs(description->numInputChannels);
-            setAudioOutputs(description->numOutputChannels);
-            vst->prepareToPlay(processor->getSampleRate(), processor->getBlockSize());
-            vstNotifier.addMessage(new VSTEvent(VSTEvent::VST_SET, this));
-
+            setAudioOutputs(description->numOutputChannels); 
             setMIDIIO(vst->acceptsMidi(), false);
+
         }
         else
         {
@@ -90,12 +98,21 @@ void VSTNode::setupVST(PluginDescription* description)
         }
     }
 
-    if(shouldResume) processor->suspendProcessing(false);
+    isSettingVST = false;
+    updatePlayConfig();
+
+    vstNotifier.addMessage(new VSTEvent(VSTEvent::VST_SET, this));
 }
 
 void VSTNode::updatePlayConfigInternal()
 {
-    if (vst != nullptr) vst->setPlayConfigDetails(getNumAudioInputs(), getNumAudioOutputs(), processor->getSampleRate(), processor->getBlockSize());
+    Node::updatePlayConfigInternal();
+
+    if (vst != nullptr && !isSettingVST)
+    {
+        vst->setRateAndBufferSizeDetails(processor->getSampleRate(), processor->getBlockSize());
+        vst->prepareToPlay(processor->getSampleRate(), processor->getBlockSize());
+    }
 }
 
 void VSTNode::onContainerParameterChangedInternal(Parameter* p)
@@ -123,7 +140,6 @@ void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiM
         if (currentDevice != nullptr)
         {
             inMidiBuffer.clear();
-            //LOG(vst->getNumInputChannels() << ", " << vst->getNumOutputChannels() << " / " << buffer.getNumChannels());
             midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
         }
        

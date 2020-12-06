@@ -87,6 +87,7 @@ void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
 {
     if (e.type == e.ControllableFeedbackUpdate)
     {
+        if (e.targetControllable.wasObjectDeleted()) return;
         if (e.targetControllable == track->trackState)
         {
             feedback.trackStateUpdate(track->trackState->getValueDataAsEnum<LooperTrack::TrackState>());

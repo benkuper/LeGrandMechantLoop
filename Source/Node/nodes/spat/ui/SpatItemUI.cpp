@@ -55,6 +55,7 @@ void SpatItemUI::paint(Graphics& g)
 
 void SpatItemUI::newMessage(const ContainerAsyncEvent& e)
 {
+    if (e.targetControllable.wasObjectDeleted()) return;
     if (e.targetControllable == item->weight)
     {
         repaint();

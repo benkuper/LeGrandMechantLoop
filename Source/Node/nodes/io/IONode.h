@@ -21,13 +21,16 @@ public:
 	FloatParameter* gain;
 	FloatParameter* rms;
 	BoolParameter* active;
+	float prevGain;
+
+	float getGain() const;
 };
 
 class IONode :
 	public Node
 {
 public:
-	IONode(var params = var(), bool isInput = true);
+	IONode(StringRef name, var params = var(), bool isInput = true);
 	virtual ~IONode() {}
 
 
@@ -52,7 +55,7 @@ class AudioInputNode :
 	public IONode
 {
 public:
-	AudioInputNode(var params = var()) : IONode(params, true) {}
+	AudioInputNode(var params = var()) : IONode(getTypeString(), params, true) {}
 
 	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "Audio Input"; }
@@ -64,7 +67,7 @@ class AudioOutputNode :
 	public IONode
 {
 public:
-	AudioOutputNode(var params = var()) : IONode(params, false) {}
+	AudioOutputNode(var params = var()) : IONode(getTypeString(), params, false) {}
 	
 	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "Audio Output"; }

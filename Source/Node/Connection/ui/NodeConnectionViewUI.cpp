@@ -22,6 +22,8 @@ NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConne
 {
 	setOpaque(false);
 
+	dragAndDropEnabled = false;
+
 	setSourceConnector(_sourceConnector);
 	setDestConnector(_destConnector);
 

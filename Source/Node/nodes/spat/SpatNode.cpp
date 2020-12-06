@@ -45,7 +45,10 @@ void SpatNode::updateAudioOutputsInternal()
 
 void SpatNode::updateSpatPoints()
 {
-	while (spatCC.controllableContainers.size() > getNumAudioInputs())
+	jassert(processor->isSuspended());
+	DBG("Num spat items before updates : " << spatCC.controllableContainers.size() << " / " << getNumAudioOutputs());
+
+	while (spatCC.controllableContainers.size() > getNumAudioOutputs())
 	{
 		spatCC.removeChildControllableContainer(spatCC.controllableContainers[spatCC.controllableContainers.size() - 1]);
 	}
@@ -59,6 +62,11 @@ void SpatNode::updateSpatPoints()
 
 	placeItems();
 	updateRadiuses();
+
+
+	jassert(processor->isSuspended());
+
+	DBG("Num spat items after updates : " << spatCC.controllableContainers.size() << " / " << getNumAudioOutputs());
 }
 
 void SpatNode::placeItems()
@@ -97,9 +105,7 @@ void SpatNode::onContainerParameterChangedInternal(Parameter* p)
 {
 	Node::onContainerParameterChangedInternal(p);
 
-	if (p == numAudioInputs) setAudioInputs(numAudioInputs->intValue());
-	else if (p == numAudioOutputs) setAudioInputs(numAudioOutputs->intValue());
-	else if (p == spatMode || p == circleRadius || p == circleAngle)
+	if (p == spatMode || p == circleRadius || p == circleAngle)
 	{
 		placeItems();
 	}
@@ -112,18 +118,27 @@ void SpatNode::onContainerParameterChangedInternal(Parameter* p)
 void SpatNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	int numSamples = buffer.getNumSamples();
-	tmpBuffer.setSize(numAudioOutputs->intValue(), numSamples);
+
+	
+	DBG("Process " << spatCC.controllableContainers.size() << " / "  << getNumAudioOutputs() << " / " << (int)processor->isSuspended());
+	jassert(getNumAudioOutputs() == spatCC.controllableContainers.size());
+
+	int numOutputs = spatCC.controllableContainers.size();
+
+	tmpBuffer.setSize(numOutputs, numSamples);
 	tmpBuffer.clear();
 
-	for (int outputIndex = 0; outputIndex < numAudioOutputs->intValue(); outputIndex++)
+
+	for (int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
 	{
+		DBG("Suspended ? " << (int)processor->isSuspended() << "Suspend count " << processor->suspendCount);
 		SpatItem* si = (SpatItem*)spatCC.controllableContainers[outputIndex].get();
 		float dist = spatPosition->getPoint().getDistanceFrom(si->position->getPoint());
 		float rad = si->radius->floatValue();
 		float relDist = jlimit<float>(0, 1, rad == 0 ? 1 : dist / rad);
 		float weight = fadeCurve.getValueAtPosition(relDist);
 
-		for (int inputIndex = 0; inputIndex < numAudioInputs->intValue(); inputIndex++)
+		for (int inputIndex = 0; inputIndex < getNumAudioInputs(); inputIndex++)
 		{
 			tmpBuffer.addFrom(outputIndex, 0, buffer.getReadPointer(inputIndex), numSamples, weight);
 		}
@@ -131,11 +146,12 @@ void SpatNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midi
 		si->weight->setValue(weight);
 	}
 
-	for (int outputIndex = 0; outputIndex < numAudioOutputs->intValue(); outputIndex++)
+	for (int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
 	{
 		buffer.clear(outputIndex, 0, numSamples);
 		buffer.addFrom(outputIndex, 0, tmpBuffer.getReadPointer(outputIndex), numSamples);
 
+		jassert(!processor->isSuspended()); 
 		SpatItem* si = (SpatItem*)spatCC.controllableContainers[outputIndex].get();
 		float rms = buffer.getRMSLevel(outputIndex, 0, buffer.getNumSamples());
 		float curVal = si->rms->floatValue();
