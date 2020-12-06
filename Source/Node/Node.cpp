@@ -314,12 +314,12 @@ BaseNodeViewUI* Node::createViewUI()
 	return new BaseNodeViewUI(this);
 }
 
-inline NodeAudioProcessor::Suspender::Suspender(NodeAudioProcessor* proc) : proc(proc)
+NodeAudioProcessor::Suspender::Suspender(NodeAudioProcessor* proc) : proc(proc)
 {
 	proc->suspend();
 }
 
-inline NodeAudioProcessor::Suspender::~Suspender() {
+NodeAudioProcessor::Suspender::~Suspender() {
 	proc->resume(); 
 }
 
