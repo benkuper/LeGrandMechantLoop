@@ -13,6 +13,8 @@
 
 juce_ImplementSingleton(VSTManager)
 
+static OrganicApplication& getApp() { return *dynamic_cast<OrganicApplication*>(JUCEApplication::getInstance()); }
+
 VSTManager::VSTManager() :
     ControllableContainer("VST Plugin Paths"),
     Thread("VST Scan"),
@@ -69,6 +71,8 @@ void VSTManager::updateVSTList()
     }
     
     NLOG("VST", s);
+
+    getApp().saveGlobalSettings();
 
     vstManagerNotifier.addMessage(new VSTManagerEvent(VSTManagerEvent::PLUGINS_UPDATED, this));
 }
