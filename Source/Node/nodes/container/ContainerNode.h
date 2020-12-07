@@ -26,6 +26,8 @@ public:
     AudioProcessorGraph containerGraph;
     AudioProcessorGraph::NodeID inputID;
     AudioProcessorGraph::NodeID outputID;
+    AudioProcessorGraph::AudioGraphIOProcessor* iNode;
+    AudioProcessorGraph::AudioGraphIOProcessor* oNode;
 
     AudioBuffer<float> graphBuffer;
 

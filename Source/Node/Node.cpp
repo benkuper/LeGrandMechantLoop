@@ -259,6 +259,8 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 
 	ScopedLock sl(processor->getCallbackLock());
 
+	//NLOG(niceName, "RMS before " << buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
+
 	int numInputs = getNumAudioInputs();
 	int numOutputs = getNumAudioOutputs();
 
@@ -308,6 +310,9 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		float targetVal = outRMS->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
 		outRMS->setValue(targetVal);
 	}
+
+	//NLOG(niceName, "RMS after " << buffer.getRMSLevel(0, 0, buffer.getNumSamples()));
+
 }
 
 BaseNodeViewUI* Node::createViewUI()
@@ -327,7 +332,11 @@ NodeAudioProcessor::Suspender::~Suspender() {
 void NodeAudioProcessor::suspend()
 {
 	suspendCount++;
-	if (suspendCount == 1) suspendProcessing(true);
+	if (suspendCount == 1)
+	{
+		suspendProcessing(true);
+		LOG("Suspend");
+	}
 }
 
 
@@ -335,6 +344,10 @@ void NodeAudioProcessor::resume()
 {
 	suspendCount --;
 	jassert(suspendCount >= 0);
-	if (suspendCount == 0) suspendProcessing(false);
+	if (suspendCount == 0)
+	{
+		suspendProcessing(false);
+		LOG("Resume");
+	}
 }
 

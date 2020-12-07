@@ -17,11 +17,11 @@ ContainerNode::ContainerNode(var params) :
     inputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),
     outputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID()))
 {
-    std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procIn(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioInputNode));
-    std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procOut(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode));
+    iNode = new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioInputNode);
+    oNode = new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode);
+    containerGraph.addNode(std::unique_ptr< AudioProcessorGraph::AudioGraphIOProcessor>(iNode), inputID);
+    containerGraph.addNode(std::unique_ptr< AudioProcessorGraph::AudioGraphIOProcessor>(oNode), outputID);
 
-    containerGraph.addNode(std::move(procIn), inputID);
-    containerGraph.addNode(std::move(procOut), outputID);
 
     nodeManager.reset(new NodeManager(&containerGraph, inputID, outputID));
     addChildControllableContainer(nodeManager.get());
@@ -53,8 +53,11 @@ void ContainerNode::itemRemoved(Node* n)
 void ContainerNode::updateGraph()
 {
     ScopedSuspender sp(processor);
-    containerGraph.setPlayConfigDetails(getNumAudioInputs(), getNumAudioOutputs(), graph->getSampleRate(), graph->getBlockSize());
-    containerGraph.prepareToPlay(graph->getSampleRate(), graph->getBlockSize());
+    
+    iNode->setPlayConfigDetails(getNumAudioInputs(), getNumAudioInputs(), processor->getSampleRate(), processor->getBlockSize());
+    oNode->setPlayConfigDetails(getNumAudioOutputs(), getNumAudioOutputs(), processor->getSampleRate(), processor->getBlockSize());
+    containerGraph.setPlayConfigDetails(getNumAudioInputs(), getNumAudioOutputs(), processor->getSampleRate(), processor->getBlockSize());
+    containerGraph.prepareToPlay(processor->getSampleRate(), processor->getBlockSize());
 }
 
 void ContainerNode::updateAudioInputsInternal()

@@ -2,42 +2,11 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b11">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b12">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="fut9ay" name="default.lgmllayout" compile="0" resource="1"
             file="Resources/default.lgmllayout"/>
-      <GROUP id="{E64011D1-E57A-B4BF-FEA2-987CB75B9AD0}" name="looper">
-        <GROUP id="{D0916EDF-EA50-67D7-5292-E5B4E8C929BE}" name="ui">
-          <FILE id="L5Hqiu" name="LooperNodeViewUI.cpp" compile="1" resource="0"
-                file="Source/Node/nodes/looper/ui/LooperNodeViewUI.cpp"/>
-          <FILE id="sYfJne" name="LooperNodeViewUI.h" compile="0" resource="0"
-                file="Source/Node/nodes/looper/ui/LooperNodeViewUI.h"/>
-          <FILE id="ViuVt6" name="LooperTrackUI.cpp" compile="1" resource="0"
-                file="Source/Node/nodes/looper/ui/LooperTrackUI.cpp"/>
-          <FILE id="oXiVXz" name="LooperTrackUI.h" compile="0" resource="0" file="Source/Node/nodes/looper/ui/LooperTrackUI.h"/>
-        </GROUP>
-        <FILE id="UohpXP" name="AudioLooperNode.cpp" compile="1" resource="0"
-              file="Source/Node/nodes/looper/AudioLooperNode.cpp"/>
-        <FILE id="nIz1OM" name="AudioLooperNode.h" compile="0" resource="0"
-              file="Source/Node/nodes/looper/AudioLooperNode.h"/>
-        <FILE id="Ktw4tE" name="AudioLooperTrack.cpp" compile="1" resource="0"
-              file="Source/Node/nodes/looper/AudioLooperTrack.cpp"/>
-        <FILE id="giB1PC" name="AudioLooperTrack.h" compile="0" resource="0"
-              file="Source/Node/nodes/looper/AudioLooperTrack.h"/>
-        <FILE id="SBqo06" name="LooperNode.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperNode.cpp"/>
-        <FILE id="MI1IfJ" name="LooperNode.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperNode.h"/>
-        <FILE id="Ufc6nf" name="LooperTrack.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperTrack.cpp"/>
-        <FILE id="lQlMOU" name="LooperTrack.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperTrack.h"/>
-        <FILE id="KYUtps" name="MIDILooperNode.cpp" compile="1" resource="0"
-              file="Source/Node/nodes/looper/MIDILooperNode.cpp"/>
-        <FILE id="FWoyQ0" name="MIDILooperNode.h" compile="0" resource="0"
-              file="Source/Node/nodes/looper/MIDILooperNode.h"/>
-        <FILE id="BEmcGZ" name="MIDILooperTrack.cpp" compile="1" resource="0"
-              file="Source/Node/nodes/looper/MIDILooperTrack.cpp"/>
-        <FILE id="vfdaTR" name="MIDILooperTrack.h" compile="0" resource="0"
-              file="Source/Node/nodes/looper/MIDILooperTrack.h"/>
-      </GROUP>
       <FILE id="k24oFh" name="icon.png" compile="0" resource="1" file="Resources/icon.png"/>
     </GROUP>
     <GROUP id="{644794F3-EEA3-18B3-8950-FB0E90CE6C1E}" name="Source">
@@ -188,6 +157,37 @@
           <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
         </GROUP>
         <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
+          <GROUP id="{E64011D1-E57A-B4BF-FEA2-987CB75B9AD0}" name="looper">
+            <GROUP id="{D0916EDF-EA50-67D7-5292-E5B4E8C929BE}" name="ui">
+              <FILE id="L5Hqiu" name="LooperNodeViewUI.cpp" compile="1" resource="0"
+                    file="Source/Node/nodes/looper/ui/LooperNodeViewUI.cpp"/>
+              <FILE id="sYfJne" name="LooperNodeViewUI.h" compile="0" resource="0"
+                    file="Source/Node/nodes/looper/ui/LooperNodeViewUI.h"/>
+              <FILE id="ViuVt6" name="LooperTrackUI.cpp" compile="1" resource="0"
+                    file="Source/Node/nodes/looper/ui/LooperTrackUI.cpp"/>
+              <FILE id="oXiVXz" name="LooperTrackUI.h" compile="0" resource="0" file="Source/Node/nodes/looper/ui/LooperTrackUI.h"/>
+            </GROUP>
+            <FILE id="UohpXP" name="AudioLooperNode.cpp" compile="1" resource="0"
+                  file="Source/Node/nodes/looper/AudioLooperNode.cpp"/>
+            <FILE id="nIz1OM" name="AudioLooperNode.h" compile="0" resource="0"
+                  file="Source/Node/nodes/looper/AudioLooperNode.h"/>
+            <FILE id="Ktw4tE" name="AudioLooperTrack.cpp" compile="1" resource="0"
+                  file="Source/Node/nodes/looper/AudioLooperTrack.cpp"/>
+            <FILE id="giB1PC" name="AudioLooperTrack.h" compile="0" resource="0"
+                  file="Source/Node/nodes/looper/AudioLooperTrack.h"/>
+            <FILE id="SBqo06" name="LooperNode.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperNode.cpp"/>
+            <FILE id="MI1IfJ" name="LooperNode.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperNode.h"/>
+            <FILE id="Ufc6nf" name="LooperTrack.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperTrack.cpp"/>
+            <FILE id="lQlMOU" name="LooperTrack.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperTrack.h"/>
+            <FILE id="KYUtps" name="MIDILooperNode.cpp" compile="1" resource="0"
+                  file="Source/Node/nodes/looper/MIDILooperNode.cpp"/>
+            <FILE id="FWoyQ0" name="MIDILooperNode.h" compile="0" resource="0"
+                  file="Source/Node/nodes/looper/MIDILooperNode.h"/>
+            <FILE id="BEmcGZ" name="MIDILooperTrack.cpp" compile="1" resource="0"
+                  file="Source/Node/nodes/looper/MIDILooperTrack.cpp"/>
+            <FILE id="vfdaTR" name="MIDILooperTrack.h" compile="0" resource="0"
+                  file="Source/Node/nodes/looper/MIDILooperTrack.h"/>
+          </GROUP>
           <GROUP id="{9F78E0B0-2904-96AB-DCE3-D8F72EA41A6A}" name="router">
             <GROUP id="{424502B2-0A02-FEB5-50FF-9462F3C242BC}" name="ui">
               <FILE id="srEvjX" name="AudioRouterNodeUI.cpp" compile="1" resource="0"
