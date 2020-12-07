@@ -17,8 +17,10 @@ MixerNode::MixerNode(var params) :
     outGainsCC("Out Gains"),
     gainRootCC("Channel Gains")
 {
-    viewUISize->setPoint(100, 250);
+    viewUISize->setPoint(140, 260);
 
+    saveAndLoadRecursiveData = true;
+        
     addChildControllableContainer(&rmsCC);
     rmsCC.editorIsCollapsed = true;
     addChildControllableContainer(&outGainsCC);

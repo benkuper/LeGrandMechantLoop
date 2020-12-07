@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b13">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b14">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="fut9ay" name="default.lgmllayout" compile="0" resource="1"
@@ -213,6 +213,10 @@
           </GROUP>
           <GROUP id="{AC321AE6-FB6A-AD04-F5D5-FC5C94A342F7}" name="vst">
             <GROUP id="{680507CD-BC08-6441-0592-037DA297C999}" name="ui">
+              <FILE id="xxsSYO" name="VSTLinkedParameterUI.cpp" compile="1" resource="0"
+                    file="Source/Node/nodes/vst/ui/VSTLinkedParameterUI.cpp"/>
+              <FILE id="Zb4Hqk" name="VSTLinkedParameterUI.h" compile="0" resource="0"
+                    file="Source/Node/nodes/vst/ui/VSTLinkedParameterUI.h"/>
               <FILE id="Pqn9oN" name="VSTNodeViewUI.cpp" compile="1" resource="0"
                     file="Source/Node/nodes/vst/ui/VSTNodeViewUI.cpp"/>
               <FILE id="FTt0Ut" name="VSTNodeViewUI.h" compile="0" resource="0" file="Source/Node/nodes/vst/ui/VSTNodeViewUI.h"/>

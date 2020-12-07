@@ -22,6 +22,8 @@ AudioRouterNode::AudioRouterNode(var params) :
 
     previousInput = currentInput->intValue();
     previousOutput = currentOutput->intValue();
+
+    viewUISize->setPoint(220, 100);
 }
 
 AudioRouterNode::~AudioRouterNode()

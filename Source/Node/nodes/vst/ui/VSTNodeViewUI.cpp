@@ -10,29 +10,50 @@
 
 #include "VSTNodeViewUI.h"
 #include "Common/MIDI/ui/MIDIDeviceParameterUI.h"
+#include "Engine/ui/VSTManagerUI.h"
 
 VSTNodeViewUI::VSTNodeViewUI(VSTNode * n) :
     NodeViewUI(n),
     editBT("Edit VST")
 {
-    editBT.addListener(this);
     addAndMakeVisible(&editBT);
+    editBT.addListener(this);
+
+    editHeaderBT.reset(AssetManager::getInstance()->getEditBT());
+    addAndMakeVisible(editHeaderBT.get());
+    editHeaderBT->addListener(this);
+    
+
+    pluginUI.reset(new VSTPluginParameterUI(n->pluginParam));
+    addAndMakeVisible(pluginUI.get());
 
     midiParamUI.reset(node->midiParam->createMIDIParameterUI());
     addAndMakeVisible(midiParamUI.get());
 
-    contentComponents.add(&editBT);
+    contentComponents.add(pluginUI.get());
     contentComponents.add(midiParamUI.get());
+    contentComponents.add(&editBT);
 }
 
 VSTNodeViewUI::~VSTNodeViewUI()
 {
 }
 
+void VSTNodeViewUI::resizedInternalHeader(Rectangle<int>& r)
+{
+    NodeViewUI::resizedInternalHeader(r);
+    editHeaderBT->setBounds(r.removeFromRight(r.getHeight()).reduced(1));
+}
+
 void VSTNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
+    pluginUI->setBounds(r.removeFromTop(20).reduced(1));
+    r.removeFromTop(4);
+
     midiParamUI->setBounds(r.removeFromTop(20).reduced(1));
-    editBT.setBounds(r.removeFromTop(20).reduced(1));
+
+    r.removeFromTop(4);
+    editBT.setBounds(r.removeFromTop(30).reduced(1));
 }
 
 void VSTNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
@@ -44,7 +65,7 @@ void VSTNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 void VSTNodeViewUI::buttonClicked(Button* b)
 {
     NodeViewUI::buttonClicked(b);
-    if (b == &editBT)
+    if (b == &editBT || b == editHeaderBT.get())
     {
         if (node->vst != nullptr && node->vst->hasEditor())
         {

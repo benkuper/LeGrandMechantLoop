@@ -27,6 +27,8 @@ ContainerNode::ContainerNode(var params) :
     addChildControllableContainer(nodeManager.get());
 
     nodeManager->addBaseManagerListener(this);
+
+    viewUISize->setPoint(200, 150);
 }
 
 ContainerNode::~ContainerNode()
@@ -100,7 +102,7 @@ var ContainerNode::getJSONData()
     return data;
 }
 
-void ContainerNode::loadJSONDataInternal(var data)
+void ContainerNode::loadJSONDataItemInternal(var data)
 {
     nodeManager->loadJSONData(data.getProperty("manager", var()));
     Node::loadJSONDataInternal(data);

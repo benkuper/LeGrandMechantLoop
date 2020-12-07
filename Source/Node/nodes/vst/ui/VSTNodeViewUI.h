@@ -53,9 +53,13 @@ public:
     ~VSTNodeViewUI();
 
     TextButton editBT;
-    std::unique_ptr<PluginWindow> pluginEditor;
+    std::unique_ptr<ImageButton> editHeaderBT;
+    
     std::unique_ptr<MIDIDeviceParameterUI> midiParamUI;
-
+    std::unique_ptr<VSTPluginParameterUI> pluginUI;
+    std::unique_ptr<PluginWindow> pluginEditor;
+    
+    void resizedInternalHeader(Rectangle<int>& r) override;
     void resizedInternalContentNode(Rectangle<int>& r) override;
     void controllableFeedbackUpdateInternal(Controllable* c) override;
     void buttonClicked(Button* b) override;

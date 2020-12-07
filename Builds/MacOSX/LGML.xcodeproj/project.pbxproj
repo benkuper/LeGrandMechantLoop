@@ -277,6 +277,10 @@
 			isa = PBXBuildFile;
 			fileRef = F0DC7BA1288CB8F0C5BEBB8D;
 		};
+		16CA15759CD26DC461A161D1 = {
+			isa = PBXBuildFile;
+			fileRef = 84D2879FC27A3B0FB0227AAE;
+		};
 		5045CC99C38D9CE766F82B6A = {
 			isa = PBXBuildFile;
 			fileRef = 8C29D7354E42E53340668E47;
@@ -1179,6 +1183,13 @@
 			path = "~/JUCE/modules/juce_core";
 			sourceTree = "<absolute>";
 		};
+		84D2879FC27A3B0FB0227AAE = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = VSTLinkedParameterUI.cpp;
+			path = ../../Source/Node/nodes/vst/ui/VSTLinkedParameterUI.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		8530BA68A7A0DE66DF8BC751 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -1478,6 +1489,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = AudioRouterNode.h;
 			path = ../../Source/Node/nodes/router/AudioRouterNode.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		C0EF384DA8EC9EDB0BF3C0E3 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = VSTLinkedParameterUI.h;
+			path = ../../Source/Node/nodes/vst/ui/VSTLinkedParameterUI.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		C1506F409953753093758A71 = {
@@ -2079,6 +2097,8 @@
 		9CC660CBFABCDD9A4549061A = {
 			isa = PBXGroup;
 			children = (
+				84D2879FC27A3B0FB0227AAE,
+				C0EF384DA8EC9EDB0BF3C0E3,
 				8C29D7354E42E53340668E47,
 				BE1556843A6B69311B79A4D0,
 			);
@@ -2391,7 +2411,7 @@
 					"JUCE_STANDALONE_APPLICATION=1",
 					"VST_LOGGING=0",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=1.0.0b13",
+					"JUCE_APP_VERSION=1.0.0b14",
 					"JUCE_APP_VERSION_HEX=0x10000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
@@ -2501,7 +2521,7 @@
 					"JUCE_STANDALONE_APPLICATION=1",
 					"VST_LOGGING=0",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=1.0.0b13",
+					"JUCE_APP_VERSION=1.0.0b14",
 					"JUCE_APP_VERSION_HEX=0x10000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
@@ -2740,6 +2760,7 @@
 				87521008636FF00A5662535C,
 				FEA2AE3DC66AEAFF67D547F7,
 				E4EE4A3B744F33AA3A7D6334,
+				16CA15759CD26DC461A161D1,
 				5045CC99C38D9CE766F82B6A,
 				21DB36313703FE475B623260,
 				83613C33A4CB0E8079400D08,

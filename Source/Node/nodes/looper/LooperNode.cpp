@@ -18,7 +18,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
     currentTrack(nullptr),
     tracksCC("Tracks")
 {
-	viewUISize->setPoint(350, 220);
+	saveAndLoadRecursiveData = true;
 
 	const int defaultNumTracks = 8;
 
@@ -47,6 +47,8 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 
 	Transport::getInstance()->addTransportListener(this);
+
+	viewUISize->setPoint(350, 220);
 }
 
 LooperNode::~LooperNode()

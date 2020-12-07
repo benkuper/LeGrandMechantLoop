@@ -16,7 +16,7 @@ SpatNode::SpatNode(var params) :
     fadeCurve("Fade Curve",nullptr),
     spatCC("Points")
 {
-	viewUISize->setPoint(300, 300);
+	saveAndLoadRecursiveData = true;
 
 	spatMode = addEnumParameter("Mode", "Mode of the spat");
 	spatMode->addOption("Circle", CIRCLE)->addOption("Free", FREE);
@@ -36,6 +36,8 @@ SpatNode::SpatNode(var params) :
 	circleAngle = addFloatParameter("Circle Angle", "Angle of the circle if in cirlce mode", 0, 0, 360);
 	
 	addChildControllableContainer(&spatCC);
+
+	viewUISize->setPoint(300, 300);
 }
 
 void SpatNode::updateAudioOutputsInternal()
