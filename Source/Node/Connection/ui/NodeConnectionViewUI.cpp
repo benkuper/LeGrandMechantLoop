@@ -98,7 +98,7 @@ void NodeConnectionViewUI::updateBounds()
     Rectangle<float> sourceR = sourceConnector == nullptr? mouseR: getParentComponent()->getLocalArea(sourceConnector, sourceConnector->getLocalBounds().toFloat());
     Rectangle<float> destR = destConnector == nullptr ? mouseR : getParentComponent()->getLocalArea(destConnector, destConnector->getLocalBounds().toFloat());
     
-    Rectangle<int> r = sourceR.getUnion(destR).expanded(10).toNearestInt();
+    Rectangle<int> r = sourceR.getUnion(destR).expanded(20).toNearestInt();
     setBounds(r); 
     buildPath();
     resized();

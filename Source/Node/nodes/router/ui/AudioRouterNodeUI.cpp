@@ -19,6 +19,8 @@ AudioRouterNodeViewUI::AudioRouterNodeViewUI(AudioRouterNode * n) :
     currentOutputUI.reset((ParameterEditor *)node->currentOutput->getEditor(false));
     addAndMakeVisible(currentOutputUI.get());
     
+
+    contentComponents.add(currentInputUI.get());
     contentComponents.add(currentOutputUI.get());
 }
 
