@@ -58,7 +58,7 @@ public:
 	AudioInputNode(var params = var()) : IONode(getTypeString(), params, true) {}
 
 	String getTypeString() const override { return getTypeStringStatic(); }
-	static const String getTypeStringStatic() { return "Audio Input"; }
+	static const String getTypeStringStatic() { return "Audio In"; }
 
 	void updatePlayConfigInternal() override;
 };
@@ -70,7 +70,7 @@ public:
 	AudioOutputNode(var params = var()) : IONode(getTypeString(), params, false) {}
 	
 	String getTypeString() const override { return getTypeStringStatic(); }
-	static const String getTypeStringStatic() { return "Audio Output"; }
+	static const String getTypeStringStatic() { return "Audio Out"; }
 
 	void updatePlayConfigInternal() override;
 };
