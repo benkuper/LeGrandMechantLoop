@@ -95,9 +95,9 @@ var IONode::getJSONData()
 	return data;
 }
 
-void IONode::loadJSONDataInternal(var data)
+void IONode::loadJSONDataItemInternal(var data)
 {
-	Node::loadJSONDataInternal(data);
+	Node::loadJSONDataItemInternal(data);
 	gainGhostData = data.getProperty("gains", var());
 }
 

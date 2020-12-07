@@ -17,11 +17,13 @@ BaseNodeViewUI::BaseNodeViewUI(Node* node) :
 	dragAndDropEnabled = true;
 	autoHideWhenDragging = false;
 	drawEmptyDragIcon = true;
+	showRemoveBT = false;
 
 	if (item->outGain!= nullptr)
 	{
 		outGainUI.reset(item->outGain->createSlider());
 		outGainUI->orientation = FloatSliderUI::VERTICAL;
+		outGainUI->showLabel = false;
 		contentComponents.add(outGainUI.get());
 		addAndMakeVisible(outGainUI.get());
 	}

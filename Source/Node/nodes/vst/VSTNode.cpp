@@ -172,7 +172,7 @@ var VSTNode::getJSONData()
 void VSTNode::loadJSONDataItemInternal(var data)
 {
     Node::loadJSONDataItemInternal(data);
-    vstParamsCC->loadJSONData(data.getProperty("vstParams", var()));
+    if(vstParamsCC != nullptr) vstParamsCC->loadJSONData(data.getProperty("vstParams", var()));
 }
 
 BaseNodeViewUI* VSTNode::createViewUI()

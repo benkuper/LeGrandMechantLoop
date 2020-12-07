@@ -64,6 +64,7 @@ IOChannelUI::IOChannelUI(IOChannel* ioChannel) :
 {
     gainUI.reset(ioChannel->gain->createSlider());
     gainUI->orientation = gainUI->VERTICAL;
+    gainUI->customLabel = ioChannel->niceName;
     addAndMakeVisible(gainUI.get());
     rmsUI.reset(new RMSSliderUI(ioChannel->rms));
     addAndMakeVisible(rmsUI.get());

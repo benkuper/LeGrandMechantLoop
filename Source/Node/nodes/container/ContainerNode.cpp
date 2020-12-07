@@ -105,7 +105,7 @@ var ContainerNode::getJSONData()
 void ContainerNode::loadJSONDataItemInternal(var data)
 {
     nodeManager->loadJSONData(data.getProperty("manager", var()));
-    Node::loadJSONDataInternal(data);
+    Node::loadJSONDataItemInternal(data);
 }
 
 BaseNodeViewUI* ContainerNode::createViewUI()
