@@ -71,7 +71,7 @@ void IONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMe
 		if (chan->rms == nullptr || chan->gain == nullptr) return;
 
 		float gain = chan->getGain();
-		buffer.applyGainRamp(i, 0, buffer.getNumSamples(), prevGain, gain);
+		buffer.applyGainRamp(i, 0, buffer.getNumSamples(), chan->prevGain, gain);
 		chan->prevGain = gain;
 
 		float rms = buffer.getRMSLevel(i, 0, buffer.getNumSamples());

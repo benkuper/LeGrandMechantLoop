@@ -59,7 +59,6 @@ public:
     IntParameter* numAudioOutputs; //if userCanSetIO
     FloatParameter* outRMS;
     FloatParameter* outGain;
-
     float prevGain; //for smooth outGain
 
     virtual void init(AudioProcessorGraph* graph);
