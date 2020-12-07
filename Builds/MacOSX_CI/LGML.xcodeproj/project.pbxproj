@@ -281,6 +281,10 @@
 			isa = PBXBuildFile;
 			fileRef = 8C29D7354E42E53340668E47;
 		};
+		21DB36313703FE475B623260 = {
+			isa = PBXBuildFile;
+			fileRef = B023B4BC9ADDF0EA07CFF028;
+		};
 		83613C33A4CB0E8079400D08 = {
 			isa = PBXBuildFile;
 			fileRef = 36A9825F0D2DD9FF84EA17E1;
@@ -578,6 +582,13 @@
 			lastKnownFileType = sourcecode.c.h;
 			name = JuceHeader.h;
 			path = ../../JuceLibraryCode/JuceHeader.h;
+			sourceTree = "SOURCE_ROOT";
+		};
+		18276969FFAAACF0866ECBE0 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			name = VSTLinkedParameter.h;
+			path = ../../Source/Node/nodes/vst/VSTLinkedParameter.h;
 			sourceTree = "SOURCE_ROOT";
 		};
 		19F11F31D630C760BBCEC079 = {
@@ -1378,6 +1389,13 @@
 			path = "../../JUCE/modules/juce_gui_basics";
 			sourceTree = "SOURCE_ROOT";
 		};
+		B023B4BC9ADDF0EA07CFF028 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = VSTLinkedParameter.cpp;
+			path = ../../Source/Node/nodes/vst/VSTLinkedParameter.cpp;
+			sourceTree = "SOURCE_ROOT";
+		};
 		B3AA1093E61438C4D5B58128 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.c.h;
@@ -2071,6 +2089,8 @@
 			isa = PBXGroup;
 			children = (
 				9CC660CBFABCDD9A4549061A,
+				B023B4BC9ADDF0EA07CFF028,
+				18276969FFAAACF0866ECBE0,
 				36A9825F0D2DD9FF84EA17E1,
 				3CDD5D2E812DBD7836CF59C1,
 			);
@@ -2371,7 +2391,7 @@
 					"JUCE_STANDALONE_APPLICATION=1",
 					"VST_LOGGING=0",
 					"JUCER_XCODE_MAC_2F3811D6=1",
-					"JUCE_APP_VERSION=1.0.0b12",
+					"JUCE_APP_VERSION=1.0.0b13",
 					"JUCE_APP_VERSION_HEX=0x10000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
@@ -2560,6 +2580,7 @@
 				FEA2AE3DC66AEAFF67D547F7,
 				E4EE4A3B744F33AA3A7D6334,
 				5045CC99C38D9CE766F82B6A,
+				21DB36313703FE475B623260,
 				83613C33A4CB0E8079400D08,
 				7F04CAED28FF42045CFB6849,
 				71BE39A8BAEC827D77DFF23E,

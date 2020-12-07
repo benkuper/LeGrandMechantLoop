@@ -1048,6 +1048,9 @@
     <ClCompile Include="..\..\Source\Node\nodes\vst\ui\VSTNodeViewUI.cpp">
       <Filter>LGML\Source\Node\nodes\vst\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\vst\VSTLinkedParameter.cpp">
+      <Filter>LGML\Source\Node\nodes\vst</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\vst\VSTNode.cpp">
       <Filter>LGML\Source\Node\nodes\vst</Filter>
     </ClCompile>
@@ -4169,6 +4172,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\vst\ui\VSTNodeViewUI.h">
       <Filter>LGML\Source\Node\nodes\vst\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\vst\VSTLinkedParameter.h">
+      <Filter>LGML\Source\Node\nodes\vst</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\vst\VSTNode.h">
       <Filter>LGML\Source\Node\nodes\vst</Filter>
