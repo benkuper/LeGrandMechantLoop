@@ -33,6 +33,8 @@ public:
 
     void clearItem() override;
 
+    void initInternal() override;
+
     void itemAdded(Node* n) override;
     void itemRemoved(Node* n) override;
 

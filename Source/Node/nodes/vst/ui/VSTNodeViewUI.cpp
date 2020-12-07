@@ -13,12 +13,8 @@
 #include "Engine/ui/VSTManagerUI.h"
 
 VSTNodeViewUI::VSTNodeViewUI(VSTNode * n) :
-    NodeViewUI(n),
-    editBT("Edit VST")
+    NodeViewUI(n)
 {
-    addAndMakeVisible(&editBT);
-    editBT.addListener(this);
-
     editHeaderBT.reset(AssetManager::getInstance()->getEditBT());
     addAndMakeVisible(editHeaderBT.get());
     editHeaderBT->addListener(this);
@@ -32,7 +28,6 @@ VSTNodeViewUI::VSTNodeViewUI(VSTNode * n) :
 
     contentComponents.add(pluginUI.get());
     contentComponents.add(midiParamUI.get());
-    contentComponents.add(&editBT);
 }
 
 VSTNodeViewUI::~VSTNodeViewUI()
@@ -51,9 +46,6 @@ void VSTNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
     r.removeFromTop(4);
 
     midiParamUI->setBounds(r.removeFromTop(20).reduced(1));
-
-    r.removeFromTop(4);
-    editBT.setBounds(r.removeFromTop(30).reduced(1));
 }
 
 void VSTNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
@@ -65,7 +57,7 @@ void VSTNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 void VSTNodeViewUI::buttonClicked(Button* b)
 {
     NodeViewUI::buttonClicked(b);
-    if (b == &editBT || b == editHeaderBT.get())
+    if (b == editHeaderBT.get())
     {
         if (node->vst != nullptr && node->vst->hasEditor())
         {
@@ -73,7 +65,7 @@ void VSTNodeViewUI::buttonClicked(Button* b)
             {
                 pluginEditor.reset(new PluginWindow(node));
                 pluginEditor->addPluginWindowListener(this);
-                editBT.setEnabled(false);
+                editHeaderBT->setEnabled(false);
             }
             else
             {
@@ -86,7 +78,7 @@ void VSTNodeViewUI::buttonClicked(Button* b)
 void VSTNodeViewUI::windowClosed()
 {
     pluginEditor.reset();
-    editBT.setEnabled(true);
+    editHeaderBT->setEnabled(true);
 }
 
 PluginWindow::PluginWindow(VSTNode* node) :

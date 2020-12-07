@@ -41,6 +41,11 @@ void ContainerNode::clearItem()
     nodeManager->clear();
 }
 
+void ContainerNode::initInternal()
+{
+    updateGraph();
+}
+
 void ContainerNode::itemAdded(Node* n)
 {
     n->addNodeListener(this);
@@ -86,7 +91,7 @@ void ContainerNode::onControllableFeedbackUpdateInternal(ControllableContainer* 
 void ContainerNode::updatePlayConfigInternal()
 {
     Node::updatePlayConfigInternal();
-    updateGraph();
+    if(!isCurrentlyLoadingData) updateGraph();
 }
 
 
@@ -104,9 +109,11 @@ var ContainerNode::getJSONData()
 
 void ContainerNode::loadJSONDataItemInternal(var data)
 {
-    nodeManager->loadJSONData(data.getProperty("manager", var()));
     Node::loadJSONDataItemInternal(data);
+    updateGraph();
+    nodeManager->loadJSONData(data.getProperty("manager", var()));
 }
+
 
 BaseNodeViewUI* ContainerNode::createViewUI()
 {

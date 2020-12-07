@@ -52,9 +52,7 @@ public:
     VSTNodeViewUI(VSTNode * n);
     ~VSTNodeViewUI();
 
-    TextButton editBT;
     std::unique_ptr<ImageButton> editHeaderBT;
-    
     std::unique_ptr<MIDIDeviceParameterUI> midiParamUI;
     std::unique_ptr<VSTPluginParameterUI> pluginUI;
     std::unique_ptr<PluginWindow> pluginEditor;

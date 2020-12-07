@@ -34,7 +34,6 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 }
 
 
-
 NodeManager::~NodeManager()
 {
 }

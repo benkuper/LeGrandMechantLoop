@@ -20,10 +20,8 @@ public:
     ~ContainerNodeViewUI();
 
     std::unique_ptr<ImageButton> editHeaderBT;
-    TextButton editBT;
     
     void resizedInternalHeader(Rectangle<int>& r) override;
-    void resizedInternalContentNode(Rectangle<int>& r) override;
 
     void buttonClicked(Button*) override;
 };

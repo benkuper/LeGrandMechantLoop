@@ -133,10 +133,12 @@ void BaseNodeViewUI::updateOutputConnectors()
 void BaseNodeViewUI::paint(Graphics& g)
 {
 	BaseItemUI::paint(g);
-	if (outRMSUI != nullptr || outGainUI != nullptr)
+	if (!item->miniMode->boolValue() && (outRMSUI != nullptr || outGainUI != nullptr))
 	{
-		g.setColour(bgColor.darker(.2f));
+		g.setColour(bgColor.darker(.3f));
 		g.fillRoundedRectangle(outControlRect.expanded(1).toFloat(), 2);
+		g.setColour(bgColor.darker(.6f));
+		g.drawRoundedRectangle(outControlRect.expanded(1).toFloat(), 2, 1);
 	}
 }
 
@@ -180,7 +182,8 @@ void BaseNodeViewUI::resized()
 void BaseNodeViewUI::resizedInternalContent(Rectangle<int>& r)
 {
 	BaseItemUI::resizedInternalContent(r);
-
+	
+	r.removeFromLeft(2);
 	outControlRect = Rectangle<int>(r);
 
 	if (outRMSUI != nullptr) outRMSUI->setBounds(r.removeFromRight(10).reduced(2));

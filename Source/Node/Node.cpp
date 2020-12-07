@@ -138,7 +138,6 @@ void Node::setAudioOutputs(const int& numOutputs, bool updateConfig)
 void Node::setAudioOutputs(const StringArray& outputNames, bool updateConfig)
 {
 	if (audioOutputNames == outputNames) return;
-	
 	ScopedSuspender sp(processor);
 
 	audioOutputNames = outputNames;
