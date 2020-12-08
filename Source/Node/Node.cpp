@@ -32,6 +32,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	processor = new NodeAudioProcessor(this);
 	processor->setPlayHead(Transport::getInstance());
 
+	editorIsCollapsed = true;
 
 	isNodePlaying = addBoolParameter("Is Node Playing", "This is a feedback to know if a node has playing content. Used by the global time to automatically stop if no content is playing", false);
 	isNodePlaying->setControllableFeedbackOnly(true);
@@ -96,7 +97,11 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 {
 	if (p == enabled)
 	{
-		if (!enabled->boolValue()) for (auto& c : outAudioConnections) c->activityLevel = 0;
+		if (!enabled->boolValue())
+		{
+			for (auto& c : outAudioConnections) c->activityLevel = 0;
+			outRMS->setValue(0);
+		}
 	}
 	else if (p == numAudioInputs)
 	{
@@ -243,12 +248,7 @@ void Node::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)
 
 void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	if (!enabled->boolValue())
-	{
-		processBlockBypassed(buffer, midiMessages);
-		return;
-	}
-
+	
 	if (processor->isSuspended())
 	{
 		LOGWARNING("Processor should be suspended, should not be here...");
@@ -266,23 +266,28 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		return;
 	}
 
-	processBlockInternal(buffer, inMidiBuffer);
-
-	if (outGain != nullptr)
+	if (!enabled->boolValue())
 	{
-		buffer.applyGainRamp(0, buffer.getNumSamples(), prevGain, outGain->floatValue());
-		prevGain = outGain->floatValue();
+		processBlockBypassed(buffer, midiMessages);
+	}
+	else
+	{
+		processBlockInternal(buffer, inMidiBuffer);
+
+		if (outGain != nullptr)
+		{
+			buffer.applyGainRamp(0, buffer.getNumSamples(), prevGain, outGain->floatValue());
+			prevGain = outGain->floatValue();
+		}
 	}
 
 	float rms = 0;
-
 	connectionsActivityLevels.fill(0);
 	int numOutConnections = outAudioConnections.size();
 
 	for (int i = 0; i < buffer.getNumChannels(); i++)
 	{
 		float channelRMS = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
-		rms = jmax(rms, channelRMS);
 
 		for (int c = 0; c < numOutConnections; c++)
 		{
@@ -291,16 +296,19 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 				if (cm.sourceChannel == i) connectionsActivityLevels.set(c, jmax(connectionsActivityLevels[c], channelRMS));
 			}
 		}
+
+		rms = jmax(rms, channelRMS);
 	}
 
 	for (int i = 0; i < outAudioConnections.size(); i++)
 	{
 		float curLevel = outAudioConnections[i]->activityLevel;
 		float level = connectionsActivityLevels[i];
+		if (isnan(curLevel)) curLevel = level;
 		outAudioConnections[i]->activityLevel = curLevel + (level - curLevel) * .2f;
 	}
 
-	if (outRMS != nullptr)
+	if (outRMS != nullptr && enabled->boolValue())
 	{
 		float curVal = outRMS->floatValue();
 		float targetVal = outRMS->getLerpValueTo(rms, rms > curVal ? .8f : .2f);

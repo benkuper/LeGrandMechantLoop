@@ -11,6 +11,7 @@
 #include "NodeConnectionViewUI.h"
 #include "NodeConnector.h"
 #include "Common/ConnectionUIHelper.h"
+#include "../../ui/NodeViewUI.h"
 
 NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConnector* _sourceConnector, NodeConnector* _destConnector) :
 	BaseItemMinimalUI(connection),
@@ -53,7 +54,6 @@ NodeConnectionViewUI::~NodeConnectionViewUI()
 
 void NodeConnectionViewUI::paint(Graphics& g)
 {
-
 	NodeAudioConnection* ac = nullptr;
 	
 	Colour c = YELLOW_COLOR;
@@ -68,7 +68,7 @@ void NodeConnectionViewUI::paint(Graphics& g)
 			if (item != nullptr)
 			{
 				c = ct == NodeConnection::AUDIO ? BLUE_COLOR : GREEN_COLOR;
-				c = c.darker().brighter(activityLevel*10);
+				c = c.darker().brighter(activityLevel*5);
 			}
 			if (ac != nullptr && ac->channelMap.size() == 0) c = NORMAL_COLOR;
 		}
@@ -108,17 +108,48 @@ void NodeConnectionViewUI::updateBounds()
 void NodeConnectionViewUI::buildPath()
 {
 	Point<float> mouseP = Rectangle<int>(0, 0, 10, 10).withCentre(getMouseXYRelative()).getCentre().toFloat();
+
 	Point<float> sourceP = sourceConnector == nullptr ? mouseP :getLocalPoint(sourceConnector, sourceConnector->getLocalBounds().getCentre()).toFloat();
 	Point<float> destP = destConnector == nullptr ? mouseP : getLocalPoint(destConnector, destConnector->getLocalBounds().getCentre()).toFloat();
 
+	
 	path.clear();
 	path.startNewSubPath(sourceP);
-	path.cubicTo(sourceP.translated(60, 0), destP.translated(-60, 0), destP);
 
+	if (destP.x >= sourceP.x - 20)
+	{
+		Point<float> controlPoint1 = sourceP.translated(60, 0);
+		Point<float> controlPoint2 = destP.translated(-60, 0);
+		path.cubicTo(controlPoint1, controlPoint2, destP);
+	}
+	else
+	{
+		Point<float> controlPoint1 = sourceP.translated(20, 0);
+		Point<float> controlPoint2 = destP.translated(-20, 0);
+		float middleY = jmax(sourceP.y, destP.y) - 25;
+		path.lineTo(controlPoint1);
+		path.lineTo(controlPoint1.x, middleY);
+		path.lineTo(controlPoint2.x, middleY);
+		path.lineTo(controlPoint2);
+		path.lineTo(destP);
+		path = path.createPathWithRoundedCorners(10);
+	}
+	
 	hitPath = PathHelpers::buildHitPath(&path);
 
-	sourceHandle.setCentrePosition(path.getPointAlongPath(20).toInt());
-	destHandle.setCentrePosition(path.getPointAlongPath(path.getLength()-20).toInt());
+	if (path.getLength() > 60)
+	{
+		sourceHandle.setVisible(true);
+		destHandle.setVisible(true);
+		sourceHandle.setCentrePosition(path.getPointAlongPath(15).toInt());
+		destHandle.setCentrePosition(path.getPointAlongPath(path.getLength() - 15).toInt());
+	}
+	else
+	{
+		sourceHandle.setVisible(false);
+		destHandle.setVisible(false);
+	}
+	
 }
 bool NodeConnectionViewUI::hitTest(int x, int y)
 {
