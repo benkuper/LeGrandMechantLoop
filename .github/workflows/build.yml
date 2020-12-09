@@ -3,7 +3,6 @@ on: [push]
 env:
   ProjectName: LGML
   PackagesVersion: 1.2.9
-  DepDirURL: http://benjamin.kuperberg.fr/lgml/download/
 
 jobs:
   windows:
@@ -23,7 +22,7 @@ jobs:
           ref: develop-local
           path: JUCE
 
-      - name: Set Suffix
+      - name: Set Variables
         id: set_variables
         uses: ./.github/actions/set-suffix
         with:
@@ -37,32 +36,18 @@ jobs:
         run: |
           cmd.exe /c "call `"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat`" && set > %temp%\vcvars.txt"
           Get-Content "$env:temp\vcvars.txt" | Foreach-Object { if ($_ -match "^(.*?)=(.*)$") { Set-Content "env:\$($matches[1])" $matches[2] }}
-      
-      - name: Set Config Type
-        shell: powershell
-        id: set_config
-        run: |
-          if [[ $GITHUB_REF == *"refs/tags/"* ]]
-          then
-            echo "Found Tag : ${GITHUB_REF#refs/tags/}"
-            echo "::set-output name=config::Release"
-            echo "::set-output name=dep::release"
-          else
-            echo "::set-output name=config::Debug"
-            echo "::set-output name=dep::debug"
-          fi
-
+    
       - name: Build
-        run:  msbuild "Builds/VisualStudio2019_CI/${{ env.ProjectName }}.sln" /m /verbosity:normal /p:Configuration=${{ steps.set_config.outputs.config }}
+        run:  msbuild "Builds/VisualStudio2019_CI/${{ env.ProjectName }}.sln" /m /verbosity:normal /p:Configuration=${{ steps.set_variables.outputs.config }}
 
       - name: Create Package
         id: create_package
         run: |
-          DEPZIP=${{ env.ProjectName }}-win-x64-${{ steps.set_config.outputs.dep }}-dependencies.zip
+          DEPZIP=${{ env.ProjectName }}-win-x64-${{ steps.set_variables.outputs.dep }}-dependencies.zip
           PKGNAME=${{ env.ProjectName }}-${{ steps.set_variables.outputs.suffix }}.exe
 
-          Start-FileDownload "${{ env.DepDirURL }}"
-          7z e ${{ env.ProjectName }}-win-x64-${{ steps.set_config.outputs.dep }}-dependencies.zip -aoa
+          Start-FileDownload "${{ secrets.UPLOADURL }}$DEPZIP"
+          7z e $DEPZIP -aoa
           &"C:/Program Files (x86)/Inno Setup 6/ISCC.exe" "${{ github.workspace }}/install.iss" /F$PKGNAME
           echo "::set-output name=pkg-name::$PKGNAME"
         working-directory: ./Binaries/CI/App
@@ -91,7 +76,7 @@ jobs:
           ref: develop-local
           path: JUCE
 
-      - name: Set Suffix
+      - name: Set Variables
         id: set_variables
         uses: ./.github/actions/set-suffix
         with:
@@ -156,7 +141,7 @@ jobs:
           ref: develop-local
           path: JUCE
 
-      - name: Set Suffix
+      - name: Set Variables
         id: set_variables
         uses: ./.github/actions/set-suffix
         with:
