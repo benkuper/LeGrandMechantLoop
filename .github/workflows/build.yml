@@ -42,9 +42,10 @@ jobs:
 
       - name: Create Package
         id: create_package
+        shell: powershell
         run: |
-          DEPZIP=${{ env.ProjectName }}-win-x64-${{ steps.set_variables.outputs.dep }}-dependencies.zip
-          PKGNAME=${{ env.ProjectName }}-${{ steps.set_variables.outputs.suffix }}.exe
+          Set-Variable -Name "DEPZIP" -Value "${{ env.ProjectName }}-win-x64-${{ steps.set_variables.outputs.dep }}-dependencies.zip"
+          Set-Variable -Name "PKGNAME" -Value "${{ env.ProjectName }}-${{ steps.set_variables.outputs.suffix }}.exe"
 
           Start-FileDownload "${{ secrets.UPLOADURL }}$DEPZIP"
           7z e $DEPZIP -aoa
