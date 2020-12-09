@@ -37,7 +37,6 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	clearAllTrigger = addTrigger("Clear All", "Clear all the tracks");
 
 	numTracks = addIntParameter("Track Count", "Number of tracks to use for this looper", defaultNumTracks, 1, 32);
-	autoNext = addBoolParameter("Auto Next", "If checked, will automatically select the next track to record", true);
 	
 	monitorMode = addEnumParameter("Monitor Mode", "How to monitor");
 	monitorMode->addOption("Always", ALWAYS)->addOption("Armed track", ARMED_TRACK)->addOption("When recording", RECORDING_ONLY)->addOption("Off", OFF);
@@ -48,7 +47,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 	Transport::getInstance()->addTransportListener(this);
 
-	viewUISize->setPoint(350, 220);
+	viewUISize->setPoint(360, 260);
 }
 
 LooperNode::~LooperNode()
@@ -113,7 +112,7 @@ void LooperNode::onContainerTriggerTriggered(Trigger* t)
 			
 			LooperTrack::TrackState s = currentTrack->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
 			
-			if ((s == LooperTrack::FINISH_RECORDING || currentTrack->isPlaying(true)) && autoNext->boolValue())
+			if ((s == LooperTrack::FINISH_RECORDING || currentTrack->isPlaying(true)))
 			{
 				currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
 			}
@@ -123,12 +122,9 @@ void LooperNode::onContainerTriggerTriggered(Trigger* t)
 	{
 		if (currentTrack != nullptr)
 		{
-			if (autoNext->boolValue())
+			while (!currentTrack->hasContent(true) && currentTrackIndex->intValue() > 1)
 			{
-				while (!currentTrack->hasContent(true) && currentTrackIndex->intValue() > 1)
-				{
-					currentTrackIndex->setValue(currentTrackIndex->intValue() - 1);
-				}
+				currentTrackIndex->setValue(currentTrackIndex->intValue() - 1);
 			}
 			currentTrack->clearTrigger->trigger();
 		}

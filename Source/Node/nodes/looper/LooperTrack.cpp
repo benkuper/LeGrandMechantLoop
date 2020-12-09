@@ -29,7 +29,6 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 	numBeats(0)
 {
 	editorIsCollapsed = true;
-	isSelectable = false; 
 
 	isCurrent = addBoolParameter("Is Current", "Is this track the current one controlled by the looper ?", false);
 	isCurrent->hideInEditor = true;

@@ -27,28 +27,25 @@ public:
 
     LooperType looperType;
 
+    enum MonitorMode { OFF, ALWAYS, RECORDING_ONLY, ARMED_TRACK };
+    EnumParameter* monitorMode;
+    
+    IntParameter* currentTrackIndex;
     IntParameter* numTracks;
-    IntParameter* fadeTimeMS;
 
     EnumParameter* quantization;
     EnumParameter* freeFillMode;
 
     Trigger* recTrigger;
     Trigger* clearCurrentTrigger;
-
     Trigger* playAllTrigger;
     Trigger* stopAllTrigger;
     Trigger* clearAllTrigger;
 
-    BoolParameter* autoNext;
-    IntParameter* currentTrackIndex;
-
     LooperTrack* currentTrack;
-
     ControllableContainer tracksCC;
-
-    enum MonitorMode { OFF, ALWAYS, RECORDING_ONLY, ARMED_TRACK };
-    EnumParameter* monitorMode;
+    
+    IntParameter* fadeTimeMS;
 
     virtual void initInternal() override;
 
