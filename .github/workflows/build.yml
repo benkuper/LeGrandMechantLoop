@@ -12,9 +12,9 @@ jobs:
 
     steps:
       - name: Checkout repo
-          uses: actions/checkout@v2
-          with:
-            submodules: 'recursive'
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
 
       - name: Checkout JUCE
         uses: actions/checkout@v2
