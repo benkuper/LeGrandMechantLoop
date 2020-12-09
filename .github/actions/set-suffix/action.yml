@@ -9,11 +9,11 @@ outputs:
     description: 'Suffix for the compiled version'
     value: ${{ steps.main.outputs.suffix }}
 
-  suffix:
+  config:
     description: 'Config to use (Win only)'
     value: ${{ steps.main.outputs.config }}
 
-  suffix:
+  dep:
     description: 'Dependency file suffix'
     value: ${{ steps.main.outputs.dep }}
 
