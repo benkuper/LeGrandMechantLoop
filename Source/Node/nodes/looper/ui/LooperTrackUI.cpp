@@ -105,6 +105,7 @@ void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
 LooperTrackUI::Feedback::Feedback(LooperTrack* t) :
     track(t)
 {
+    setInterceptsMouseClicks(false, false);
     updateContourColor();
 }
 

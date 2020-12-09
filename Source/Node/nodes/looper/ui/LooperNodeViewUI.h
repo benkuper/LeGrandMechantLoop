@@ -23,6 +23,13 @@ public:
     LooperNodeViewUI(LooperNode * n);
     ~LooperNodeViewUI();
 
+    std::unique_ptr<TriggerButtonUI> recUI;
+    std::unique_ptr<TriggerButtonUI> clearUI;
+
+    std::unique_ptr<TriggerButtonUI> clearAllUI;
+    std::unique_ptr<TriggerButtonUI> stopAllUI;
+    std::unique_ptr<TriggerButtonUI> playAllUI;
+
     void updateTracksUI();
 
     std::unique_ptr<MIDIDeviceParameterUI> midiParamUI;
