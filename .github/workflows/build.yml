@@ -45,7 +45,7 @@ jobs:
         shell: powershell
         run: |
           Set-Variable -Name "PKGNAME" -Value "${{ env.ProjectName }}-${{ steps.set_variables.outputs.suffix }}.exe"
-          Invoke-WebRequest "${{ secrets.UPLOADURL }}${{ env.ProjectName }}-win-x64-${{ steps.set_variables.outputs.dep }}-dependencies.zip" -OutFile ./deps.zip
+          Invoke-WebRequest "${{ secrets.DEPDIRURL }}${{ env.ProjectName }}-win-x64-${{ steps.set_variables.outputs.dep }}-dependencies.zip" -OutFile ./deps.zip
           7z e deps.zip -aoa
           &"C:/Program Files (x86)/Inno Setup 6/ISCC.exe" "${{ github.workspace }}/install.iss" /F$PKGNAME
           echo "::set-output name=pkg-name::$PKGNAME"
