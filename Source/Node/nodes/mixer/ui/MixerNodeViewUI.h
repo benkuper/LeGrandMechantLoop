@@ -12,6 +12,23 @@
 #include "../MixerNode.h"
 #include "../../../ui/NodeViewUI.h"
 
+class MixerItemUI :
+    public Component
+{
+public:
+    MixerItemUI(MixerItem* item);
+    ~MixerItemUI() {}
+
+    MixerItem* item;
+
+    std::unique_ptr<FloatSliderUI> gainUI;
+    std::unique_ptr<RMSSliderUI> rmsUI;
+    std::unique_ptr<BoolButtonToggleUI> activeUI;
+
+    void paint(Graphics& g) override;
+    void resized() override;
+};
+
 class MixerNodeViewUI :
     public NodeViewUI<MixerNode>
 {
@@ -26,9 +43,9 @@ public:
         InputGainLine(ControllableContainer* gainsCC, int index);
 
         int index;
-        ControllableContainer* gainsCC;
+        ControllableContainer* itemsCC;
+        OwnedArray<MixerItemUI> itemsUI;
 
-        OwnedArray<FloatSliderUI> gainsUI;
         void rebuild();
 
         void paint(Graphics& g) override;
@@ -37,8 +54,7 @@ public:
 
     OwnedArray<InputGainLine> gainLines;
 
-    OwnedArray<FloatSliderUI> outGainsUI;
-    OwnedArray<FloatSliderUI> rmsUI;
+    OwnedArray<MixerItemUI> outItemsUI;
 
     Rectangle<int> outRect;
 

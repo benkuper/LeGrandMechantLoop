@@ -12,6 +12,26 @@
 
 #include "../../Node.h"
 
+
+
+class MixerItem :
+	public ControllableContainer
+{
+public:
+	MixerItem(int inputIndex, int outputIndex, bool hasRMS = false);
+	~MixerItem();
+
+	int inputIndex;
+	int outputIndex;
+
+	float prevGain;
+	FloatParameter* gain;
+	FloatParameter* rms;
+	BoolParameter * active;
+
+	float getGain();
+};
+
 class MixerNode :
 	public Node
 {
@@ -19,19 +39,17 @@ public:
 	MixerNode(var params = var());
 	~MixerNode() {}
 
-	ControllableContainer rmsCC;
-	ControllableContainer outGainsCC;
-	ControllableContainer gainRootCC;
+	ControllableContainer outItemsCC;
+	ControllableContainer itemsCC;
 
 	AudioBuffer<float> tmpBuffer;
 	
 	void updateAudioInputsInternal() override;
 	void updateAudioOutputsInternal() override;
 
-	void addGainCC();
 	void updateGainCC(ControllableContainer* cc);
 
-	FloatParameter * getGainParameter(int inputIndex, int outputIndex);
+	MixerItem * getMixerItem(int inputIndex, int outputIndex);
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	
