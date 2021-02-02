@@ -429,6 +429,10 @@
 			isa = PBXBuildFile;
 			fileRef = F7546626F5987ED1AFE6D40A;
 		};
+		40F770D66E1BAF7286C96C60 = {
+			isa = PBXBuildFile;
+			fileRef = FE6B21EF19C19C84D19F48B6;
+		};
 		383161D8BA5431CBBC808175 = {
 			isa = PBXBuildFile;
 			fileRef = 1EBAAFB7B33347A8FACCEFA5;
@@ -1806,6 +1810,13 @@
 			path = ../../Source/Node/ui/NodeUI.h;
 			sourceTree = "SOURCE_ROOT";
 		};
+		FE6B21EF19C19C84D19F48B6 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.cpp.cpp;
+			name = "include_juce_organicui4.cpp";
+			path = "../../JuceLibraryCode/include_juce_organicui4.cpp";
+			sourceTree = "SOURCE_ROOT";
+		};
 		FF38CAF59F3A08E5FDB1555F = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.cpp.cpp;
@@ -2300,6 +2311,7 @@
 				0DA31F87CFF887F48593D7E6,
 				741145CF557D3323427536E9,
 				F7546626F5987ED1AFE6D40A,
+				FE6B21EF19C19C84D19F48B6,
 				1EBAAFB7B33347A8FACCEFA5,
 				67038B9140608DAD8B6E6934,
 				4ACE978AE9CC0CC00C427119,
@@ -2377,7 +2389,7 @@
 					"DEBUG=1",
 					"JUCE_DISPLAY_SPLASH_SCREEN=0",
 					"JUCE_USE_DARK_SPLASH_SCREEN=1",
-					"JUCE_PROJUCER_VERSION=0x60005",
+					"JUCE_PROJUCER_VERSION=0x60007",
 					"JUCE_MODULE_AVAILABLE_juce_audio_basics=1",
 					"JUCE_MODULE_AVAILABLE_juce_audio_devices=1",
 					"JUCE_MODULE_AVAILABLE_juce_audio_formats=1",
@@ -2424,19 +2436,19 @@
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
-					"../../JuceLibraryCode",
-					"$(HOME)/JUCE/modules",
-					"../../Modules",
-					"../../External/servus/include",
-					"../../External/dnssd/include",
-					"../../External/serial/include",
-					"../../Source",
-					"../../External/asio",
-					"../../External/servus/include",
-					"../../External/dnssd/include",
-					"../../External/vst2",
-					"../../External/serial/include",
+					"$(SRCROOT)/~/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode",
+					"$(SRCROOT)/~/JUCE/modules",
+					"$(SRCROOT)/../../Modules",
+					"$(SRCROOT)/../../External/servus/include",
+					"$(SRCROOT)/../../External/dnssd/include",
+					"$(SRCROOT)/../../External/serial/include",
+					"$(SRCROOT)/../../Source",
+					"$(SRCROOT)/../../External/asio",
+					"$(SRCROOT)/../../External/servus/include",
+					"$(SRCROOT)/../../External/dnssd/include",
+					"$(SRCROOT)/../../External/vst2",
+					"$(SRCROOT)/../../External/serial/include",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Info-App.plist;
@@ -2448,24 +2460,25 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_HEADER_SEARCH_PATHS = (
-					"$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
-					"../../JuceLibraryCode",
-					"$(HOME)/JUCE/modules",
-					"../../Modules",
-					"../../External/servus/include",
-					"../../External/dnssd/include",
-					"../../External/serial/include",
-					"../../Source",
-					"../../External/asio",
-					"../../External/servus/include",
-					"../../External/dnssd/include",
-					"../../External/vst2",
-					"../../External/serial/include",
+					"$(SRCROOT)/~/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode",
+					"$(SRCROOT)/~/JUCE/modules",
+					"$(SRCROOT)/../../Modules",
+					"$(SRCROOT)/../../External/servus/include",
+					"$(SRCROOT)/../../External/dnssd/include",
+					"$(SRCROOT)/../../External/serial/include",
+					"$(SRCROOT)/../../Source",
+					"$(SRCROOT)/../../External/asio",
+					"$(SRCROOT)/../../External/servus/include",
+					"$(SRCROOT)/../../External/dnssd/include",
+					"$(SRCROOT)/../../External/vst2",
+					"$(SRCROOT)/../../External/serial/include",
 				);
 				OTHER_LDFLAGS = "-lServus";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.LGML;
 				PRODUCT_NAME = "LGML";
 				USE_HEADERMAP = NO;
+				VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS = OpenGL;
 				VALID_ARCHS = "x86_64";
 			};
 			name = Debug;
@@ -2487,7 +2500,7 @@
 					"NDEBUG=1",
 					"JUCE_DISPLAY_SPLASH_SCREEN=0",
 					"JUCE_USE_DARK_SPLASH_SCREEN=1",
-					"JUCE_PROJUCER_VERSION=0x60005",
+					"JUCE_PROJUCER_VERSION=0x60007",
 					"JUCE_MODULE_AVAILABLE_juce_audio_basics=1",
 					"JUCE_MODULE_AVAILABLE_juce_audio_devices=1",
 					"JUCE_MODULE_AVAILABLE_juce_audio_formats=1",
@@ -2534,19 +2547,19 @@
 				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = (
-					"$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
-					"../../JuceLibraryCode",
-					"$(HOME)/JUCE/modules",
-					"../../Modules",
-					"../../External/servus/include",
-					"../../External/dnssd/include",
-					"../../External/serial/include",
-					"../../Source",
-					"../../External/asio",
-					"../../External/servus/include",
-					"../../External/dnssd/include",
-					"../../External/vst2",
-					"../../External/serial/include",
+					"$(SRCROOT)/~/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode",
+					"$(SRCROOT)/~/JUCE/modules",
+					"$(SRCROOT)/../../Modules",
+					"$(SRCROOT)/../../External/servus/include",
+					"$(SRCROOT)/../../External/dnssd/include",
+					"$(SRCROOT)/../../External/serial/include",
+					"$(SRCROOT)/../../Source",
+					"$(SRCROOT)/../../External/asio",
+					"$(SRCROOT)/../../External/servus/include",
+					"$(SRCROOT)/../../External/dnssd/include",
+					"$(SRCROOT)/../../External/vst2",
+					"$(SRCROOT)/../../External/serial/include",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Info-App.plist;
@@ -2559,24 +2572,25 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_HEADER_SEARCH_PATHS = (
-					"$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
-					"../../JuceLibraryCode",
-					"$(HOME)/JUCE/modules",
-					"../../Modules",
-					"../../External/servus/include",
-					"../../External/dnssd/include",
-					"../../External/serial/include",
-					"../../Source",
-					"../../External/asio",
-					"../../External/servus/include",
-					"../../External/dnssd/include",
-					"../../External/vst2",
-					"../../External/serial/include",
+					"$(SRCROOT)/~/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode",
+					"$(SRCROOT)/~/JUCE/modules",
+					"$(SRCROOT)/../../Modules",
+					"$(SRCROOT)/../../External/servus/include",
+					"$(SRCROOT)/../../External/dnssd/include",
+					"$(SRCROOT)/../../External/serial/include",
+					"$(SRCROOT)/../../Source",
+					"$(SRCROOT)/../../External/asio",
+					"$(SRCROOT)/../../External/servus/include",
+					"$(SRCROOT)/../../External/dnssd/include",
+					"$(SRCROOT)/../../External/vst2",
+					"$(SRCROOT)/../../External/serial/include",
 				);
 				OTHER_LDFLAGS = "-lServus";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.LGML;
 				PRODUCT_NAME = "LGML";
 				USE_HEADERMAP = NO;
+				VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS = OpenGL;
 				VALID_ARCHS = "x86_64";
 			};
 			name = Release;
@@ -2798,6 +2812,7 @@
 				8668D99ED6CE90129C7CBD9B,
 				02CBCC84561EDE752436DEC5,
 				41CC1BAF3544933BBA20F824,
+				40F770D66E1BAF7286C96C60,
 				383161D8BA5431CBBC808175,
 				9C690A6C09D4E52ECF8CE964,
 				C4AB9814673B0D5F9D939C01,
@@ -2843,7 +2858,7 @@
 		654E08D00AA239F015209CE5 = {
 			isa = PBXProject;
 			buildConfigurationList = 30219CF005AC6F86A92DF221;
-			attributes = { LastUpgradeCheck = 1200; ORGANIZATIONNAME = ""; TargetAttributes = { CEDBFE646754336406EE4841 = { SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; com.apple.HardenedRuntime = { enabled = 0; }; }; }; }; };
+			attributes = { LastUpgradeCheck = 1230; ORGANIZATIONNAME = ""; TargetAttributes = { CEDBFE646754336406EE4841 = { SystemCapabilities = {com.apple.ApplicationGroups.iOS = { enabled = 0; }; com.apple.InAppPurchase = { enabled = 0; }; com.apple.InterAppAudio = { enabled = 0; }; com.apple.Push = { enabled = 0; }; com.apple.Sandbox = { enabled = 0; }; com.apple.HardenedRuntime = { enabled = 0; }; }; }; }; };
 			compatibilityVersion = "Xcode 3.2";
 			hasScannedForEncodings = 0;
 			mainGroup = 30D10D8D5E568AB9EAFBF3D2;
