@@ -164,7 +164,8 @@ void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiM
 
 void VSTNode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    buffer.clear();
+    if(getNumAudioInputs() == 0) buffer.clear();
+    Node::processBlockBypassed(buffer, midiMessages);
 }
 
 var VSTNode::getJSONData()
