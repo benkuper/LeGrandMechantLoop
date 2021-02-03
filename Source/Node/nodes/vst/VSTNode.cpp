@@ -162,9 +162,21 @@ void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiM
     inMidiBuffer.clear();
 }
 
+void VSTNode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+{
+    buffer.clear();
+}
+
 var VSTNode::getJSONData()
 {
     var data = Node::getJSONData();
+    if (vst != nullptr)
+    {
+        MemoryBlock b;
+        vst->getStateInformation(b);
+        data.getDynamicObject()->setProperty("vstState", b.toBase64Encoding());
+    }
+
     if (vstParamsCC != nullptr) data.getDynamicObject()->setProperty("vstParams", vstParamsCC->getJSONData());
     return data;
 }
@@ -172,6 +184,14 @@ var VSTNode::getJSONData()
 void VSTNode::loadJSONDataItemInternal(var data)
 {
     Node::loadJSONDataItemInternal(data);
+
+    if (vst != nullptr)
+    {
+        String vstData = data.getProperty("vstState", "");
+        MemoryBlock b;
+        if (b.fromBase64Encoding(vstData)) vst->setStateInformation(b.getData(), b.getSize());
+    }
+
     if(vstParamsCC != nullptr) vstParamsCC->loadJSONData(data.getProperty("vstParams", var()));
 }
 

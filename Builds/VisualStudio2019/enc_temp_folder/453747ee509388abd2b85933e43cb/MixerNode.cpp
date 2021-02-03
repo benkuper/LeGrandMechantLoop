@@ -128,6 +128,7 @@ void MixerNode::loadJSONDataItemInternal(var data)
     Node::loadJSONDataItemInternal(data);
     autoSetNumAudioInputs();
     autoSetNumAudioOutputs();
+    DBG("Num audio inputs / outputs : " << getNumAudioInputs() << " / " << getNumAudioOutputs());
     if(data.hasProperty("items")) itemsCC.loadJSONData(data.getProperty("items", var()));
     if(data.hasProperty("outItems")) outItemsCC.loadJSONData(data.getProperty("outItems",var()));
 }
