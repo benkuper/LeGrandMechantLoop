@@ -325,7 +325,8 @@ void LooperTrack::onContainerParameterChanged(Parameter* p)
 }
 void LooperTrack::handleBeatChanged(bool isNewBar)
 {
-	if (isRecording(false) && autoStopRecAfterBeats)
+	TrackState s = trackState->getValueDataAsEnum<TrackState>();
+	if (s == RECORDING && autoStopRecAfterBeats > 0)
 	{
 		autoStopRecAfterBeats--;
 		if (autoStopRecAfterBeats == 0) finishRecordingAndPlay();
@@ -335,7 +336,6 @@ void LooperTrack::handleBeatChanged(bool isNewBar)
 
 	if (!isWaiting()) return;
 	
-	TrackState s = trackState->getValueDataAsEnum<TrackState>();
 	if (s == IDLE) return;
 	
 	if (isRecording(true))
