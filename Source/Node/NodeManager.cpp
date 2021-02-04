@@ -14,6 +14,7 @@
 #include "Connection/NodeConnectionManager.h"
 #include "nodes/io/IONode.h"
 #include "Transport/Transport.h"
+#include "nodes/looper/LooperNode.h"
 
 juce_ImplementSingleton(RootNodeManager)
 
@@ -29,8 +30,13 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 	isPlaying->setControllableFeedbackOnly(true);
 	isPlaying->hideInEditor = true;
 
+	playAllLoopers = addTrigger("Play All Loopers", "This will play all loopers");
+	stopAllLoopers = addTrigger("Stop All Loopers", "This will stop all loopers");
+	clearAllLoopers = addTrigger("Clear All Loopers", "This will clear all loopers");
+
 	connectionManager.reset(new NodeConnectionManager(this));
 	addChildControllableContainer(connectionManager.get());
+
 }
 
 
@@ -143,6 +149,14 @@ Array<UndoableAction*> NodeManager::getRemoveItemsUndoableAction(Array<Node*> it
 	return result;
 }
 
+
+void NodeManager::onContainerTriggerTriggered(Trigger* t)
+{
+	BaseManager::onContainerTriggerTriggered(t);
+	if (t == playAllLoopers) for (auto& n : items) if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->playAllTrigger->trigger();
+	else if (t == stopAllLoopers) for (auto& n : items) if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->stopAllTrigger->trigger();
+	else if (t == clearAllLoopers) for (auto& n : items) if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->clearAllTrigger->trigger();
+}
 
 void NodeManager::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
 {

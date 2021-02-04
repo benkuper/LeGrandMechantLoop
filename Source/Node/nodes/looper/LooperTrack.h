@@ -57,6 +57,8 @@ public:
 	int curReadSample;
 	int numBeats;
 
+	int autoStopRecAfterBeats;
+
 	virtual void stateChanged();
 
 	virtual void recordOrPlay();

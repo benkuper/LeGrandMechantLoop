@@ -30,22 +30,34 @@ public:
     enum MonitorMode { OFF, ALWAYS, RECORDING_ONLY, ARMED_TRACK };
     EnumParameter* monitorMode;
     
-    IntParameter* currentTrackIndex;
-    IntParameter* numTracks;
+    LooperTrack* currentTrack;
+    ControllableContainer tracksCC;
 
+    ControllableContainer trackParamsCC;
+    IntParameter* numTracks;
+    IntParameter* currentTrackIndex;
+    
+    ControllableContainer recordCC;
     EnumParameter* quantization;
     EnumParameter* freeFillMode;
+    IntParameter* fadeTimeMS;
+    enum DoubleRecMode { NOTHING, AUTO_STOP_BAR, AUTO_STOP_BEAT };
+    EnumParameter* doubleRecMode;
+    IntParameter* doubleRecVal;
+    enum TempMuteMode { NEXT_BAR, NEXT_BEAT };
+    EnumParameter* tmpMuteMode;
+    FloatParameter* firstRecVolumeThreshold;
 
+    ControllableContainer controlsCC;
     Trigger* recTrigger;
     Trigger* clearCurrentTrigger;
     Trigger* playAllTrigger;
     Trigger* stopAllTrigger;
     Trigger* clearAllTrigger;
+    Trigger* tmpMuteAllTrigger;
 
-    LooperTrack* currentTrack;
-    ControllableContainer tracksCC;
-    
-    IntParameter* fadeTimeMS;
+    //tmp mute
+    Array<LooperTrack *> tmpMuteTracks;
 
     virtual void initInternal() override;
 
@@ -54,8 +66,6 @@ public:
 
     virtual void setCurrentTrack(LooperTrack* t);
 
-    virtual void onContainerTriggerTriggered(Trigger* t) override;
-    virtual void onContainerParameterChangedInternal(Parameter* p) override;
     virtual void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
     virtual void beatChanged(bool isNewBar) override;

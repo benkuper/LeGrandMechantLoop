@@ -26,7 +26,8 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 	globalBeatAtStart(0),
 	freePlaySample(0),
 	curReadSample(0),
-	numBeats(0)
+	numBeats(0),
+	autoStopRecAfterBeats(-1)
 {
 	editorIsCollapsed = true;
 
@@ -95,10 +96,11 @@ void LooperTrack::stateChanged()
 
 	case WILL_RECORD:
 	{
-		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue() 
+
+		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()
 			|| looper->getQuantization() == Transport::FREE)
 		{
-			startRecording();
+			if (!looper->firstRecVolumeThreshold->enabled) startRecording();
 		}
 	}
 	break;
@@ -146,7 +148,7 @@ void LooperTrack::stateChanged()
 void LooperTrack::startRecording()
 {
 	startRecordingInternal();
-
+	
 	trackState->setValueWithData(RECORDING);
 	if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
 	{
@@ -167,6 +169,7 @@ void LooperTrack::startRecording()
 
 void LooperTrack::finishRecordingAndPlay()
 {
+	autoStopRecAfterBeats = -1;
 	
 	Transport::Quantization q = looper->getQuantization();
 	Transport::Quantization fillMode = looper->getFreeFillMode();
@@ -322,7 +325,16 @@ void LooperTrack::onContainerParameterChanged(Parameter* p)
 }
 void LooperTrack::handleBeatChanged(bool isNewBar)
 {
+	if (isRecording(false) && autoStopRecAfterBeats)
+	{
+		autoStopRecAfterBeats--;
+		if (autoStopRecAfterBeats == 0) finishRecordingAndPlay();
+		return;
+	}
+
+
 	if (!isWaiting()) return;
+	
 	TrackState s = trackState->getValueDataAsEnum<TrackState>();
 	if (s == IDLE) return;
 	

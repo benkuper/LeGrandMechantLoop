@@ -112,6 +112,17 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 	bool outputToSeparateTrack = outputBuffer.getNumChannels() > trackChannel;
 	float rmsVal = 0;
 
+
+	TrackState s = trackState->getValueDataAsEnum<TrackState>();
+
+	if (s == WILL_RECORD 
+		&& (!Transport::getInstance()->isCurrentlyPlaying->boolValue() || looper->getQuantization() == Transport::FREE)
+		&& looper->firstRecVolumeThreshold->enabled)
+	{
+		float mag = inputBuffer.getMagnitude(0, blockSize);
+		if (mag >= looper->firstRecVolumeThreshold->floatValue()) startRecording();
+	}
+
 	if (buffer.getNumSamples() == 0) return;
 
 	if (isRecording(false))
@@ -139,6 +150,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 	if ((outputToMainTrack || outputToSeparateTrack) && (curReadSample <= bufferNumSamples))
 	{
+
 		for (int i = 0; i < numChannels; i++)
 		{
 			if (outputToMainTrack)
@@ -151,8 +163,10 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 				outputBuffer.addFrom(trackChannel, 0, buffer, i, curReadSample, blockSize, vol);
 			}
 
-			rmsVal = jmax(rmsVal, buffer.getRMSLevel(i, curReadSample, blockSize));
+			//rmsVal = jmax(rmsVal, buffer.getMagnitude(i, curReadSample, blockSize));
 		}
+
+		rmsVal = buffer.getMagnitude(curReadSample, blockSize);
 
 		float curVal = rms->floatValue();
 		float targetVal = rms->getLerpValueTo(rmsVal, rmsVal > curVal ? .8f : .2f);

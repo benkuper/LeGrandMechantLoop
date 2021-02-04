@@ -165,7 +165,14 @@ void NodeAudioConnection::connectChannels(int sourceChannel, int destChannel)
 
 	if (sourceChannel >= sourceNode->getNumAudioOutputs() || destChannel >= destNode->getNumAudioInputs())
 	{
-		LOGWARNING("Wrong connection, not connecting");
+		if(isCurrentlyLoadingData)
+		{
+			ghostChannelMap.add({ sourceChannel, destChannel }); //one of the node may not be fully init, keep for later
+		}
+		else
+		{
+			LOGWARNING("Wrong connection, not connecting");
+		}
 		return;
 	}
 
@@ -294,6 +301,7 @@ void NodeAudioConnection::loadJSONDataConnectionInternal(var data)
 	var ghostData = data.getProperty("ghostChannels", var());
 	for (int i = 0; i < ghostData.size(); i++)
 	{
+		DBG("Ghost channel set > " + (int)ghostData[i][0] << " > " <<(int) ghostData[i][1]);
 		ghostChannelMap.add({ ghostData[i][0], ghostData[i][1] });
 	}
 
