@@ -13,11 +13,12 @@
 #include "JuceHeader.h"
 #include "Common/RingBuffer.h"
 #include "Transport/Transport.h"
+#include "../../Node.h"
 
 class LooperNode;
 
 class LooperTrack :
-	public ControllableContainer
+	public VolumeControl
 {
 public:
 	LooperTrack(LooperNode * looper, int index);
@@ -36,7 +37,6 @@ public:
 	Trigger* clearTrigger;
 
 	BoolParameter* isCurrent;
-	BoolParameter* active;
 
 	IntParameter* loopBeat;
 	IntParameter* loopBar;
@@ -70,6 +70,8 @@ public:
 	virtual void clearBuffer();
 	virtual void startPlaying();
 	virtual void stopPlaying();
+
+	virtual void clearTrack();
 
 	virtual void handleWaiting();
 

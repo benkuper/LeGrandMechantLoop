@@ -30,7 +30,7 @@ LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     if (looperType == LooperNode::AUDIO)
     {
         AudioLooperTrack* audioTrack = (AudioLooperTrack*)track;
-        volumeUI.reset(audioTrack->volume->createSlider());
+        volumeUI.reset(audioTrack->gain->createSlider());
         volumeUI->orientation = volumeUI->VERTICAL;
         rmsUI.reset(new RMSSliderUI(audioTrack->rms));
     }

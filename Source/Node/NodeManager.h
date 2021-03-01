@@ -29,6 +29,7 @@ public:
     Trigger* stopAllLoopers;
     Trigger* playAllLoopers;
     Trigger* clearAllLoopers;
+    Trigger* tmpMuteAllLoopers;
 
     AudioProcessorGraph* graph;
     AudioProcessorGraph::NodeID inputNodeID;

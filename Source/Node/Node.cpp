@@ -20,13 +20,10 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	nodeGraphID(AudioManager::getInstance()->getNewGraphID()),
 	hasAudioInput(hasAudioInput),
 	hasAudioOutput(hasAudioOutput),
-    hasMIDIInput(false),
-    hasMIDIOutput(false),
-    numAudioInputs(nullptr),
+	hasMIDIInput(false),
+	hasMIDIOutput(false),
+	numAudioInputs(nullptr),
 	numAudioOutputs(nullptr),
-    outRMS(nullptr),
-    outGain(nullptr),
-    prevGain(0),
 	nodeNotifier(5)
 {
 	processor = new NodeAudioProcessor(this);
@@ -53,10 +50,8 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 
 	if (useOutControl)
 	{
-		outGain = addFloatParameter("Out Gain", "Gain to apply to all channels after processing", 1, 0, 2);
-		prevGain = outGain->floatValue();
-		outRMS = addFloatParameter("Out RMS", "The general activity of all channels combined after processing", 0, 0, 1);
-		outRMS->setControllableFeedbackOnly(true);
+		outControl.reset(new VolumeControl("Out", true));
+		addChildControllableContainer(outControl.get());
 	}
 
 }
@@ -100,7 +95,7 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 		if (!enabled->boolValue())
 		{
 			for (auto& c : outAudioConnections) c->activityLevel = 0;
-			outRMS->setValue(0);
+			if (outControl != nullptr) outControl->rms->setValue(0);
 		}
 	}
 	else if (p == numAudioInputs)
@@ -229,7 +224,7 @@ void Node::updatePlayConfig(bool notify)
 	}
 
 	ScopedSuspender sp(processor);
-	
+
 	updatePlayConfigInternal();
 	if (notify && !isCurrentlyLoadingData) nodeListeners.call(&NodeListener::nodePlayConfigUpdated, this);
 }
@@ -248,7 +243,7 @@ void Node::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)
 
 void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	
+
 	if (processor->isSuspended())
 	{
 		LOGWARNING("Processor should be suspended, should not be here...");
@@ -262,6 +257,10 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 
 	if (buffer.getNumChannels() < jmax(numInputs, numOutputs))
 	{
+		if (Engine::mainEngine->isLoadingFile)
+		{
+			LOGWARNING("Should not be here");
+		}
 		LOGWARNING("Not the same number of channels ! " << buffer.getNumChannels() << " < > " << jmax(numInputs, numOutputs));
 		return;
 	}
@@ -274,11 +273,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	{
 		processBlockInternal(buffer, inMidiBuffer);
 
-		if (outGain != nullptr)
-		{
-			buffer.applyGainRamp(0, buffer.getNumSamples(), prevGain, outGain->floatValue());
-			prevGain = outGain->floatValue();
-		}
+		if (outControl != nullptr) outControl->applyGain(buffer);
 	}
 
 	float rms = 0;
@@ -287,7 +282,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 
 	for (int i = 0; i < buffer.getNumChannels(); i++)
 	{
-		float channelRMS = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
+		float channelRMS = buffer.getMagnitude(i, 0, buffer.getNumSamples());
 
 		for (int c = 0; c < numOutConnections; c++)
 		{
@@ -308,11 +303,11 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		outAudioConnections[i]->activityLevel = curLevel + (level - curLevel) * .2f;
 	}
 
-	if (outRMS != nullptr && enabled->boolValue())
+	if (outControl != nullptr && enabled->boolValue())
 	{
-		float curVal = outRMS->floatValue();
-		float targetVal = outRMS->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
-		outRMS->setValue(targetVal);
+		float curVal = outControl->rms->floatValue();
+		float targetVal = outControl->rms->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
+		outControl->rms->setValue(targetVal);
 	}
 }
 
@@ -327,7 +322,7 @@ NodeAudioProcessor::Suspender::Suspender(NodeAudioProcessor* proc) : proc(proc)
 }
 
 NodeAudioProcessor::Suspender::~Suspender() {
-	proc->resume(); 
+	proc->resume();
 }
 
 void NodeAudioProcessor::suspend()
@@ -339,8 +334,52 @@ void NodeAudioProcessor::suspend()
 
 void NodeAudioProcessor::resume()
 {
-	suspendCount --;
+	suspendCount--;
 	jassert(suspendCount >= 0);
 	if (suspendCount == 0) suspendProcessing(false);
 }
 
+VolumeControl::VolumeControl(const String& name, bool hasRMS) :
+	ControllableContainer(name),
+	prevGain(1),
+	rms(nullptr)
+{
+	gain = addFloatParameter("Gain", "Gain for this", 1, 0, 3);
+	active = addBoolParameter("Active", "Fast way to mute this", true);
+
+	if (hasRMS)
+	{
+		rms = addFloatParameter("RMS", "RMS for this", 0, 0, 1);
+		rms->setControllableFeedbackOnly(true);
+	}
+}
+
+VolumeControl::~VolumeControl()
+{
+}
+
+float VolumeControl::getGain()
+{
+	if (active == nullptr || gain == nullptr) return 0;
+	return active->boolValue() ? gain->floatValue() : 0;
+}
+
+void VolumeControl::resetGainAndActive()
+{
+	gain->resetValue();
+	active->resetValue();
+}
+
+void VolumeControl::applyGain(AudioSampleBuffer& buffer)
+{
+	float g = getGain();
+	buffer.applyGainRamp(0, buffer.getNumSamples(), prevGain, g);
+	prevGain = g;
+}
+
+void VolumeControl::applyGain(int channel, AudioSampleBuffer& buffer)
+{
+	float g = getGain();
+	buffer.applyGainRamp(channel, 0, buffer.getNumSamples(), prevGain, g);
+	prevGain = g;
+}

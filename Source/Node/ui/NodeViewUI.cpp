@@ -19,20 +19,11 @@ BaseNodeViewUI::BaseNodeViewUI(Node* node) :
 	drawEmptyDragIcon = true;
 	showRemoveBT = false;
 
-	if (item->outGain!= nullptr)
+	if (item->outControl != nullptr)
 	{
-		outGainUI.reset(item->outGain->createSlider());
-		outGainUI->orientation = FloatSliderUI::VERTICAL;
-		outGainUI->showLabel = false;
-		contentComponents.add(outGainUI.get());
-		addAndMakeVisible(outGainUI.get());
-	}
-
-	if (item->outRMS != nullptr)
-	{
-		outRMSUI.reset(new RMSSliderUI(item->outRMS));
-		contentComponents.add(outRMSUI.get());
-		addAndMakeVisible(outRMSUI.get());
+		outControlUI.reset(new VolumeControlUI(item->outControl.get()));
+		contentComponents.add(outControlUI.get());
+		addAndMakeVisible(outControlUI.get());
 	}
 
 	updateInputConnectors();
@@ -133,7 +124,7 @@ void BaseNodeViewUI::updateOutputConnectors()
 void BaseNodeViewUI::paint(Graphics& g)
 {
 	BaseItemUI::paint(g);
-	if (!item->miniMode->boolValue() && (outRMSUI != nullptr || outGainUI != nullptr))
+	if (!item->miniMode->boolValue() && outControlUI != nullptr)
 	{
 		g.setColour(bgColor.darker(.3f));
 		g.fillRoundedRectangle(outControlRect.expanded(1).toFloat(), 2);
@@ -186,8 +177,7 @@ void BaseNodeViewUI::resizedInternalContent(Rectangle<int>& r)
 	r.removeFromLeft(2);
 	outControlRect = Rectangle<int>(r);
 
-	if (outRMSUI != nullptr) outRMSUI->setBounds(r.removeFromRight(10).reduced(2));
-	if (outGainUI != nullptr) outGainUI->setBounds(r.removeFromRight(20).reduced(2));
+	if (outControlUI != nullptr) outControlUI->setBounds(r.removeFromRight(30).reduced(2));
 	r.removeFromRight(2);
 	outControlRect.setLeft(r.getRight());
 
@@ -213,4 +203,47 @@ void BaseNodeViewUI::newMessage(const Node::NodeEvent& e)
 {
 	if (e.type == e.INPUTS_CHANGED || e.type == e.MIDI_INPUT_CHANGED) nodeInputsChanged();
 	else if (e.type == e.OUTPUTS_CHANGED || e.type == e.MIDI_OUTPUT_CHANGED) nodeOutputsChanged();
+}
+
+
+VolumeControlUI::VolumeControlUI(VolumeControl* item) :
+	item(item)
+{
+	gainUI.reset(item->gain->createSlider());
+	gainUI->orientation = gainUI->VERTICAL;
+	gainUI->customLabel = item->niceName;
+	addAndMakeVisible(gainUI.get());
+	if (item->rms != nullptr)
+	{
+		rmsUI.reset(new RMSSliderUI(item->rms));
+		addAndMakeVisible(rmsUI.get());
+	}
+
+	activeUI.reset(item->active->createButtonToggle());
+	activeUI->showLabel = false;
+	addAndMakeVisible(activeUI.get());
+}
+
+void VolumeControlUI::paint(Graphics& g)
+{
+	g.setColour(NORMAL_COLOR);
+	g.drawRoundedRectangle(getLocalBounds().reduced(1).toFloat(), 2, 1);
+}
+
+void VolumeControlUI::resized()
+{
+	Rectangle<int> r = getLocalBounds().reduced(2);
+	activeUI->setBounds(r.removeFromBottom(r.getWidth()).reduced(2));
+
+	if (rmsUI != nullptr)
+	{
+		rmsUI->setBounds(r.removeFromRight(8));
+		r.removeFromRight(2);
+	}
+	else
+	{
+		r.reduce(2, 0);
+	}
+
+	gainUI->setBounds(r);
 }

@@ -15,7 +15,7 @@
 String LooperTrack::trackStateNames[LooperTrack::STATES_MAX] = { "Idle", "Will Record", "Recording", "Finish Recording", "Playing", "Will Stop", "Stopped", "Will Play" };
 
 LooperTrack::LooperTrack(LooperNode * looper, int index) :
-	ControllableContainer("Track " + String(index + 1)),
+	VolumeControl("Track " + String(index + 1),true),
 	looper(looper),
 	index(index),
     curSample(0),
@@ -33,10 +33,11 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 
 	isCurrent = addBoolParameter("Is Current", "Is this track the current one controlled by the looper ?", false);
 	isCurrent->hideInEditor = true;
+	isCurrent->setControllableFeedbackOnly(true);
 
 	trackState = addEnumParameter("State", "State of this track, for feedback");
 	for (int i = 0; i < STATES_MAX; i++) trackState->addOption(trackStateNames[i], (TrackState)i);
-	//trackState->setControllableFeedbackOnly(true);
+	trackState->setControllableFeedbackOnly(true);
 
 	playRecordTrigger = addTrigger("Record", "If empty, this will start recording. If recording, this will stop recording and start playing. If already recorded, this will start playing");
 	playTrigger = addTrigger("Play", "If empty, this will do nothing. If something is already recording, this will start playing.");
@@ -46,8 +47,13 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 	active = addBoolParameter("Active", "If this is not checked, this will act as a track mute.", true);
 
 	loopBeat = addIntParameter("Current Beat", "Current beat of this loop", 0, 0);
+	loopBeat->setControllableFeedbackOnly(true);
+	
 	loopBar = addIntParameter("Current Bar", "Current bar of this loop", 0, 0);
+	loopBar->setControllableFeedbackOnly(true);
+
 	loopProgression = addFloatParameter("Progression", "The progression of this loop", 0, 0, 1);
+	loopProgression->setControllableFeedbackOnly(true);
 }
 
 LooperTrack::~LooperTrack()
@@ -274,6 +280,13 @@ void LooperTrack::stopPlaying()
 	else if (isPlaying(true)) trackState->setValueWithData(STOPPED);
 }
 
+void LooperTrack::clearTrack()
+{
+	if (isRecording(true)) cancelRecording();
+	clearBuffer();
+	resetGainAndActive();
+}
+
 void LooperTrack::handleWaiting()
 {
 	TrackState s = trackState->getValueDataAsEnum<TrackState>();
@@ -311,8 +324,7 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 	}
 	else if (t == clearTrigger)
 	{
-		if (isRecording(true)) cancelRecording(); 
-		clearBuffer();
+		clearTrack();
 	}
 }
 

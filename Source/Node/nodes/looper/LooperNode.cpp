@@ -27,7 +27,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 	numTracks = trackParamsCC.addIntParameter("Track Count", "Number of tracks to use for this looper", defaultNumTracks, 1, 32);
 	currentTrackIndex = trackParamsCC.addIntParameter("Current Track", "Index of the current track", 1, 1, defaultNumTracks);
-	
+	currentTrackIndex->isSavable = false;
 	
 	quantization = recordCC.addEnumParameter("Quantization", "The way to know when to stop recording. Default means getting the quantization from the Transport.\nBar/beat means it will stop the recording to fill an round number of bar/beat, even if you stop before. Free means it will stop instantly.");
 	quantization->addOption("Default", Transport::DEFAULT)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Free", Transport::FREE);
@@ -180,8 +180,10 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 		for (auto& cc : tracksCC.controllableContainers)
 		{
 			((LooperTrack*)cc.get())->clearTrigger->trigger();
-			currentTrackIndex->setValue(1);
 		}
+
+		currentTrackIndex->setValue(1);
+		if (outControl != nullptr) outControl->resetGainAndActive();
 	}
 	else if (c == playAllTrigger)
 	{

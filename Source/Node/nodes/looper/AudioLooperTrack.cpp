@@ -16,9 +16,6 @@ AudioLooperTrack::AudioLooperTrack(AudioLooperNode * looper, int index, int numC
     audioLooper(looper),
     numChannels(numChannels)
 {
-	volume = addFloatParameter("Gain", "The gain for this track", 1, 0, 2);
-	rms = addFloatParameter("RMS", "RMS for this track, for feedback", 0, 0, 1);
-	rms->setControllableFeedbackOnly(true);
 }
 
 AudioLooperTrack::~AudioLooperTrack()
@@ -44,6 +41,7 @@ void AudioLooperTrack::clearBuffer()
 	buffer.clear();
 	LooperTrack::clearBuffer();
 }
+
 
 void AudioLooperTrack::startRecordingInternal()
 {
@@ -146,7 +144,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		outputBuffer.clear(trackChannel, 0, blockSize);
 	}
 
-	float vol = active->boolValue() ? volume->floatValue() : 0;
+	float vol = getGain();
 
 	if ((outputToMainTrack || outputToSeparateTrack) && (curReadSample <= bufferNumSamples))
 	{
@@ -155,12 +153,12 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		{
 			if (outputToMainTrack)
 			{
-				outputBuffer.addFrom(i, 0, buffer, i, curReadSample, blockSize, vol);
+				outputBuffer.addFromWithRamp(i, 0, buffer.getReadPointer(i, curReadSample), blockSize, prevGain, vol);
 			}
 
 			if (outputToSeparateTrack)
 			{
-				outputBuffer.addFrom(trackChannel, 0, buffer, i, curReadSample, blockSize, vol);
+				outputBuffer.addFromWithRamp(trackChannel, 0, buffer.getReadPointer(i, curReadSample), blockSize, prevGain, vol);
 			}
 
 			//rmsVal = jmax(rmsVal, buffer.getMagnitude(i, curReadSample, blockSize));
@@ -176,4 +174,6 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 	{
 		rms->setValue(0);
 	}
+
+	prevGain = vol;
 }

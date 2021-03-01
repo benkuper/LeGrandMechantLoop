@@ -19,6 +19,7 @@ LooperNodeViewUI::LooperNodeViewUI(LooperNode* n) :
 	{
 		midiParamUI.reset(mlp->midiParam->createMIDIParameterUI());
 		addAndMakeVisible(midiParamUI.get());
+		contentComponents.add(midiParamUI.get());
 	}
 
 	recUI.reset(node->recTrigger->createButtonUI());
@@ -34,6 +35,12 @@ LooperNodeViewUI::LooperNodeViewUI(LooperNode* n) :
 	addAndMakeVisible(stopAllUI.get());
 	addAndMakeVisible(clearAllUI.get());
 
+	contentComponents.add(recUI.get());
+	contentComponents.add(clearUI.get());
+	contentComponents.add(playAllUI.get());
+	contentComponents.add(stopAllUI.get());
+	contentComponents.add(clearAllUI.get());
+
 	updateTracksUI();
 }
 
@@ -48,6 +55,7 @@ void LooperNodeViewUI::updateTracksUI()
 	while (tracksUI.size() > numTracks)
 	{
 		removeChildComponent(tracksUI[tracksUI.size() - 1]);
+		contentComponents.removeAllInstancesOf(tracksUI[tracksUI.size() - 1]);
 		tracksUI.removeLast();
 	}
 
@@ -55,6 +63,7 @@ void LooperNodeViewUI::updateTracksUI()
 	{
 		LooperTrackUI* ui = new LooperTrackUI((LooperTrack*)node->tracksCC.controllableContainers[tracksUI.size()].get());
 		addAndMakeVisible(ui);
+		contentComponents.add(ui);
 		tracksUI.add(ui);
 	}
 

@@ -23,9 +23,6 @@ public:
 
     AudioLooperNode* audioLooper;
 
-    FloatParameter* volume;
-    FloatParameter* rms;
-
     int numChannels;
     AudioBuffer<float> buffer;
     AudioBuffer<float> preRecBuffer; //a snapshot of the looper's ringbuffer just before recording. This allows for delay adjustement and nice fades for the end of the loop

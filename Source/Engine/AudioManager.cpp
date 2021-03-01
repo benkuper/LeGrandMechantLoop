@@ -43,10 +43,13 @@ AudioManager::AudioManager() :
     graph.setPlayConfigDetails(numAudioInputs, numAudioOutputs, currentSampleRate, currentBufferSize);
     graph.prepareToPlay(currentSampleRate, currentBufferSize);
 
+    Engine::mainEngine->addEngineListener(this);
 }
 
 AudioManager::~AudioManager()
 {
+    Engine::mainEngine->removeEngineListener(this);
+
     am.removeAudioCallback(&player);
     graph.clear();
     player.setProcessor(nullptr);
@@ -118,6 +121,16 @@ StringArray AudioManager::getOutputChannelNames() const
     StringArray result;
     for (int i = 0; i < allOutputs.size(); i++)  if (actives[i]) result.add(allOutputs[i]);
     return result;
+}
+
+void AudioManager::startLoadFile()
+{
+    graph.suspendProcessing(true);
+}
+
+void AudioManager::endLoadFile()
+{
+    graph.suspendProcessing(false);
 }
 
 var AudioManager::getJSONData()

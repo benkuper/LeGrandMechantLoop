@@ -12,10 +12,8 @@
 
 #include "../../Node.h"
 
-
-
 class MixerItem :
-	public ControllableContainer
+	public VolumeControl
 {
 public:
 	MixerItem(int inputIndex, int outputIndex, bool hasRMS = false);
@@ -23,13 +21,6 @@ public:
 
 	int inputIndex;
 	int outputIndex;
-
-	float prevGain;
-	FloatParameter* gain;
-	FloatParameter* rms;
-	BoolParameter * active;
-
-	float getGain();
 };
 
 class MixerNode :

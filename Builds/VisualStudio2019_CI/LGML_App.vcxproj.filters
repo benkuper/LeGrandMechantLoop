@@ -1996,6 +1996,9 @@
     <ClCompile Include="..\..\JUCE\modules\juce_core\native\juce_posix_NamedPipe.cpp">
       <Filter>JUCE Modules\juce_core\native</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\JUCE\modules\juce_core\native\juce_wasm_SystemStats.cpp">
+      <Filter>JUCE Modules\juce_core\native</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\JUCE\modules\juce_core\native\juce_win32_Files.cpp">
       <Filter>JUCE Modules\juce_core\native</Filter>
     </ClCompile>
@@ -7139,6 +7142,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Modules\juce_organicui\progress\ProgressNotifier.h">
       <Filter>JUCE Modules\juce_organicui\progress</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Modules\juce_organicui\remotecontrol\OSCInputHelper.h">
+      <Filter>JUCE Modules\juce_organicui\remotecontrol</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Modules\juce_organicui\remotecontrol\OSCRemoteControl.h">
       <Filter>JUCE Modules\juce_organicui\remotecontrol</Filter>

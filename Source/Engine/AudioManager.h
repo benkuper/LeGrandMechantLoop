@@ -19,7 +19,8 @@
 class AudioManager :
     public ControllableContainer, 
 	public AudioIODeviceCallback,
-	public ChangeListener
+	public ChangeListener,
+	public EngineListener
 {
 public:
 	juce_DeclareSingleton(AudioManager, true);
@@ -49,9 +50,11 @@ public:
 
 	virtual void changeListenerCallback(ChangeBroadcaster* source) override;
 
-
 	StringArray getInputChannelNames() const;
 	StringArray getOutputChannelNames() const;
+
+	void startLoadFile() override;
+	void endLoadFile() override;
 
 	class AudioManagerListener
 	{

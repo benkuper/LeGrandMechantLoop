@@ -107,7 +107,7 @@ void MixerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& mid
         buffer.addFromWithRamp(outputIndex, 0, tmpBuffer.getReadPointer(outputIndex), numSamples, outMI->prevGain, newGain);
         outMI->prevGain = newGain;
 
-        float rms = buffer.getRMSLevel(outputIndex, 0, buffer.getNumSamples());
+        float rms = buffer.getMagnitude(outputIndex, 0, buffer.getNumSamples());
         float curVal = outMI->rms->floatValue();
         float targetVal = outMI->rms->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
         outMI->rms->setValue(targetVal);
@@ -138,28 +138,12 @@ BaseNodeViewUI* MixerNode::createViewUI()
 }
 
 MixerItem::MixerItem(int inputIndex, int outputIndex, bool hasRMS) :
-    ControllableContainer(inputIndex > -1 ? (String(inputIndex + 1) + " > " + String(outputIndex + 1)) : "Out " + String(outputIndex + 1)),
+    VolumeControl(inputIndex > -1 ? (String(inputIndex + 1) + " > " + String(outputIndex + 1)) : "Out " + String(outputIndex + 1), hasRMS),
     inputIndex(inputIndex),
-    outputIndex(outputIndex),
-    prevGain(1),
-    rms(nullptr)
+    outputIndex(outputIndex)
 {
-    gain = addFloatParameter("Gain", "Gain for this", 1, 0, 1);
-    active = addBoolParameter("Active", "Fast way to mute this", true);
-   
-    if (hasRMS)
-    {
-        rms = addFloatParameter("RMS", "RMS for this", 0, 0, 1);
-        rms->setControllableFeedbackOnly(true);
-    }
 }
 
 MixerItem::~MixerItem()
 {
-}
-
-float MixerItem::getGain()
-{
-    if (active == nullptr || gain == nullptr) return 0;
-    return active->boolValue() ? gain->floatValue() : 0;
 }

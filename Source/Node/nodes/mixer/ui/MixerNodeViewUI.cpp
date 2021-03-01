@@ -59,7 +59,7 @@ void MixerNodeViewUI::rebuildOutLine()
 
     for (int i = 0; i < node->outItemsCC.controllableContainers.size(); i++)
     {
-        MixerItemUI* mi = new MixerItemUI((MixerItem*)node->outItemsCC.controllableContainers[i].get());
+        VolumeControlUI * mi = new VolumeControlUI ((MixerItem*)node->outItemsCC.controllableContainers[i].get());
         addAndMakeVisible(mi);
         outItemsUI.add(mi);
     }
@@ -111,7 +111,7 @@ void MixerNodeViewUI::InputGainLine::rebuild()
 
     for (auto& cc : itemsCC->controllableContainers)
     {
-        MixerItemUI * mi = new MixerItemUI((MixerItem *)cc.get());
+        VolumeControlUI  * mi = new VolumeControlUI ((MixerItem *)cc.get());
         itemsUI.add(mi);
         addAndMakeVisible(mi);
     }
@@ -135,48 +135,4 @@ void MixerNodeViewUI::InputGainLine::resized()
     {
         itemsUI[i]->setBounds(r.removeFromLeft(sizePerGain).reduced(2));
     }
-}
-
-
-
-MixerItemUI::MixerItemUI(MixerItem* item) :
-    item(item)
-{
-    gainUI.reset(item->gain->createSlider());
-    gainUI->orientation = gainUI->VERTICAL;
-    gainUI->customLabel = item->niceName;
-    addAndMakeVisible(gainUI.get());
-    if (item->rms != nullptr)
-    {
-        rmsUI.reset(new RMSSliderUI(item->rms));
-        addAndMakeVisible(rmsUI.get());
-    }
-   
-    activeUI.reset(item->active->createButtonToggle());
-    activeUI->showLabel = false;
-    addAndMakeVisible(activeUI.get());
-}
-
-void MixerItemUI::paint(Graphics& g)
-{
-    g.setColour(NORMAL_COLOR);
-    g.drawRoundedRectangle(getLocalBounds().reduced(1).toFloat(), 2, 1);
-}
-
-void MixerItemUI::resized()
-{
-    Rectangle<int> r = getLocalBounds().reduced(2);
-    activeUI->setBounds(r.removeFromBottom(r.getWidth()).reduced(2));
-
-    if (rmsUI != nullptr)
-    {
-        rmsUI->setBounds(r.removeFromRight(8));
-        r.removeFromRight(2);
-    }
-    else
-    {
-        r.reduce(2, 0);
-    }
-    
-    gainUI->setBounds(r);
 }

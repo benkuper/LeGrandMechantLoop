@@ -19,6 +19,8 @@ class BaseNodeViewUI;
 
 class NodeAudioProcessor;
 
+class VolumeControl;
+
 class Node :
     public BaseItem
 {
@@ -57,9 +59,7 @@ public:
     BoolParameter* isNodePlaying;
     IntParameter* numAudioInputs; //if userCanSetIO
     IntParameter* numAudioOutputs; //if userCanSetIO
-    FloatParameter* outRMS;
-    FloatParameter* outGain;
-    float prevGain; //for smooth outGain
+    std::unique_ptr<VolumeControl> outControl;
 
     virtual void init(AudioProcessorGraph* graph);
     virtual void initInternal() {}
@@ -127,9 +127,6 @@ public:
     WeakReference<Node>::Master masterReference;
 };
 
-
-
-
 /* AudioProcessor */
 class NodeAudioProcessor :
     public AudioProcessor
@@ -174,3 +171,22 @@ public:
 };
 
 typedef NodeAudioProcessor::Suspender ScopedSuspender;
+
+class VolumeControl :
+    public ControllableContainer
+{
+public:
+    VolumeControl(const String &name, bool hasRMS = false);
+    virtual ~VolumeControl();
+
+    float prevGain;
+    FloatParameter* gain;
+    FloatParameter* rms;
+    BoolParameter* active;
+
+    virtual float getGain();
+    virtual void resetGainAndActive();
+
+    virtual void applyGain(AudioSampleBuffer& buffer);
+    virtual void applyGain(int channel, AudioSampleBuffer& buffer);
+};

@@ -301,7 +301,7 @@ void NodeAudioConnection::loadJSONDataConnectionInternal(var data)
 	var ghostData = data.getProperty("ghostChannels", var());
 	for (int i = 0; i < ghostData.size(); i++)
 	{
-		DBG("Ghost channel set > " + (int)ghostData[i][0] << " > " <<(int) ghostData[i][1]);
+		//DBG("Ghost channel set > " << (int)ghostData[i][0] << " > " <<(int) ghostData[i][1]);
 		ghostChannelMap.add({ ghostData[i][0], ghostData[i][1] });
 	}
 
