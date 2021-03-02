@@ -44,8 +44,6 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 	stopTrigger = addTrigger("Stop", "If recording, this will cancel the recording. If playing, this will stop the track but will keep the recorded content");
 	clearTrigger = addTrigger("Clear", "If recording, this will cancel the recording. If playing, this will clear the track of the recorded content");
 
-	active = addBoolParameter("Active", "If this is not checked, this will act as a track mute.", true);
-
 	loopBeat = addIntParameter("Current Beat", "Current beat of this loop", 0, 0);
 	loopBeat->setControllableFeedbackOnly(true);
 	
