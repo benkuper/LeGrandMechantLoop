@@ -38,6 +38,7 @@ public:
     IntParameter* currentTrackIndex;
     
     ControllableContainer recordCC;
+    BoolParameter* isRecording;
     EnumParameter* quantization;
     EnumParameter* freeFillMode;
     IntParameter* fadeTimeMS;
@@ -47,6 +48,7 @@ public:
     enum TempMuteMode { NEXT_BAR, NEXT_BEAT };
     EnumParameter* tmpMuteMode;
     FloatParameter* firstRecVolumeThreshold;
+
 
     ControllableContainer controlsCC;
     Trigger* recTrigger;

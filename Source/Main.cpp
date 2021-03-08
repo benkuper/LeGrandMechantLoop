@@ -12,7 +12,7 @@
 
 LGMLApplication::LGMLApplication() :
 	OrganicApplication(ProjectInfo::projectName,
-		true)// ,LGMLAssetManager::getImage("icon3"))
+		true, ImageCache::getFromMemory(BinaryData::icon_png, BinaryData::icon_pngSize))
 {
 }
 

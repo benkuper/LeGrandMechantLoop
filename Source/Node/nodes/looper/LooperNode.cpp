@@ -29,6 +29,9 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	currentTrackIndex = trackParamsCC.addIntParameter("Current Track", "Index of the current track", 1, 1, defaultNumTracks);
 	currentTrackIndex->isSavable = false;
 	
+	isRecording = recordCC.addBoolParameter("Is Recording", "Is at least one track recording right now ?", false);
+	isRecording->setControllableFeedbackOnly(true);
+
 	quantization = recordCC.addEnumParameter("Quantization", "The way to know when to stop recording. Default means getting the quantization from the Transport.\nBar/beat means it will stop the recording to fill an round number of bar/beat, even if you stop before. Free means it will stop instantly.");
 	quantization->addOption("Default", Transport::DEFAULT)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Free", Transport::FREE);
 	
@@ -212,6 +215,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 		if (c == t->trackState)
 		{
 			isNodePlaying->setValue(hasContent());
+			isRecording->setValue(isOneTrackRecording(false));
 		}
 	}
 }
