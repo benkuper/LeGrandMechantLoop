@@ -30,7 +30,7 @@ public:
 
     void setNumChannels(int num);
     void updateBufferSize(int newSize);
-    void clearBuffer() override;
+    void clearBuffer(bool setIdle = true) override;
 
     void startRecordingInternal() override;
     void finishRecordingAndPlayInternal() override;

@@ -36,9 +36,10 @@ public:
     ControllableContainer trackParamsCC;
     IntParameter* numTracks;
     IntParameter* currentTrackIndex;
-    
+    IntParameter* section;
+
     ControllableContainer recordCC;
-    BoolParameter* isRecording;
+    EnumParameter * recordingState;
     EnumParameter* quantization;
     EnumParameter* freeFillMode;
     IntParameter* fadeTimeMS;
@@ -49,14 +50,19 @@ public:
     EnumParameter* tmpMuteMode;
     FloatParameter* firstRecVolumeThreshold;
 
-
     ControllableContainer controlsCC;
     Trigger* recTrigger;
     Trigger* clearCurrentTrigger;
     Trigger* playAllTrigger;
+    Trigger* playCurrentSectionTrigger;
+
     Trigger* stopAllTrigger;
+
+    Trigger* clearSectionTrigger;
+    Trigger* clearOtherSectionsTrigger;
     Trigger* clearAllTrigger;
     Trigger* tmpMuteAllTrigger;
+
 
     //tmp mute
     Array<LooperTrack *> tmpMuteTracks;
@@ -77,6 +83,11 @@ public:
     virtual bool hasContent();
     virtual bool isOneTrackRecording(bool includeWillRecord = false);
     LooperTrack* getTrackForIndex(int index);
+    LooperTrack* getFirstEmptyTrack();
+    void setCurrentTrackToFirstEmpty();
+
+    Array<LooperTrack*> getTracksForSection(int section);
+    Array<LooperTrack*> getTracksExceptSection(int section);
 
     Transport::Quantization getQuantization();
     Transport::Quantization getFreeFillMode();

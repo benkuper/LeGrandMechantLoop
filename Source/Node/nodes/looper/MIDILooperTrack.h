@@ -40,7 +40,7 @@ public:
 
     Array<SampledNoteInfo> getNoteOnsAtSample(int sample);
 
-    void clearBuffer() override;
+    void clearBuffer(bool setIdle = true) override;
     void startRecordingInternal() override;
     void finishRecordingAndPlayInternal() override;
 

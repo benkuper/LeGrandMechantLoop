@@ -19,7 +19,11 @@ LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     feedback(t)
 {
     playRecordUI.reset(track->playRecordTrigger->createButtonUI());
-    playRecordUI->customLabel = ">";
+    Colour c = Colour::fromHSV((track->section->intValue()-1) * .2f, .3f, .6f, 1);
+    playRecordUI->customLabel = track->section->stringValue();
+    playRecordUI->customBGColor = c;
+    playRecordUI->useCustomBGColor = true;
+    //playRecordUI->customLabel = ">";
 
     stopUI.reset(track->stopTrigger->createButtonUI());
     clearUI.reset(track->clearTrigger->createButtonUI());
@@ -38,15 +42,18 @@ LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     addAndMakeVisible(playRecordUI.get());
     addAndMakeVisible(stopUI.get());
     addAndMakeVisible(clearUI.get());
-    addAndMakeVisible(activeUI.get());
+    
     activeUI->customLabel = String(t->index + 1);
     activeUI->useCustomFGColor = true;
     activeUI->customFGColor = HIGHLIGHT_COLOR.darker(.25f);
+    addAndMakeVisible(activeUI.get());
 
     addAndMakeVisible(volumeUI.get());
     addAndMakeVisible(&feedback);
     addAndMakeVisible(rmsUI.get());
-    
+
+   
+
     track->addAsyncContainerListener(this);
 }
 
@@ -57,6 +64,8 @@ LooperTrackUI::~LooperTrackUI()
 
 void LooperTrackUI::paint(Graphics& g)
 {
+    if (inspectable.wasObjectDeleted()) return;
+
     if (track->isCurrent->boolValue())
     {
         g.setColour(BLUE_COLOR.withAlpha(.2f));
@@ -64,7 +73,8 @@ void LooperTrackUI::paint(Graphics& g)
     }
 
     g.setColour(feedback.contourColor);
-    g.drawRoundedRectangle(getLocalBounds().reduced(1).toFloat(), 2, 1);
+    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(1), 2, 1);
+
 }
 
 void LooperTrackUI::resized()
@@ -96,6 +106,14 @@ void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
         else if (e.targetControllable == track->isCurrent)
         {
             repaint();
+        }
+        else if (e.targetControllable == track->section)
+        {
+            Colour c = Colour::fromHSV((track->section->intValue() - 1) * .2f, .3f, .6f, 1);
+            playRecordUI->customLabel = track->section->stringValue();
+            playRecordUI->customBGColor = c;
+            playRecordUI->updateUIParams();
+            playRecordUI->repaint();
         }
     }
 }

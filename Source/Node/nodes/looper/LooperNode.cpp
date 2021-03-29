@@ -28,9 +28,12 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	numTracks = trackParamsCC.addIntParameter("Track Count", "Number of tracks to use for this looper", defaultNumTracks, 1, 32);
 	currentTrackIndex = trackParamsCC.addIntParameter("Current Track", "Index of the current track", 1, 1, defaultNumTracks);
 	currentTrackIndex->isSavable = false;
-	
-	isRecording = recordCC.addBoolParameter("Is Recording", "Is at least one track recording right now ?", false);
-	isRecording->setControllableFeedbackOnly(true);
+
+	section = trackParamsCC.addIntParameter("Current Section", "The Section to set for the next recorded track (like A,B,C in a song). This allow to make changing structure and switch between sections during performance", 1, 1);
+
+	recordingState = recordCC.addEnumParameter("Is Recording", "Is at least one track recording right now ?", false);
+	recordingState->addOption("Idle", LooperTrack::IDLE)->addOption("Will Record", LooperTrack::WILL_RECORD)->addOption("Recording", LooperTrack::RECORDING)->addOption("Finish Recording", LooperTrack::FINISH_RECORDING);
+	recordingState->setControllableFeedbackOnly(true);
 
 	quantization = recordCC.addEnumParameter("Quantization", "The way to know when to stop recording. Default means getting the quantization from the Transport.\nBar/beat means it will stop the recording to fill an round number of bar/beat, even if you stop before. Free means it will stop instantly.");
 	quantization->addOption("Default", Transport::DEFAULT)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Free", Transport::FREE);
@@ -56,7 +59,10 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	recTrigger = controlsCC.addTrigger("Rec", "Record to the current track");
 	clearCurrentTrigger = controlsCC.addTrigger("Clear","Clear the current track if not empty, otherwise clear the past one");
 	playAllTrigger = controlsCC.addTrigger("Play All", "Stop all tracks");
+	playCurrentSectionTrigger = controlsCC.addTrigger("Play Current Section", "This will play tracks in current section and stop all others");
 	stopAllTrigger = controlsCC.addTrigger("Stop All", "Stop all tracks");
+	clearSectionTrigger = controlsCC.addTrigger("Clear Section", "Clear all tracks in current section");
+	clearOtherSectionsTrigger = controlsCC.addTrigger("Clear Other Sections", "Clear all tracks in other sections than the current one");
 	clearAllTrigger = controlsCC.addTrigger("Clear All", "Clear all the tracks");
 	tmpMuteAllTrigger = controlsCC.addTrigger("Temp Mute All", "This will mute all the tracks that are not already muted, and will unmute them depending on the Temp Mute Mode value");
 
@@ -144,24 +150,41 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 				currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
 			}
 
-			LooperTrack::TrackState s = currentTrack->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
-			
+			LooperTrack* t = currentTrack; //may change during the process
+			LooperTrack::TrackState s = t->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
+
 			if (s == LooperTrack::WILL_RECORD)
 			{
 				DoubleRecMode m = doubleRecMode->getValueDataAsEnum<DoubleRecMode>();
 				if (m == AUTO_STOP_BAR || m == AUTO_STOP_BEAT)
 				{
 					int numBeats = doubleRecVal->intValue() * (m == AUTO_STOP_BAR ? Transport::getInstance()->beatsPerBar->intValue() : 1);
-					currentTrack->autoStopRecAfterBeats = numBeats;
+					t->autoStopRecAfterBeats = numBeats;
 				}
 			}
 			else
 			{
+				/*
+				if (s == LooperTrack::FINISH_RECORDING)
+				{
+					while (currentTrack->isPlaying(true) && currentTrackIndex->intValue() < numTracks->intValue())
+					{
+						currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
+					}
+				}
+				*/
+
 				currentTrack->playRecordTrigger->trigger();
 			}
 
+			LooperTrack::TrackState newState = t->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
+			if (newState == LooperTrack::WILL_RECORD || newState == LooperTrack::RECORDING)
+			{
+				t->section->setValue(section->intValue());
+			}
 
-			if ((s == LooperTrack::FINISH_RECORDING || currentTrack->isPlaying(true)))
+
+			if ((newState == LooperTrack::FINISH_RECORDING || t->isPlaying(true)))
 			{
 				currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
 			}
@@ -178,6 +201,12 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			currentTrack->clearTrigger->trigger();
 		}
 	}
+	else if (c == clearSectionTrigger || c == clearOtherSectionsTrigger)
+	{
+		Array<LooperTrack*> tracks = c == clearSectionTrigger ? getTracksForSection(section->intValue()) : getTracksExceptSection(section->intValue());
+		for (auto& t : tracks) t->clearTrigger->trigger();
+		setCurrentTrackToFirstEmpty();
+	}
 	else if (c == clearAllTrigger)
 	{
 		for (auto& cc : tracksCC.controllableContainers)
@@ -185,12 +214,21 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			((LooperTrack*)cc.get())->clearTrigger->trigger();
 		}
 
-		currentTrackIndex->setValue(1);
+		setCurrentTrackToFirstEmpty();
 		if (outControl != nullptr) outControl->resetGainAndActive();
 	}
 	else if (c == playAllTrigger)
 	{
 		for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->playTrigger->trigger();
+	}
+	else if (c == playCurrentSectionTrigger)
+	{
+		for (auto& cc : tracksCC.controllableContainers)
+		{
+			LooperTrack* t = (LooperTrack*)cc.get();
+			if (t->section->intValue() == section->intValue()) t->playTrigger->trigger();
+			else t->stopTrigger->trigger();
+		}
 	}
 	else if (c == stopAllTrigger)
 	{
@@ -215,7 +253,19 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 		if (c == t->trackState)
 		{
 			isNodePlaying->setValue(hasContent());
-			isRecording->setValue(isOneTrackRecording(false));
+
+			bool recordOrWillRecord = isOneTrackRecording(true);
+			bool isActuallyRecording = isOneTrackRecording(false);
+			LooperTrack::TrackState s = t->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
+
+			LooperTrack::TrackState ts;
+
+			if (isActuallyRecording && s == LooperTrack::FINISH_RECORDING) ts = LooperTrack::FINISH_RECORDING;
+			else if (isActuallyRecording) ts = LooperTrack::RECORDING;
+			else if (recordOrWillRecord) ts = LooperTrack::WILL_RECORD;
+			else ts = LooperTrack::IDLE;
+
+			recordingState->setValueWithData(ts);
 		}
 	}
 }
@@ -259,6 +309,47 @@ LooperTrack* LooperNode::getTrackForIndex(int index)
 {
 	if (index >= tracksCC.controllableContainers.size()) return nullptr;
 	return (LooperTrack*)tracksCC.controllableContainers[index].get();
+}
+
+LooperTrack* LooperNode::getFirstEmptyTrack()
+{
+	for (auto& cc : tracksCC.controllableContainers)
+	{
+		LooperTrack* t = (LooperTrack*)cc.get();
+		if (!t->hasContent(true)) return t;
+	}
+	return nullptr;
+}
+
+void LooperNode::setCurrentTrackToFirstEmpty()
+{
+	LooperTrack* t = getFirstEmptyTrack();
+	if (t == nullptr) currentTrackIndex->setValue(1);
+	else currentTrackIndex->setValue(tracksCC.controllableContainers.indexOf(t) + 1);
+}
+
+Array<LooperTrack*> LooperNode::getTracksForSection(int targetSection)
+{
+	Array<LooperTrack*> result;
+	for (auto& cc : tracksCC.controllableContainers)
+	{
+		LooperTrack* t = (LooperTrack*)cc.get();
+		if (t->section->intValue() == targetSection) result.add(t);
+	}
+
+	return result;
+}
+
+Array<LooperTrack*> LooperNode::getTracksExceptSection(int targetSection)
+{
+	Array<LooperTrack*> result;
+	for (auto& cc : tracksCC.controllableContainers)
+	{
+		LooperTrack* t = (LooperTrack*)cc.get();
+		if (t->section->intValue() != targetSection) result.add(t);
+	}
+
+	return result;
 }
 
 Transport::Quantization LooperNode::getQuantization()

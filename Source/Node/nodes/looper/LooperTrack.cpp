@@ -52,6 +52,8 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 
 	loopProgression = addFloatParameter("Progression", "The progression of this loop", 0, 0, 1);
 	loopProgression->setControllableFeedbackOnly(true);
+
+	section = addIntParameter("Section", "The section this track was recorded for. This is for musical structure purpose", 1, 1);
 }
 
 LooperTrack::~LooperTrack()
@@ -80,6 +82,11 @@ void LooperTrack::recordOrPlay()
 	case STOPPED:
 	{
 		trackState->setValueWithData(WILL_PLAY);
+	}
+
+	case WILL_STOP:
+	{
+		trackState->setValueWithData(PLAYING); //was alreayd playing, cancel the will stop and keep playing
 	}
 	break;
 
@@ -243,11 +250,11 @@ void LooperTrack::cancelRecording()
 	clearBuffer();
 }
 
-void LooperTrack::clearBuffer()
+void LooperTrack::clearBuffer(bool setIdle)
 {
 	curSample = 0;
 	bufferNumSamples = 0;
-	trackState->setValueWithData(IDLE);
+	if(setIdle) trackState->setValueWithData(IDLE);
 }
 
 void LooperTrack::startPlaying()
@@ -283,6 +290,7 @@ void LooperTrack::clearTrack()
 	if (isRecording(true)) cancelRecording();
 	clearBuffer();
 	resetGainAndActive();
+	section->setValue(1);
 }
 
 void LooperTrack::handleWaiting()
@@ -309,6 +317,7 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 	else if (t == playTrigger)
 	{
 		if (s == STOPPED) trackState->setValueWithData(WILL_PLAY);
+		else if (s == WILL_STOP) trackState->setValue(WILL_STOP); //meaning it was already playing, cancel the will stop and keep playing
 	}
 	else if (t == stopTrigger)
 	{

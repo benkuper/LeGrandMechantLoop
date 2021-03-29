@@ -22,10 +22,10 @@ MIDILooperTrack::~MIDILooperTrack()
 {
 }
 
-void MIDILooperTrack::clearBuffer()
+void MIDILooperTrack::clearBuffer(bool setIdle)
 {
     buffer.clear();
-	LooperTrack::clearBuffer();
+	LooperTrack::clearBuffer(setIdle);
 }
 
 void MIDILooperTrack::startRecordingInternal()

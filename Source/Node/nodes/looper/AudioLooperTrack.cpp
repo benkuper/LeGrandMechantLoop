@@ -36,10 +36,10 @@ void AudioLooperTrack::updateBufferSize(int newSize)
 	buffer.setSize(numChannels, newSize, true, true);
 }
 
-void AudioLooperTrack::clearBuffer()
+void AudioLooperTrack::clearBuffer(bool setIdle)
 {
 	buffer.clear();
-	LooperTrack::clearBuffer();
+	LooperTrack::clearBuffer(setIdle);
 }
 
 
@@ -49,7 +49,7 @@ void AudioLooperTrack::startRecordingInternal()
 
 	updateBufferSize(recNumSamples);
 
-	clearBuffer();
+	clearBuffer(false);
 
 	//Store a snapshot of the ring buffer that will be faded at the end of the recorded buffer
 	int fadeNumSamples = audioLooper->getFadeNumSamples();

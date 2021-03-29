@@ -94,6 +94,7 @@ void Transport::stop()
 
 void Transport::finishSetTempo(bool startPlaying)
 {
+	if (blockSize == 0) return;
 	isSettingTempo = false;
 	numSamplesPerBeat = round(setTempoSampleCount / (beatsPerBar->intValue() * blockSize)) * blockSize;
 	bpm->setValue(60.0 / getTimeForSamples(numSamplesPerBeat));

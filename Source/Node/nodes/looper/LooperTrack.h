@@ -41,6 +41,7 @@ public:
 	IntParameter* loopBeat;
 	IntParameter* loopBar;
 	FloatParameter* loopProgression;
+	IntParameter* section;
 
 	int index;
 
@@ -67,7 +68,7 @@ public:
 	virtual void finishRecordingAndPlay();
 	virtual void finishRecordingAndPlayInternal() {}
 	virtual void cancelRecording();
-	virtual void clearBuffer();
+	virtual void clearBuffer(bool setIdle = true);
 	virtual void startPlaying();
 	virtual void stopPlaying();
 

@@ -43,7 +43,6 @@ public:
         Colour contourColor;
         Colour fillColor;
 
-
         void trackStateUpdate(LooperTrack::TrackState s);
 
         void updateContourColor();
