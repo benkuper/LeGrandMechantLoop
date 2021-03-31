@@ -66,6 +66,7 @@ LooperTrack * AudioLooperNode::createLooperTrack(int index)
 
 void AudioLooperNode::updateRingBuffer()
 {
+	ScopedSuspender sp(processor);
 	ringBuffer.reset(new RingBuffer<float>(numChannelsPerTrack->intValue(), getFadeNumSamples() * 2)); //double to not have overlapping read and write
 }
 
@@ -101,6 +102,8 @@ void AudioLooperNode::onContainerParameterChangedInternal(Parameter* p)
 		{
 			((AudioLooperTrack*)cc.get())->setNumChannels(numChannelsPerTrack->intValue());
 		}
+
+		updateRingBuffer();
 	}
 	else if (p == fadeTimeMS) updateRingBuffer();
 }
