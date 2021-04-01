@@ -24,12 +24,13 @@ public:
         public Component
     {
     public:
-        OutputGainLine(OutputLineCC * outputLine);
+        OutputGainLine(MixerNode * node, OutputLineCC * outputLine);
 
+        MixerNode* node;
         OutputLineCC * outputLine;
 
         OwnedArray<VolumeControlUI> itemsUI;
-        VolumeControlUI outUI;
+        std::unique_ptr<VolumeControlUI> outUI;
         std::unique_ptr<BoolButtonToggleUI> exclusiveUI;
 
         void rebuild();
@@ -44,6 +45,8 @@ public:
     void nodeOutputsChanged() override;
 
     void updateLines();
+
+    void viewFilterUpdated() override;
 
     void paint(Graphics& g) override;
     void resizedInternalContentNode(Rectangle<int> &r) override;

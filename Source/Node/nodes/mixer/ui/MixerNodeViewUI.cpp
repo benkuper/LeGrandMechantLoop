@@ -40,14 +40,23 @@ void MixerNodeViewUI::updateLines()
         gainLines.removeLast();
     }
 
+    for (auto & l : gainLines) l->rebuild();
+
     while (gainLines.size() < numLines)
     {
-        OutputGainLine* line = new OutputGainLine(node->outputLines[gainLines.size()]);
+        OutputGainLine* line = new OutputGainLine(node, node->outputLines[gainLines.size()]);
         addAndMakeVisible(line);
         gainLines.add(line);
     }
 
+
     resized();
+}
+
+void MixerNodeViewUI::viewFilterUpdated()
+{
+    updateLines();
+    NodeViewUI::viewFilterUpdated();
 }
 
 void MixerNodeViewUI::paint(Graphics& g)
@@ -66,29 +75,71 @@ void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 
 // INPUT GAIN LINE
 
-MixerNodeViewUI::OutputGainLine::OutputGainLine(OutputLineCC * outputLine) :
-    outputLine(outputLine),
-    outUI(&outputLine->out)
+MixerNodeViewUI::OutputGainLine::OutputGainLine(MixerNode * node, OutputLineCC * outputLine) :
+    node(node),
+    outputLine(outputLine)
 {
-    exclusiveUI.reset(outputLine->exclusiveMode->createButtonToggle());
-    addAndMakeVisible(exclusiveUI.get());
-    exclusiveUI->useCustomFGColor = true;
-    exclusiveUI->customFGColor = Colours::purple.brighter(.2f);
-    exclusiveUI->customLabel = "Ex.";
-    addAndMakeVisible(&outUI);
     rebuild();
 }
 
 void MixerNodeViewUI::OutputGainLine::rebuild()
 {
+    if (node->showOutputActives->boolValue() ||
+        node->showOutputGains->boolValue() ||
+        node->showOutputRMS->boolValue()
+        )
+    {
+        if (outUI == nullptr)
+        {
+            outUI.reset(new VolumeControlUI(&outputLine->out));
+            addAndMakeVisible(outUI.get());
+        }
+        
+        outUI->setViewedComponents(node->showOutputGains->boolValue(), node->showOutputRMS->boolValue(), node->showOutputActives->boolValue());
+
+    }
+    else
+    {
+        if (outUI != nullptr)
+        {
+            removeChildComponent(outUI.get());
+            outUI.reset();
+        }
+    }
+
+    if (node->showOutputExclusives->boolValue())
+    {
+        if (exclusiveUI == nullptr)
+        {
+            exclusiveUI.reset(outputLine->exclusiveMode->createButtonToggle());
+            exclusiveUI->useCustomFGColor = true;
+            exclusiveUI->customFGColor = Colours::purple.brighter(.2f);
+            exclusiveUI->customLabel = "Ex.";
+            addAndMakeVisible(exclusiveUI.get());
+        }
+    }
+    else
+    {
+        if (exclusiveUI != nullptr)
+        {
+            removeChildComponent(exclusiveUI.get());
+            exclusiveUI.reset();
+        }
+    }
+
+
     for (auto& ui : itemsUI) removeChildComponent(ui);
     itemsUI.clear();
 
-    for (auto& mi : outputLine->mixerItems)
+    if (node->showItemGains->boolValue() || node->showItemActives->boolValue())
     {
-        VolumeControlUI  * mui = new VolumeControlUI(mi);
-        itemsUI.add(mui);
-        addAndMakeVisible(mui);
+        for (auto& mi : outputLine->mixerItems)
+        {
+            VolumeControlUI* mui = new VolumeControlUI(mi);
+            mui->setViewedComponents(node->showItemGains->boolValue(), false, node->showItemActives->boolValue());
+            itemsUI.add(mui);
+            addAndMakeVisible(mui);
+        }
     }
 
     resized();
@@ -98,7 +149,7 @@ void MixerNodeViewUI::OutputGainLine::paint(Graphics& g)
 {
     g.setColour(NORMAL_COLOR.withAlpha(.5f));
     Rectangle<float> r = getLocalBounds().toFloat();
-    r.removeFromRight(40).toFloat();
+    if(outUI != nullptr || exclusiveUI != nullptr) r.removeFromRight(40).toFloat();
 
     g.drawRoundedRectangle(r, 2, 1);
 }
@@ -109,11 +160,16 @@ void MixerNodeViewUI::OutputGainLine::resized()
 
     Rectangle<int> r = getLocalBounds().reduced(2);
 
-    Rectangle<int> rr = r.removeFromRight(30);
-    exclusiveUI->setBounds(rr.removeFromTop(rr.getWidth()).reduced(2));
-    outUI.setBounds(rr);
-    r.removeFromRight(10);
-
+    if (outUI != nullptr || exclusiveUI != nullptr)
+    {
+        Rectangle<int> rr = r.removeFromRight(30);
+        
+        if(exclusiveUI != nullptr) exclusiveUI->setBounds(rr.removeFromTop(rr.getWidth()).reduced(2));
+        if(outUI != nullptr) outUI->setBounds(rr);
+        
+        r.removeFromRight(10);
+    }
+   
     int sizePerGain = jmin(r.getWidth() / itemsUI.size(), 30);
     for (int i = 0; i < itemsUI.size();i++)
     {

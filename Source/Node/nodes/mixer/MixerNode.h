@@ -55,6 +55,7 @@ public:
 	BoolParameter* showOutputGains;
 	BoolParameter* showOutputRMS;
 	BoolParameter* showOutputActives;
+	BoolParameter* showOutputExclusives;
 	BoolParameter* showItemGains;
 	BoolParameter* showItemActives;
 

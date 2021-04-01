@@ -24,6 +24,9 @@ public:
 	var gainGhostData;
 	bool isRoot;
 
+	int realNumInputs;
+	int realNumOutputs;
+
 	void setIsRoot(bool value);
 
 	virtual void setAudioInputs(const StringArray& inputNames, bool updateConfig = true) override;

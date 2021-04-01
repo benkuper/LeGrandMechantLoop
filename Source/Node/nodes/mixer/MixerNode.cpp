@@ -20,6 +20,7 @@ MixerNode::MixerNode(var params) :
 	showOutputGains = viewCC.addBoolParameter("Show Outputs Gain", "Show Output Gain", true);
 	showOutputRMS = viewCC.addBoolParameter("Show Outputs RMS", "Show Output RMS", true);
 	showOutputActives = viewCC.addBoolParameter("Show Outputs Active", "Show Output Active", true);
+	showOutputExclusives = viewCC.addBoolParameter("Show Outputs Exclusives", "Show Output Exclusives", true);
 	showItemGains = viewCC.addBoolParameter("Show Items Gain", "Show Items Gain", true);
 	showItemActives = viewCC.addBoolParameter("Show Items Active", "Show Items Active", true);
 

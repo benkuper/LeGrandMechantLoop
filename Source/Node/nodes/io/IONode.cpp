@@ -15,7 +15,9 @@ IONode::IONode(StringRef name, var params, bool isInput) :
 	Node(name, params, !isInput, isInput),
     isInput(isInput),
 	channelsCC("Channels"),
-	isRoot(false)
+	isRoot(false),
+	realNumInputs(0),
+	realNumOutputs(0)
 {
 	viewUISize->setPoint(150, 180);
 
@@ -27,16 +29,17 @@ void IONode::setIsRoot(bool value)
 {
 	if (isRoot == value) return;
 	isRoot = value;
+
 	if (isRoot)
 	{
 		if (isInput)
 		{
-			numAudioOutputs = addIntParameter("Channels", "Number of channels to get from the sound card", 2, 0, 32);
+			numAudioOutputs = addIntParameter("Num Channels", "Number of channels to get from the sound card", 2, 0, 32);
 			autoSetNumAudioOutputs();
 		}
 		else
 		{
-			numAudioInputs = addIntParameter("Channels", "Number of channels to get to the sound card", 2, 0, 32);
+			numAudioInputs = addIntParameter("Num Channels", "Number of channels to get to the sound card", 2, 0, 32);
 			autoSetNumAudioInputs();
 		}
 	}
@@ -58,6 +61,8 @@ void IONode::setIsRoot(bool value)
 
 void IONode::setAudioInputs(const StringArray& inputNames, bool updateConfig)
 {
+	realNumInputs = inputNames.size();
+
 	if (!isRoot)
 	{
 		Node::setAudioInputs(inputNames, updateConfig);
@@ -70,11 +75,13 @@ void IONode::setAudioInputs(const StringArray& inputNames, bool updateConfig)
 		actualInputNames.add(i < inputNames.size() ? inputNames[i] : "Output " + String(i + 1));
 	}
 
-	Node::setAudioOutputs(actualInputNames);
+	Node::setAudioInputs(actualInputNames, updateConfig);
 }
 
 void IONode::setAudioOutputs(const StringArray& outputNames, bool updateConfig)
 {
+	realNumOutputs = outputNames.size();
+
 	if (!isRoot)
 	{
 		Node::setAudioOutputs(outputNames, updateConfig);
@@ -87,7 +94,7 @@ void IONode::setAudioOutputs(const StringArray& outputNames, bool updateConfig)
 		actualOutputNames.add(i < outputNames.size() ? outputNames[i] : "Input " + String(i + 1));
 	}
 
-	Node::setAudioInputs(actualOutputNames);
+	Node::setAudioOutputs(actualOutputNames, updateConfig);
 }
 
 void IONode::updateAudioInputsInternal()
@@ -124,7 +131,7 @@ void IONode::updateIO()
 		int index = channelsCC.controllableContainers.size();
 		String s = names[index];
 
-		VolumeControl * channel = new VolumeControl(s);
+		VolumeControl * channel = new VolumeControl(s, true);
 		channelsCC.addChildControllableContainer(channel, true);
 		if (index < gainGhostData.size()) channel->gain->setValue(gainGhostData[index]);
 	}
@@ -138,11 +145,9 @@ void IONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMe
 
 		if (chan->rms == nullptr || chan->gain == nullptr) return;
 
-		float gain = chan->getGain();
-		buffer.applyGainRamp(i, 0, buffer.getNumSamples(), chan->prevGain, gain);
-		chan->prevGain = gain;
+		chan->applyGain(i, buffer);
 
-		float rms = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
+		float rms = buffer.getMagnitude(i, 0, buffer.getNumSamples());
 		float curVal = chan->rms->floatValue();
 		float targetVal = chan->rms->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
 		chan->rms->setValue(targetVal);

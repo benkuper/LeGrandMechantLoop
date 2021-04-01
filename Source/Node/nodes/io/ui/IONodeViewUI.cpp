@@ -42,10 +42,16 @@ void IONodeViewUI::updateUI()
     channelsUI.clear();
 
     int numChannels = node->isInput ? node->getNumAudioOutputs() : node->getNumAudioInputs();
+    int realNumChannels = node->isInput ? node->realNumOutputs : node->realNumInputs;
 
     for (int i = 0; i < numChannels; i++)
     {
         VolumeControlUI* channelUI = new VolumeControlUI((VolumeControl*)node->channelsCC.controllableContainers[i].get());
+        if (i >= realNumChannels)
+        {
+            channelUI->gainUI->useCustomFGColor = true;
+            channelUI->gainUI->customFGColor = Colours::grey;
+        }
         contentComponents.add(channelUI);
         channelsUI.add(channelUI);
         addAndMakeVisible(channelUI);
@@ -56,5 +62,5 @@ void IONodeViewUI::updateUI()
 
 void IONodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
-    for (auto& ui : channelsUI) ui->setBounds(r.removeFromLeft(45).reduced(6));
+    for (auto& ui : channelsUI) ui->setBounds(r.removeFromLeft(40).reduced(6));
 }
