@@ -23,6 +23,25 @@ public:
 	int outputIndex;
 };
 
+class OutputLineCC :
+	public ControllableContainer
+{
+public:
+	OutputLineCC(int index);
+	~OutputLineCC();
+
+	int index;
+
+	Array<MixerItem*> mixerItems;
+	BoolParameter* exclusiveMode;
+	VolumeControl out;
+
+	void setInputNumber(int inputNumber);
+	void updateActives(MixerItem * activeItem = nullptr);
+	void onContainerParameterChanged(Parameter* p)override;
+	void onControllableFeedbackUpdate(ControllableContainer * cc, Controllable * c)override;
+};
+
 class MixerNode :
 	public Node
 {
@@ -30,15 +49,19 @@ public:
 	MixerNode(var params = var());
 	~MixerNode() {}
 
-	ControllableContainer outItemsCC;
 	ControllableContainer itemsCC;
+	Array<OutputLineCC*> outputLines;
+
+	BoolParameter* showOutputGains;
+	BoolParameter* showOutputRMS;
+	BoolParameter* showOutputActives;
+	BoolParameter* showItemGains;
+	BoolParameter* showItemActives;
 
 	AudioBuffer<float> tmpBuffer;
 	
 	void updateAudioInputsInternal() override;
 	void updateAudioOutputsInternal() override;
-
-	void updateGainCC(ControllableContainer* cc);
 
 	MixerItem * getMixerItem(int inputIndex, int outputIndex);
 

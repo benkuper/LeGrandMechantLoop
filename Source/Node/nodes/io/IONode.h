@@ -12,20 +12,6 @@
 
 #include "../../Node.h"
 
-class IOChannel :
-	public ControllableContainer
-{
-public:
-	IOChannel(StringRef name);
-	~IOChannel() {}
-	FloatParameter* gain;
-	FloatParameter* rms;
-	BoolParameter* active;
-	float prevGain;
-
-	float getGain() const;
-};
-
 class IONode :
 	public Node
 {
@@ -33,10 +19,15 @@ public:
 	IONode(StringRef name, var params = var(), bool isInput = true);
 	virtual ~IONode() {}
 
-
 	bool isInput;
 	ControllableContainer channelsCC;
 	var gainGhostData;
+	bool isRoot;
+
+	void setIsRoot(bool value);
+
+	virtual void setAudioInputs(const StringArray& inputNames, bool updateConfig = true) override;
+	virtual void setAudioOutputs(const StringArray& outputNames, bool updateConfig = true) override;
 
 	void updateAudioInputsInternal() override;
 	void updateAudioOutputsInternal() override;

@@ -61,15 +61,19 @@ public:
     IntParameter* numAudioOutputs; //if userCanSetIO
     std::unique_ptr<VolumeControl> outControl;
 
+    ControllableContainer viewCC;
+    BoolParameter* showOutControl;
+
     virtual void init(AudioProcessorGraph* graph);
     virtual void initInternal() {}
 
     void onContainerParameterChangedInternal(Parameter* p) override;
+    virtual void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
-    void setAudioInputs(const int& numInputs, bool updateConfig = true); //auto naming
-    void setAudioInputs(const StringArray& inputNames, bool updateConfig = true);
-    void setAudioOutputs(const int& numOutputs, bool updateConfig = true); //auto naming
-    void setAudioOutputs(const StringArray& outputNames, bool updateConfig = true);
+    virtual void setAudioInputs(const int& numInputs, bool updateConfig = true); //auto naming
+    virtual void setAudioInputs(const StringArray& inputNames, bool updateConfig = true);
+    virtual void setAudioOutputs(const int& numOutputs, bool updateConfig = true); //auto naming
+    virtual void setAudioOutputs(const StringArray& outputNames, bool updateConfig = true);
     virtual void autoSetNumAudioInputs(); //if userCanSetIO
     virtual void autoSetNumAudioOutputs(); //if userCanSetIO
 
@@ -120,7 +124,7 @@ public:
     void addNodeListener(NodeListener* newListener) { nodeListeners.add(newListener); }
     void removeNodeListener(NodeListener* listener) { nodeListeners.remove(listener); }
 
-    DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED, MIDI_INPUT_CHANGED, MIDI_OUTPUT_CHANGED))
+    DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED, MIDI_INPUT_CHANGED, MIDI_OUTPUT_CHANGED, VIEW_FILTER_UPDATED))
 
     virtual BaseNodeViewUI* createViewUI();
 

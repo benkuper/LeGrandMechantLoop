@@ -37,6 +37,8 @@ public:
 
     void controllableFeedbackUpdateInternal(Controllable* c) override;
 
+    virtual void viewFilterUpdated() override;
+
     void resizedInternalHeader(Rectangle<int>& r) override;
     void resizedInternalContentNode(Rectangle<int> &r) override;
 };

@@ -45,7 +45,7 @@ void IONodeViewUI::updateUI()
 
     for (int i = 0; i < numChannels; i++)
     {
-        IOChannelUI* channelUI = new IOChannelUI((IOChannel*)node->channelsCC.controllableContainers[i].get());
+        VolumeControlUI* channelUI = new VolumeControlUI((VolumeControl*)node->channelsCC.controllableContainers[i].get());
         contentComponents.add(channelUI);
         channelsUI.add(channelUI);
         addAndMakeVisible(channelUI);
@@ -57,34 +57,4 @@ void IONodeViewUI::updateUI()
 void IONodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
     for (auto& ui : channelsUI) ui->setBounds(r.removeFromLeft(45).reduced(6));
-}
-
-IOChannelUI::IOChannelUI(IOChannel* ioChannel) :
-    ioChannel(ioChannel)
-{
-    gainUI.reset(ioChannel->gain->createSlider());
-    gainUI->orientation = gainUI->VERTICAL;
-    gainUI->customLabel = ioChannel->niceName;
-    addAndMakeVisible(gainUI.get());
-    rmsUI.reset(new RMSSliderUI(ioChannel->rms));
-    addAndMakeVisible(rmsUI.get());
-    activeUI.reset(ioChannel->active->createButtonToggle());
-    addAndMakeVisible(activeUI.get());
-}
-
-void IOChannelUI::paint(Graphics& g)
-{
-    g.setColour(NORMAL_COLOR);
-    g.drawRoundedRectangle(getLocalBounds().reduced(1).toFloat(), 2, 1);
-}
-
-void IOChannelUI::resized()
-{
-    Rectangle<int> r = getLocalBounds().reduced(2);
-    activeUI->setBounds(r.removeFromBottom(r.getWidth()).reduced(2));
-
-    rmsUI->setBounds(r.removeFromRight(8));
-    r.removeFromRight(2);
-
-    gainUI->setBounds(r);
 }

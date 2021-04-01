@@ -20,15 +20,17 @@ public:
     MixerNodeViewUI(MixerNode* n);
     ~MixerNodeViewUI();
 
-    class InputGainLine :
+    class OutputGainLine :
         public Component
     {
     public:
-        InputGainLine(ControllableContainer* gainsCC, int index);
+        OutputGainLine(OutputLineCC * outputLine);
 
-        int index;
-        ControllableContainer* itemsCC;
+        OutputLineCC * outputLine;
+
         OwnedArray<VolumeControlUI> itemsUI;
+        VolumeControlUI outUI;
+        std::unique_ptr<BoolButtonToggleUI> exclusiveUI;
 
         void rebuild();
 
@@ -36,17 +38,12 @@ public:
         void resized() override;
     };
 
-    OwnedArray<InputGainLine> gainLines;
-
-    OwnedArray<VolumeControlUI> outItemsUI;
-
-    Rectangle<int> outRect;
+    OwnedArray<OutputGainLine> gainLines;
 
     void nodeInputsChanged() override;
     void nodeOutputsChanged() override;
 
     void updateLines();
-    void rebuildOutLine();
 
     void paint(Graphics& g) override;
     void resizedInternalContentNode(Rectangle<int> &r) override;

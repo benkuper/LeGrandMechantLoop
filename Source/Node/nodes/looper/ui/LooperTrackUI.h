@@ -55,5 +55,7 @@ public:
     void paint(Graphics& g) override;
     void resized() override;
 
+    void setViewedComponents(bool showRec, bool showStopClear, bool showGains, bool showRMS, bool showActives);
+
     void newMessage(const ContainerAsyncEvent& e) override;
 };

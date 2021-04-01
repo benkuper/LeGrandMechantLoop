@@ -14,12 +14,80 @@
 IONode::IONode(StringRef name, var params, bool isInput) :
 	Node(name, params, !isInput, isInput),
     isInput(isInput),
-	channelsCC("Channels")
+	channelsCC("Channels"),
+	isRoot(false)
 {
 	viewUISize->setPoint(150, 180);
 
 	channelsCC.saveAndLoadRecursiveData = true;
 	addChildControllableContainer(&channelsCC);
+}
+
+void IONode::setIsRoot(bool value)
+{
+	if (isRoot == value) return;
+	isRoot = value;
+	if (isRoot)
+	{
+		if (isInput)
+		{
+			numAudioOutputs = addIntParameter("Channels", "Number of channels to get from the sound card", 2, 0, 32);
+			autoSetNumAudioOutputs();
+		}
+		else
+		{
+			numAudioInputs = addIntParameter("Channels", "Number of channels to get to the sound card", 2, 0, 32);
+			autoSetNumAudioInputs();
+		}
+	}
+	else
+	{
+		if (isInput)
+		{
+			removeControllable(numAudioOutputs);
+			numAudioOutputs = nullptr;
+		}
+		else
+		{
+			removeControllable(numAudioInputs);
+			numAudioInputs = nullptr;
+		}
+	}
+}
+
+
+void IONode::setAudioInputs(const StringArray& inputNames, bool updateConfig)
+{
+	if (!isRoot)
+	{
+		Node::setAudioInputs(inputNames, updateConfig);
+		return;
+	}
+
+	StringArray actualInputNames;
+	for (int i = 0; i < numAudioInputs->intValue(); i++)
+	{
+		actualInputNames.add(i < inputNames.size() ? inputNames[i] : "Output " + String(i + 1));
+	}
+
+	Node::setAudioOutputs(actualInputNames);
+}
+
+void IONode::setAudioOutputs(const StringArray& outputNames, bool updateConfig)
+{
+	if (!isRoot)
+	{
+		Node::setAudioOutputs(outputNames, updateConfig);
+		return;
+	}
+
+	StringArray actualOutputNames;
+	for (int i = 0; i < numAudioOutputs->intValue(); i++)
+	{
+		actualOutputNames.add(i < outputNames.size() ? outputNames[i] : "Input " + String(i + 1));
+	}
+
+	Node::setAudioInputs(actualOutputNames);
 }
 
 void IONode::updateAudioInputsInternal()
@@ -56,7 +124,7 @@ void IONode::updateIO()
 		int index = channelsCC.controllableContainers.size();
 		String s = names[index];
 
-		IOChannel* channel = new IOChannel(s);
+		VolumeControl * channel = new VolumeControl(s);
 		channelsCC.addChildControllableContainer(channel, true);
 		if (index < gainGhostData.size()) channel->gain->setValue(gainGhostData[index]);
 	}
@@ -66,7 +134,7 @@ void IONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMe
 {
 	for (int i = 0; i < channelsCC.controllableContainers.size() && i < buffer.getNumChannels(); i++)
 	{
-		IOChannel* chan = (IOChannel *)channelsCC.controllableContainers[i].get();
+		VolumeControl* chan = (VolumeControl *)channelsCC.controllableContainers[i].get();
 
 		if (chan->rms == nullptr || chan->gain == nullptr) return;
 
@@ -90,7 +158,7 @@ var IONode::getJSONData()
 {
 	var data = Node::getJSONData();
 	var gainData;
-	for (auto& cc : channelsCC.controllableContainers) gainData.append(((IOChannel*)cc.get())->gain->floatValue());
+	for (auto& cc : channelsCC.controllableContainers) gainData.append(((VolumeControl*)cc.get())->gain->floatValue());
 	data.getDynamicObject()->setProperty("gains", gainData);
 	return data;
 }
@@ -114,19 +182,4 @@ void AudioInputNode::updatePlayConfigInternal()
 void AudioOutputNode::updatePlayConfigInternal()
 {
 	processor->setPlayConfigDetails(getNumAudioInputs(), getNumAudioInputs(), graph->getSampleRate(), graph->getBlockSize());
-}
-
-IOChannel::IOChannel(StringRef name) :
-	ControllableContainer(name)
-{
-	gain = addFloatParameter("Gain", "Gain for this channel", 1, 0, 3);
-	rms = addFloatParameter("RMS", "RMS for this channel", 0, 0, 1);
-	rms->setControllableFeedbackOnly(true);
-	active = addBoolParameter("Active", "Fast way to mute a channel", true);
-	prevGain = getGain();
-}
-
-float IOChannel::getGain() const
-{
-	return active->boolValue() ? gain->floatValue() : 0;
 }

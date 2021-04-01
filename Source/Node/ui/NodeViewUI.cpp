@@ -19,12 +19,7 @@ BaseNodeViewUI::BaseNodeViewUI(Node* node) :
 	drawEmptyDragIcon = true;
 	showRemoveBT = false;
 
-	if (item->outControl != nullptr)
-	{
-		outControlUI.reset(new VolumeControlUI(item->outControl.get()));
-		contentComponents.add(outControlUI.get());
-		addAndMakeVisible(outControlUI.get());
-	}
+	viewFilterUpdated(); //force refresh
 
 	updateInputConnectors();
 	updateOutputConnectors();
@@ -173,11 +168,12 @@ void BaseNodeViewUI::resized()
 void BaseNodeViewUI::resizedInternalContent(Rectangle<int>& r)
 {
 	BaseItemUI::resizedInternalContent(r);
-	
 	r.removeFromLeft(2);
+
 	outControlRect = Rectangle<int>(r);
 
 	if (outControlUI != nullptr) outControlUI->setBounds(r.removeFromRight(30).reduced(2));
+	
 	r.removeFromRight(2);
 	outControlRect.setLeft(r.getRight());
 
@@ -199,32 +195,105 @@ void BaseNodeViewUI::nodeOutputsChanged()
 	updateOutputConnectors();
 }
 
+void BaseNodeViewUI::viewFilterUpdated()
+{
+	if (item->outControl != nullptr &&
+		(item->showOutControl != nullptr && item->showOutControl->boolValue()))
+	{
+		if (outControlUI == nullptr)
+		{
+			outControlUI.reset(new VolumeControlUI(item->outControl.get()));
+			contentComponents.add(outControlUI.get());
+			addAndMakeVisible(outControlUI.get());
+		}
+	}
+	else if (outControlUI != nullptr)
+	{
+		removeChildComponent(outControlUI.get());
+		contentComponents.removeAllInstancesOf(outControlUI.get());
+		outControlUI.reset();
+	}
+
+
+	resized();
+}
+
 void BaseNodeViewUI::newMessage(const Node::NodeEvent& e)
 {
 	if (e.type == e.INPUTS_CHANGED || e.type == e.MIDI_INPUT_CHANGED) nodeInputsChanged();
 	else if (e.type == e.OUTPUTS_CHANGED || e.type == e.MIDI_OUTPUT_CHANGED) nodeOutputsChanged();
+	else if (e.type == e.VIEW_FILTER_UPDATED) viewFilterUpdated();
 }
 
 
 VolumeControlUI::VolumeControlUI(VolumeControl* item) :
 	item(item)
 {
-	gainUI.reset(new DecibelSliderUI(item->gain));
-	gainUI->customLabel = item->niceName;
-	gainUI->orientation = FloatSliderUI::VERTICAL;
+	setViewedComponents(true, true, true);
+}
 
-	addAndMakeVisible(gainUI.get());
-	if (item->rms != nullptr)
+void VolumeControlUI::setViewedComponents(bool showGain, bool showRMS, bool showActive)
+{
+	if (showGain)
 	{
-		rmsUI.reset(new RMSSliderUI(item->rms));
-		rmsUI->orientation = FloatSliderUI::VERTICAL;
-
-		addAndMakeVisible(rmsUI.get());
+		if (gainUI == nullptr)
+		{
+			gainUI.reset(new DecibelSliderUI(item->gain));
+			gainUI->customLabel = item->niceName;
+			gainUI->orientation = FloatSliderUI::VERTICAL;
+			addAndMakeVisible(gainUI.get());
+		}
+	}
+	else
+	{
+		if (gainUI != nullptr)
+		{
+			removeChildComponent(gainUI.get());
+			gainUI.reset();
+		}
 	}
 
-	activeUI.reset(item->active->createButtonToggle());
-	activeUI->showLabel = false;
-	addAndMakeVisible(activeUI.get());
+	if (showRMS)
+	{
+		if (item->rms != nullptr)
+		{
+			if (rmsUI == nullptr)
+			{
+				rmsUI.reset(new RMSSliderUI(item->rms));
+				rmsUI->orientation = FloatSliderUI::VERTICAL;
+
+				addAndMakeVisible(rmsUI.get());
+			}
+		}
+	}
+	else
+	{
+		if (rmsUI != nullptr)
+		{
+			removeChildComponent(rmsUI.get());
+			rmsUI.reset();
+		}
+	}
+
+	if (showActive)
+	{
+		if (activeUI == nullptr)
+		{
+			activeUI.reset(item->active->createButtonToggle());
+			activeUI->showLabel = false;
+			addAndMakeVisible(activeUI.get());
+		}
+	}
+	else
+	{
+		if (activeUI != nullptr)
+		{
+			removeChildComponent(activeUI.get());
+			activeUI.reset();
+		}
+	}
+
+	resized();
 }
 
 void VolumeControlUI::paint(Graphics& g)
@@ -236,7 +305,7 @@ void VolumeControlUI::paint(Graphics& g)
 void VolumeControlUI::resized()
 {
 	Rectangle<int> r = getLocalBounds().reduced(2);
-	activeUI->setBounds(r.removeFromBottom(r.getWidth()).reduced(2));
+	if(activeUI != nullptr) activeUI->setBounds(r.removeFromBottom(r.getWidth()).reduced(2));
 
 	if (rmsUI != nullptr)
 	{
@@ -248,5 +317,5 @@ void VolumeControlUI::resized()
 		r.reduce(2, 0);
 	}
 
-	gainUI->setBounds(r);
+	if(gainUI != nullptr) gainUI->setBounds(r);
 }

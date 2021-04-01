@@ -72,6 +72,14 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 	addChildControllableContainer(&tracksCC);
 
+	showGlobalControl = viewCC.addBoolParameter("Show Global Controls", "Show Global Controls", true);
+	showTracks = viewCC.addBoolParameter("Show Tracks", "Shows the tracks in view", true);
+	showTrackRec = viewCC.addBoolParameter("Show Tracks Rec", "Show Tracks Rec Control", true);
+	showTrackStopClear= viewCC.addBoolParameter("Show Tracks Stop/Clear", "Show Tracks other controls", true);
+	showTrackActives = viewCC.addBoolParameter("Show Tracks Active", "Show Tracks Active", true);
+	showTrackGains = viewCC.addBoolParameter("Show Tracks Gain", "Show Tracks Gain", true);
+	showTrackRMS = viewCC.addBoolParameter("Show Tracks RMS", "Show Tracks RMS", true);
+
 	Transport::getInstance()->addTransportListener(this);
 	viewUISize->setPoint(360, 260);
 }

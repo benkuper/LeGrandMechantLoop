@@ -18,40 +18,7 @@ LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     track(t),
     feedback(t)
 {
-    playRecordUI.reset(track->playRecordTrigger->createButtonUI());
-    Colour c = Colour::fromHSV((track->section->intValue()-1) * .2f, .3f, .6f, 1);
-    playRecordUI->customLabel = track->section->stringValue();
-    playRecordUI->customBGColor = c;
-    playRecordUI->useCustomBGColor = true;
-    //playRecordUI->customLabel = ">";
-
-    stopUI.reset(track->stopTrigger->createButtonUI());
-    clearUI.reset(track->clearTrigger->createButtonUI());
-    
-    volumeUI.reset(new VolumeControlUI(track));
-    
-    /*
-    LooperNode::LooperType looperType = track->looper->looperType;
-    if (looperType == LooperNode::AUDIO)
-    {
-        AudioLooperTrack* audioTrack = (AudioLooperTrack*)track;
-        volumeUI.reset(audioTrack->gain->createSlider());
-        volumeUI->orientation = volumeUI->VERTICAL;
-        rmsUI.reset(new RMSSliderUI(audioTrack->rms));
-    }
-    */
-
-    addAndMakeVisible(playRecordUI.get());
-    addAndMakeVisible(stopUI.get());
-    addAndMakeVisible(clearUI.get());
-    
-    volumeUI->activeUI->customLabel = String(t->index + 1);
-    volumeUI->activeUI->useCustomFGColor = true;
-    volumeUI->activeUI->customFGColor = HIGHLIGHT_COLOR.darker(.25f);
-    addAndMakeVisible(volumeUI.get());
-
     addAndMakeVisible(&feedback);
-
     track->addAsyncContainerListener(this);
 }
 
@@ -82,11 +49,87 @@ void LooperTrackUI::resized()
 
     feedback.setBounds(r.removeFromTop(10).reduced(1));
     
-    playRecordUI->setBounds(r.removeFromTop(30).reduced(1));
-    stopUI->setBounds(r.removeFromTop(20).reduced(1));
-    clearUI->setBounds(r.removeFromTop(20).reduced(1));
+    if (playRecordUI != nullptr)
+    {
+        playRecordUI->setBounds(r.removeFromTop(30).reduced(1));
+    }
 
+    if (stopUI != nullptr)
+    {
+        stopUI->setBounds(r.removeFromTop(20).reduced(1));
+        clearUI->setBounds(r.removeFromTop(20).reduced(1));
+    }
+    
     if(volumeUI != nullptr) volumeUI->setBounds(r.reduced(1));
+}
+
+void LooperTrackUI::setViewedComponents(bool showRec, bool showStopClear, bool showGains, bool showRMS, bool showActives)
+{
+    if (showRec)
+    {
+        if (playRecordUI == nullptr)
+        {
+            playRecordUI.reset(track->playRecordTrigger->createButtonUI());
+            Colour c = Colour::fromHSV((track->section->intValue() - 1) * .2f, .3f, .6f, 1);
+            playRecordUI->customLabel = track->section->stringValue();
+            playRecordUI->customBGColor = c;
+            playRecordUI->useCustomBGColor = true;
+            addAndMakeVisible(playRecordUI.get());
+        }
+    }
+    else
+    {
+        if (playRecordUI != nullptr)
+        {
+            removeChildComponent(playRecordUI.get());
+            playRecordUI.reset();
+        }
+    }
+
+    if(showStopClear)
+    {
+        if(stopUI == nullptr)
+        {
+            stopUI.reset(track->stopTrigger->createButtonUI());
+            clearUI.reset(track->clearTrigger->createButtonUI());
+            addAndMakeVisible(stopUI.get());
+            addAndMakeVisible(clearUI.get());
+        }
+    }
+    else
+    {
+        if (stopUI != nullptr)
+        {
+            removeChildComponent(stopUI.get());
+            removeChildComponent(clearUI.get());
+            stopUI.reset();
+            clearUI.reset();
+        }
+    }
+    
+    if (showGains || showRMS || showActives)
+    {
+        if (volumeUI == nullptr)
+        {
+            volumeUI.reset(new VolumeControlUI(track));
+            volumeUI->activeUI->customLabel = String(track->index + 1);
+            volumeUI->activeUI->useCustomFGColor = true;
+            volumeUI->activeUI->customFGColor = HIGHLIGHT_COLOR.darker(.25f);
+            addAndMakeVisible(volumeUI.get());
+        }
+
+        volumeUI->setViewedComponents(showGains, showRMS, showActives);
+    }
+    else
+    {
+        if (volumeUI != nullptr)
+        {
+            removeChildComponent(volumeUI.get());
+            volumeUI.reset();
+        }
+    }
+   
+    resized();
 }
 
 void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
@@ -105,11 +148,14 @@ void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
         }
         else if (e.targetControllable == track->section)
         {
-            Colour c = Colour::fromHSV((track->section->intValue() - 1) * .2f, .3f, .6f, 1);
-            playRecordUI->customLabel = track->section->stringValue();
-            playRecordUI->customBGColor = c;
-            playRecordUI->updateUIParams();
-            playRecordUI->repaint();
+            if (playRecordUI != nullptr)
+            {
+                Colour c = Colour::fromHSV((track->section->intValue() - 1) * .2f, .3f, .6f, 1);
+                playRecordUI->customLabel = track->section->stringValue();
+                playRecordUI->customBGColor = c;
+                playRecordUI->updateUIParams();
+                playRecordUI->repaint();
+            }
         }
     }
 }

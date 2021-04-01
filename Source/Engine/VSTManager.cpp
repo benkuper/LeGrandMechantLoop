@@ -46,7 +46,7 @@ void VSTManager::updateVSTFormats()
     formatManager.reset(new AudioPluginFormatManager());
 
 #if JUCE_PLUGINHOST_AU && (JUCE_MAC || JUCE_IOS)
-    if (scanAU->boolValue()) formatManager->addFormat(new AudioUnitPluginFormat()));
+    if (scanAU->boolValue()) formatManager->addFormat(new AudioUnitPluginFormat());
 #endif
 
 #if JUCE_PLUGINHOST_VST && (JUCE_MAC || JUCE_WINDOWS || JUCE_LINUX || JUCE_IOS)

@@ -64,6 +64,15 @@ public:
     Trigger* tmpMuteAllTrigger;
 
 
+    //View
+    BoolParameter* showGlobalControl;
+    BoolParameter* showTracks;
+    BoolParameter* showTrackActives;
+    BoolParameter* showTrackGains;
+    BoolParameter* showTrackRMS;
+    BoolParameter* showTrackRec;
+    BoolParameter* showTrackStopClear;
+
     //tmp mute
     Array<LooperTrack *> tmpMuteTracks;
 

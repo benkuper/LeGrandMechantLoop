@@ -24,6 +24,8 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	hasMIDIOutput(false),
 	numAudioInputs(nullptr),
 	numAudioOutputs(nullptr),
+	viewCC("View"),
+	showOutControl(nullptr),
 	nodeNotifier(5)
 {
 	processor = new NodeAudioProcessor(this);
@@ -48,11 +50,17 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 		}
 	}
 
+
+
 	if (useOutControl)
 	{
 		outControl.reset(new VolumeControl("Out", true));
 		addChildControllableContainer(outControl.get());
+
+		showOutControl = viewCC.addBoolParameter("Show Out Control", "Shows the Gain, RMS and Active on the right side in the view", true);
 	}
+
+	addChildControllableContainer(&viewCC);
 
 }
 
@@ -108,6 +116,13 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 	}
 }
 
+void Node::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
+{
+	if (cc == &viewCC)
+	{
+		if(!isCurrentlyLoadingData) nodeNotifier.addMessage(new NodeEvent(NodeEvent::VIEW_FILTER_UPDATED, this));
+	}
+}
 
 void Node::setAudioInputs(const int& numInputs, bool updateConfig)
 {

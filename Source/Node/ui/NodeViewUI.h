@@ -41,10 +41,13 @@ public:
     virtual void resizedInternalContent(Rectangle<int>& r) override;
     virtual void resizedInternalContentNode(Rectangle<int>& r) {}
 
+
     Rectangle<int> getMainBounds() override;
 
     virtual void nodeInputsChanged();
     virtual void nodeOutputsChanged();
+
+    virtual void viewFilterUpdated();
 
     void newMessage(const Node::NodeEvent& e) override;
 };
@@ -72,6 +75,8 @@ public:
     std::unique_ptr<DecibelSliderUI> gainUI;
     std::unique_ptr<RMSSliderUI> rmsUI;
     std::unique_ptr<BoolButtonToggleUI> activeUI;
+
+    void setViewedComponents(bool showGain, bool showRMS, bool showActive);
 
     void paint(Graphics& g) override;
     void resized() override;

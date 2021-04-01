@@ -115,13 +115,17 @@ void NodeManager::addItemInternal(Node* n, var data)
 {
 	n->init(graph);
 
+	bool isRoot = this == RootNodeManager::getInstance();
+
 	if (AudioInputNode* in = dynamic_cast<AudioInputNode *>(n))
 	{
+		in->setIsRoot(isRoot);
 		audioInputNodes.add(in);
 		updateAudioInputNode(in);
 	}
 	else if (AudioOutputNode* on = dynamic_cast<AudioOutputNode*>(n))
 	{
+		on->setIsRoot(isRoot);
 		audioOutputNodes.add(on);
 		updateAudioOutputNode(on);
 	}
