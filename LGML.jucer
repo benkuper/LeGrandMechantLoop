@@ -414,7 +414,7 @@
                customPList="&lt;plist&gt;&#10;&lt;dict&gt;&#10;&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;&#9;&lt;dict&gt;&#10;&#9;&#9;&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;&#10;&#9;&#9;&lt;true/&gt;&#10;&#9;&lt;/dict&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
                microphonePermissionNeeded="1" documentExtensions="lgml">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="0" name="Release" osxCompatibility="10.8 SDK" libraryPath="../../External/servus/lib/osx/release"
+        <CONFIGURATION isDebug="0" name="Release" osxCompatibility="10.13 SDK" libraryPath="../../External/servus/lib/osx/release"
                        headerPath="../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/serial/include"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
