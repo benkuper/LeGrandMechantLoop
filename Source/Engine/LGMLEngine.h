@@ -19,10 +19,15 @@ public:
     LGMLEngine();
     ~LGMLEngine();
 
+    FloatParameter* cpuUsage;
+
     void clearInternal() override;
 
     var getJSONData() override;
     void loadJSONDataInternalEngine(var data, ProgressTask* loadingTask) override;
 
+    virtual void timerCallback(int timerID) override;
+
     String getMinimumRequiredFileVersion() override;
+
 };

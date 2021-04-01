@@ -39,7 +39,6 @@ public:
 	int numAudioInputs;
 	int numAudioOutputs;
 
-
 	int getNewGraphID();
 
 	void updateGraph();

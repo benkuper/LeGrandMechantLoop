@@ -30,6 +30,10 @@ LGMLEngine::LGMLEngine() :
     ProjectSettings::getInstance()->addChildControllableContainer(AudioManager::getInstance());
     GlobalSettings::getInstance()->addChildControllableContainer(VSTManager::getInstance());
 
+    cpuUsage = addFloatParameter("CPU Usage", "This is a global CPU Usage indicator", 0, 0, 1);
+    cpuUsage->setControllableFeedbackOnly(true);
+
+    startTimer(2, 500);
 }
 
 LGMLEngine::~LGMLEngine()
@@ -68,6 +72,13 @@ void LGMLEngine::loadJSONDataInternalEngine(var data, ProgressTask* loadingTask)
     RootNodeManager::getInstance()->loadJSONData(data.getProperty(RootNodeManager::getInstance()->shortName, var()));
     InterfaceManager::getInstance()->loadJSONData(data.getProperty(InterfaceManager::getInstance()->shortName, var()));
     Transport::getInstance()->loadJSONData(data.getProperty(Transport::getInstance()->shortName, var()));
+}
+
+void LGMLEngine::timerCallback(int timerID)
+{
+    Engine::timerCallback(timerID);
+    if (isClearing || isLoadingFile) return;
+    if (timerID == 2) cpuUsage->setValue(AudioManager::getInstance()->am.getCpuUsage());
 }
 
 String LGMLEngine::getMinimumRequiredFileVersion()

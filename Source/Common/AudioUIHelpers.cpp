@@ -10,11 +10,26 @@
 
 #include "AudioUIHelpers.h"
 
+DecibelSliderUI::DecibelSliderUI(FloatParameter* p) :
+    FloatSliderUI(p)
+{
+    
+}
+
+DecibelSliderUI::~DecibelSliderUI()
+{
+}
+
+String DecibelSliderUI::getValueText() const
+{
+    return Decibels::toString(Decibels::gainToDecibels(parameter->floatValue()));
+}
+
+
 RMSSliderUI::RMSSliderUI(FloatParameter* p) :
     FloatSliderUI(p)
 {
-    updateRate = 15;
-    orientation = VERTICAL;
+    updateRate = 10;
     showLabel = false;
     showValue = false;
 }

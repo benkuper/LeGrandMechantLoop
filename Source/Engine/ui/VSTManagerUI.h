@@ -22,6 +22,8 @@ public:
 
     VSTManager* vstManager;
     std::unique_ptr<TriggerButtonUI> rescanUI;
+    std::unique_ptr<BoolToggleUI> vstUI;
+    std::unique_ptr<BoolToggleUI> auUI;
     Label countLabel;
 
     void resizedInternalHeader(Rectangle<int>& r) override;

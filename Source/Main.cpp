@@ -32,3 +32,11 @@ void LGMLApplication::initialiseInternal(const String&)
     ShapeShifterManager::getInstance()->setDefaultFileData(BinaryData::default_lgmllayout);
 	ShapeShifterManager::getInstance()->setLayoutInformations("lgmllayout", "LGML/layouts");
 }
+
+void LGMLApplication::afterInit()
+{
+	if (mainWindow != nullptr)
+	{
+		mainWindow->setMenuBarComponent(new LGMLMenuBarComponent((MainComponent*)mainComponent.get(), (LGMLEngine*)engine.get()));
+	}
+}

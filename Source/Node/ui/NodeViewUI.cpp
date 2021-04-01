@@ -209,13 +209,16 @@ void BaseNodeViewUI::newMessage(const Node::NodeEvent& e)
 VolumeControlUI::VolumeControlUI(VolumeControl* item) :
 	item(item)
 {
-	gainUI.reset(item->gain->createSlider());
-	gainUI->orientation = gainUI->VERTICAL;
+	gainUI.reset(new DecibelSliderUI(item->gain));
 	gainUI->customLabel = item->niceName;
+	gainUI->orientation = FloatSliderUI::VERTICAL;
+
 	addAndMakeVisible(gainUI.get());
 	if (item->rms != nullptr)
 	{
 		rmsUI.reset(new RMSSliderUI(item->rms));
+		rmsUI->orientation = FloatSliderUI::VERTICAL;
+
 		addAndMakeVisible(rmsUI.get());
 	}
 
@@ -237,7 +240,7 @@ void VolumeControlUI::resized()
 
 	if (rmsUI != nullptr)
 	{
-		rmsUI->setBounds(r.removeFromRight(8));
+		rmsUI->setBounds(r.removeFromRight(6));
 		r.removeFromRight(2);
 	}
 	else

@@ -19,6 +19,7 @@ public:
     LGMLApplication();
 
     void initialiseInternal(const String& commandLine) override;
+    void afterInit() override;
 }; 
 
 START_JUCE_APPLICATION(LGMLApplication)

@@ -93,7 +93,7 @@ void VSTNode::setupVST(PluginDescription* description)
 	else
 	{
 		String errorMessage;
-		vst = VSTManager::getInstance()->formatManager.createPluginInstance(*description, processor->getSampleRate(), processor->getBlockSize(), errorMessage);
+		vst = VSTManager::getInstance()->formatManager->createPluginInstance(*description, processor->getSampleRate(), processor->getBlockSize(), errorMessage);
 
 		if (errorMessage.isNotEmpty())
 		{

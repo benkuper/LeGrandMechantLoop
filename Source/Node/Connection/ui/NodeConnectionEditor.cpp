@@ -83,6 +83,17 @@ void NodeAudioConnectionEditor::mouseDown(const MouseEvent& e)
     }
 }
 
+void NodeAudioConnectionEditor::mouseDoubleClick(const MouseEvent& e)
+{
+    if (ChannelConnection* c = dynamic_cast<ChannelConnection*>(e.originalComponent))
+    {
+        if (e.mods.isLeftButtonDown())
+        {
+            removeConnection(c);
+        }
+    }
+}
+
 void NodeAudioConnectionEditor::mouseDrag(const MouseEvent& e)
 {
     if (ChannelSlot* s = dynamic_cast<ChannelSlot*> (e.originalComponent))

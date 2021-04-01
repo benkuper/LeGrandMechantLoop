@@ -344,7 +344,8 @@ VolumeControl::VolumeControl(const String& name, bool hasRMS) :
 	prevGain(1),
 	rms(nullptr)
 {
-	gain = addFloatParameter("Gain", "Gain for this", 1, 0, 3);
+	gain = new DecibelFloatParameter("Gain", "Gain for this");
+	addParameter(gain);
 	active = addBoolParameter("Active", "Fast way to mute this", true);
 
 	if (hasRMS)
@@ -382,4 +383,19 @@ void VolumeControl::applyGain(int channel, AudioSampleBuffer& buffer)
 	float g = getGain();
 	buffer.applyGainRamp(channel, 0, buffer.getNumSamples(), prevGain, g);
 	prevGain = g;
+}
+
+DecibelFloatParameter::DecibelFloatParameter(const String& niceName, const String& description) :
+	FloatParameter(niceName, description, Decibels::decibelsToGain(0), 0, Decibels::decibelsToGain(6.0f))
+{
+	
+}
+
+DecibelFloatParameter::~DecibelFloatParameter()
+{
+}
+
+ControllableUI* DecibelFloatParameter::createDefaultUI()
+{
+	return new DecibelSliderUI(this);
 }

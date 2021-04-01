@@ -11,6 +11,16 @@
 #pragma once
 #include "JuceHeader.h"
 
+class DecibelSliderUI :
+    public FloatSliderUI
+{
+public:
+    DecibelSliderUI(FloatParameter* p);
+    ~DecibelSliderUI();
+
+    virtual String getValueText() const override;
+};
+
 class RMSSliderUI :
     public FloatSliderUI
 {

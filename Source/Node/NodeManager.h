@@ -25,6 +25,8 @@ public:
     NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID);
     ~NodeManager();
     
+    FloatParameter* cpuUsage;
+
     BoolParameter* isPlaying;
     Trigger* stopAllLoopers;
     Trigger* playAllLoopers;

@@ -11,6 +11,22 @@
 ApplicationProperties& getAppProperties();
 ApplicationCommandManager& getCommandManager();
 
+class MainComponent;
+class LGMLEngine;
+
+class LGMLMenuBarComponent :
+    public Component
+{
+public:
+    LGMLMenuBarComponent(MainComponent * mainComp, LGMLEngine * engine);
+    ~LGMLMenuBarComponent();
+
+    MenuBarComponent menuBarComp;
+    std::unique_ptr<FloatSliderUI> cpuUsageUI;
+
+    void resized() override;
+};
+
 class MainComponent : public OrganicMainContentComponent
 {
 public:

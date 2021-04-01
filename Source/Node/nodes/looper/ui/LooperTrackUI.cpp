@@ -27,9 +27,10 @@ LooperTrackUI::LooperTrackUI(LooperTrack* t) :
 
     stopUI.reset(track->stopTrigger->createButtonUI());
     clearUI.reset(track->clearTrigger->createButtonUI());
-
-    activeUI.reset(track->active->createButtonToggle());
     
+    volumeUI.reset(new VolumeControlUI(track));
+    
+    /*
     LooperNode::LooperType looperType = track->looper->looperType;
     if (looperType == LooperNode::AUDIO)
     {
@@ -38,21 +39,18 @@ LooperTrackUI::LooperTrackUI(LooperTrack* t) :
         volumeUI->orientation = volumeUI->VERTICAL;
         rmsUI.reset(new RMSSliderUI(audioTrack->rms));
     }
+    */
 
     addAndMakeVisible(playRecordUI.get());
     addAndMakeVisible(stopUI.get());
     addAndMakeVisible(clearUI.get());
     
-    activeUI->customLabel = String(t->index + 1);
-    activeUI->useCustomFGColor = true;
-    activeUI->customFGColor = HIGHLIGHT_COLOR.darker(.25f);
-    addAndMakeVisible(activeUI.get());
-
+    volumeUI->activeUI->customLabel = String(t->index + 1);
+    volumeUI->activeUI->useCustomFGColor = true;
+    volumeUI->activeUI->customFGColor = HIGHLIGHT_COLOR.darker(.25f);
     addAndMakeVisible(volumeUI.get());
-    addAndMakeVisible(&feedback);
-    addAndMakeVisible(rmsUI.get());
 
-   
+    addAndMakeVisible(&feedback);
 
     track->addAsyncContainerListener(this);
 }
@@ -88,8 +86,6 @@ void LooperTrackUI::resized()
     stopUI->setBounds(r.removeFromTop(20).reduced(1));
     clearUI->setBounds(r.removeFromTop(20).reduced(1));
 
-    activeUI->setBounds(r.removeFromBottom(r.getWidth()).reduced(1));
-    if(rmsUI != nullptr) rmsUI->setBounds(r.removeFromRight(8).reduced(1));
     if(volumeUI != nullptr) volumeUI->setBounds(r.reduced(1));
 }
 

@@ -60,7 +60,6 @@ public:
 };
 
 
-
 class VolumeControlUI :
     public Component
 {
@@ -70,7 +69,7 @@ public:
 
     VolumeControl * item;
 
-    std::unique_ptr<FloatSliderUI> gainUI;
+    std::unique_ptr<DecibelSliderUI> gainUI;
     std::unique_ptr<RMSSliderUI> rmsUI;
     std::unique_ptr<BoolButtonToggleUI> activeUI;
 

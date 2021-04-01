@@ -22,12 +22,15 @@ public:
     VSTManager();
     ~VSTManager();
 
-    AudioPluginFormatManager formatManager;
+    std::unique_ptr<AudioPluginFormatManager> formatManager;
     OwnedArray<PluginDescription> descriptions;
     HashMap<String, PluginDescription*> idDescriptionMap;
 
     Trigger* rescan;
+    BoolParameter* scanVST;
+    BoolParameter* scanAU;
 
+    void updateVSTFormats();
     void updateVSTList();
     void onContainerParameterChanged(Parameter * p) override;
     void onControllableAdded(Controllable* c) override;

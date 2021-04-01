@@ -172,6 +172,16 @@ public:
 
 typedef NodeAudioProcessor::Suspender ScopedSuspender;
 
+class DecibelFloatParameter :
+    public FloatParameter
+{
+public:
+    DecibelFloatParameter(const String& niceName, const String& description);
+    ~DecibelFloatParameter();
+
+    ControllableUI* createDefaultUI() override;
+};
+
 class VolumeControl :
     public ControllableContainer
 {

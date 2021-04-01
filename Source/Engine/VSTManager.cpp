@@ -18,12 +18,18 @@ static OrganicApplication& getApp() { return *dynamic_cast<OrganicApplication*>(
 VSTManager::VSTManager() :
     ControllableContainer("VST Plugin Paths"),
     Thread("VST Scan"),
-    vstManagerNotifier(5)
+    vstManagerNotifier(5),
+    scanAU(nullptr)
 {
     rescan = addTrigger("Rescan", "Rescan all paths");
     rescan->hideInEditor = true;
 
-    formatManager.addDefaultFormats();
+    scanVST = addBoolParameter("Scan VST", "Scan VST Plugins", true);
+#if JUCE_MAC
+    scanAU = addBoolParameter("Scan AU", "Scan AU Plugins", true);
+#endif
+
+    updateVSTFormats();
 
     userCanAddControllables = true;
     userAddControllablesFilters.add(FileParameter::getTypeStringStatic());
@@ -35,11 +41,32 @@ VSTManager::~VSTManager()
     descriptions.clear();
 }
 
+void VSTManager::updateVSTFormats()
+{
+    formatManager.reset(new AudioPluginFormatManager());
+
+#if JUCE_PLUGINHOST_AU && (JUCE_MAC || JUCE_IOS)
+    if (scanAU->boolValue()) formatManager->addFormat(new AudioUnitPluginFormat()));
+#endif
+
+#if JUCE_PLUGINHOST_VST && (JUCE_MAC || JUCE_WINDOWS || JUCE_LINUX || JUCE_IOS)
+    if (scanVST->boolValue()) formatManager->addFormat(new VSTPluginFormat());
+#endif
+
+#if JUCE_PLUGINHOST_VST3 && (JUCE_MAC || JUCE_WINDOWS || JUCE_LINUX)
+    if (scanVST->boolValue()) formatManager->addFormat(new VST3PluginFormat());
+#endif
+
+#if JUCE_PLUGINHOST_LADSPA && JUCE_LINUX
+    formatManager->addFormat(new LADSPAPluginFormat());
+#endif
+}
+
 void VSTManager::updateVSTList()
 {
     LOG("Updating VSTs...");
    
-    Array<AudioPluginFormat*> formats = formatManager.getFormats();
+    Array<AudioPluginFormat*> formats = formatManager->getFormats();
     FileSearchPath searchPath;
 
     for (auto& c : controllables)
@@ -80,6 +107,11 @@ void VSTManager::updateVSTList()
 void VSTManager::onContainerParameterChanged(Parameter* p)
 {
     if (isCurrentlyLoadingData) return;
+
+    if (p == scanVST || p == scanAU)
+    {
+        updateVSTFormats();
+    }
 
     startThread();
 }

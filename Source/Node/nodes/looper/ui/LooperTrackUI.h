@@ -11,6 +11,7 @@
 #pragma once
 
 #include "../LooperTrack.h"
+#include "Node/ui/NodeViewUI.h"
 
 class LooperTrackUI :
     public InspectableContentComponent,
@@ -26,9 +27,7 @@ public:
     std::unique_ptr<TriggerButtonUI> stopUI;
     std::unique_ptr<TriggerButtonUI> clearUI;
 
-    std::unique_ptr<BoolButtonToggleUI> activeUI;
-    std::unique_ptr<FloatSliderUI> volumeUI;
-    std::unique_ptr<FloatSliderUI> rmsUI;
+    std::unique_ptr<VolumeControlUI> volumeUI;
 
     class Feedback :
         public Component,

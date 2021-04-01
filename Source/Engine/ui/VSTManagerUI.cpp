@@ -17,6 +17,17 @@ VSTManagerEditor::VSTManagerEditor(VSTManager* vstManager, bool isRoot) :
     rescanUI.reset(vstManager->rescan->createButtonUI());
     addAndMakeVisible(rescanUI.get());
 
+    vstUI.reset(vstManager->scanVST->createToggle());
+    vstUI->customLabel = "VST";
+    addAndMakeVisible(vstUI.get());
+
+    if (vstManager->scanAU != nullptr)
+    {
+        auUI.reset(vstManager->scanAU->createToggle());
+        auUI->customLabel = "AU";
+        addAndMakeVisible(auUI.get());
+    }
+
     countLabel.setColour(countLabel.textColourId, TEXT_COLOR);
     countLabel.setFont(countLabel.getFont().withHeight(10));
     countLabel.setJustificationType(Justification::centred);
@@ -27,6 +38,8 @@ void VSTManagerEditor::resizedInternalHeader(Rectangle<int>& r)
 {
     GenericControllableContainerEditor::resizedInternalHeader(r);
     rescanUI->setBounds(r.removeFromRight(60).reduced(1));
+    vstUI->setBounds(r.removeFromRight(50).reduced(2));
+    if(auUI != nullptr) auUI->setBounds(r.removeFromRight(50).reduced(2));
     countLabel.setBounds(r.removeFromRight(60));
 }
 
@@ -69,7 +82,7 @@ void VSTPluginParameterUI::showMenuAndSetVST()
     int index = 1;
     for (auto& d : VSTManager::getInstance()->descriptions)
     {
-        String subM = d->category;
+        String subM = d->manufacturerName;
         if (!subMenuMap.contains(subM))
         {
             PopupMenu* sp = new PopupMenu();
