@@ -33,13 +33,9 @@ public:
 	int index;
 
 	Array<MixerItem*> mixerItems;
-	BoolParameter* exclusiveMode;
 	VolumeControl out;
 
 	void setInputNumber(int inputNumber);
-	void updateActives(MixerItem * activeItem = nullptr);
-	void onContainerParameterChanged(Parameter* p)override;
-	void onControllableFeedbackUpdate(ControllableContainer * cc, Controllable * c)override;
 };
 
 class MixerNode :
@@ -50,7 +46,10 @@ public:
 	~MixerNode() {}
 
 	ControllableContainer itemsCC;
+	ControllableContainer exclusivesCC;
+
 	Array<OutputLineCC*> outputLines;
+	Array<BoolParameter*> exclusiveModes;
 
 	BoolParameter* showOutputGains;
 	BoolParameter* showOutputRMS;
@@ -65,6 +64,10 @@ public:
 	void updateAudioOutputsInternal() override;
 
 	MixerItem * getMixerItem(int inputIndex, int outputIndex);
+
+	void updateActiveInput(int inputIndex, int activeOutput = 0);
+
+	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	

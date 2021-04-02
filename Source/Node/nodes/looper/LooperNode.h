@@ -63,7 +63,6 @@ public:
     Trigger* clearAllTrigger;
     Trigger* tmpMuteAllTrigger;
 
-
     //View
     BoolParameter* showGlobalControl;
     BoolParameter* showTracks;

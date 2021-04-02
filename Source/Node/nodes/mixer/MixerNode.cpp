@@ -13,7 +13,8 @@
 
 MixerNode::MixerNode(var params) :
 	Node(getTypeString(), params, true, true, true, true),
-	itemsCC("Items")
+	itemsCC("Items"),
+	exclusivesCC("Exclusive Modes")
 {
 	viewUISize->setPoint(200, 300);
 
@@ -27,11 +28,26 @@ MixerNode::MixerNode(var params) :
 	itemsCC.saveAndLoadRecursiveData = true;
 	addChildControllableContainer(&itemsCC);
 	itemsCC.editorIsCollapsed = true;
+
+	addChildControllableContainer(&exclusivesCC);
 }
 
 void MixerNode::updateAudioInputsInternal()
 {
 	for (int i = 0; i < itemsCC.controllableContainers.size(); i++) ((OutputLineCC*)itemsCC.controllableContainers[i].get())->setInputNumber(getNumAudioInputs());
+
+	while (exclusiveModes.size() > getNumAudioInputs())
+	{
+		BoolParameter* b = exclusiveModes[exclusiveModes.size() - 1];
+		exclusivesCC.removeControllable(b);
+		exclusiveModes.removeAllInstancesOf(b);
+	}
+
+	while (exclusiveModes.size() < getNumAudioInputs())
+	{
+		BoolParameter * b = exclusivesCC.addBoolParameter("Input "+String(exclusiveModes.size()+1)+" Exclusive", "If checked, only one input will be active at a time", false);
+		exclusiveModes.add(b);
+	}
 }
 
 void MixerNode::updateAudioOutputsInternal()
@@ -56,6 +72,50 @@ MixerItem* MixerNode::getMixerItem(int inputIndex, int outputIndex)
 {
 	return  outputLines[outputIndex]->mixerItems[inputIndex];
 }
+
+
+void MixerNode::updateActiveInput(int inputIndex, int activeOutput)
+{
+	if (!exclusiveModes[inputIndex]->boolValue()) return;
+
+	if (activeOutput < 0) activeOutput = 0;
+
+	if (activeOutput >= outputLines.size()) return;
+
+	OutputLineCC* ol = outputLines[activeOutput];
+	MixerItem* item = ol->mixerItems[inputIndex];
+	if (!item->active->boolValue())
+	{
+		item->active->setValue(true);
+		return;
+	}
+
+	for (auto& l : outputLines)
+	{
+		if (l->mixerItems[inputIndex] == item) continue;
+		l->mixerItems[inputIndex]->active->setValue(false);
+	}
+	
+}
+
+void MixerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
+{
+	if (cc == &exclusivesCC)
+	{
+		int index = exclusiveModes.indexOf((BoolParameter*)c);
+		updateActiveInput(index, 0);
+	}else if (MixerItem * mi = c->getParentAs<MixerItem>())
+	{
+		if (c == mi->active && mi->active->boolValue())
+		{
+			OutputLineCC* ol = (OutputLineCC*)mi->parentContainer.get();
+			int index = ol->mixerItems.indexOf(mi);
+			updateActiveInput(index, outputLines.indexOf(ol));
+		}
+	}
+}
+
+
 
 void MixerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
@@ -128,7 +188,6 @@ OutputLineCC::OutputLineCC(int index) :
 {
 	saveAndLoadRecursiveData = true;
 
-	exclusiveMode = addBoolParameter("Exclusive Mode", "If checked, only one input will be active at a time", false);
 	addChildControllableContainer(&out);
 }
 
@@ -150,45 +209,5 @@ void OutputLineCC::setInputNumber(int inputNumber)
 		MixerItem* mi = new MixerItem(mixerItems.size(), index);
 		addChildControllableContainer(mi, true);
 		mixerItems.add(mi);
-	}
-}
-
-void OutputLineCC::updateActives(MixerItem* item)
-{
-	if (!exclusiveMode->boolValue()) return;
-
-	if (item == nullptr)
-	{
-		if (mixerItems.size() == 0) return;
-		item = mixerItems[0];
-	}
-
-	if (!item->active->boolValue())
-	{
-		item->active->setValue(true);
-		return;
-	}
-
-	for (auto& mi : mixerItems)
-	{
-		if (mi == item) continue;
-		mi->active->setValue(false);
-	}
-}
-
-void OutputLineCC::onContainerParameterChanged(Parameter* p)
-{
-	if (p == exclusiveMode) updateActives(nullptr);
-	
-}
-
-void OutputLineCC::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
-{
-	if (exclusiveMode->boolValue())
-	{
-		if (MixerItem* m = dynamic_cast<MixerItem *>(cc))
-		{
-			if (c == m->active && m->active->boolValue()) updateActives(m);
-		}
 	}
 }

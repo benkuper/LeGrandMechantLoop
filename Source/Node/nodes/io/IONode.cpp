@@ -17,7 +17,8 @@ IONode::IONode(StringRef name, var params, bool isInput) :
 	channelsCC("Channels"),
 	isRoot(false),
 	realNumInputs(0),
-	realNumOutputs(0)
+	realNumOutputs(0),
+	ghostNumChannels(-1)
 {
 	viewUISize->setPoint(150, 180);
 
@@ -35,11 +36,15 @@ void IONode::setIsRoot(bool value)
 		if (isInput)
 		{
 			numAudioOutputs = addIntParameter("Num Channels", "Number of channels to get from the sound card", 2, 0, 32);
+			numAudioOutputs->isSavable = false; //handled manually
+			if (ghostNumChannels >= 0) numAudioOutputs->setValue(ghostNumChannels);
 			autoSetNumAudioOutputs();
 		}
 		else
 		{
 			numAudioInputs = addIntParameter("Num Channels", "Number of channels to get to the sound card", 2, 0, 32);
+			numAudioInputs->isSavable = false; //handled manually
+			if (ghostNumChannels >= 0) numAudioInputs->setValue(ghostNumChannels);
 			autoSetNumAudioInputs();
 		}
 	}
@@ -165,6 +170,7 @@ var IONode::getJSONData()
 	var gainData;
 	for (auto& cc : channelsCC.controllableContainers) gainData.append(((VolumeControl*)cc.get())->gain->floatValue());
 	data.getDynamicObject()->setProperty("gains", gainData);
+	if (isRoot) data.getDynamicObject()->setProperty("numChannels", isInput ? numAudioOutputs->intValue() : numAudioInputs->intValue());
 	return data;
 }
 
@@ -172,6 +178,7 @@ void IONode::loadJSONDataItemInternal(var data)
 {
 	Node::loadJSONDataItemInternal(data);
 	gainGhostData = data.getProperty("gains", var());
+	ghostNumChannels = data.getProperty("numChannels", -1);
 }
 
 BaseNodeViewUI* IONode::createViewUI()

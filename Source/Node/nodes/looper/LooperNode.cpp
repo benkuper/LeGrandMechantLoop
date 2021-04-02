@@ -153,7 +153,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	{
 		if (currentTrack != nullptr)
 		{
-			while (currentTrack->isPlaying(true) && currentTrackIndex->intValue() < numTracks->intValue())
+			while (currentTrack->hasContent(false) && currentTrackIndex->intValue() < numTracks->intValue())
 			{
 				currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
 			}

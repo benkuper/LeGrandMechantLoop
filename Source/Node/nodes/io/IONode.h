@@ -27,6 +27,8 @@ public:
 	int realNumInputs;
 	int realNumOutputs;
 
+	int ghostNumChannels; //for root nodes
+
 	void setIsRoot(bool value);
 
 	virtual void setAudioInputs(const StringArray& inputNames, bool updateConfig = true) override;

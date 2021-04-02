@@ -13,6 +13,7 @@
 MixerNodeViewUI::MixerNodeViewUI(MixerNode* n) :
     NodeViewUI(n)
 {
+    updateExclusives();
     updateLines();
 }
 
@@ -23,6 +24,7 @@ MixerNodeViewUI::~MixerNodeViewUI()
 void MixerNodeViewUI::nodeInputsChanged()
 {
     for (auto& line : gainLines) line->rebuild();
+    updateExclusives();
     resized(); 
 }
 
@@ -53,8 +55,40 @@ void MixerNodeViewUI::updateLines()
     resized();
 }
 
+void MixerNodeViewUI::updateExclusives()
+{
+    if (node->getNumAudioInputs() == 0) return;
+
+    if (node->showOutputExclusives->boolValue())
+    {
+        while (exclusivesUI.size() > node->exclusiveModes.size())
+        {
+            BoolButtonToggleUI* eui = exclusivesUI[exclusivesUI.size() - 1];
+            removeChildComponent(eui);
+            exclusivesUI.removeObject(eui);
+        }
+
+        while (exclusivesUI.size() < node->exclusiveModes.size())
+        {
+            BoolButtonToggleUI* eui = node->exclusiveModes[exclusivesUI.size()]->createButtonToggle();
+            eui->useCustomFGColor = true;
+            eui->customFGColor = Colours::purple.brighter(.2f);
+            eui->customLabel = "Ex.";
+            exclusivesUI.add(eui);
+            addAndMakeVisible(eui);
+        }
+    }
+    else
+    {
+        for (auto& eui : exclusivesUI) removeChildComponent(eui);
+        exclusivesUI.clear();
+    }
+
+}
+
 void MixerNodeViewUI::viewFilterUpdated()
 {
+    updateExclusives();
     updateLines();
     NodeViewUI::viewFilterUpdated();
 }
@@ -69,7 +103,18 @@ void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
     if (gainLines.size() == 0) return;
     int lineHeight = jmin(r.getHeight() / gainLines.size(), 140);
+    if (exclusivesUI.size() > 0)
+    {
+        Rectangle<int> er = r.removeFromBottom(30).reduced(2);
+        int sizePerGain = jmin(er.getWidth() / exclusivesUI.size(), 30);
+
+        for (int i = 0; i < exclusivesUI.size(); i++)
+        {
+            exclusivesUI[i]->setBounds(er.removeFromLeft(sizePerGain).reduced(2));
+        }
+    }
     for (auto& line : gainLines) line->setBounds(r.removeFromTop(lineHeight).reduced(2));
+
 }
 
 
@@ -107,27 +152,6 @@ void MixerNodeViewUI::OutputGainLine::rebuild()
         }
     }
 
-    if (node->showOutputExclusives->boolValue())
-    {
-        if (exclusiveUI == nullptr)
-        {
-            exclusiveUI.reset(outputLine->exclusiveMode->createButtonToggle());
-            exclusiveUI->useCustomFGColor = true;
-            exclusiveUI->customFGColor = Colours::purple.brighter(.2f);
-            exclusiveUI->customLabel = "Ex.";
-            addAndMakeVisible(exclusiveUI.get());
-        }
-    }
-    else
-    {
-        if (exclusiveUI != nullptr)
-        {
-            removeChildComponent(exclusiveUI.get());
-            exclusiveUI.reset();
-        }
-    }
-
-
     for (auto& ui : itemsUI) removeChildComponent(ui);
     itemsUI.clear();
 
@@ -149,7 +173,7 @@ void MixerNodeViewUI::OutputGainLine::paint(Graphics& g)
 {
     g.setColour(NORMAL_COLOR.withAlpha(.5f));
     Rectangle<float> r = getLocalBounds().toFloat();
-    if(outUI != nullptr || exclusiveUI != nullptr) r.removeFromRight(40).toFloat();
+    if(outUI != nullptr) r.removeFromRight(40).toFloat();
 
     g.drawRoundedRectangle(r, 2, 1);
 }
@@ -160,13 +184,10 @@ void MixerNodeViewUI::OutputGainLine::resized()
 
     Rectangle<int> r = getLocalBounds().reduced(2);
 
-    if (outUI != nullptr || exclusiveUI != nullptr)
+    if (outUI != nullptr )
     {
         Rectangle<int> rr = r.removeFromRight(30);
-        
-        if(exclusiveUI != nullptr) exclusiveUI->setBounds(rr.removeFromTop(rr.getWidth()).reduced(2));
-        if(outUI != nullptr) outUI->setBounds(rr);
-        
+        outUI->setBounds(rr);
         r.removeFromRight(10);
     }
    

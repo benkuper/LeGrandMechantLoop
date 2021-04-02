@@ -21,6 +21,8 @@ NodeManagerViewUI::NodeManagerViewUI(NodeManager * manager) :
     connectionManagerUI.reset(new NodeConnectionManagerViewUI(this, manager->connectionManager.get()));
     addAndMakeVisible(connectionManagerUI.get(), 0);
 
+    setShowPane(true);
+
     bringToFrontOnSelect = false;
     enableSnapping = true;
 

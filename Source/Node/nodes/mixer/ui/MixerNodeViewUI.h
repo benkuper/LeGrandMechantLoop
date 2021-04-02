@@ -31,7 +31,6 @@ public:
 
         OwnedArray<VolumeControlUI> itemsUI;
         std::unique_ptr<VolumeControlUI> outUI;
-        std::unique_ptr<BoolButtonToggleUI> exclusiveUI;
 
         void rebuild();
 
@@ -40,12 +39,13 @@ public:
     };
 
     OwnedArray<OutputGainLine> gainLines;
+    OwnedArray<BoolButtonToggleUI> exclusivesUI;
 
     void nodeInputsChanged() override;
     void nodeOutputsChanged() override;
 
     void updateLines();
-
+    void updateExclusives();
     void viewFilterUpdated() override;
 
     void paint(Graphics& g) override;
