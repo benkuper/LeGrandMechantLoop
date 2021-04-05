@@ -44,10 +44,15 @@ void MainComponent::init()
 }
 
 LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent * mainComp, LGMLEngine * engine) :
-	Component("LGML Menu Bar"),
-	menuBarComp(mainComp)
+	Component("LGML Menu Bar")
+#if !JUCE_MAC
+	, menuBarComp(mainComp)
+#endif
 {
+#if !JUCE_MAC
 	addAndMakeVisible(menuBarComp);
+#endif
+
 	cpuUsageUI.reset(engine->cpuUsage->createSlider());
 	addAndMakeVisible(cpuUsageUI.get());
 }
@@ -59,7 +64,9 @@ LGMLMenuBarComponent::~LGMLMenuBarComponent()
 void LGMLMenuBarComponent::resized()
 {
 	Rectangle<int> r = getLocalBounds();
+#if !JUCE_MAC	
 	menuBarComp.setBounds(r); 
+#endif
 	cpuUsageUI->setBounds(r.removeFromRight(200).reduced(2)); //overlap but we don't care
 	
 }

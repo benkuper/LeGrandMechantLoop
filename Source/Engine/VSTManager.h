@@ -36,6 +36,8 @@ public:
     void onControllableAdded(Controllable* c) override;
     void onControllableRemoved(Controllable* c) override;
 
+    void reset();
+
     var getJSONData() override;
     void loadJSONDataInternal(var data) override;
     void afterLoadJSONDataInternal() override;

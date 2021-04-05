@@ -20,6 +20,8 @@ public:
 
     void initialiseInternal(const String& commandLine) override;
     void afterInit() override;
+
+    void clearGlobalSettings() override;
 }; 
 
 START_JUCE_APPLICATION(LGMLApplication)

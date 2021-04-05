@@ -127,7 +127,6 @@ void SpatNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midi
 	int numSamples = buffer.getNumSamples();
 
 	
-	DBG("Process " << spatCC.controllableContainers.size() << " / "  << getNumAudioOutputs() << " / " << (int)processor->isSuspended());
 	jassert(getNumAudioOutputs() == spatCC.controllableContainers.size());
 
 	int numOutputs = spatCC.controllableContainers.size();
@@ -138,7 +137,6 @@ void SpatNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midi
 
 	for (int outputIndex = 0; outputIndex < numOutputs; outputIndex++)
 	{
-		DBG("Suspended ? " << (int)processor->isSuspended() << "Suspend count " << processor->suspendCount);
 		SpatItem* si = (SpatItem*)spatCC.controllableContainers[outputIndex].get();
 		float dist = spatPosition->getPoint().getDistanceFrom(si->position->getPoint());
 		float rad = si->radius->floatValue();

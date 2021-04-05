@@ -18,6 +18,10 @@ public:
     DecibelSliderUI(FloatParameter* p);
     ~DecibelSliderUI();
 
+    float getNormalizedValueFromMouseDrag(const MouseEvent &e) override;
+    int getDrawPos() override;
+    int getDrawPosForValue(float normVal);
+
     virtual String getValueText() const override;
 };
 

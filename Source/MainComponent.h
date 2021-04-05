@@ -21,7 +21,9 @@ public:
     LGMLMenuBarComponent(MainComponent * mainComp, LGMLEngine * engine);
     ~LGMLMenuBarComponent();
 
+#if !JUCE_MAC
     MenuBarComponent menuBarComp;
+#endif
     std::unique_ptr<FloatSliderUI> cpuUsageUI;
 
     void resized() override;

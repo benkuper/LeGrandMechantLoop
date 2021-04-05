@@ -133,6 +133,17 @@ void VSTManager::onControllableRemoved(Controllable* c)
     startThread();
 }
 
+void VSTManager::reset()
+{
+    for (auto& c : controllables)
+    {
+        if (FileParameter* fp = dynamic_cast<FileParameter*>(c)) fp->resetValue();
+    }
+
+    descriptions.clear();
+    idDescriptionMap.clear();
+}
+
 var VSTManager::getJSONData()
 {
     var data = ControllableContainer::getJSONData();

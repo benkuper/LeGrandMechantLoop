@@ -9,6 +9,7 @@
 #include "Main.h"
 #include "MainComponent.h"
 #include "Engine/LGMLEngine.h"
+#include "Engine/VSTManager.h"
 
 LGMLApplication::LGMLApplication() :
 	OrganicApplication(ProjectInfo::projectName,
@@ -39,4 +40,10 @@ void LGMLApplication::afterInit()
 	{
 		mainWindow->setMenuBarComponent(new LGMLMenuBarComponent((MainComponent*)mainComponent.get(), (LGMLEngine*)engine.get()));
 	}
+}
+
+void LGMLApplication::clearGlobalSettings()
+{
+	OrganicApplication::clearGlobalSettings();
+	VSTManager::getInstance()->reset();
 }

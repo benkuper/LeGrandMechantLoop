@@ -113,6 +113,8 @@ void MixerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, 
 			updateActiveInput(index, outputLines.indexOf(ol));
 		}
 	}
+
+	Node::onControllableFeedbackUpdateInternal(cc, c);
 }
 
 
