@@ -65,3 +65,9 @@ public:
     VSTPluginParameterUI* createVSTParamUI();
     ControllableUI * createDefaultUI() override;
 };
+
+class DescriptionSorter
+{
+public:
+    static int compareElements(PluginDescription* first, PluginDescription* second);
+};

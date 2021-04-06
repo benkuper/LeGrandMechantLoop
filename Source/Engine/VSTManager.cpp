@@ -100,6 +100,9 @@ void VSTManager::updateVSTList()
 		}
 	}
 
+	DescriptionSorter sorter;
+	descriptions.sort(sorter, true);
+
 	String s = "Found plugins :";
 	for (auto& d : descriptions)
 	{
@@ -226,4 +229,11 @@ VSTPluginParameterUI* VSTPluginParameter::createVSTParamUI()
 ControllableUI* VSTPluginParameter::createDefaultUI()
 {
 	return createVSTParamUI();
+}
+
+inline int DescriptionSorter::compareElements(PluginDescription* first, PluginDescription* second)
+{
+	int result = first->manufacturerName.compare(second->manufacturerName);
+	if(result == 0) result = first->name.compare(second->name);
+	return result;
 }
