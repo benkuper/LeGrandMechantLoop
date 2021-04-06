@@ -102,7 +102,8 @@ void MixerNodeViewUI::paint(Graphics& g)
 void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
     if (gainLines.size() == 0) return;
-    int lineHeight = jmin(r.getHeight() / gainLines.size(), 140);
+    int lineHeight = jmin((r.getHeight() - 32) / gainLines.size(), 140);
+
     if (exclusivesUI.size() > 0)
     {
         Rectangle<int> er = r.removeFromBottom(30).reduced(2);

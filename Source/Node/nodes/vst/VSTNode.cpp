@@ -92,12 +92,19 @@ void VSTNode::setupVST(PluginDescription* description)
 	}
 	else
 	{
-		String errorMessage;
-		vst = VSTManager::getInstance()->formatManager->createPluginInstance(*description, processor->getSampleRate(), processor->getBlockSize(), errorMessage);
-
-		if (errorMessage.isNotEmpty())
+		try
 		{
-			NLOGERROR(niceName, "VST Load error : " << errorMessage);
+			String errorMessage;
+			vst = VSTManager::getInstance()->formatManager->createPluginInstance(*description, processor->getSampleRate(), processor->getBlockSize(), errorMessage);
+
+			if (errorMessage.isNotEmpty())
+			{
+				NLOGERROR(niceName, "VST Load error : " << errorMessage);
+			}
+		}
+		catch (std::exception e)
+		{
+			NLOGERROR(niceName, "Error while loading plugin : " << e.what());
 		}
 
 		if (vst != nullptr)
