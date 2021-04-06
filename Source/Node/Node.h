@@ -98,6 +98,7 @@ public:
     virtual void updatePlayConfig(bool notify = true);
     virtual void updatePlayConfigInternal();
 
+    
     //MIDI
     void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer);
 
@@ -109,6 +110,9 @@ public:
     virtual void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {}
 
  
+    virtual var getJSONData() override;
+    virtual void loadJSONDataItemInternal(var data) override;
+
     class NodeListener
     {
     public:
