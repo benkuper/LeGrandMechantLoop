@@ -38,7 +38,9 @@ void MixerNodeViewUI::updateLines()
     int numLines = node->outputLines.size();
     while (gainLines.size() > numLines)
     {
-        removeChildComponent(gainLines[gainLines.size() - 1]);
+        Component* c = gainLines[gainLines.size() - 1];
+        removeChildComponent(c);
+        contentComponents.removeAllInstancesOf(c);
         gainLines.removeLast();
     }
 
@@ -47,6 +49,7 @@ void MixerNodeViewUI::updateLines()
     while (gainLines.size() < numLines)
     {
         OutputGainLine* line = new OutputGainLine(node, node->outputLines[gainLines.size()]);
+        contentComponents.add(line);
         addAndMakeVisible(line);
         gainLines.add(line);
     }
@@ -64,6 +67,7 @@ void MixerNodeViewUI::updateExclusives()
         while (exclusivesUI.size() > node->exclusiveModes.size())
         {
             BoolButtonToggleUI* eui = exclusivesUI[exclusivesUI.size() - 1];
+            contentComponents.removeAllInstancesOf(eui);
             removeChildComponent(eui);
             exclusivesUI.removeObject(eui);
         }
@@ -75,12 +79,17 @@ void MixerNodeViewUI::updateExclusives()
             eui->customFGColor = Colours::purple.brighter(.2f);
             eui->customLabel = "Ex.";
             exclusivesUI.add(eui);
+            contentComponents.add(eui);
             addAndMakeVisible(eui);
         }
     }
     else
     {
-        for (auto& eui : exclusivesUI) removeChildComponent(eui);
+        for (auto& eui : exclusivesUI)
+        {
+            removeChildComponent(eui);
+            contentComponents.removeAllInstancesOf(eui);
+        }
         exclusivesUI.clear();
     }
 
