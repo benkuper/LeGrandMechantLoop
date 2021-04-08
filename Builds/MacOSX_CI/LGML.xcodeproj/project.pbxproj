@@ -142,6 +142,7 @@
 		13CF90DFC1204A7632151D4E /* ../../Source/Node/nodes/spat/ui/SpatView.h */ /* SpatView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SpatView.h; path = ../../Source/Node/nodes/spat/ui/SpatView.h; sourceTree = SOURCE_ROOT; };
 		148F888C5AC71F227501279F /* System/Library/Frameworks/Cocoa.framework */ /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		14F932711A4916D2E2DF6896 /* System/Library/Frameworks/Foundation.framework */ /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		16D3E51E2FDD32BB40CAE5D0 /* ../../JuceLibraryCode/JuceHeader.h */ /* JuceHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JuceHeader.h; path = ../../JuceLibraryCode/JuceHeader.h; sourceTree = SOURCE_ROOT; };
 		18276969FFAAACF0866ECBE0 /* ../../Source/Node/nodes/vst/VSTLinkedParameter.h */ /* VSTLinkedParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VSTLinkedParameter.h; path = ../../Source/Node/nodes/vst/VSTLinkedParameter.h; sourceTree = SOURCE_ROOT; };
 		19F11F31D630C760BBCEC079 /* ../../Source/Node/nodes/looper/ui/LooperNodeViewUI.cpp */ /* LooperNodeViewUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = LooperNodeViewUI.cpp; path = ../../Source/Node/nodes/looper/ui/LooperNodeViewUI.cpp; sourceTree = SOURCE_ROOT; };
 		1A294BBC28883F10E2499A5A /* ../../Source/Node/Connection/NodeConnectionManager.h */ /* NodeConnectionManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NodeConnectionManager.h; path = ../../Source/Node/Connection/NodeConnectionManager.h; sourceTree = SOURCE_ROOT; };
@@ -743,6 +744,7 @@
 				67038B9140608DAD8B6E6934,
 				9AC376B4418CF6BA712F68CE,
 				4ACE978AE9CC0CC00C427119,
+				16D3E51E2FDD32BB40CAE5D0,
 			);
 			name = "JUCE Library Code";
 			sourceTree = "<group>";
