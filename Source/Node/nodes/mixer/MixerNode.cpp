@@ -155,6 +155,7 @@ void MixerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& mid
 var MixerNode::getJSONData()
 {
 	var data = Node::getJSONData();
+	data.getDynamicObject()->setProperty("exclusives", exclusivesCC.getJSONData());
 	data.getDynamicObject()->setProperty("items", itemsCC.getJSONData());
 	return data;
 }
@@ -164,7 +165,8 @@ void MixerNode::loadJSONDataItemInternal(var data)
 	Node::loadJSONDataItemInternal(data);
 	autoSetNumAudioInputs();
 	autoSetNumAudioOutputs();
-	if (data.hasProperty("items")) itemsCC.loadJSONData(data.getProperty("items", var()));
+	exclusivesCC.loadJSONData(data.getProperty("exclusives", var()));
+	itemsCC.loadJSONData(data.getProperty("items", var()));
 }
 
 BaseNodeViewUI* MixerNode::createViewUI()

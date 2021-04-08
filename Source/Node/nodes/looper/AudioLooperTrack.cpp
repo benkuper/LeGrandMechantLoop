@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    AudioLooperTrack.cpp
-    Created: 1 Dec 2020 11:15:40pm
-    Author:  bkupe
+	AudioLooperTrack.cpp
+	Created: 1 Dec 2020 11:15:40pm
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -11,10 +11,10 @@
 #include "AudioLooperTrack.h"
 #include "AudioLooperNode.h"
 
-AudioLooperTrack::AudioLooperTrack(AudioLooperNode * looper, int index, int numChannels) :
+AudioLooperTrack::AudioLooperTrack(AudioLooperNode* looper, int index, int numChannels) :
 	LooperTrack(looper, index),
-    audioLooper(looper),
-    numChannels(numChannels)
+	audioLooper(looper),
+	numChannels(numChannels)
 {
 }
 
@@ -86,7 +86,7 @@ void AudioLooperTrack::finishRecordingAndPlayInternal()
 		//fade with ring buffer using looper fadeTimeMS
 		int fadeNumSamples = audioLooper->getFadeNumSamples();
 
-		if (fadeNumSamples)
+		if (fadeNumSamples > 0 && bufferNumSamples > fadeNumSamples)
 		{
 			int bufferStartSample = bufferNumSamples - 1 - fadeNumSamples;
 
@@ -113,7 +113,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 	TrackState s = trackState->getValueDataAsEnum<TrackState>();
 
-	if (s == WILL_RECORD 
+	if (s == WILL_RECORD
 		&& (!Transport::getInstance()->isCurrentlyPlaying->boolValue() || looper->getQuantization() == Transport::FREE)
 		&& looper->firstRecVolumeThreshold->enabled)
 	{
