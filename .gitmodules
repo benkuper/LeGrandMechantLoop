@@ -4,6 +4,3 @@
 [submodule "Modules/juce_simpleweb"]
 	path = Modules/juce_simpleweb
 	url = https://github.com/benkuper/juce_simpleweb
-[submodule "Modules/juce_timeline"]
-	path = Modules/juce_timeline
-	url = http://github.com/benkuper/juce_timeline
