@@ -30,7 +30,7 @@ LGMLEngine::LGMLEngine() :
     ProjectSettings::getInstance()->addChildControllableContainer(AudioManager::getInstance());
     GlobalSettings::getInstance()->addChildControllableContainer(VSTManager::getInstance());
 
-    cpuUsage = addFloatParameter("CPU Usage", "This is a global CPU Usage indicator", 0, 0, 1);
+    cpuUsage = addFloatParameter("Audio CPU Usage", "Audio CPU Usage indicator. /!\ This is only showing the audio processing, not the UI and other processes !", 0, 0, 1);
     cpuUsage->setControllableFeedbackOnly(true);
 
     startTimer(2, 500);

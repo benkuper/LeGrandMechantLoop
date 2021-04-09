@@ -24,8 +24,12 @@ public:
 #if !JUCE_MAC
     MenuBarComponent menuBarComp;
 #endif
-    std::unique_ptr<FloatSliderUI> cpuUsageUI;
 
+    std::unique_ptr<FloatSliderUI> cpuUsageUI;
+    std::unique_ptr<BoolToggleUI> logInUI;
+    std::unique_ptr<BoolToggleUI> logOutUI;
+
+    void paint(Graphics& g) override;
     void resized() override;
 };
 

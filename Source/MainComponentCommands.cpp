@@ -172,19 +172,19 @@ bool MainComponent::perform(const InvocationInfo& info)
 		break;
 
 	case LGMLCommandIDs::gotoWebsite:
-		URL("http://benjamin.kuperberg.fr/blux").launchInDefaultBrowser();
+		URL("http://benjamin.kuperberg.fr/lgml").launchInDefaultBrowser();
 		break;
 
 	case LGMLCommandIDs::gotoForum:
-		URL("http://benjamin.kuperberg.fr/blux/forum").launchInDefaultBrowser();
+		URL("http://benjamin.kuperberg.fr/lgml/forum").launchInDefaultBrowser();
 		break;
 
 	case LGMLCommandIDs::gotoDocs:
-		URL("https://benjamin.kuperberg.fr/blux/docs").launchInDefaultBrowser();
+		URL("https://benjamin.kuperberg.fr/lgml/docs").launchInDefaultBrowser();
 		break;
 
 	case LGMLCommandIDs::gotoChangelog:
-		URL("https://benjamin.kuperberg.fr/blux/releases/changelog.html").launchInDefaultBrowser();
+		URL("https://benjamin.kuperberg.fr/lgml/releases/changelog.html").launchInDefaultBrowser();
 		break;
 
 	case LGMLCommandIDs::postGithubIssue:

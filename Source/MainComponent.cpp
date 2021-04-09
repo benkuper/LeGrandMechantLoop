@@ -55,10 +55,21 @@ LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent * mainComp, LGMLEngine 
 
 	cpuUsageUI.reset(engine->cpuUsage->createSlider());
 	addAndMakeVisible(cpuUsageUI.get());
+
+	logInUI.reset(OSCRemoteControl::getInstance()->logIncoming->createToggle());
+	logOutUI.reset(OSCRemoteControl::getInstance()->logOutgoing->createToggle());
+
+	addAndMakeVisible(logInUI.get());
+	addAndMakeVisible(logOutUI.get());
 }
 
 LGMLMenuBarComponent::~LGMLMenuBarComponent()
 {
+}
+
+void LGMLMenuBarComponent::paint(Graphics& g)
+{
+	g.fillAll(BG_COLOR);
 }
 
 void LGMLMenuBarComponent::resized()
@@ -67,6 +78,10 @@ void LGMLMenuBarComponent::resized()
 #if !JUCE_MAC	
 	menuBarComp.setBounds(r); 
 #endif
+	logOutUI->setBounds(r.removeFromRight(90).reduced(1)); //overlap but we don't care
+	r.removeFromRight(20);
+	logInUI->setBounds(r.removeFromRight(90).reduced(1)); //overlap but we don't care
+	r.removeFromRight(20);
 	cpuUsageUI->setBounds(r.removeFromRight(200).reduced(2)); //overlap but we don't care
 	
 }

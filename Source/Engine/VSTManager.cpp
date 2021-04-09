@@ -25,11 +25,11 @@ VSTManager::VSTManager() :
 	rescan->hideInEditor = true;
 
 	scanVST = addBoolParameter("Scan VST", "Scan VST Plugins", true);
+	scanVST->hideInEditor = true;
 #if JUCE_MAC
 	scanAU = addBoolParameter("Scan AU", "Scan AU Plugins", true);
+	scanAU->hideInEditor = true;
 #endif
-
-	updateVSTFormats();
 
 	userCanAddControllables = true;
 	userAddControllablesFilters.add(FileParameter::getTypeStringStatic());
@@ -65,6 +65,8 @@ void VSTManager::updateVSTFormats()
 void VSTManager::updateVSTList()
 {
 	LOG("Updating VSTs...");
+
+	updateVSTFormats();
 
 	Array<AudioPluginFormat*> formats = formatManager->getFormats();
 	FileSearchPath searchPath;
@@ -119,11 +121,6 @@ void VSTManager::updateVSTList()
 void VSTManager::onContainerParameterChanged(Parameter* p)
 {
 	if (isCurrentlyLoadingData) return;
-
-	if (p == scanVST || p == scanAU)
-	{
-		updateVSTFormats();
-	}
 
 	startThread();
 }
