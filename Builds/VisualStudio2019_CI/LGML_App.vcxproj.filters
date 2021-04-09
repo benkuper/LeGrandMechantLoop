@@ -887,63 +887,6 @@
     <Filter Include="JUCE Modules\juce_simpleweb">
       <UniqueIdentifier>{927B0C0F-A737-BF56-1213-11FFF1B9E758}</UniqueIdentifier>
     </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\resources">
-      <UniqueIdentifier>{D391EFE7-9D9C-64D9-7CA8-C06DBE64F72C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Cue\ui">
-      <UniqueIdentifier>{675B1DB0-7AEA-A463-6F13-A6C8D7C5D25A}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Cue">
-      <UniqueIdentifier>{E6F9DA01-A486-96CB-63BA-06132A7EEB43}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui">
-      <UniqueIdentifier>{319110E8-E082-7BC9-BAAE-79176A306716}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio">
-      <UniqueIdentifier>{3E2233F6-6961-1D0A-5713-3948A75F9C33}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\ui">
-      <UniqueIdentifier>{5760E1A5-6E8A-8726-5D50-40D7185FB74D}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Block">
-      <UniqueIdentifier>{32D57B7D-AE7E-065F-7840-14410E2C21F8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui">
-      <UniqueIdentifier>{F808F0A0-B0F0-4E2A-F030-DA5C4A270465}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock">
-      <UniqueIdentifier>{4C4E3B19-5E09-E236-600D-A37EBF009738}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui">
-      <UniqueIdentifier>{B4D3CBA4-7C14-A44C-E2DA-67667C9F2E80}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger">
-      <UniqueIdentifier>{38321AC7-8947-F0A1-5A3D-3731F17C3F35}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers">
-      <UniqueIdentifier>{AB1A1199-96AB-2A7E-9E0C-870A25DEB6A5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer\ui">
-      <UniqueIdentifier>{6272CF56-3789-7A45-BFB5-49DBC5C977D7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\Layer">
-      <UniqueIdentifier>{849CC859-D283-1053-FD34-17629C25FB67}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence\ui">
-      <UniqueIdentifier>{CC9A313E-0722-A2D4-17A7-BAF1A38EED37}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\Sequence">
-      <UniqueIdentifier>{57576BB0-BE29-31DA-48A8-DBEF5F4E9F61}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline\ui">
-      <UniqueIdentifier>{85D6C1BA-B79E-A632-E094-2D9A0D6BC3C9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline\timeline">
-      <UniqueIdentifier>{174D6D8D-6950-6C63-3A4A-577AC6BC0674}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="JUCE Modules\juce_timeline">
-      <UniqueIdentifier>{31374781-50DF-1D59-72CC-734A4B423CBB}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JUCE Modules">
       <UniqueIdentifier>{FE955B6B-68AC-AA07-70D8-2413F6DB65C8}</UniqueIdentifier>
     </Filter>
@@ -3961,153 +3904,6 @@
     <ClCompile Include="..\..\Modules\juce_simpleweb\SimpleWebSocketServer.cpp">
       <Filter>JUCE Modules\juce_simpleweb</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\resources\BinaryData.cpp">
-      <Filter>JUCE Modules\juce_timeline\resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Cue\ui\TimeCueManagerUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Cue\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Cue\ui\TimeCueUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Cue\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Cue\TimeCue.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Cue</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Cue\TimeCueManager.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Cue</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui\AudioLayerClipManagerUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui\AudioLayerClipUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui\AudioLayerPanel.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui\AudioLayerTimeline.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\AudioLayer.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\AudioLayerClip.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\AudioLayerClipManager.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\ui\LayerBlockManagerUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\ui\LayerBlockUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\LayerBlock.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Block</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\LayerBlockManager.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Block</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui\SequenceBlockLayerPanel.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui\SequenceBlockLayerTimeline.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui\SequenceBlockManagerUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui\SequenceBlockUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\SequenceBlock.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\SequenceBlockLayer.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\SequenceBlockManager.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui\TimeTriggerManagerUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui\TimeTriggerMultiTransformer.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui\TimeTriggerUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui\TriggerLayerPanel.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui\TriggerLayerTimeline.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\TimeTrigger.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\TimeTriggerManager.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\TriggerLayer.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\ui\SequenceLayerPanel.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\ui\SequenceLayerPanelManagerUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\ui\SequenceLayerTimeline.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\ui\SequenceLayerTimelineManagerUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\SequenceLayer.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\SequenceLayerManager.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceEditorView.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceTimelineHeader.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceTimelineNavigationUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceTimelineSeeker.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceTransportUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\Sequence\Sequence.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\ui\SequenceManagerUI.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\ui\TimeMachineView.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline\ui</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\timeline\SequenceManager.cpp">
-      <Filter>JUCE Modules\juce_timeline\timeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\juce_timeline.cpp">
-      <Filter>JUCE Modules\juce_timeline</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_timeline\TimelineAppCommands.cpp">
-      <Filter>JUCE Modules\juce_timeline</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\BinaryData.cpp">
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
@@ -4172,9 +3968,6 @@
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_simpleweb2.cpp">
-      <Filter>JUCE Library Code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\JuceLibraryCode\include_juce_timeline.cpp">
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
   </ItemGroup>
@@ -10266,153 +10059,6 @@
     <ClInclude Include="..\..\Modules\juce_simpleweb\juce_simpleweb.h">
       <Filter>JUCE Modules\juce_simpleweb</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\resources\BinaryData.h">
-      <Filter>JUCE Modules\juce_timeline\resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Cue\ui\TimeCueManagerUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Cue\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Cue\ui\TimeCueUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Cue\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Cue\TimeCue.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Cue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Cue\TimeCueManager.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Cue</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui\AudioLayerClipManagerUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui\AudioLayerClipUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui\AudioLayerPanel.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui\AudioLayerTimeline.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\AudioLayer.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\AudioLayerClip.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\audio\AudioLayerClipManager.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\ui\LayerBlockManagerUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\ui\LayerBlockUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\LayerBlock.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Block</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Block\LayerBlockManager.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Block</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui\SequenceBlockLayerPanel.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui\SequenceBlockLayerTimeline.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui\SequenceBlockManagerUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui\SequenceBlockUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\SequenceBlock.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\SequenceBlockLayer.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock\SequenceBlockManager.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\SequenceBlock</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui\TimeTriggerManagerUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui\TimeTriggerMultiTransformer.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui\TimeTriggerUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui\TriggerLayerPanel.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui\TriggerLayerTimeline.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\TimeTrigger.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\TimeTriggerManager.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger\TriggerLayer.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\layers\Trigger</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\ui\SequenceLayerPanel.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\ui\SequenceLayerPanelManagerUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\ui\SequenceLayerTimeline.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\ui\SequenceLayerTimelineManagerUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\SequenceLayer.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Layer\SequenceLayerManager.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\Layer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceEditorView.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceTimelineHeader.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceTimelineNavigationUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceTimelineSeeker.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceTransportUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\ui\SequenceUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\Sequence\Sequence.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\Sequence</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\ui\SequenceManagerUI.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\ui\TimeMachineView.h">
-      <Filter>JUCE Modules\juce_timeline\timeline\ui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\timeline\SequenceManager.h">
-      <Filter>JUCE Modules\juce_timeline\timeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\TimelineAppCommands.h">
-      <Filter>JUCE Modules\juce_timeline</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Modules\juce_timeline\juce_timeline.h">
-      <Filter>JUCE Modules\juce_timeline</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h">
       <Filter>JUCE Library Code</Filter>
     </ClInclude>
@@ -10425,6 +10071,12 @@
       <Filter>LGML\Resources</Filter>
     </None>
     <None Include="..\..\Resources\icon.png">
+      <Filter>LGML\Resources</Filter>
+    </None>
+    <None Include="..\..\Resources\play.png">
+      <Filter>LGML\Resources</Filter>
+    </None>
+    <None Include="..\..\Resources\stop.png">
       <Filter>LGML\Resources</Filter>
     </None>
     <None Include="..\..\JUCE\modules\juce_audio_devices\native\oboe\CMakeLists.txt">
@@ -10489,9 +10141,6 @@
     </None>
     <None Include="..\..\Modules\juce_simpleweb\README.md">
       <Filter>JUCE Modules\juce_simpleweb</Filter>
-    </None>
-    <None Include="..\..\Modules\juce_timeline\README.md">
-      <Filter>JUCE Modules\juce_timeline</Filter>
     </None>
     <None Include=".\icon.ico">
       <Filter>JUCE Library Code</Filter>

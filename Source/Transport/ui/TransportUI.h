@@ -28,6 +28,7 @@ public:
     std::unique_ptr<IntParameterLabelUI> beatsPerBarUI;
     std::unique_ptr<IntParameterLabelUI> beatUnitUI;
     std::unique_ptr<FloatParameterLabelUI> bpmUI;
+    std::unique_ptr<EnumParameterUI> quantizUI;
 
     std::unique_ptr<IntParameterLabelUI> curBarUI;
     std::unique_ptr<IntParameterLabelUI> curBeatUI;

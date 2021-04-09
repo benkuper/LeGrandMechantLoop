@@ -2,12 +2,14 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b30" cppLanguageStandard="17">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b31" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="fut9ay" name="default.lgmllayout" compile="0" resource="1"
             file="Resources/default.lgmllayout"/>
       <FILE id="k24oFh" name="icon.png" compile="0" resource="1" file="Resources/icon.png"/>
+      <FILE id="FbFKZX" name="play.png" compile="0" resource="1" file="Resources/play.png"/>
+      <FILE id="HmeOao" name="stop.png" compile="0" resource="1" file="Resources/stop.png"/>
     </GROUP>
     <GROUP id="{644794F3-EEA3-18B3-8950-FB0E90CE6C1E}" name="Source">
       <GROUP id="{C932F17D-F807-6D54-C9FE-636145A3A77A}" name="Common">
@@ -320,7 +322,6 @@
         <MODULEPATH id="juce_osc" path="D:\Softwares\JUCE\modules"/>
         <MODULEPATH id="juce_organicui" path="Modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
-        <MODULEPATH id="juce_timeline" path="Modules"/>
       </MODULEPATHS>
     </VS2019>
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="k24oFh" bigIcon="k24oFh"
@@ -350,7 +351,6 @@
         <MODULEPATH id="juce_osc"/>
         <MODULEPATH id="juce_organicui" path="Modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
-        <MODULEPATH id="juce_timeline" path="Modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="k24oFh" bigIcon="k24oFh"
@@ -379,7 +379,6 @@
         <MODULEPATH id="juce_osc" path="JUCE/modules"/>
         <MODULEPATH id="juce_organicui" path="Modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
-        <MODULEPATH id="juce_timeline" path="Modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2019 targetFolder="Builds/VisualStudio2019_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib"
@@ -390,7 +389,6 @@
                        alwaysGenerateDebugSymbols="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_timeline" path="Modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
         <MODULEPATH id="juce_osc" path="JUCE/modules"/>
         <MODULEPATH id="juce_organicui" path="Modules"/>
@@ -418,7 +416,6 @@
                        headerPath="../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/serial/include"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_timeline" path="Modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
         <MODULEPATH id="juce_osc" path="JUCE/modules"/>
         <MODULEPATH id="juce_organicui" path="Modules"/>
@@ -449,7 +446,6 @@
                        linuxArchitecture="-march=armv7"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_timeline" path="Modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
         <MODULEPATH id="juce_osc" path="JUCE/modules"/>
         <MODULEPATH id="juce_organicui" path="Modules"/>
@@ -486,7 +482,6 @@
     <MODULE id="juce_organicui" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_osc" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_simpleweb" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
-    <MODULE id="juce_timeline" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
   </MODULES>
   <LIVE_SETTINGS>
     <WINDOWS/>

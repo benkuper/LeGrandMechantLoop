@@ -29,7 +29,6 @@
 #include <juce_organicui/juce_organicui.h>
 #include <juce_osc/juce_osc.h>
 #include <juce_simpleweb/juce_simpleweb.h>
-#include <juce_timeline/juce_timeline.h>
 
 #include "BinaryData.h"
 
@@ -53,7 +52,7 @@ namespace ProjectInfo
 {
     const char* const  projectName    = "LGML";
     const char* const  companyName    = "";
-    const char* const  versionString  = "1.0.0b30";
+    const char* const  versionString  = "1.0.0b31";
     const int          versionNumber  = 0x10000;
 }
 #endif

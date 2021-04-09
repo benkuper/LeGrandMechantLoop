@@ -10,6 +10,7 @@
 
 
 #include "MainComponent.h"
+#include "Transport/Transport.h"
 
 namespace LGMLCommandIDs
 {
@@ -24,6 +25,9 @@ namespace LGMLCommandIDs
 
 	static const int guideStart = 0x300; //up to 0x300 +100
 	static const int exitGuide = 0x399;
+
+
+	static const int playPauseTransport = 0x501;
 }
 
 void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& result)
@@ -36,13 +40,13 @@ void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& 
 
 	switch (commandID)
 	{
-	case LGMLCommandIDs::showAbout:
-		result.setInfo("About...", "", "General", result.readOnlyInKeyEditor);
-		break;
+	//case LGMLCommandIDs::showAbout:
+	//	result.setInfo("About...", "", "General", result.readOnlyInKeyEditor);
+	//	break;
 
-	case LGMLCommandIDs::showWelcome:
-		result.setInfo("Show Welcome Screen...", "", "General", result.readOnlyInKeyEditor);
-		break;
+	//case LGMLCommandIDs::showWelcome:
+		//result.setInfo("Show Welcome Screen...", "", "General", result.readOnlyInKeyEditor);
+		//break;
 
 	case LGMLCommandIDs::donate:
 		result.setInfo("Be cool and donate", "", "General", result.readOnlyInKeyEditor);
@@ -51,13 +55,13 @@ void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& 
 	case LGMLCommandIDs::gotoWebsite:
 		result.setInfo("Go to website", "", "Help", result.readOnlyInKeyEditor);
 		break;
-	case LGMLCommandIDs::gotoForum:
-		result.setInfo("Go to forum", "", "Help", result.readOnlyInKeyEditor);
-		break;
+	//case LGMLCommandIDs::gotoForum:
+	//	result.setInfo("Go to forum", "", "Help", result.readOnlyInKeyEditor);
+	//	break;
 
-	case LGMLCommandIDs::gotoDocs:
-		result.setInfo("Go to the Amazing Documentation", "", "Help", result.readOnlyInKeyEditor);
-		break;
+	//case LGMLCommandIDs::gotoDocs:
+	//	result.setInfo("Go to the Amazing Documentation", "", "Help", result.readOnlyInKeyEditor);
+	//	break;
 
 	case LGMLCommandIDs::gotoChangelog:
 		result.setInfo("See the changelog", "", "Help", result.readOnlyInKeyEditor);
@@ -74,6 +78,10 @@ void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& 
 		result.setActive(false);// Guider::getInstance()->guide != nullptr);
 		break;
 
+	case LGMLCommandIDs::playPauseTransport:
+		result.setInfo("Play / Pause Transport", "", "Edit", 0);
+		result.addDefaultKeypress(KeyPress::spaceKey, ModifierKeys::noModifiers);
+		break;
 
 	default:
 		OrganicMainContentComponent::getCommandInfo(commandID, result);
@@ -89,12 +97,13 @@ void MainComponent::getAllCommands(Array<CommandID>& commands) {
 
 	const CommandID ids[] = {
 
-		LGMLCommandIDs::showAbout,
-		LGMLCommandIDs::showWelcome,
+		LGMLCommandIDs::playPauseTransport,
+		//LGMLCommandIDs::showAbout,
+		//LGMLCommandIDs::showWelcome,
 		LGMLCommandIDs::donate,
 		LGMLCommandIDs::gotoWebsite,
-		LGMLCommandIDs::gotoForum,
-		LGMLCommandIDs::gotoDocs,
+		//LGMLCommandIDs::gotoForum,
+		//LGMLCommandIDs::gotoDocs,
 		LGMLCommandIDs::gotoChangelog,
 		LGMLCommandIDs::postGithubIssue,
 	};
@@ -108,15 +117,18 @@ PopupMenu MainComponent::getMenuForIndex(int topLevelMenuIndex, const String& me
 {
 	PopupMenu menu = OrganicMainContentComponent::getMenuForIndex(topLevelMenuIndex, menuName);
 
-	if (menuName == "Help")
+	if (menuName == "Edit")
 	{
-		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::showAbout);
-		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::showWelcome);
+		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::playPauseTransport);
+	}else if (menuName == "Help")
+	{
+		//menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::showAbout);
+		//menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::showWelcome);
 		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::donate);
 		menu.addSeparator();
 		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::gotoWebsite);
-		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::gotoForum);
-		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::gotoDocs);
+		//menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::gotoForum);
+		//menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::gotoDocs);
 		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::gotoChangelog);
 		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::postGithubIssue);
 
@@ -175,22 +187,25 @@ bool MainComponent::perform(const InvocationInfo& info)
 		URL("http://benjamin.kuperberg.fr/lgml").launchInDefaultBrowser();
 		break;
 
-	case LGMLCommandIDs::gotoForum:
-		URL("http://benjamin.kuperberg.fr/lgml/forum").launchInDefaultBrowser();
-		break;
+	//case LGMLCommandIDs::gotoForum:
+	//	URL("http://benjamin.kuperberg.fr/lgml/forum").launchInDefaultBrowser();
+	//	break;
 
-	case LGMLCommandIDs::gotoDocs:
-		URL("https://benjamin.kuperberg.fr/lgml/docs").launchInDefaultBrowser();
-		break;
+	//case LGMLCommandIDs::gotoDocs:
+	//	URL("https://benjamin.kuperberg.fr/lgml/docs").launchInDefaultBrowser();
+	//	break;
 
 	case LGMLCommandIDs::gotoChangelog:
 		URL("https://benjamin.kuperberg.fr/lgml/releases/changelog.html").launchInDefaultBrowser();
 		break;
 
 	case LGMLCommandIDs::postGithubIssue:
-		URL("http://github.com/benkuper/LGML/issues").launchInDefaultBrowser();
+		URL("https://github.com/benkuper/LeGrandMechantLoop/issues").launchInDefaultBrowser();
 		break;
 
+	case LGMLCommandIDs::playPauseTransport:
+		Transport::getInstance()->togglePlayTrigger->trigger();
+		break;
 
 		//case LGMLCommandIDs::exitGuide:
 		//	Guider::getInstance()->setCurrentGuide(nullptr);

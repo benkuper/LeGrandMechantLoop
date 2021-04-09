@@ -88,7 +88,7 @@ public:
     virtual void playStateChanged(bool isPlaying) override;
 
     //helpers
-    virtual bool hasContent();
+    virtual bool hasContent(bool includeFreeTracks = true);
     virtual bool isOneTrackRecording(bool includeWillRecord = false);
     LooperTrack* getTrackForIndex(int index);
     LooperTrack* getFirstEmptyTrack();

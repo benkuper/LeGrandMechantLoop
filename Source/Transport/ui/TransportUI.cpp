@@ -15,18 +15,23 @@ TransportUI::TransportUI(StringRef name) :
 	InspectableContent(Transport::getInstance()),
 	transport(Transport::getInstance())
 {
-	toggleBT.reset(transport->togglePlayTrigger->createImageUI(ImageCache::getFromMemory(TimelineBinaryData::play_png, TimelineBinaryData::play_pngSize)));
+	toggleBT.reset(transport->togglePlayTrigger->createImageUI(ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize)));
 	addAndMakeVisible(toggleBT.get());
 
-	stopBT.reset(transport->stopTrigger->createImageUI(ImageCache::getFromMemory(TimelineBinaryData::stop_png, TimelineBinaryData::stop_pngSize)));
+	stopBT.reset(transport->stopTrigger->createImageUI(ImageCache::getFromMemory(BinaryData::stop_png, BinaryData::stop_pngSize)));
 	addAndMakeVisible(stopBT.get());
 
 	beatsPerBarUI.reset(transport->beatsPerBar->createLabelUI());
 	addAndMakeVisible(beatsPerBarUI.get());
 	beatUnitUI.reset(transport->beatUnit->createLabelUI());
 	addAndMakeVisible(beatUnitUI.get());
-	bpmUI.reset(transport->bpm->createLabelParameter());
 	
+	bpmUI.reset(transport->bpm->createLabelParameter());
+	addAndMakeVisible(bpmUI.get());
+
+	quantizUI.reset(transport->quantization->createUI());
+	addAndMakeVisible(quantizUI.get());
+
 	curBarUI.reset(transport->curBar->createLabelUI());
 	addAndMakeVisible(curBarUI.get());
 	curBeatUI.reset(transport->curBeat->createLabelUI());
@@ -57,7 +62,11 @@ void TransportUI::resized()
 	beatUnitUI->setBounds(tr.removeFromRight(30).reduced(2));
 	beatsPerBarUI->setBounds(tr.removeFromRight(30).reduced(2));
 	tr.removeFromRight(10);
-	bpmUI->setBounds(tr.removeFromRight(60).reduced(2));
+	bpmUI->setBounds(tr.removeFromRight(80).reduced(2));
+
+	Rectangle<int> qr = r.removeFromTop(20);
+	quantizUI->setBounds(qr.removeFromRight(140).reduced(2));
+
 }
 
 void TransportUI::mouseDown(const MouseEvent& e)

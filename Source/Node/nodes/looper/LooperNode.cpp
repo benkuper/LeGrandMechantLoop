@@ -227,7 +227,10 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	}
 	else if (c == playAllTrigger)
 	{
-		for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->playTrigger->trigger();
+		for (auto& cc : tracksCC.controllableContainers)
+		{
+			((LooperTrack*)cc.get())->playTrigger->trigger();
+		}
 	}
 	else if (c == playCurrentSectionTrigger)
 	{
@@ -260,7 +263,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	{
 		if (c == t->trackState)
 		{
-			isNodePlaying->setValue(hasContent());
+			isNodePlaying->setValue(hasContent(false));
 
 			bool recordOrWillRecord = isOneTrackRecording(true);
 			bool isActuallyRecording = isOneTrackRecording(false);
@@ -292,14 +295,23 @@ void LooperNode::beatChanged(bool isNewBar)
 
 void LooperNode::playStateChanged(bool isPlaying)
 {
-	if (!isPlaying) for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->stopPlaying();
+	if (!isPlaying)
+	{
+		for (auto& cc : tracksCC.controllableContainers)
+		{
+			LooperTrack* tc = (LooperTrack*)cc.get();
+			if(tc->playQuantization != Transport::FREE) tc->stopPlaying();
+		}
+	}
 }
 
-bool LooperNode::hasContent()
+bool LooperNode::hasContent(bool includeFreeTracks)
 {
 	for (auto& cc : tracksCC.controllableContainers)
 	{
-		if (((LooperTrack*)cc.get())->hasContent(false)) return true;
+		LooperTrack* tc = (LooperTrack*)cc.get();
+		if (!includeFreeTracks && tc->playQuantization == Transport::FREE) continue;
+		if (tc->hasContent(false)) return true;
 	}
 	return false;
 }

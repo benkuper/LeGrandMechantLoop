@@ -25,7 +25,8 @@ Transport::Transport() :
 	timeAtStart(0)
 {
 	bpm = addFloatParameter("BPM", "Current BPM", 120, 10, 900);
-	bpm->setControllableFeedbackOnly(true);
+	bpm->defaultUI = FloatParameter::LABEL;
+	//bpm->setControllableFeedbackOnly(true);
 
 	beatsPerBar = addIntParameter("Beats per Bar", "Number of beats in a bar", 4, 1, 32);
 	beatUnit = addIntParameter("Beat unit", "Unit designation of a beat. This is useful to get coherent BPM, visualization, metronome and other cool stuff. This follow musical notation, 4 is a quarter.", 4, 1, 32);

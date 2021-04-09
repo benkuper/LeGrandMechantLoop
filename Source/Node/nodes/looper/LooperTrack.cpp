@@ -83,6 +83,7 @@ void LooperTrack::recordOrPlay()
 	{
 		trackState->setValueWithData(WILL_PLAY);
 	}
+	break;
 
 	case WILL_STOP:
 	{
@@ -147,7 +148,12 @@ void LooperTrack::stateChanged()
 	break;
 
 	case WILL_PLAY:
-		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) Transport::getInstance()->play();
+		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
+		{
+			Transport::getInstance()->play();
+			startPlaying();
+		}
+
 		if (playQuantization == Transport::FREE) startPlaying();
 		break;
             
@@ -161,20 +167,24 @@ void LooperTrack::startRecording()
 	startRecordingInternal();
 	
 	trackState->setValueWithData(RECORDING);
-	if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
-	{
-		//If already has content, just play
-		bool doSetTempo = !RootNodeManager::getInstance()->hasPlayingNodes();
-		Transport::getInstance()->play(doSetTempo);
-	}
 
 	Transport::Quantization q = looper->getQuantization();
+
 	if (q == Transport::FREE)
 	{
 		Transport::Quantization fillMode = looper->getFreeFillMode();
 		freeRecStartOffset = 0;
 		if (fillMode == Transport::BAR) freeRecStartOffset = Transport::getInstance()->getRelativeBarSamples();
 		else if (fillMode == Transport::BEAT) freeRecStartOffset = Transport::getInstance()->getRelativeBeatSamples();
+	}
+	else
+	{
+		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
+		{
+			//If already has content, just play
+			bool doSetTempo = !RootNodeManager::getInstance()->hasPlayingNodes();
+			Transport::getInstance()->play(doSetTempo);
+		}
 	}
 }
 
@@ -187,17 +197,20 @@ void LooperTrack::finishRecordingAndPlay()
 	
 	int beatsPerBar = Transport::getInstance()->beatsPerBar->intValue();
 	
-	if (Transport::getInstance()->isSettingTempo) Transport::getInstance()->finishSetTempo(true);
-	
-	
+	bool isFullFree = q == Transport::FREE && fillMode == Transport::FREE;
+
+	if (Transport::getInstance()->isSettingTempo)
+	{
+		Transport::getInstance()->finishSetTempo(true);
+	}
+
 	if (q == Transport::FREE)
 	{
 		if (fillMode == Transport::BAR) numBeats = jmax(Transport::getInstance()->getBarForSamples(curSample, false), 1) * beatsPerBar;
 		else if (fillMode == Transport::BEAT) numBeats = jmax(Transport::getInstance()->getBeatForSamples(curSample, false, false), 1);
 		else //fillMode FREE
 		{
-			loopBeat->setRange(0, numBeats - 1);
-			loopBar->setRange(0, 0);
+			numBeats = -1;
 		}
 	}
 	else
@@ -212,7 +225,7 @@ void LooperTrack::finishRecordingAndPlay()
 		return;
 	}
 
-	if(q != Transport::FREE || (q == Transport::FREE && fillMode != Transport::FREE))
+	if(!isFullFree)
 	{
 		loopBeat->setRange(0, numBeats - 1);
 		loopBar->setRange(0, jmax<int>(floor(numBeats * 1.0f / beatsPerBar) - 1, 0));

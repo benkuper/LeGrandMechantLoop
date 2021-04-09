@@ -1640,6 +1640,47 @@ static const unsigned char temp_binary_data_1[] =
 
 const char* icon_png = (const char*) temp_binary_data_1;
 
+//================== play.png ==================
+static const unsigned char temp_binary_data_2[] =
+"\x89PNG\r\n"
+"\x1a\n"
+"\0\0\0\rIHDR\0\0\0 \0\0\0 \x08\x06\0\0\0szz\xf4\0\0\0\tpHYs\0\0\0\xec\0\0\0\xec\x01y(q\xbd\0\0\x05\xe9iTXtXML:com.adobe.xmp\0\0\0\0\0<?xpacket begin=\"\xef\xbb\xbf\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?> <x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Ad"
+"obe XMP Core 5.6-c148 79.164036, 2019/08/13-01:06:57        \"> <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"> <rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/"
+"\" xmlns:photoshop=\"http://ns.adobe.com/photoshop/1.0/\" xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\" xmlns:stEvt=\"http://ns.adobe.com/xap/1.0/sType/ResourceEvent#\" xmp:CreatorTool=\"Adobe Photoshop CC 2019 (Windows)\" xmp:CreateDate=\"2018-05-"
+"13T04:48:26+02:00\" xmp:ModifyDate=\"2020-05-16T21:17:46+02:00\" xmp:MetadataDate=\"2020-05-16T21:17:46+02:00\" dc:format=\"image/png\" photoshop:ColorMode=\"3\" photoshop:ICCProfile=\"sRGB IEC61966-2.1\" xmpMM:InstanceID=\"xmp.iid:dcd13076-da17-c144"
+"-8b79-d698c8da57d4\" xmpMM:DocumentID=\"xmp.did:116a9430-8c8a-4747-9881-93b288291091\" xmpMM:OriginalDocumentID=\"xmp.did:116a9430-8c8a-4747-9881-93b288291091\"> <xmpMM:History> <rdf:Seq> <rdf:li stEvt:action=\"created\" stEvt:instanceID=\"xmp.iid:11"
+"6a9430-8c8a-4747-9881-93b288291091\" stEvt:when=\"2018-05-13T04:48:26+02:00\" stEvt:softwareAgent=\"Adobe Photoshop CC 2019 (Windows)\"/> <rdf:li stEvt:action=\"saved\" stEvt:instanceID=\"xmp.iid:dcd13076-da17-c144-8b79-d698c8da57d4\" stEvt:when=\"20"
+"20-05-16T21:17:46+02:00\" stEvt:softwareAgent=\"Adobe Photoshop 21.1 (Windows)\" stEvt:changed=\"/\"/> </rdf:Seq> </xmpMM:History> </rdf:Description> </rdf:RDF> </x:xmpmeta> <?xpacket end=\"r\"?>\xe3\xd7\x03(\0\0\x01\x94IDATX\x85\xed\x97\xbdN\x15Q\x14"
+"\x85\xbfu\x8e\x88P\x98`iH\xb0""5\x96\x94\xfe\x90P\xdb\xe8#H!\x9d\x8d\x05\x81\x07\x80\x08\rv\x12\xf5\x11\xa0\xa1\x81\x82\xc4\xbf'\x90\x84\x16\x1b\x12*\x13\x8a\x1b\x92\x99""9\x8b""b\x10\xee\xd5p9\xe6^\xef\xb5\x98\xd5\xcd\x99\xbdg\x7f\xb3\xf7\xec\x95\x8c"
+"l3L\x85\xa1Vo\0\x1a\x80\xff\x01\xe0""FNP\xb9?7\x15\xd0""BR:Fa#\x10\x8f\xa8\x8a\xfa""f\x0c\xe8\xa4$\x15%\xdc\x1d\x85\xc2P]\xbeW|\xf0\xbew\0\xe0\x95\xe5y!\x80i\xf0\"\xf0=3\xb7\xab\xb2""F 1{qa?\xb5\xabO\xc0\x02""0>\x10\0\xe0w\xbb\x9cp\xd0\xb2\x83v\x81'\xb8"
+"-B \xc7\xbaW\x7f\xa4\xf5\x0f\xe0\x97\x1e\x1av<\xc2*7\xc3\x9d\x8e\xa8L\x87\xef}\x0b\xec[\x1e\x8f\xaf\xb9=\xf2U\x95\x9f\x01\x08\xb0\x9d\x05\xd1\x9f""5\xacGp\xdf\xa5""6]\xea\x03""0yq>\x10\x80""6\t^$U_\x90\x9f\xbb\x8f\xdf\xc0_\xca\xf7\x90\xde)hjH\0\xf9\xfa"
+"G\0:\xc4~\xe9\xe4\x1f\x03\x07""0|\x0c\x8e\x8f\xb1""6\xcf\x9d\xb3\xabr\xad\xb8\xbb\xea:\x07\x8a^\x02\xb6(:\xce\xbb\xaa\xf7\x0eH\xa7jUk\x9c\x14\x8f\x1c\xb5\x05\xf5\xf6I\xca\x02\xc8\xed\xc0U\x8f\xfa&XT\xc1g\x17\xa9""3*\xa3x/\0?\x95\xfc\x06xKT\x0b\xb5""E"
+"\x18\xac\x8a\\/\xce\x1a\x81\xcd\xde%\x8a\xb6\xa5""8\x03\xac\0\xad+2\xb2\x8a""C~\x07\xd6""e\x8d%\xa5""c\xd0\x86\xd0Qv\x85k\xa4\xe6\xc7\xa4\x01h\0\x86\rp\x06""1\x8a\x82M\xd5\xd9Kd\0\0\0\0IEND\xae""B`\x82";
+
+const char* play_png = (const char*) temp_binary_data_2;
+
+//================== stop.png ==================
+static const unsigned char temp_binary_data_3[] =
+"\x89PNG\r\n"
+"\x1a\n"
+"\0\0\0\rIHDR\0\0\0 \0\0\0 \x08\x06\0\0\0szz\xf4\0\0\0\tpHYs\0\0\r\xd7\0\0\r\xd7\x01""B(\x9bx\0\0\x05\x1ciTXtXML:com.adobe.xmp\0\0\0\0\0<?xpacket begin=\"\xef\xbb\xbf\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?> <x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\""
+"Adobe XMP Core 5.6-c145 79.163499, 2018/08/13-16:40:22        \"> <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"> <rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\" xmlns:dc=\"http://purl.org/dc/elements/1."
+"1/\" xmlns:photoshop=\"http://ns.adobe.com/photoshop/1.0/\" xmlns:xmpMM=\"http://ns.adobe.com/xap/1.0/mm/\" xmlns:stEvt=\"http://ns.adobe.com/xap/1.0/sType/ResourceEvent#\" xmp:CreatorTool=\"Adobe Photoshop CC 2019 (Windows)\" xmp:CreateDate=\"2017-0"
+"4-23T21:03:24+02:00\" xmp:ModifyDate=\"2019-01-27T14:13:57+01:00\" xmp:MetadataDate=\"2019-01-27T14:13:57+01:00\" dc:format=\"image/png\" photoshop:ColorMode=\"3\" photoshop:ICCProfile=\"sRGB IEC61966-2.1\" xmpMM:InstanceID=\"xmp.iid:b76d7782-8831-9f"
+"42-a897-a900903ff943\" xmpMM:DocumentID=\"xmp.did:b76d7782-8831-9f42-a897-a900903ff943\" xmpMM:OriginalDocumentID=\"xmp.did:b76d7782-8831-9f42-a897-a900903ff943\"> <xmpMM:History> <rdf:Seq> <rdf:li stEvt:action=\"created\" stEvt:instanceID=\"xmp.iid:"
+"b76d7782-8831-9f42-a897-a900903ff943\" stEvt:when=\"2017-04-23T21:03:24+02:00\" stEvt:softwareAgent=\"Adobe Photoshop CC 2019 (Windows)\"/> </rdf:Seq> </xmpMM:History> </rdf:Description> </rdf:RDF> </x:xmpmeta> <?xpacket end=\"r\"?>\xc8\xa5\xc9""E\0\0"
+"\x02""DIDATX\x85\xed\xd7""Ak\x13""A\x14\x07\xf0\xff{3\x9b\xddM\xd2\xdd""D\xa9UT\x10*b\x0bV\x10\xec\xc1\xa3'\xf1\xd0\x93""7\xc1\x8b\xe0\xd9/\xe0G\xd0\x9b \xde\xc5\xb3\xe0\xd1\x83_\xc0""B\n"
+"\xc5\"\x16-\xa5\x16\xdb&mM\x93\xecnf\xe6y\xa8\x8dUWX\xa4\x12\xc1<\x98\xcb\xbe""a\xe7\xc7\xdb\x19\xe6-\x89\x08\x86\x19<\xd4\xd5G\x80\x7f\x01\xa0\xf3\x1e>\xbe""5\x87\x8e\xd3|\xa3\xb6\xaaNy=\xbe\xbfrM\x7fH\"\x8aT6\x98# \xe7\xb1\tj\xbaw\xc6#\xeb;\x90=\xc8"
+"1De\xa2\xd2\xb5""4\xfa""47\xbe\xd8\xbey\xfc\xad\xfd""b\x02""3\xfb\xf4}1@\xc0\x96[\xc6\x9fi\xf6\xc3;S\xe5\xd6\xd5\x07\xa7\xdfp\xe2\x14""4}?1\x02\x12\xd6)\xebp+ eY\x04\x83$\x01\xe4\0\x97""A\xa7i\xcf""7\xdb\xfd\xea\xcb\x9a\x9f=\x04`\n"
+"\x01\x16\xbbu\x9e\x1d\xdb\xb8}6\xdc\xb9\xeb\x91\x8b.\x8e}\x06H\x80\x1fN,\x01:\x01\xaaM@\xe1\xa7\xdc\xa0\x14H\x92\x12\x16""6N\x9aW\x1f\xe3GS\xf9S~\x8d\xf9\xee\xb8\x9a\t[\xd7\xcfW7#\x08\x03\xc6\x07\xfa\x01`rF_\x03}\xe4\x8f\x14\x08\xaa\x19\"\xb5\xed\xbf"
+"x\x17\xab\xbc\xb5r\x01>Y\xed@)\xdc\x11\xecQ\x07""8\x10\x95\xb5+\x17\x06\x10@\xc8/\xea\x9f""FH\x84\xc9\xc2\x80\xbf\x10%\0\x13\xc3\x04\x08\xf6w\xc5\xd0\0\xbf\x8d\x11`\x04\x18\x01\xfe\x0f\0\x01\xc4$^a\xc0\xb7\x8b\x97\x8e\n"
+" \x80\xed;\xee\x14\x06""d\xa2\x0c\x13|\xf0\x11\xdcG\n"
+"pD\xed""f\xe2""5\xf2\xd2\xb9\r\xc9""e\x7f\xdd""6v\xc7^\xfbT\xbf""0\x19\xf4\xaa\x10\x02J\x0e\xd0\x0e\x90\x83\xc2\x10\xa0\r\x10\x98\xfd\xb7\x1c\xb6\x1e\xd4O\x01\xe8),7\xe3Zjy\xb7""0`\xda\xdbtK{\x95\xe7\xc7t\xac'\xc3\xee\x15\x10\xb0\xba\xe3\xd3zW\xc3\x1b"
+"T\x85\xc0Zk]\xc9*\xc4V\xe1PK\x06\x02\x89\xc0&\xc2\xed\xb2(\xbb\xd5\r\x17\x98\xf2?i. \x11\xed\x02v\xf3>\xdb\x06H\x08Z\xf0l9\xe6'Ku:\x11\x1a\0\x10\x01Pb\x17\xd7\xc3\x89i\x8f]\xd9\t\r\xfa=&\xf1""2\xcb\x9d\x95v\xd0\xb8wim\xef\\\xd4\x13\xe4\xf4\x83\0@\xa3"
+"_\xb3\x11`\xd8\x80\xaf""F0\xdb\x08\xf1\x03\xcb \0\0\0\0IEND\xae""B`\x82";
+
+const char* stop_png = (const char*) temp_binary_data_3;
+
 
 const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 {
@@ -1653,6 +1694,8 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
     {
         case 0x1fa434c2:  numBytes = 2599; return default_lgmllayout;
         case 0xd4093963:  numBytes = 106933; return icon_png;
+        case 0x7000b29e:  numBytes = 2007; return play_png;
+        case 0x663b186c:  numBytes = 1978; return stop_png;
         default: break;
     }
 
@@ -1663,13 +1706,17 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 const char* namedResourceList[] =
 {
     "default_lgmllayout",
-    "icon_png"
+    "icon_png",
+    "play_png",
+    "stop_png"
 };
 
 const char* originalFilenames[] =
 {
     "default.lgmllayout",
-    "icon.png"
+    "icon.png",
+    "play.png",
+    "stop.png"
 };
 
 const char* getNamedResourceOriginalFilename (const char* resourceNameUTF8)
