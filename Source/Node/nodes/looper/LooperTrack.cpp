@@ -407,6 +407,8 @@ void LooperTrack::processTrack(int blockSize)
 		}
 		else //bar, beat
 		{
+			if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) return;
+
 			int curBeat = Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart;
 			int trackBeat = curBeat % numBeats;
 

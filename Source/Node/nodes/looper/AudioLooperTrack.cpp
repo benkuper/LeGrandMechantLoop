@@ -104,6 +104,8 @@ void AudioLooperTrack::finishRecordingAndPlayInternal()
 
 void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>& outputBuffer, int numMainChannels, bool outputIfRecording)
 {
+	
+
 	int blockSize = inputBuffer.getNumSamples();
 	int trackChannel = numMainChannels + index;
 	bool outputToMainTrack = false;
@@ -137,7 +139,20 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 	processTrack(blockSize);
 
-	if (isPlaying(false)) outputToMainTrack = true;
+	
+	if (isPlaying(false))
+	{
+		if (playQuantization != Transport::FREE && !Transport::getInstance()->isCurrentlyPlaying->boolValue())
+		{
+			outputToSeparateTrack = false;
+			outputToMainTrack = false;
+		}
+		else
+		{
+			outputToMainTrack = true;
+		}
+	}
+
 
 	if (outputToSeparateTrack)
 	{

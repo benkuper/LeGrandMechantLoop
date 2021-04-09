@@ -300,7 +300,7 @@ void LooperNode::playStateChanged(bool isPlaying)
 		for (auto& cc : tracksCC.controllableContainers)
 		{
 			LooperTrack* tc = (LooperTrack*)cc.get();
-			if(tc->playQuantization != Transport::FREE) tc->stopPlaying();
+		//	if(tc->playQuantization != Transport::FREE) tc->stopPlaying();
 		}
 	}
 }
