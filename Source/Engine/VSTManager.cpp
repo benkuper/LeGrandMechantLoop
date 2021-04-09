@@ -33,6 +33,8 @@ VSTManager::VSTManager() :
 
 	userCanAddControllables = true;
 	userAddControllablesFilters.add(FileParameter::getTypeStringStatic());
+    
+    updateVSTFormats();
 }
 
 VSTManager::~VSTManager()
@@ -44,6 +46,7 @@ VSTManager::~VSTManager()
 void VSTManager::updateVSTFormats()
 {
 	formatManager.reset(new AudioPluginFormatManager());
+
 
 #if JUCE_PLUGINHOST_AU && (JUCE_MAC || JUCE_IOS)
 	if (scanAU->boolValue()) formatManager->addFormat(new AudioUnitPluginFormat());
@@ -60,6 +63,7 @@ void VSTManager::updateVSTFormats()
 #if JUCE_PLUGINHOST_LADSPA && JUCE_LINUX
 	formatManager->addFormat(new LADSPAPluginFormat());
 #endif
+     
 }
 
 void VSTManager::updateVSTList()
@@ -113,16 +117,16 @@ void VSTManager::updateVSTList()
 	}
 
 	NLOG("VST", s);
-
+    
 	getApp().saveGlobalSettings();
-	vstManagerNotifier.addMessage(new VSTManagerEvent(VSTManagerEvent::PLUGINS_UPDATED, this));
+	
+    vstManagerNotifier.addMessage(new VSTManagerEvent(VSTManagerEvent::PLUGINS_UPDATED, this));
 }
 
 void VSTManager::onContainerParameterChanged(Parameter* p)
 {
 	if (isCurrentlyLoadingData) return;
-
-	startThread();
+	//startThread();
 }
 
 void VSTManager::onControllableAdded(Controllable* c)
@@ -139,7 +143,7 @@ void VSTManager::onControllableRemoved(Controllable* c)
 {
 	if (isCurrentlyLoadingData) return;
 
-	startThread();
+	//startThread();
 }
 
 void VSTManager::reset()

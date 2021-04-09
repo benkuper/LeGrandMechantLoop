@@ -47,7 +47,8 @@ public:
     void run() override;
 
     DECLARE_ASYNC_EVENT(VSTManager, VSTManager, vstManager, ENUM_LIST(PLUGINS_UPDATED))
-
+    
+    
     InspectableEditor* getEditor(bool isRoot) override;
 };
 

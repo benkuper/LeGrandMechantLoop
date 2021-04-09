@@ -109,9 +109,13 @@ void VSTNode::setupVST(PluginDescription* description)
 
 		if (vst != nullptr)
 		{
+            vst->enableAllBuses();
+            
+            LOG(description->numInputChannels << " / " << vst->getTotalNumInputChannels());
+            
 			vst->setPlayHead(Transport::getInstance());
-			setAudioInputs(description->numInputChannels);
-			setAudioOutputs(description->numOutputChannels);
+			setAudioInputs(vst->getTotalNumInputChannels());
+			setAudioOutputs(vst->getTotalNumOutputChannels());
 			setMIDIIO(vst->acceptsMidi(), false);
 
 			vstParamsCC.reset(new VSTParameterContainer(vst.get()));
