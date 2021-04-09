@@ -110,9 +110,6 @@ void VSTNode::setupVST(PluginDescription* description)
 		if (vst != nullptr)
 		{
             vst->enableAllBuses();
-            
-            LOG(description->numInputChannels << " / " << vst->getTotalNumInputChannels());
-            
 			vst->setPlayHead(Transport::getInstance());
 			setAudioInputs(vst->getTotalNumInputChannels());
 			setAudioOutputs(vst->getTotalNumOutputChannels());
