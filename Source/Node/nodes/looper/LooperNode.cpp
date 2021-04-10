@@ -31,7 +31,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 	section = trackParamsCC.addIntParameter("Current Section", "The Section to set for the next recorded track (like A,B,C in a song). This allow to make changing structure and switch between sections during performance", 1, 1);
 
-	recordingState = recordCC.addEnumParameter("Is Recording", "Is at least one track recording right now ?", false);
+	recordingState = recordCC.addEnumParameter("Recording State", "General feedback to know if the looper is recording at least one track");
 	recordingState->addOption("Idle", LooperTrack::IDLE)->addOption("Will Record", LooperTrack::WILL_RECORD)->addOption("Recording", LooperTrack::RECORDING)->addOption("Finish Recording", LooperTrack::FINISH_RECORDING);
 	recordingState->setControllableFeedbackOnly(true);
 
