@@ -14,12 +14,17 @@
 #include "VSTLinkedParameter.h"
 
 VSTNode::VSTNode(var params) :
-	Node(getTypeString(), params),
+	Node(getTypeString(), params, true, true, true),
 	currentDevice(nullptr),
 	isSettingVST(false),
 	currentPreset(nullptr),
 	vstNotifier(5)
 {
+	numAudioInputs->canBeDisabledByUser = true;
+	numAudioInputs->setEnabled(false);
+	numAudioOutputs->canBeDisabledByUser = true;
+	numAudioOutputs->setEnabled(false);
+
 	pluginParam = new VSTPluginParameter("VST", "The VST to use");
 	ControllableContainer::addParameter(pluginParam);
 
@@ -28,16 +33,14 @@ VSTNode::VSTNode(var params) :
 
 	presetEnum = addEnumParameter("Preset", "Load a preset");
 
-
-	setAudioInputs(2);
-	setAudioOutputs(2);
+	setIOFromVST(); //force nothing
 
 	viewUISize->setPoint(200, 150);
 }
 
 VSTNode::~VSTNode()
 {
-	Engine::mainEngine->removeEngineListener(this);
+
 }
 
 void VSTNode::clearItem()
@@ -65,8 +68,6 @@ void VSTNode::setMIDIDevice(MIDIInputDevice* d)
 
 void VSTNode::setupVST(PluginDescription* description)
 {
-	if (isCurrentlyLoadingData || Engine::mainEngine->isLoadingFile) return;
-
 	ScopedSuspender sp(processor);
 
 	isSettingVST = true;
@@ -97,7 +98,12 @@ void VSTNode::setupVST(PluginDescription* description)
 		try
 		{
 			String errorMessage;
-			vst = VSTManager::getInstance()->formatManager->createPluginInstance(*description, processor->getSampleRate(), processor->getBlockSize(), errorMessage);
+			int sampleRate = processor->getSampleRate() != 0 ? processor->getSampleRate() : Transport::getInstance()->sampleRate;
+			int blockSize = processor->getBlockSize() != 0 ? processor->getBlockSize() : Transport::getInstance()->blockSize;
+			
+			jassert(sampleRate > 0 && blockSize > 0);
+
+			vst = VSTManager::getInstance()->formatManager->createPluginInstance(*description, sampleRate, blockSize, errorMessage);
 
 			if (errorMessage.isNotEmpty())
 			{
@@ -111,18 +117,16 @@ void VSTNode::setupVST(PluginDescription* description)
 
 		if (vst != nullptr)
 		{
-            vst->enableAllBuses();
 			vst->setPlayHead(Transport::getInstance());
-			setAudioInputs(vst->getTotalNumInputChannels());
-			setAudioOutputs(vst->getTotalNumOutputChannels());
-			setMIDIIO(vst->acceptsMidi(), false);
 
+		}
+		
+		setIOFromVST();
+
+		if(vst != nullptr)
+		{
 			vstParamsCC.reset(new VSTParameterContainer(vst.get()));
 			addChildControllableContainer(vstParamsCC.get());
-		}
-		else
-		{
-			setMIDIIO(false, false);
 		}
 	}
 
@@ -131,6 +135,27 @@ void VSTNode::setupVST(PluginDescription* description)
 	updatePresetEnum();
 
 	vstNotifier.addMessage(new VSTEvent(VSTEvent::VST_SET, this));
+}
+
+void VSTNode::setIOFromVST()
+{
+	if (vst != nullptr)
+	{
+		vst->enableAllBuses();
+		auto layout = vst->getBusesLayout();
+		int targetInputs = numAudioInputs->enabled ? numAudioInputs->intValue() : layout.getMainInputChannels();
+		int targetOutputs = numAudioOutputs->enabled ? numAudioOutputs->intValue() : layout.getMainOutputChannels();
+		setAudioInputs(targetInputs);// vst->getTotalNumInputChannels());
+		setAudioOutputs(targetOutputs);// vst->getTotalNumOutputChannels());
+		setMIDIIO(vst->acceptsMidi(), false);
+	}
+	else
+	{
+		setAudioInputs(0);// vst->getTotalNumInputChannels());
+		setAudioOutputs(0);// vst->getTotalNumOutputChannels());
+		setMIDIIO(false, false);
+	}
+	
 }
 
 String VSTNode::getVSTState()
@@ -185,8 +210,9 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 {
 	Node::onContainerParameterChangedInternal(p);
 	if (p == pluginParam) setupVST(pluginParam->getPluginDescription());
-	if (p == midiParam) setMIDIDevice(midiParam->inputDevice);
-	if (p == presetEnum)
+	else if (p == midiParam) setMIDIDevice(midiParam->inputDevice);
+	else if (p == numAudioInputs || p == numAudioOutputs) setIOFromVST();
+	else if (p == presetEnum)
 	{
 		int d = presetEnum->getValueData();
 		if (d == 1000)
@@ -230,6 +256,12 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 			setVSTState(currentPreset->data);
 		}
 	}
+}
+
+void VSTNode::controllableStateChanged(Controllable* c)
+{
+	ControllableContainer::controllableStateChanged(c);
+	if (c == numAudioInputs || c == numAudioOutputs) setIOFromVST();
 }
 
 
@@ -288,32 +320,6 @@ var VSTNode::getJSONData()
 void VSTNode::loadJSONDataItemInternal(var data)
 {
 	Node::loadJSONDataItemInternal(data);
-	dataToLoad = data;
-}
-
-void VSTNode::afterLoadJSONDataInternal()
-{
-	if (Engine::mainEngine->isLoadingFile)
-	{
-		Engine::mainEngine->addEngineListener(this);
-	}
-	else
-	{
-		loadVSTData(dataToLoad);
-		dataToLoad = var();
-	}
-}
-
-void VSTNode::endLoadFile()
-{
-	Engine::mainEngine->removeEngineListener(this);
-	loadVSTData(dataToLoad);
-	dataToLoad = var();
-}
-
-void VSTNode::loadVSTData(var data)
-{
-	setupVST(pluginParam->getPluginDescription());
 
 	setVSTState(data.getProperty("vstState", ""));
 

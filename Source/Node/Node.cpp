@@ -329,13 +329,21 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 var Node::getJSONData()
 {
 	var data = BaseItem::getJSONData();
-	if(!saveAndLoadRecursiveData) data.getDynamicObject()->setProperty("view", viewCC.getJSONData());
+	if (!saveAndLoadRecursiveData)
+	{
+		if (outControl != nullptr) data.getDynamicObject()->setProperty("out", outControl->getJSONData());
+		data.getDynamicObject()->setProperty("view", viewCC.getJSONData());
+	}
 	return data;
 }
 
 void Node::loadJSONDataItemInternal(var data)
 {
-	if(!saveAndLoadRecursiveData) viewCC.loadJSONData(data.getProperty("view", var()));
+	if (!saveAndLoadRecursiveData)
+	{
+		if(outControl != nullptr) outControl->loadJSONData(data.getProperty("out", var()));
+		viewCC.loadJSONData(data.getProperty("view", var()));
+	}
 }
 
 BaseNodeViewUI* Node::createViewUI()

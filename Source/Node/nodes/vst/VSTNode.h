@@ -17,8 +17,7 @@ class VSTParameterContainer;
 
 class VSTNode :
 	public Node,
-	public MIDIInputDevice::MIDIInputListener,
-	public EngineListener
+	public MIDIInputDevice::MIDIInputListener
 {
 public:
 	VSTNode(var params = var());
@@ -40,17 +39,19 @@ public:
 	};
 
 	OwnedArray<VSTPreset> presets;
+
 	VSTPreset* currentPreset;
+
 	EnumParameter* presetEnum;
 
 	bool isSettingVST; //avoid updating vst's playconfig while setting it
-	var dataToLoad; //load after file
 
 	void clearItem() override;
 
 	
 	void setMIDIDevice(MIDIInputDevice* d);
 	void setupVST(PluginDescription* description);
+	void setIOFromVST();
 
 	String getVSTState();
 	void setVSTState(const String& data);
@@ -60,6 +61,7 @@ public:
 	void updatePlayConfigInternal() override;
 
 	void onContainerParameterChangedInternal(Parameter* p) override;
+	void controllableStateChanged(Controllable* c) override;
 
 	void midiMessageReceived(const MidiMessage& m) override;
 
@@ -69,11 +71,6 @@ public:
 
 	var getJSONData() override;
 	void loadJSONDataItemInternal(var data) override;
-	void afterLoadJSONDataInternal() override;
-
-	void endLoadFile() override;
-
-	void loadVSTData(var data);
 
 	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "VST"; }
