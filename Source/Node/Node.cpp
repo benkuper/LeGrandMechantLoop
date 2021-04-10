@@ -398,6 +398,7 @@ VolumeControl::VolumeControl(const String& name, bool hasRMS) :
 		rms = addFloatParameter("RMS", "RMS for this", 0, 0, 1);
 		rms->setControllableFeedbackOnly(true);
 		rms->hideInRemoteControl = true; //hide by default
+		rms->defaultHideInRemoteControl = true; //hide by default
 	}
 }
 
