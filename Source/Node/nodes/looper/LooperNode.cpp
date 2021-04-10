@@ -295,14 +295,14 @@ void LooperNode::beatChanged(bool isNewBar)
 
 void LooperNode::playStateChanged(bool isPlaying)
 {
-	if (!isPlaying)
-	{
-		for (auto& cc : tracksCC.controllableContainers)
-		{
-			LooperTrack* tc = (LooperTrack*)cc.get();
-		//	if(tc->playQuantization != Transport::FREE) tc->stopPlaying();
-		}
-	}
+	//if (!isPlaying)
+	//{
+	//	for (auto& cc : tracksCC.controllableContainers)
+	//	{
+	//		LooperTrack* tc = (LooperTrack*)cc.get();
+	//		if(tc->playQuantization != Transport::FREE) tc->stopPlaying();
+	//	}
+	//}
 }
 
 bool LooperNode::hasContent(bool includeFreeTracks)

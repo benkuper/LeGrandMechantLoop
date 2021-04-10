@@ -37,7 +37,7 @@ VSTNode::VSTNode(var params) :
 
 VSTNode::~VSTNode()
 {
-
+	Engine::mainEngine->removeEngineListener(this);
 }
 
 void VSTNode::clearItem()
@@ -65,6 +65,8 @@ void VSTNode::setMIDIDevice(MIDIInputDevice* d)
 
 void VSTNode::setupVST(PluginDescription* description)
 {
+	if (isCurrentlyLoadingData || Engine::mainEngine->isLoadingFile) return;
+
 	ScopedSuspender sp(processor);
 
 	isSettingVST = true;
@@ -286,6 +288,32 @@ var VSTNode::getJSONData()
 void VSTNode::loadJSONDataItemInternal(var data)
 {
 	Node::loadJSONDataItemInternal(data);
+	dataToLoad = data;
+}
+
+void VSTNode::afterLoadJSONDataInternal()
+{
+	if (Engine::mainEngine->isLoadingFile)
+	{
+		Engine::mainEngine->addEngineListener(this);
+	}
+	else
+	{
+		loadVSTData(dataToLoad);
+		dataToLoad = var();
+	}
+}
+
+void VSTNode::endLoadFile()
+{
+	Engine::mainEngine->removeEngineListener(this);
+	loadVSTData(dataToLoad);
+	dataToLoad = var();
+}
+
+void VSTNode::loadVSTData(var data)
+{
+	setupVST(pluginParam->getPluginDescription());
 
 	setVSTState(data.getProperty("vstState", ""));
 
