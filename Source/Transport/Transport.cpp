@@ -76,7 +76,11 @@ void Transport::play(bool startTempoSet)
 	isSettingTempo = startTempoSet;
 	timeAtStart = Time::getMillisecondCounterHiRes() / 1000.0;
 
-	if (!startTempoSet) isCurrentlyPlaying->setValue(true);
+	if (!startTempoSet)
+	{
+		numSamplesPerBeat = sampleRate * 60.0 / bpm->floatValue();
+		isCurrentlyPlaying->setValue(true);
+	}
 	else setTempoSampleCount = 0;
 }
 
@@ -307,7 +311,7 @@ void Transport::audioDeviceAboutToStart(AudioIODevice* device)
 {
 	sampleRate = (int)device->getCurrentSampleRate();
 	blockSize = (int)device->getCurrentBufferSizeSamples();
-	if (numSamplesPerBeat == 0) numSamplesPerBeat = sampleRate * 60.0 / bpm->floatValue();
+	numSamplesPerBeat = sampleRate * 60.0 / bpm->floatValue();
 	
 }
 
