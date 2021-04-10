@@ -151,11 +151,6 @@ void IONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMe
 		if (chan->rms == nullptr || chan->gain == nullptr) return;
 
 		chan->applyGain(i, buffer);
-
-		float rms = buffer.getMagnitude(i, 0, buffer.getNumSamples());
-		float curVal = chan->rms->floatValue();
-		float targetVal = chan->rms->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
-		chan->rms->setValue(targetVal);
 	}
 }
 

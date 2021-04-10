@@ -283,21 +283,22 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	if (!enabled->boolValue())
 	{
 		processBlockBypassed(buffer, midiMessages);
+		if (outControl != nullptr) outControl->updateRMS(buffer);
 	}
 	else
 	{
 		processBlockInternal(buffer, inMidiBuffer);
-
 		if (outControl != nullptr) outControl->applyGain(buffer);
 	}
 
-	float rms = 0;
+	//float rms = 0;
 	connectionsActivityLevels.fill(0);
 	int numOutConnections = outAudioConnections.size();
 
 	for (int i = 0; i < buffer.getNumChannels(); i++)
 	{
-		float channelRMS = buffer.getMagnitude(i, 0, buffer.getNumSamples());
+		float channelRMS = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
+		jassert(!isnan(channelRMS) && !isinf(channelRMS));
 
 		for (int c = 0; c < numOutConnections; c++)
 		{
@@ -307,23 +308,30 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 			}
 		}
 
-		rms = jmax(rms, channelRMS);
+		//rms = jmax(rms, channelRMS);
 	}
 
 	for (int i = 0; i < outAudioConnections.size(); i++)
 	{
 		float curLevel = outAudioConnections[i]->activityLevel;
 		float level = connectionsActivityLevels[i];
-		if (isnan(curLevel)) curLevel = level;
+		if (isnan(curLevel) || isinf(curLevel)) curLevel = level;
 		outAudioConnections[i]->activityLevel = curLevel + (level - curLevel) * .2f;
 	}
 
+	/*
 	if (outControl != nullptr && enabled->boolValue())
 	{
 		float curVal = outControl->rms->floatValue();
 		float targetVal = outControl->rms->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
 		outControl->rms->setValue(targetVal);
 	}
+	*/
+}
+
+void Node::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) 
+{
+	for (int i = getNumAudioInputs(); i < getNumAudioOutputs(); i++) buffer.clear(i, 0, buffer.getNumSamples());
 }
 
 var Node::getJSONData()
@@ -377,7 +385,9 @@ void NodeAudioProcessor::resume()
 VolumeControl::VolumeControl(const String& name, bool hasRMS) :
 	ControllableContainer(name),
 	prevGain(1),
-	rms(nullptr)
+	rms(nullptr),
+	rmsSampleCount(0),
+	rmsMax(0)
 {
 	gain = new DecibelFloatParameter("Gain", "Gain for this");
 	addParameter(gain);
@@ -387,6 +397,7 @@ VolumeControl::VolumeControl(const String& name, bool hasRMS) :
 	{
 		rms = addFloatParameter("RMS", "RMS for this", 0, 0, 1);
 		rms->setControllableFeedbackOnly(true);
+		rms->hideInRemoteControl = true; //hide by default
 	}
 }
 
@@ -411,6 +422,8 @@ void VolumeControl::applyGain(AudioSampleBuffer& buffer)
 	float g = getGain();
 	buffer.applyGainRamp(0, buffer.getNumSamples(), prevGain, g);
 	prevGain = g;
+
+	updateRMS(buffer);
 }
 
 void VolumeControl::applyGain(int channel, AudioSampleBuffer& buffer)
@@ -418,6 +431,30 @@ void VolumeControl::applyGain(int channel, AudioSampleBuffer& buffer)
 	float g = getGain();
 	buffer.applyGainRamp(channel, 0, buffer.getNumSamples(), prevGain, g);
 	prevGain = g;
+
+	updateRMS(buffer, channel);
+}
+
+void VolumeControl::updateRMS(AudioSampleBuffer& buffer, int channel, int startSample, int numSamples)
+{
+	if (numSamples == -1) numSamples = buffer.getNumSamples();
+
+	if (rms != nullptr)
+	{
+		if(channel >= 0) rmsMax = jmax(buffer.getRMSLevel(channel, startSample, numSamples), rmsMax);
+		else
+		{
+			for (int i = 0; i < buffer.getNumChannels(); i++) rmsMax = jmax(buffer.getRMSLevel(i, startSample, numSamples), rmsMax);
+		}
+
+		rmsSampleCount += buffer.getNumSamples();
+		if (rmsSampleCount > 4000) //~10fps @44100Hz
+		{
+			rms->setValue(rms->getLerpValueTo(rmsMax, rmsMax > rms->floatValue() ? .8f : .3f));
+			rmsSampleCount = 0;
+			rmsMax = 0;
+		}
+	}
 }
 
 DecibelFloatParameter::DecibelFloatParameter(const String& niceName, const String& description) :

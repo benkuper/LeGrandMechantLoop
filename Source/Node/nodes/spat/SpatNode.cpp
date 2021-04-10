@@ -158,10 +158,11 @@ void SpatNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midi
 
 		jassert(!processor->isSuspended()); 
 		SpatItem* si = (SpatItem*)spatCC.controllableContainers[outputIndex].get();
+
 		float rms = buffer.getRMSLevel(outputIndex, 0, buffer.getNumSamples());
 		float curVal = si->rms->floatValue();
 		float targetVal = si->rms->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
-		si->rms->setValue(targetVal);
+		si->rms->setValue(targetVal); //to change
 	}
 }
 

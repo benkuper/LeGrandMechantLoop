@@ -118,7 +118,6 @@ void MixerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, 
 }
 
 
-
 void MixerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	int numSamples = buffer.getNumSamples();
@@ -144,11 +143,8 @@ void MixerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& mid
 		buffer.clear(outputIndex, 0, numSamples);
 		buffer.addFromWithRamp(outputIndex, 0, tmpBuffer.getReadPointer(outputIndex), numSamples, outMI->prevGain, newGain);
 		outMI->prevGain = newGain;
-
-		float rms = buffer.getMagnitude(outputIndex, 0, buffer.getNumSamples());
-		float curVal = outMI->rms->floatValue();
-		float targetVal = outMI->rms->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
-		outMI->rms->setValue(targetVal);
+		
+		outMI->updateRMS(buffer, outputIndex);
 	}
 }
 

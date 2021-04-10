@@ -110,7 +110,6 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 	int trackChannel = numMainChannels + index;
 	bool outputToMainTrack = false;
 	bool outputToSeparateTrack = outputBuffer.getNumChannels() > trackChannel;
-	float rmsVal = 0;
 
 
 	TrackState s = trackState->getValueDataAsEnum<TrackState>();
@@ -179,15 +178,17 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 			//rmsVal = jmax(rmsVal, buffer.getMagnitude(i, curReadSample, blockSize));
 		}
 
-		rmsVal = buffer.getMagnitude(curReadSample, blockSize);
+		//rmsVal = buffer.getMagnitude(curReadSample, blockSize);
 
-		float curVal = rms->floatValue();
-		float targetVal = rms->getLerpValueTo(rmsVal, rmsVal > curVal ? .8f : .2f);
-		rms->setValue(targetVal);
+		//float curVal = rms->floatValue();
+		//float targetVal = rms->getLerpValueTo(rmsVal, rmsVal > curVal ? .8f : .2f);
+		//rms->setValue(targetVal);
+
+		updateRMS(buffer, -1, curReadSample, blockSize);
 	}
 	else
 	{
-		rms->setValue(0);
+		//rms->setValue(0);
 	}
 
 	prevGain = vol;

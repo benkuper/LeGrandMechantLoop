@@ -62,7 +62,6 @@ public:
     T* node;
 };
 
-
 class VolumeControlUI :
     public Component
 {
