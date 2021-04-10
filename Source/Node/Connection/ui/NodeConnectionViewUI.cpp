@@ -12,6 +12,7 @@
 #include "NodeConnector.h"
 #include "Common/ConnectionUIHelper.h"
 #include "../../ui/NodeViewUI.h"
+#include "Engine/LGMLSettings.h"
 
 NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConnector* _sourceConnector, NodeConnector* _destConnector) :
 	BaseItemMinimalUI(connection),
@@ -40,7 +41,7 @@ NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConne
 		addAndMakeVisible(&destHandle);
 	}
 
-	startTimerHz(15);
+	if(LGMLSettings::getInstance()->animateConnectionIntensity->boolValue()) startTimerHz(10);
 	if(item != nullptr) item->addAsyncConnectionListener(this);
 }
 
@@ -76,7 +77,7 @@ void NodeConnectionViewUI::paint(Graphics& g)
 
 	if (isMouseOverOrDragging()) c = c.brighter();
 	g.setColour(c);
-	g.strokePath(path, PathStrokeType(isMouseOverOrDragging()?3:1+activityLevel*3));
+	g.strokePath(path, PathStrokeType(isMouseOverOrDragging() ? 3.0f : jmin<float>(1 + activityLevel * 3, 20)));
 
 	if (item == nullptr) return;
 

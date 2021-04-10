@@ -17,6 +17,8 @@ class LGMLSettings :
 public:
     juce_DeclareSingleton(LGMLSettings, true);
 
+    BoolParameter* animateConnectionIntensity;
+
     LGMLSettings();
     ~LGMLSettings();
 };

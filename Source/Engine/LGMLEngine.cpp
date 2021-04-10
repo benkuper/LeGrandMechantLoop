@@ -16,6 +16,7 @@
 #include "Transport/Transport.h"
 #include "AudioManager.h"
 #include "VSTManager.h"
+#include "LGMLSettings.h"
 #include "Common/MIDI/MIDIManager.h"
 
 LGMLEngine::LGMLEngine() :
@@ -28,6 +29,7 @@ LGMLEngine::LGMLEngine() :
     addChildControllableContainer(Transport::getInstance());
 
     ProjectSettings::getInstance()->addChildControllableContainer(AudioManager::getInstance());
+    GlobalSettings::getInstance()->addChildControllableContainer(LGMLSettings::getInstance());
     GlobalSettings::getInstance()->addChildControllableContainer(VSTManager::getInstance());
 
     cpuUsage = addFloatParameter("Audio CPU Usage", "Audio CPU Usage indicator. /!\\ This is only showing the audio processing, not the UI and other processes !", 0, 0, 1);
@@ -47,7 +49,7 @@ LGMLEngine::~LGMLEngine()
     NodeFactory::deleteInstance();
 
     VSTManager::deleteInstance();
-
+    LGMLSettings::deleteInstance();
     MIDIManager::deleteInstance();
 }
 

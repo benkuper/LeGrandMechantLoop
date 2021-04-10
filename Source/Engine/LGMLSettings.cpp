@@ -15,6 +15,7 @@ juce_ImplementSingleton(LGMLSettings)
 LGMLSettings::LGMLSettings() :
     ControllableContainer("LGML")
 {
+    animateConnectionIntensity = addBoolParameter("Animate Connections Intensity", "If checked, this will animate the connection wires in the Node View", true);
 }
 
 LGMLSettings::~LGMLSettings()
