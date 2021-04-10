@@ -201,8 +201,15 @@ void VSTNode::updatePlayConfigInternal()
 
 	if (vst != nullptr && !isSettingVST)
 	{
-		vst->setRateAndBufferSizeDetails(processor->getSampleRate(), processor->getBlockSize());
-		vst->prepareToPlay(processor->getSampleRate(), processor->getBlockSize());
+		//int sampleRate = processor->getSampleRate() != 0 ? processor->getSampleRate() : Transport::getInstance()->sampleRate;
+		//int blockSize = processor->getBlockSize() != 0 ? processor->getBlockSize() : Transport::getInstance()->blockSize;
+		if (processor->getSampleRate() > 0 && processor->getBlockSize() > 0)
+		{
+			vst->setRateAndBufferSizeDetails(processor->getSampleRate(), processor->getBlockSize());
+			vst->prepareToPlay(processor->getSampleRate(), processor->getBlockSize());
+
+		}
+		
 	}
 }
 
@@ -272,7 +279,7 @@ void VSTNode::midiMessageReceived(const MidiMessage& m)
 
 void VSTNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
-	if (vst != nullptr) vst->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock);
+	if (vst != nullptr && sampleRate > 0 && maximumExpectedSamplesPerBlock > 0) vst->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock);
 	if (sampleRate != 0) midiCollector.reset(sampleRate);
 }
 
