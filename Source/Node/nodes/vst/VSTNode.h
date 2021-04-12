@@ -68,6 +68,7 @@ public:
 	void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	void processVSTBlock(AudioBuffer<float>& buffer, bool bypassed);
 
 	var getJSONData() override;
 	void loadJSONDataItemInternal(var data) override;

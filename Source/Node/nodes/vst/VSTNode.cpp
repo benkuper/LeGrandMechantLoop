@@ -12,6 +12,7 @@
 #include "ui/VSTNodeViewUI.h"
 #include "Transport/Transport.h"
 #include "VSTLinkedParameter.h"
+#include "Node/Connection/NodeConnection.h"
 
 VSTNode::VSTNode(var params) :
 	Node(getTypeString(), params, true, true, true),
@@ -147,7 +148,7 @@ void VSTNode::setIOFromVST()
 		int targetOutputs = numAudioOutputs->enabled ? numAudioOutputs->intValue() : layout.getMainOutputChannels();
 		setAudioInputs(targetInputs);// vst->getTotalNumInputChannels());
 		setAudioOutputs(targetOutputs);// vst->getTotalNumOutputChannels());
-		setMIDIIO(vst->acceptsMidi(), false);
+		setMIDIIO(vst->acceptsMidi(), vst->producesMidi());
 	}
 	else
 	{
@@ -285,6 +286,17 @@ void VSTNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBloc
 
 void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+	processVSTBlock(buffer, false);
+}
+
+void VSTNode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+{
+	if (getNumAudioInputs() == 0) buffer.clear();
+	processVSTBlock(buffer, true);
+}
+
+void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, bool bypassed)
+{
 	if (vst != nullptr)
 	{
 		if (currentDevice != nullptr)
@@ -293,16 +305,19 @@ void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiM
 			midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
 		}
 
-		vst->processBlock(buffer, inMidiBuffer);
+		if(!bypassed) vst->processBlock(buffer, inMidiBuffer);
+
+		if (vst->producesMidi())
+		{
+			if (!inMidiBuffer.isEmpty())
+			{
+				for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
+			}
+		}
+
 	}
 
 	inMidiBuffer.clear();
-}
-
-void VSTNode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
-{
-	if (getNumAudioInputs() == 0) buffer.clear();
-	Node::processBlockBypassed(buffer, midiMessages);
 }
 
 var VSTNode::getJSONData()
