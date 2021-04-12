@@ -60,6 +60,8 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 		showOutControl = viewCC.addBoolParameter("Show Out Control", "Shows the Gain, RMS and Active on the right side in the view", true);
 	}
 
+	viewCC.hideInRemoteControl = true;
+	viewCC.defaultHideInRemoteControl = true;
 	addChildControllableContainer(&viewCC);
 
 }

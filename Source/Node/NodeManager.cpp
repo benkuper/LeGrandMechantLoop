@@ -37,8 +37,9 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 	tmpMuteAllLoopers = addTrigger("Temp Mute All Loopers", "This will temporary mute all loopers");
 
 	connectionManager.reset(new NodeConnectionManager(this));
+	connectionManager->hideInRemoteControl = true;
+	connectionManager->defaultHideInRemoteControl = true;
 	addChildControllableContainer(connectionManager.get());
-
 }
 
 

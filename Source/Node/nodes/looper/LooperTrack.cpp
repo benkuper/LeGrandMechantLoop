@@ -46,12 +46,18 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 
 	loopBeat = addIntParameter("Current Beat", "Current beat of this loop", 0, 0);
 	loopBeat->setControllableFeedbackOnly(true);
-	
+	loopBeat->defaultHideInRemoteControl = true;
+	loopBeat->hideInRemoteControl = true;
+
 	loopBar = addIntParameter("Current Bar", "Current bar of this loop", 0, 0);
 	loopBar->setControllableFeedbackOnly(true);
+	loopBar->defaultHideInRemoteControl = true;
+	loopBar->hideInRemoteControl = true;
 
 	loopProgression = addFloatParameter("Progression", "The progression of this loop", 0, 0, 1);
 	loopProgression->setControllableFeedbackOnly(true);
+	loopProgression->defaultHideInRemoteControl = true;
+	loopProgression->hideInRemoteControl = true;
 
 	section = addIntParameter("Section", "The section this track was recorded for. This is for musical structure purpose", 1, 1);
 }
