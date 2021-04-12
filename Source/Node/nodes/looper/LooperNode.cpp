@@ -21,8 +21,6 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	controlsCC("Controls"),
     tracksCC("Tracks")
 {
-	saveAndLoadRecursiveData = true;
-
 	const int defaultNumTracks = 8;
 
 	numTracks = trackParamsCC.addIntParameter("Track Count", "Number of tracks to use for this looper", defaultNumTracks, 1, 32);
@@ -384,6 +382,32 @@ Transport::Quantization LooperNode::getFreeFillMode()
 	Transport::Quantization q = freeFillMode->getValueDataAsEnum<Transport::Quantization>();
 	if (q == Transport::DEFAULT) q = getQuantization();
 	return q;
+}
+
+var LooperNode::getJSONData()
+{
+	var data = Node::getJSONData();
+	data.getDynamicObject()->setProperty(trackParamsCC.shortName, trackParamsCC.getJSONData());
+	data.getDynamicObject()->setProperty(recordCC.shortName, recordCC.getJSONData());
+	var tracksData;
+	for (auto& t : tracksCC.controllableContainers) tracksData.append(t->getJSONData());
+	data.getDynamicObject()->setProperty("tracks", tracksData);
+	return data;
+}
+
+void LooperNode::loadJSONDataItemInternal(var data)
+{
+	Node::loadJSONDataItemInternal(data);
+	trackParamsCC.loadJSONData(trackParamsCC.shortName, var());
+	recordCC.loadJSONData(recordCC.shortName, var());
+	
+	updateLooperTracks();
+
+	var tracksData = data.getProperty("tracks", var());
+	for (int i = 0; i < tracksData.size(); i++)
+	{
+		if (LooperTrack* tc = getTrackForIndex(i)) tc->loadJSONData(tracksData[i]);
+	}
 }
 
 BaseNodeViewUI* LooperNode::createViewUI()

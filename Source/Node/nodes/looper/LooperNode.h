@@ -100,5 +100,9 @@ public:
     Transport::Quantization getQuantization();
     Transport::Quantization getFreeFillMode();
 
+
+    var getJSONData() override;
+    void loadJSONDataItemInternal(var data) override;
+
     BaseNodeViewUI* createViewUI() override;
 };

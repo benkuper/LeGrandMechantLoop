@@ -29,6 +29,7 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 	numBeats(0),
 	autoStopRecAfterBeats(-1)
 {
+	saveAndLoadRecursiveData = true;
 	editorIsCollapsed = true;
 
 	isCurrent = addBoolParameter("Is Current", "Is this track the current one controlled by the looper ?", false);
