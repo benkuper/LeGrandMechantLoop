@@ -144,8 +144,9 @@ void VSTNode::setIOFromVST()
 	{
 		vst->enableAllBuses();
 		auto layout = vst->getBusesLayout();
-		int targetInputs = numAudioInputs->enabled ? numAudioInputs->intValue() : layout.getMainInputChannels();
-		int targetOutputs = numAudioOutputs->enabled ? numAudioOutputs->intValue() : layout.getMainOutputChannels();
+        int targetInputs = numAudioInputs->enabled ? numAudioInputs->intValue() : jmax(layout.getMainInputChannels(),vst->getTotalNumInputChannels());
+        int targetOutputs = numAudioOutputs->enabled ? numAudioOutputs->intValue() : jmax(layout.getMainOutputChannels(), vst->getTotalNumOutputChannels());
+        
 		setAudioInputs(targetInputs);// vst->getTotalNumInputChannels());
 		setAudioOutputs(targetOutputs);// vst->getTotalNumOutputChannels());
 		setMIDIIO(vst->acceptsMidi(), vst->producesMidi());
@@ -305,6 +306,8 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, bool bypassed)
 			midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
 		}
 
+        DBG(vst->getTotalNumInputChannels() << " / " << vst->getTotalNumOutputChannels() << " <> " << buffer.getNumChannels());
+        
 		if(!bypassed) vst->processBlock(buffer, inMidiBuffer);
 
 		if (vst->producesMidi())
