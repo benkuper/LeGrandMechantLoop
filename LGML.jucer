@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b35" cppLanguageStandard="17">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b36" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="fut9ay" name="default.lgmllayout" compile="0" resource="1"

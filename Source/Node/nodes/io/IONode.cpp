@@ -115,7 +115,7 @@ void IONode::updateAudioOutputsInternal()
 void IONode::updateIO()
 {
 	int numChannels = isInput ? getNumAudioOutputs() : getNumAudioInputs();
-	StringArray names = isInput ? audioOutputNames : audioInputNames;
+	//StringArray names = isInput ? audioOutputNames : audioInputNames;
 
 	//remove surplus
 	while (channelsCC.controllableContainers.size() > numChannels)
@@ -124,17 +124,19 @@ void IONode::updateIO()
 	}
 
 	//rename existing
+	/*
 	for (int i = 0; i < channelsCC.controllableContainers.size(); i++)
 	{
 		String s = names[i];
 		channelsCC.controllableContainers[i]->setNiceName(s);
 	}
+	*/
 
 	//add more
 	while (channelsCC.controllableContainers.size() < numChannels)
 	{
 		int index = channelsCC.controllableContainers.size();
-		String s = names[index];
+		String s = String(index + 1);// names[index];
 
 		VolumeControl * channel = new VolumeControl(s, true);
 		channelsCC.addChildControllableContainer(channel, true);
