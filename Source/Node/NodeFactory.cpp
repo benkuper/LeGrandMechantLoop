@@ -33,5 +33,5 @@ NodeFactory::NodeFactory()
     defs.add(Definition::createDef<AudioRouterNode>("Audio", AudioRouterNode::getTypeStringStatic()));
 
     defs.add(Definition::createDef<MIDILooperNode>("MIDI", MIDILooperNode::getTypeStringStatic()));
-    defs.add(Definition::createDef<MIDILooperNode>("MIDI", MIDIIONode::getTypeStringStatic()));
+    defs.add(Definition::createDef<MIDIIONode>("MIDI", MIDIIONode::getTypeStringStatic()));
 }
