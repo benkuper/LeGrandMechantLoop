@@ -18,6 +18,7 @@ MIDIIONode::MIDIIONode(var params) :
 {
 	midiParam = new MIDIDeviceParameter("MIDI Device", true, true);
 	ControllableContainer::addParameter(midiParam);
+	setMIDIIO(true, true);
 
 	viewUISize->setPoint(200, 150);
 }
@@ -54,13 +55,22 @@ void MIDIIONode::setMIDIInDevice(MIDIInputDevice* d)
 void MIDIIONode::setMIDIOutDevice(MIDIOutputDevice* d)
 {
 	if (currentOutDevice == d) return;
+	if (currentOutDevice != nullptr)
+	{
+		currentOutDevice->close();
+	}
 	currentOutDevice = d;
+
+	if (currentOutDevice != nullptr)
+	{
+		currentOutDevice->open();
+	}
 	setIOFromDevices();
 }
 
 void MIDIIONode::setIOFromDevices()
 {
-	setMIDIIO(currentInDevice == nullptr, currentOutDevice == nullptr);
+	//
 }
 
 void MIDIIONode::onContainerParameterChangedInternal(Parameter* p)
@@ -75,6 +85,7 @@ void MIDIIONode::onContainerParameterChangedInternal(Parameter* p)
 
 void MIDIIONode::midiMessageReceived(const MidiMessage& m)
 {
+	if (!enabled->boolValue()) return;
 	midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
 }
 
@@ -96,12 +107,10 @@ void MIDIIONode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& mi
 
 void MIDIIONode::processMIDIIO(int numSamples, MidiBuffer& midiMessages, bool bypassed)
 {
-	if (currentInDevice != nullptr)
+	if (currentInDevice != nullptr && enabled->boolValue())
 	{
-		inMidiBuffer.clear();
 		midiCollector.removeNextBlockOfMessages(inMidiBuffer, numSamples);
 	}
-
 
 	if (!inMidiBuffer.isEmpty())
 	{

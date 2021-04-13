@@ -19,7 +19,7 @@ MIDILooperNode::MIDILooperNode(var params) :
 {
     midiParam = new MIDIDeviceParameter("MIDI Device", true, false);
     ControllableContainer::addParameter(midiParam);
-    setMIDIIO(false, true);
+    setMIDIIO(true, true);
 }
 
 MIDILooperNode::~MIDILooperNode()
@@ -102,9 +102,9 @@ void MIDILooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer
     MonitorMode mm = monitorMode->getValueDataAsEnum<MonitorMode>();
 
     int blockSize = buffer.getNumSamples();
-    inMidiBuffer.clear();
-    collector.removeNextBlockOfMessages(inMidiBuffer, blockSize);
 
+    collector.removeNextBlockOfMessages(inMidiBuffer, blockSize);
+   
     MidiBuffer outBuffer;
     cleanupCollector.removeNextBlockOfMessages(outBuffer, blockSize);
 
@@ -129,4 +129,6 @@ void MIDILooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer
             c->destNode->receiveMIDIFromInput(this, outBuffer);
         }
     }
+
+    inMidiBuffer.clear();
 }

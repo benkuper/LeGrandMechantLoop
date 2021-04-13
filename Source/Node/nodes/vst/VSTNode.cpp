@@ -302,7 +302,6 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, bool bypassed)
 	{
 		if (currentDevice != nullptr)
 		{
-			inMidiBuffer.clear();
 			midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
 		}
 
