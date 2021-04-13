@@ -112,7 +112,8 @@ void VSTManager::updateVSTList()
 	String s = "Found plugins :";
 	for (auto& d : descriptions)
 	{
-		idDescriptionMap.set(d->fileOrIdentifier, d);
+		String pid = d->manufacturerName + "/" + d->name;
+		idDescriptionMap.set(pid, d);
 		s += "\n" + d->category + " > " + d->name + " (" + d->pluginFormatName + ")";
 	}
 
@@ -176,7 +177,8 @@ void VSTManager::loadJSONDataInternal(var data)
 
 		if (d->loadFromXml(*xml))
 		{
-			idDescriptionMap.set(d->fileOrIdentifier, d);
+			String pid = d->manufacturerName + "/" + d->name;
+			idDescriptionMap.set(pid, d);
 			descriptions.add(d);
 		}
 		else  LOGWARNING("Could not load VST from cache.");

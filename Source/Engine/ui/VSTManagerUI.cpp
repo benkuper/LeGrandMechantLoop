@@ -90,7 +90,7 @@ void VSTPluginParameterUI::showMenuAndSetVST()
             subMenuMap.set(subM, sp);
         }
 
-        subMenuMap[subM]->addItem(index++, d->descriptiveName);
+        subMenuMap[subM]->addItem(index++, d->descriptiveName + " ("+d->pluginFormatName+")");
     }
 
     HashMap<String, PopupMenu*>::Iterator it(subMenuMap);
@@ -100,7 +100,8 @@ void VSTPluginParameterUI::showMenuAndSetVST()
     {
         if (PluginDescription* d = VSTManager::getInstance()->descriptions[result - 1])
         {
-            parameter->setValue(d->fileOrIdentifier);
+            String pid = d->manufacturerName + "/" + d->name;
+            parameter->setValue(pid);
         }
     }
 }
