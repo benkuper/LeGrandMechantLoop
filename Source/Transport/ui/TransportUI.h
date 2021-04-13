@@ -22,7 +22,7 @@ public:
     
     Transport* transport;
 
-    std::unique_ptr<TriggerImageUI> toggleBT;
+    std::unique_ptr<TriggerImageUI> playBT;
     std::unique_ptr<TriggerImageUI> stopBT;
     
     std::unique_ptr<IntParameterLabelUI> beatsPerBarUI;

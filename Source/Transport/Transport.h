@@ -56,7 +56,7 @@ public:
     void clear() override; // override here to avoid deleting parameters
 
 	//Controls
-	void play(bool startTempoSet = false);
+	void play(bool startTempoSet = false, bool playFromStart = false);
 	void pause();
 	void stop();
 

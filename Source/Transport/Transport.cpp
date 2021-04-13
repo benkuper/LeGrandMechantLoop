@@ -50,7 +50,7 @@ Transport::Transport() :
 	beatProgression->setControllableFeedbackOnly(true);
 
 	playTrigger = addTrigger("Play", "Start playing");
-	togglePlayTrigger = addTrigger("Toggle Play", "Toggle between play / pause");
+	togglePlayTrigger = addTrigger("Toggle Play", "Toggle between play / stop");
 	pauseTrigger = addTrigger("Pause", "Stops playing but keeps the current time");
 	stopTrigger = addTrigger("Stop", "Stops playing and resets current time");
 
@@ -71,10 +71,17 @@ void Transport::clear()
 	//nothing right now
 }
 
-void Transport::play(bool startTempoSet)
+void Transport::play(bool startTempoSet, bool playFromStart)
 {
 	isSettingTempo = startTempoSet;
-	timeAtStart = Time::getMillisecondCounterHiRes() / 1000.0;
+	
+	if (isCurrentlyPlaying->boolValue() && !playFromStart) return;
+	
+	if (playFromStart)
+	{
+		setCurrentTime(0);
+		timeAtStart = Time::getMillisecondCounterHiRes() / 1000.0;
+	}
 
 	if (!startTempoSet)
 	{
@@ -144,10 +151,10 @@ void Transport::gotoBeat(int beat, int bar)
 
 void Transport::onContainerTriggerTriggered(Trigger* t)
 {
-	if (t == playTrigger) play();
+	if (t == playTrigger) play(false, true);
 	else if (t == togglePlayTrigger)
 	{
-		if (isCurrentlyPlaying->boolValue()) pauseTrigger->trigger();
+		if (isCurrentlyPlaying->boolValue()) stopTrigger->trigger();
 		else playTrigger->trigger();
 	}
 	else if (t == pauseTrigger) pause();

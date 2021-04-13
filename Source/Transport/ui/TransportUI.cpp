@@ -15,8 +15,8 @@ TransportUI::TransportUI(StringRef name) :
 	InspectableContent(Transport::getInstance()),
 	transport(Transport::getInstance())
 {
-	toggleBT.reset(transport->togglePlayTrigger->createImageUI(ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize)));
-	addAndMakeVisible(toggleBT.get());
+	playBT.reset(transport->playTrigger->createImageUI(ImageCache::getFromMemory(BinaryData::play_png, BinaryData::play_pngSize)));
+	addAndMakeVisible(playBT.get());
 
 	stopBT.reset(transport->stopTrigger->createImageUI(ImageCache::getFromMemory(BinaryData::stop_png, BinaryData::stop_pngSize)));
 	addAndMakeVisible(stopBT.get());
@@ -57,7 +57,7 @@ void TransportUI::resized()
 	barViz.setBounds(barR.reduced(4));
 
 	Rectangle<int> tr = r.removeFromBottom(20);
-	toggleBT->setBounds(tr.removeFromLeft(tr.getHeight()).reduced(2));
+	playBT->setBounds(tr.removeFromLeft(tr.getHeight()).reduced(2));
 	stopBT->setBounds(tr.removeFromLeft(tr.getHeight()).reduced(2));
 	beatUnitUI->setBounds(tr.removeFromRight(30).reduced(2));
 	beatsPerBarUI->setBounds(tr.removeFromRight(30).reduced(2));
