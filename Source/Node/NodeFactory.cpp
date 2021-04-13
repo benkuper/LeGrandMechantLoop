@@ -12,6 +12,7 @@
 #include "nodes/io/IONode.h"
 #include "nodes/looper/AudioLooperNode.h"
 #include "nodes/looper/MIDILooperNode.h"
+#include "nodes/io/MIDIIONode.h"
 #include "nodes/mixer/MixerNode.h"
 #include "nodes/spat/SpatNode.h"
 #include "nodes/vst/VSTNode.h"
@@ -32,4 +33,5 @@ NodeFactory::NodeFactory()
     defs.add(Definition::createDef<AudioRouterNode>("Audio", AudioRouterNode::getTypeStringStatic()));
 
     defs.add(Definition::createDef<MIDILooperNode>("MIDI", MIDILooperNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<MIDILooperNode>("MIDI", MIDIIONode::getTypeStringStatic()));
 }

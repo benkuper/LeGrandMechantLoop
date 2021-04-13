@@ -1087,6 +1087,9 @@
     <ClCompile Include="..\..\Source\Node\nodes\io\IONode.cpp">
       <Filter>LGML\Source\Node\nodes\io</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\io\MIDIIONode.cpp">
+      <Filter>LGML\Source\Node\nodes\io</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\Node.cpp">
       <Filter>LGML\Source\Node</Filter>
     </ClCompile>
@@ -4147,6 +4150,9 @@
       <Filter>LGML\Source\Node\nodes\io\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\io\IONode.h">
+      <Filter>LGML\Source\Node\nodes\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\io\MIDIIONode.h">
       <Filter>LGML\Source\Node\nodes\io</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\Node.h">

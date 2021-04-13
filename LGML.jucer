@@ -265,6 +265,8 @@
             </GROUP>
             <FILE id="dghFwr" name="IONode.cpp" compile="1" resource="0" file="Source/Node/nodes/io/IONode.cpp"/>
             <FILE id="TVvzsq" name="IONode.h" compile="0" resource="0" file="Source/Node/nodes/io/IONode.h"/>
+            <FILE id="Knlxdu" name="MIDIIONode.cpp" compile="1" resource="0" file="Source/Node/nodes/io/MIDIIONode.cpp"/>
+            <FILE id="qVdD86" name="MIDIIONode.h" compile="0" resource="0" file="Source/Node/nodes/io/MIDIIONode.h"/>
           </GROUP>
         </GROUP>
         <FILE id="YMfktw" name="Node.cpp" compile="1" resource="0" file="Source/Node/Node.cpp"/>

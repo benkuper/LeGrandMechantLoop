@@ -219,6 +219,7 @@
     <ClCompile Include="..\..\Source\Node\nodes\mixer\MixerNode.cpp"/>
     <ClCompile Include="..\..\Source\Node\nodes\io\ui\IONodeViewUI.cpp"/>
     <ClCompile Include="..\..\Source\Node\nodes\io\IONode.cpp"/>
+    <ClCompile Include="..\..\Source\Node\nodes\io\MIDIIONode.cpp"/>
     <ClCompile Include="..\..\Source\Node\Node.cpp"/>
     <ClCompile Include="..\..\Source\Node\NodeManager.cpp"/>
     <ClCompile Include="..\..\Source\Node\NodeFactory.cpp"/>
@@ -2944,6 +2945,7 @@
     <ClInclude Include="..\..\Source\Node\nodes\mixer\MixerNode.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\io\ui\IONodeViewUI.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\io\IONode.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\io\MIDIIONode.h"/>
     <ClInclude Include="..\..\Source\Node\Node.h"/>
     <ClInclude Include="..\..\Source\Node\NodeManager.h"/>
     <ClInclude Include="..\..\Source\Node\NodeFactory.h"/>

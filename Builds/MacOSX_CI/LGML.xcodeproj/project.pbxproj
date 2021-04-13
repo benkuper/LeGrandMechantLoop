@@ -116,6 +116,7 @@
 		F6F83967BE7C09A27F169D3D /* ../../Source/Node/nodes/looper/MIDILooperNode.cpp */ = {isa = PBXBuildFile; fileRef = AAC144AD2644909839DE1622; };
 		F8592A11CF3663F43E37D5E6 /* App */ = {isa = PBXBuildFile; fileRef = 8096301EEC61AAC32909A2B1; };
 		F92E79A4600859CB788E9129 /* ../../JuceLibraryCode/include_juce_data_structures.mm */ = {isa = PBXBuildFile; fileRef = 5AD384D4D6F8086C677B641A; };
+		FD7114409F4982F9FA485BE7 /* ../../Source/Node/nodes/io/MIDIIONode.cpp */ = {isa = PBXBuildFile; fileRef = 488A1FB6D629F4C2D3640F0E; };
 		FEA2AE3DC66AEAFF67D547F7 /* ../../Source/Node/nodes/container/ui/ContainerNodeUI.cpp */ = {isa = PBXBuildFile; fileRef = 498A61F43013F8E31F2027EC; };
 		FF80D6A915F0C3F8434801AC /* ../../Source/Engine/VSTManager.cpp */ = {isa = PBXBuildFile; fileRef = C1A78D0E5338B2A24824BF37; };
 /* End PBXBuildFile section */
@@ -186,6 +187,7 @@
 		45EBA046163FD48C438E6762 /* ../../JUCE/modules/juce_audio_utils */ /* juce_audio_utils */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_audio_utils; path = ../../JUCE/modules/juce_audio_utils; sourceTree = SOURCE_ROOT; };
 		4647F2C3AE98B4565DA5939F /* ../../Source/Node/Node.cpp */ /* Node.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Node.cpp; path = ../../Source/Node/Node.cpp; sourceTree = SOURCE_ROOT; };
 		481F8169D03A59F4A07EF0A3 /* ../../Source/Node/nodes/spat/ui/SpatItemUI.h */ /* SpatItemUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SpatItemUI.h; path = ../../Source/Node/nodes/spat/ui/SpatItemUI.h; sourceTree = SOURCE_ROOT; };
+		488A1FB6D629F4C2D3640F0E /* ../../Source/Node/nodes/io/MIDIIONode.cpp */ /* MIDIIONode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MIDIIONode.cpp; path = ../../Source/Node/nodes/io/MIDIIONode.cpp; sourceTree = SOURCE_ROOT; };
 		498A61F43013F8E31F2027EC /* ../../Source/Node/nodes/container/ui/ContainerNodeUI.cpp */ /* ContainerNodeUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ContainerNodeUI.cpp; path = ../../Source/Node/nodes/container/ui/ContainerNodeUI.cpp; sourceTree = SOURCE_ROOT; };
 		4B982CEDC55A9BE7B87BCC59 /* ../../Source/MainComponent.cpp */ /* MainComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MainComponent.cpp; path = ../../Source/MainComponent.cpp; sourceTree = SOURCE_ROOT; };
 		4E67D17383B701E0FFD53754 /* System/Library/Frameworks/Accelerate.framework */ /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -253,6 +255,7 @@
 		A6D9C1B2426EE8972DB8A81B /* ../../Source/Common/MIDI/ui/MIDIDeviceChooser.cpp */ /* MIDIDeviceChooser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MIDIDeviceChooser.cpp; path = ../../Source/Common/MIDI/ui/MIDIDeviceChooser.cpp; sourceTree = SOURCE_ROOT; };
 		A74F9AEDDDB240B88F9ED92D /* System/Library/Frameworks/Carbon.framework */ /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		A7A9F61A5231C14E9C3727BA /* ../../Source/Node/nodes/looper/AudioLooperNode.cpp */ /* AudioLooperNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AudioLooperNode.cpp; path = ../../Source/Node/nodes/looper/AudioLooperNode.cpp; sourceTree = SOURCE_ROOT; };
+		A8A5D0D5235E7FFD595D5932 /* ../../Source/Node/nodes/io/MIDIIONode.h */ /* MIDIIONode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MIDIIONode.h; path = ../../Source/Node/nodes/io/MIDIIONode.h; sourceTree = SOURCE_ROOT; };
 		A8FF7EA1FDC144D4C0EE2DFF /* ../../Source/Node/Node.h */ /* Node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Node.h; path = ../../Source/Node/Node.h; sourceTree = SOURCE_ROOT; };
 		AA945CC20764842E354B19A9 /* ../../Resources/icon.png */ /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = ../../Resources/icon.png; sourceTree = SOURCE_ROOT; };
 		AAC144AD2644909839DE1622 /* ../../Source/Node/nodes/looper/MIDILooperNode.cpp */ /* MIDILooperNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MIDILooperNode.cpp; path = ../../Source/Node/nodes/looper/MIDILooperNode.cpp; sourceTree = SOURCE_ROOT; };
@@ -483,6 +486,8 @@
 				923C61D6DAB9196F0E96013D,
 				04AD8E7D91666FBCBAF19258,
 				3FF7005A99CCC5AC2F5A4EFD,
+				488A1FB6D629F4C2D3640F0E,
+				A8A5D0D5235E7FFD595D5932,
 			);
 			name = io;
 			sourceTree = "<group>";
@@ -1043,6 +1048,7 @@
 				DC3F01637C207965CC1432E9,
 				C93F78CE99351AE2316C4FB2,
 				868B8EEF2C35302C6D091BD5,
+				FD7114409F4982F9FA485BE7,
 				B04647E3F99DBD999C1EDA37,
 				8DC102E307EF75EE0CFFAAA7,
 				51B8E3F3726ADC750BCFCB40,

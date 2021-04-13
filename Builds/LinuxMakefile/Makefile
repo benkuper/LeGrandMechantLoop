@@ -132,6 +132,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/MixerNode_83b55be3.o \
   $(JUCE_OBJDIR)/IONodeViewUI_ba78daff.o \
   $(JUCE_OBJDIR)/IONode_620212ef.o \
+  $(JUCE_OBJDIR)/MIDIIONode_5a42fd0.o \
   $(JUCE_OBJDIR)/Node_65f22bf0.o \
   $(JUCE_OBJDIR)/NodeManager_772dfa27.o \
   $(JUCE_OBJDIR)/NodeFactory_79762504.o \
@@ -494,6 +495,11 @@ $(JUCE_OBJDIR)/IONodeViewUI_ba78daff.o: ../../Source/Node/nodes/io/ui/IONodeView
 $(JUCE_OBJDIR)/IONode_620212ef.o: ../../Source/Node/nodes/io/IONode.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling IONode.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/MIDIIONode_5a42fd0.o: ../../Source/Node/nodes/io/MIDIIONode.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling MIDIIONode.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/Node_65f22bf0.o: ../../Source/Node/Node.cpp
