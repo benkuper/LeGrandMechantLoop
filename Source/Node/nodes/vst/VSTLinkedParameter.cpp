@@ -221,7 +221,8 @@ Parameter* VSTParameterContainer::createParameterForVSTParam(AudioProcessorParam
 
 void VSTParameterContainer::inspectableDestroyed(Inspectable* i)
 {
-	if (inspectableIdMap.contains(i))
+    if(inspectableIdMap.size() == 0) return;
+    if (inspectableIdMap.contains(i))
 	{
 		int index = inspectableIdMap[i];
 		idParamMap.remove(index);
