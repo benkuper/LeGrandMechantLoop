@@ -5,6 +5,7 @@
               defines="VST_LOGGING=0&#10;" version="1.0.0b36" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
+      <FILE id="ZG9FoU" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
       <FILE id="fut9ay" name="default.lgmllayout" compile="0" resource="1"
             file="Resources/default.lgmllayout"/>
       <FILE id="k24oFh" name="icon.png" compile="0" resource="1" file="Resources/icon.png"/>

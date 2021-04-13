@@ -4915,8 +4915,10 @@
     <ClInclude Include="..\..\Modules\juce_simpleweb\SimpleWebSocketServer.h"/>
     <ClInclude Include="..\..\Modules\juce_simpleweb\juce_simpleweb.h"/>
     <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h"/>
+    <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Resources\crash.png"/>
     <None Include="..\..\Resources\default.lgmllayout"/>
     <None Include="..\..\Resources\icon.png"/>
     <None Include="..\..\Resources\play.png"/>

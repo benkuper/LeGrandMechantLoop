@@ -10062,8 +10062,14 @@
     <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h">
       <Filter>JUCE Library Code</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
+      <Filter>JUCE Library Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Resources\crash.png">
+      <Filter>LGML\Resources</Filter>
+    </None>
     <None Include="..\..\Resources\default.lgmllayout">
       <Filter>LGML\Resources</Filter>
     </None>

@@ -25,7 +25,8 @@ void LGMLApplication::initialiseInternal(const String&)
 	//Call after engine init
 	AppUpdater::getInstance()->setURLs("http://benjamin.kuperberg.fr/lgml/releases/update.json", "http://benjamin.kuperberg.fr/lgml/download/app/", "LGML");
 	//HelpBox::getInstance()->helpURL = URL("http://benjamin.kuperberg.fr/lgml/help/");
-	CrashDumpUploader::getInstance()->init("http://benjamin.kuperberg.fr/lgml/support/crash_report.php");
+	CrashDumpUploader::getInstance()->init("http://benjamin.kuperberg.fr/lgml/support/crash_report.php", ImageCache::getFromMemory(BinaryData::crash_png
+	, BinaryData::crash_pngSize));
 	//CrashDumpUploader::getInstance()->crashImage = ImageCache::getFromMemory(BinaryData::crash_png, BinaryData::crash_pngSize);
 
 	DashboardManager::getInstance()->setupDownloadURL("http://benjamin.kuperberg.fr/download/dashboard/dashboard.php");

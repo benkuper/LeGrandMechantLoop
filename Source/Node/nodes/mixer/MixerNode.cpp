@@ -45,7 +45,7 @@ void MixerNode::updateAudioInputsInternal()
 
 	while (exclusiveModes.size() < getNumAudioInputs())
 	{
-		BoolParameter * b = exclusivesCC.addBoolParameter("Input "+String(exclusiveModes.size()+1)+" Exclusive", "If checked, only one input will be active at a time", false);
+		BoolParameter * b = exclusivesCC.addBoolParameter(String(exclusiveModes.size()+1), "If checked, only one input will be active at a time", false);
 		exclusiveModes.add(b);
 	}
 }
