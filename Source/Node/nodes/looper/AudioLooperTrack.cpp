@@ -184,7 +184,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		//float targetVal = rms->getLerpValueTo(rmsVal, rmsVal > curVal ? .8f : .2f);
 		//rms->setValue(targetVal);
 
-		updateRMS(buffer, -1, curReadSample, blockSize);
+		//updateRMS(buffer, -1, curReadSample, blockSize);
 	}
 	else
 	{
