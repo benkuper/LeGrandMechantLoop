@@ -55,8 +55,9 @@ void AudioLooperTrack::startRecordingInternal()
 	int fadeNumSamples = audioLooper->getFadeNumSamples();
 	if (fadeNumSamples > 0)
 	{
-		preRecBuffer.setSize(buffer.getNumChannels(), fadeNumSamples, false);
+		preRecBuffer.setSize(buffer.getNumChannels(), fadeNumSamples, false, true);
 		audioLooper->ringBuffer->readSamples(preRecBuffer, fadeNumSamples);
+		DBG(preRecBuffer.getMagnitude(0, fadeNumSamples));
 	}
 }
 
@@ -86,14 +87,18 @@ void AudioLooperTrack::finishRecordingAndPlayInternal()
 		//fade with ring buffer using looper fadeTimeMS
 		int fadeNumSamples = audioLooper->getFadeNumSamples();
 
-		if (fadeNumSamples > 0 && bufferNumSamples > fadeNumSamples)
+		if (fadeNumSamples > 0)
 		{
-			int bufferStartSample = bufferNumSamples - 1 - fadeNumSamples;
+			int cropFadeNumSamples = jmin(bufferNumSamples, fadeNumSamples);
+			int bufferStartSample = bufferNumSamples - cropFadeNumSamples;
 
-			buffer.applyGainRamp(bufferStartSample, fadeNumSamples, 1, 0);
+			int preRecStartSample = preRecBuffer.getNumSamples() - cropFadeNumSamples;
+
+			buffer.applyGainRamp(bufferStartSample, cropFadeNumSamples, 1, 0);
+
 			for (int i = 0; i < buffer.getNumChannels(); i++)
 			{
-				buffer.addFromWithRamp(i, bufferStartSample, preRecBuffer.getReadPointer(i), fadeNumSamples, 0, 1);
+				buffer.addFromWithRamp(i, bufferStartSample, preRecBuffer.getReadPointer(i,preRecStartSample), cropFadeNumSamples, 0, 1);
 			}
 
 			preRecBuffer.clear();
@@ -104,8 +109,6 @@ void AudioLooperTrack::finishRecordingAndPlayInternal()
 
 void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>& outputBuffer, int numMainChannels, bool outputIfRecording)
 {
-	
-
 	int blockSize = inputBuffer.getNumSamples();
 	int trackChannel = numMainChannels + index;
 	bool outputToMainTrack = false;
@@ -159,10 +162,22 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 	}
 
 	float vol = getGain();
+	if (firstPlay || s == WILL_STOP)
+	{
+		int fadeSamples = looper->playStopFadeMS->intValue() * blockSize;
+		if (firstPlay || WILL_STOP)
+		{
+			if (curReadSample < fadeSamples) vol *= curReadSample * 1.0 / fadeSamples;
+		}
+		
+		if (s == WILL_STOP)
+		{
+			if (curReadSample > bufferNumSamples - fadeSamples) vol *= (bufferNumSamples - curReadSample) * 1.0 / fadeSamples;
+		}
+	}
 
 	if ((outputToMainTrack || outputToSeparateTrack) && (curReadSample <= bufferNumSamples))
 	{
-
 		for (int i = 0; i < numChannels; i++)
 		{
 			if (outputToMainTrack)
@@ -173,6 +188,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 			if (outputToSeparateTrack)
 			{
 				outputBuffer.addFromWithRamp(trackChannel, 0, buffer.getReadPointer(i, curReadSample), blockSize, prevGain, vol);
+				
 			}
 
 			//rmsVal = jmax(rmsVal, buffer.getMagnitude(i, curReadSample, blockSize));

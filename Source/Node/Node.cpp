@@ -302,7 +302,8 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	for (int i = 0; i < buffer.getNumChannels(); i++)
 	{
 		float channelRMS = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
-		jassert(!isnan(channelRMS) && !isinf(channelRMS));
+		//jassert(!isnan(channelRMS) && !isinf(channelRMS));
+		if (isinf(channelRMS) || isnan(channelRMS)) channelRMS = 0;
 
 		for (int c = 0; c < numOutConnections; c++)
 		{

@@ -43,6 +43,8 @@ public:
     EnumParameter* quantization;
     EnumParameter* freeFillMode;
     IntParameter* fadeTimeMS;
+    IntParameter* playStopFadeMS;
+
     enum DoubleRecMode { NOTHING, AUTO_STOP_BAR, AUTO_STOP_BEAT };
     EnumParameter* doubleRecMode;
     IntParameter* doubleRecVal;

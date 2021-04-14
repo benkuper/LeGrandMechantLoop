@@ -44,6 +44,7 @@ public:
 	IntParameter* section;
 
 	int index;
+	bool firstPlay;
 
 	Transport::Quantization playQuantization;
 

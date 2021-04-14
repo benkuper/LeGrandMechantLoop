@@ -18,6 +18,7 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 	VolumeControl(String(index + 1), false),
 	looper(looper),
 	index(index),
+	firstPlay(false),
     curSample(0),
     bufferNumSamples(0),
     freeRecStartOffset(0),
@@ -155,6 +156,8 @@ void LooperTrack::stateChanged()
 	break;
 
 	case WILL_PLAY:
+		firstPlay = true;
+
 		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
 		{
 			Transport::getInstance()->play();
@@ -257,6 +260,7 @@ void LooperTrack::finishRecordingAndPlay()
 	playQuantization = q != Transport::FREE ? q : fillMode;
 
 	startPlaying();
+
 	finishRecordLock = false;
 }
 
@@ -295,7 +299,7 @@ void LooperTrack::startPlaying()
 		globalBeatAtStart = Transport::getInstance()->getTotalBeatCount();
 	}
 
-	LOG("[ " << index << " ] Global beat at start " << globalBeatAtStart);
+	//LOG("[ " << index << " ] Global beat at start " << globalBeatAtStart);
 	trackState->setValueWithData(PLAYING);
 }
 
@@ -303,6 +307,7 @@ void LooperTrack::stopPlaying()
 {
 	if (isRecording(true)) cancelRecording();
 	else if (isPlaying(true)) trackState->setValueWithData(STOPPED);
+	curSample = 0;
 }
 
 void LooperTrack::clearTrack()
@@ -416,14 +421,28 @@ void LooperTrack::processTrack(int blockSize)
 		{
 			if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) return;
 
+			
 			int curBeat = Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart;
 			int trackBeat = curBeat % numBeats;
-
+			/**
 			int relBeatSamples = Transport::getInstance()->getRelativeBeatSamples();
 			startReadSample = Transport::getInstance()->getSamplesForBeat(trackBeat, 0, false) + relBeatSamples;
+			*/
 
 			loopBeat->setValue(trackBeat);
 			loopBar->setValue(floor(trackBeat * 1.0f / Transport::getInstance()->beatsPerBar->intValue()));
+
+			if (curSample >= bufferNumSamples) curSample = 0; 
+			else curSample += blockSize;
+			jassert(curSample <= bufferNumSamples);
+
+			if (curSample >= bufferNumSamples)
+			{
+				curSample = 0;
+				firstPlay = false;
+			}
+
+			startReadSample = curSample;
 		}
 
 		loopProgression->setValue(startReadSample * 1.0f / bufferNumSamples);

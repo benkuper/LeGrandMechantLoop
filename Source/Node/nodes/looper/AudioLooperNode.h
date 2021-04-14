@@ -40,6 +40,7 @@ public:
     virtual void audioSetupChanged() override;
 
     void onContainerParameterChangedInternal(Parameter* p) override;
+    void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
     virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 

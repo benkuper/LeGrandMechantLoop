@@ -105,7 +105,13 @@ void AudioLooperNode::onContainerParameterChangedInternal(Parameter* p)
 
 		updateRingBuffer();
 	}
-	else if (p == fadeTimeMS) updateRingBuffer();
+	
+}
+
+void AudioLooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
+{
+	LooperNode::onControllableFeedbackUpdateInternal(cc, c);
+	if(c == fadeTimeMS) updateRingBuffer();
 }
 
 void AudioLooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)

@@ -28,6 +28,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	currentTrackIndex->isSavable = false;
 
 	section = trackParamsCC.addIntParameter("Current Section", "The Section to set for the next recorded track (like A,B,C in a song). This allow to make changing structure and switch between sections during performance", 1, 1);
+	playStopFadeMS = trackParamsCC.addIntParameter("Play Stop Fade", "Number of ms to fade when a track is about to stop", 10, 0, 2000);
 
 	recordingState = recordCC.addEnumParameter("Recording State", "General feedback to know if the looper is recording at least one track");
 	recordingState->addOption("Idle", LooperTrack::IDLE)->addOption("Will Record", LooperTrack::WILL_RECORD)->addOption("Recording", LooperTrack::RECORDING)->addOption("Finish Recording", LooperTrack::FINISH_RECORDING);
@@ -48,6 +49,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 	firstRecVolumeThreshold = recordCC.addFloatParameter("First Rec Threshold", "If enabled, when recording the first track when Transport not playing yet, this will wait for this threshold to be reached to actually start the recording", .3f, 0, 1, false);
 	firstRecVolumeThreshold->canBeDisabledByUser = true;
+
 
 	monitorMode = recordCC.addEnumParameter("Monitor Mode", "How to monitor");
 	monitorMode->addOption("Always", ALWAYS)->addOption("Armed track", ARMED_TRACK)->addOption("When recording", RECORDING_ONLY)->addOption("Off", OFF);

@@ -85,7 +85,10 @@ void Transport::play(bool startTempoSet, bool playFromStart)
 
 	if (!startTempoSet)
 	{
-		numSamplesPerBeat = sampleRate * 60.0 / bpm->floatValue();
+		int rawSamplesPerBeat = round(sampleRate * 60.0 / bpm->floatValue());
+		numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
+		timeInSamples = 0;
+
 		isCurrentlyPlaying->setValue(true);
 	}
 	else setTempoSampleCount = 0;
@@ -108,10 +111,12 @@ void Transport::finishSetTempo(bool startPlaying)
 {
 	if (blockSize == 0) return;
 	isSettingTempo = false;
-	numSamplesPerBeat = round(setTempoSampleCount / (beatsPerBar->intValue() * blockSize)) * blockSize;
+	int rawSamplesPerBeat = floor(setTempoSampleCount / beatsPerBar->intValue());
+	numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
 	bpm->setValue(60.0 / getTimeForSamples(numSamplesPerBeat));
 	timeInSamples = 0;
-
+	
+	jassert(numSamplesPerBeat % blockSize == 0);
 
 	curBar->setValue(0);
 	curBeat->setValue(0);
@@ -318,8 +323,10 @@ void Transport::audioDeviceAboutToStart(AudioIODevice* device)
 {
 	sampleRate = (int)device->getCurrentSampleRate();
 	blockSize = (int)device->getCurrentBufferSizeSamples();
-	numSamplesPerBeat = sampleRate * 60.0 / bpm->floatValue();
-	
+
+	int rawSamplesPerBeat = round(sampleRate * 60.0 / bpm->floatValue());
+	numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
+	timeInSamples = 0;
 }
 
 void Transport::audioDeviceStopped()

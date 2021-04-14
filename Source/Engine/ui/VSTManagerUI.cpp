@@ -65,7 +65,7 @@ VSTPluginParameterUI::~VSTPluginParameterUI()
 void VSTPluginParameterUI::updateButtonText()
 {
     PluginDescription* d = vstParam->getPluginDescription();
-    bt.setButtonText(d != nullptr ? d->descriptiveName : "Select a VST");
+    bt.setButtonText(d != nullptr ? (d->descriptiveName + " (" + d->pluginFormatName + ")") : "Select a VST");
 }
 
 void VSTPluginParameterUI::resized()
