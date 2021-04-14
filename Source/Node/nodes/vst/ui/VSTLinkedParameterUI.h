@@ -21,10 +21,32 @@ public:
 
     VSTParameterContainer* vstParamContainer;
     std::unique_ptr<ImageButton> addParamBT;
-
     void resizedInternalHeader(Rectangle<int>& r) override;
 
+    
     void buttonClicked(Button* b) override;
 
     void fillPopupMenuForGroup(const AudioProcessorParameterGroup  *group, PopupMenu & menu);
+};
+
+class VSTLinkedParameterEditor :
+    public ParameterEditor,
+    public VSTParameterLink::AsyncListener
+{
+public:
+    VSTLinkedParameterEditor(VSTParameterLink * pLink, bool isRoot);
+    ~VSTLinkedParameterEditor();
+
+    VSTParameterLink* pLink;
+
+    std::unique_ptr<ImageButton> linkBT;
+
+    void paint(Graphics& g) override;
+    void paintOverChildren(Graphics& g) override;
+
+    void resizedInternal(Rectangle<int> &r) override;
+
+    void buttonClicked(Button* b) override;
+
+    void newMessage(const VSTParameterLink::VSTParameterLinkEvent& e) override;
 };

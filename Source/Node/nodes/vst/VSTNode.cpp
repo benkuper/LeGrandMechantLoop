@@ -19,6 +19,8 @@ VSTNode::VSTNode(var params) :
 	currentDevice(nullptr),
 	isSettingVST(false),
 	currentPreset(nullptr),
+	macrosCC("Macros"),
+	antiMacroFeedback(false),
 	vstNotifier(5)
 {
 	numAudioInputs->canBeDisabledByUser = true;
@@ -31,8 +33,10 @@ VSTNode::VSTNode(var params) :
 
 	midiParam = new MIDIDeviceParameter("MIDI Device", true, false);
 	ControllableContainer::addParameter(midiParam);
-
 	presetEnum = addEnumParameter("Preset", "Load a preset");
+	numMacros = addIntParameter("Num Macros", "Choose the number of macros you want for this VST", 0, 0);
+
+	addChildControllableContainer(&macrosCC);
 
 	setIOFromVST(); //force nothing
 
@@ -127,6 +131,7 @@ void VSTNode::setupVST(PluginDescription* description)
 		if(vst != nullptr)
 		{
 			vstParamsCC.reset(new VSTParameterContainer(vst.get()));
+			vstParamsCC->setMaxMacros(numMacros->intValue());
 			addChildControllableContainer(vstParamsCC.get());
 		}
 	}
@@ -197,6 +202,22 @@ void VSTNode::updatePresetEnum(const String& setPresetName)
 	presetEnum->setValueWithKey(nameToChoose);
 }
 
+void VSTNode::updateMacros()
+{
+	if (vstParamsCC != nullptr) vstParamsCC->setMaxMacros(numMacros->intValue());
+	
+	while (macrosCC.controllables.size() > numMacros->intValue())
+	{
+		macrosCC.removeControllable(macrosCC.controllables[macrosCC.controllables.size()-1]);
+	}
+
+	while (macrosCC.controllables.size() < numMacros->intValue())
+	{
+		FloatParameter* p = macrosCC.addFloatParameter("Macro " + String(macrosCC.controllables.size() + 1), "Macro", 0);
+		p->isCustomizableByUser = true;
+	}
+}
+
 void VSTNode::updatePlayConfigInternal()
 {
 	Node::updatePlayConfigInternal();
@@ -265,6 +286,44 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 			setVSTState(currentPreset->data);
 		}
 	}
+	else if (p == numMacros)
+	{
+		updateMacros();
+	}
+}
+
+void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
+{
+	Node::onControllableFeedbackUpdateInternal(cc, c);
+
+	if (cc == vstParamsCC.get())
+	{
+		if (VSTParameterLink* pLink = dynamic_cast<VSTParameterLink *>(c))
+		{
+			if (pLink->macroIndex >= 0 && pLink->macroIndex < numMacros->intValue())
+			{
+				if (!antiMacroFeedback)
+				{
+					antiMacroFeedback = true;
+					((FloatParameter*)macrosCC.controllables[pLink->macroIndex])->setValue(pLink->param->floatValue());
+					antiMacroFeedback = false;
+				}
+			}
+		}
+	}
+	else if (cc == &macrosCC)
+	{
+		if (vstParamsCC != nullptr)
+		{
+			int index = macrosCC.controllables.indexOf(c);
+			HashMap<int, VSTParameterLink*>::Iterator it(vstParamsCC->idParamMap);
+			while (it.next())
+			{
+				if (it.getValue()->macroIndex == index) it.getValue()->param->setValue(((FloatParameter*)c)->floatValue());
+			}
+		}
+		
+	}
 }
 
 void VSTNode::controllableStateChanged(Controllable* c)
@@ -305,8 +364,6 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, bool bypassed)
 			midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
 		}
 
-        DBG(vst->getTotalNumInputChannels() << " / " << vst->getTotalNumOutputChannels() << " <> " << buffer.getNumChannels());
-        
 		if(!bypassed) vst->processBlock(buffer, inMidiBuffer);
 
 		if (vst->producesMidi())
@@ -328,6 +385,7 @@ var VSTNode::getJSONData()
 	if (vst != nullptr) data.getDynamicObject()->setProperty("vstState", getVSTState());
 
 	if (vstParamsCC != nullptr) data.getDynamicObject()->setProperty("vstParams", vstParamsCC->getJSONData());
+	data.getDynamicObject()->setProperty("macros", macrosCC.getJSONData());
 
 	if (presets.size() > 0)
 	{
@@ -348,6 +406,9 @@ void VSTNode::loadJSONDataItemInternal(var data)
 	setVSTState(data.getProperty("vstState", ""));
 
 	if (vstParamsCC != nullptr) vstParamsCC->loadJSONData(data.getProperty("vstParams", var()));
+	
+	macrosCC.loadJSONData(data.getProperty("macros", var()));
+	macrosCC.loadJSONData(data.getProperty("macros", var()));
 
 	presets.clear();
 	var presetData = data.getProperty("presets", var());

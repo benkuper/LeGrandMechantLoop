@@ -25,6 +25,8 @@ public:
 
 	VSTPluginParameter* pluginParam;
 	std::unique_ptr<VSTParameterContainer> vstParamsCC;
+	ControllableContainer macrosCC;
+	IntParameter * numMacros;
 
 	MIDIDeviceParameter* midiParam;
 
@@ -44,6 +46,7 @@ public:
 
 	EnumParameter* presetEnum;
 
+	bool antiMacroFeedback;
 	bool isSettingVST; //avoid updating vst's playconfig while setting it
 
 	void clearItem() override;
@@ -57,10 +60,12 @@ public:
 	void setVSTState(const String& data);
 
 	void updatePresetEnum(const String & setPresetName = "");
+	void updateMacros();
 
 	void updatePlayConfigInternal() override;
 
 	void onContainerParameterChangedInternal(Parameter* p) override;
+	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 	void controllableStateChanged(Controllable* c) override;
 
 	void midiMessageReceived(const MidiMessage& m) override;

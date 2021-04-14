@@ -28,12 +28,16 @@ public:
     HashMap<int,  VSTParameterLink *> idParamMap;
     HashMap<Inspectable*, int> inspectableIdMap;
 
+    int maxMacros;
+
+    void setMaxMacros(int val);
+
     void addAllParams();
     void removeAllParams();
 
     VSTParameterLink * addVSTParam(AudioProcessorParameter * p);
     void fillContainerForVSTParamGroup(ControllableContainer* cc, const AudioProcessorParameterGroup* group/*, bool createParameters = false*/);
-    Parameter* createParameterForVSTParam(AudioProcessorParameter* vstParam);
+    VSTParameterLink* createParameterForVSTParam(AudioProcessorParameter* vstParam);
 
     void inspectableDestroyed(Inspectable* i) override;
 
@@ -49,7 +53,7 @@ class VSTParameterLink :
     public AudioProcessorParameter::Listener
 {
 public:
-    VSTParameterLink(AudioProcessorParameter* vstParam,Parameter * parameter);
+    VSTParameterLink(AudioProcessorParameter* vstParam, Parameter * parameter);
     virtual ~VSTParameterLink();
     
     AudioProcessorParameter* vstParam;
@@ -57,6 +61,12 @@ public:
 
     bool antiFeedback;
     float valueAtGestureStart;
+    
+    int macroIndex;
+    int maxMacros;
+
+    void setMaxMacros(int val);
+    void setMacroIndex(int index);
 
     void updateFromVST(float value);
     void updateFromParam(float value);
@@ -64,9 +74,12 @@ public:
     String getNameFromParam() const;
     String getDescriptionFromParam() const;
 
-    // Inherited via Listener
     virtual void parameterValueChanged(int parameterIndex, float newValue) override;
     virtual void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override;
+
+    DECLARE_ASYNC_EVENT(VSTParameterLink, VSTParameterLink, vstParameterLink, { MACRO_UPDATED });
+
+    InspectableEditor * getEditor(bool isRoot);
 };
 
 
@@ -79,6 +92,8 @@ public:
     ~VSTLinkedFloatParameter();
 
     void setValueInternal(var &value) override;
+    InspectableEditor* getEditor(bool isRoot) { return VSTParameterLink::getEditor(isRoot); }
+
 };
 
 class VSTLinkedIntParameter :
@@ -90,6 +105,8 @@ public:
     ~VSTLinkedIntParameter() {}
 
     void setValueInternal(var& value) override;
+    InspectableEditor* getEditor(bool isRoot) { return VSTParameterLink::getEditor(isRoot); }
+
 };
 
 class VSTLinkedBoolParameter :
@@ -99,6 +116,8 @@ class VSTLinkedBoolParameter :
 public:
     VSTLinkedBoolParameter(AudioProcessorParameter* vstParam);
     ~VSTLinkedBoolParameter() {}
-
+    
     void setValueInternal(var& value) override;
+    InspectableEditor* getEditor(bool isRoot) { return VSTParameterLink::getEditor(isRoot); }
+
 };

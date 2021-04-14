@@ -11,12 +11,14 @@
 #include "VSTLinkedParameter.h"
 #include "ui/VSTLinkedParameterUI.h"
 
-
 // Parameter Link
 VSTParameterLink::VSTParameterLink(AudioProcessorParameter* vstParam, Parameter* param) :
 	vstParam(vstParam),
 	param(param),
-	antiFeedback(false)
+	antiFeedback(false),
+	macroIndex(-1),
+	maxMacros(0),
+	vstParameterLinkNotifier(5)
 {
 	vstParam->addListener(this);
 }
@@ -24,6 +26,18 @@ VSTParameterLink::VSTParameterLink(AudioProcessorParameter* vstParam, Parameter*
 VSTParameterLink::~VSTParameterLink()
 {
 	vstParam->removeListener(this);
+}
+
+void VSTParameterLink::setMaxMacros(int val)
+{
+	maxMacros = val;
+	vstParameterLinkNotifier.addMessage(new VSTParameterLinkEvent(VSTParameterLinkEvent::MACRO_UPDATED, this));
+}
+
+void VSTParameterLink::setMacroIndex(int index)
+{
+	macroIndex = index;
+	vstParameterLinkNotifier.addMessage(new VSTParameterLinkEvent(VSTParameterLinkEvent::MACRO_UPDATED, this));
 }
 
 void VSTParameterLink::updateFromVST(float value)
@@ -61,6 +75,11 @@ void VSTParameterLink::parameterGestureChanged(int parameterIndex, bool gestureI
 {
 	if (gestureIsStarting) valueAtGestureStart = vstParam->getValue();
 	else param->setUndoableValue(valueAtGestureStart, vstParam->getValue());
+}
+
+InspectableEditor* VSTParameterLink::getEditor(bool isRoot)
+{
+	return new VSTLinkedParameterEditor(this, isRoot);
 }
 
 
@@ -116,13 +135,21 @@ void VSTLinkedBoolParameter::setValueInternal(var& value)
 
 VSTParameterContainer::VSTParameterContainer(AudioPluginInstance* vst) :
 	ControllableContainer("VST Parameters"),
-	vst(vst)
+	vst(vst),
+	maxMacros(0)
 {
 	fillContainerForVSTParamGroup(this, &vst->getParameterTree()); //fill empty containers and create idContainerMap
 }
 
 VSTParameterContainer::~VSTParameterContainer()
 {
+}
+
+void VSTParameterContainer::setMaxMacros(int val)
+{
+	maxMacros = val;
+	HashMap<int, VSTParameterLink*>::Iterator it(idParamMap);
+	while (it.next()) it.getValue()->setMaxMacros(maxMacros);
 }
 
 void VSTParameterContainer::addAllParams()
@@ -163,14 +190,15 @@ VSTParameterLink * VSTParameterContainer::addVSTParam(AudioProcessorParameter* v
 	{
 		ControllableContainer* cc = idContainerMap[index];
 
-		Parameter * p = createParameterForVSTParam(vstP);
-		p->isRemovableByUser = true;
-		p->setValue(vstP->getValue());
-		idParamMap.set(index, (VSTParameterLink *)p);
-		p->addInspectableListener(this);
-		cc->addParameter(p);
+		VSTParameterLink * pLink = createParameterForVSTParam(vstP);
+		pLink->setMaxMacros(maxMacros);
+		pLink->param->isRemovableByUser = true;
+		pLink->param->setValue(vstP->getValue());
+		idParamMap.set(index, pLink);
+		pLink->param->addInspectableListener(this);
+		cc->addParameter(pLink->param);
 
-		return (VSTParameterLink*)p;
+		return pLink;
 	}
 
 	return nullptr;
@@ -204,9 +232,9 @@ void VSTParameterContainer::fillContainerForVSTParamGroup(ControllableContainer*
 	}
 }
 
-Parameter* VSTParameterContainer::createParameterForVSTParam(AudioProcessorParameter* vstParam)
+VSTParameterLink * VSTParameterContainer::createParameterForVSTParam(AudioProcessorParameter* vstParam)
 {
-	Parameter* p = nullptr;
+	VSTParameterLink * p = nullptr;
 	if (vstParam->isBoolean()) p = new VSTLinkedBoolParameter(vstParam);
 	else if (vstParam->isDiscrete())
 	{
@@ -244,7 +272,11 @@ var VSTParameterContainer::getJSONData()
 		if (isExposed || isOverriden)
 		{
 			pData.getDynamicObject()->setProperty("index", i);
-			if (isExposed) pData.getDynamicObject()->setProperty("exposed", true);
+			if (isExposed)
+			{
+				pData.getDynamicObject()->setProperty("exposed", true);
+				if (idParamMap[i]->macroIndex != -1) pData.getDynamicObject()->setProperty("macroIndex", idParamMap[i]->macroIndex);
+			}
 			if (isOverriden) pData.getDynamicObject()->setProperty("value", params[i]->getValue());
 			data.append(pData);
 		}
@@ -261,8 +293,12 @@ void VSTParameterContainer::loadJSONData(var data, bool createIfNotThere)
 	for (int i = 0; i < data.size(); i++)
 	{
 		int index = data[i].getProperty("index", -1);
-		if(data[i].hasProperty("value")) params[index]->setValue(data[i].getProperty("value", params[i]->getValue()));
-		if (data[i].getProperty("exposed", false)) addVSTParam(params[index]);
+		if (data[i].hasProperty("value")) params[index]->setValue(data[i].getProperty("value", params[i]->getValue()));
+		if (data[i].getProperty("exposed", false))
+		{
+			VSTParameterLink* pLink = addVSTParam(params[index]);
+			pLink->setMacroIndex(data[i].getProperty("macroIndex", -1));
+		}
 	}
 }
 

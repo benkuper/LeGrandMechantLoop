@@ -53,6 +53,12 @@
     <Filter Include="LGML\Source\Node\ui">
       <UniqueIdentifier>{3B1D1023-6B9A-7940-0DE2-650FF8A525A4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Node\nodes\sampler\ui">
+      <UniqueIdentifier>{58EECB84-E337-DADE-0E81-389FF8DA9171}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Node\nodes\sampler">
+      <UniqueIdentifier>{DE051330-AF1D-8509-A192-C38744B07836}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Node\nodes\looper\ui">
       <UniqueIdentifier>{829FB97F-B330-78F3-7067-AF7CCE41F745}</UniqueIdentifier>
     </Filter>
@@ -1011,6 +1017,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\sampler\ui\SamplerNodeUI.cpp">
+      <Filter>LGML\Source\Node\nodes\sampler\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\sampler\SamplerNode.cpp">
+      <Filter>LGML\Source\Node\nodes\sampler</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperNodeViewUI.cpp">
       <Filter>LGML\Source\Node\nodes\looper\ui</Filter>
@@ -4076,6 +4088,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\sampler\ui\SamplerNodeUI.h">
+      <Filter>LGML\Source\Node\nodes\sampler\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\sampler\SamplerNode.h">
+      <Filter>LGML\Source\Node\nodes\sampler</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\looper\ui\LooperNodeViewUI.h">
       <Filter>LGML\Source\Node\nodes\looper\ui</Filter>
@@ -10080,6 +10098,9 @@
       <Filter>LGML\Resources</Filter>
     </None>
     <None Include="..\..\Resources\icon.png">
+      <Filter>LGML\Resources</Filter>
+    </None>
+    <None Include="..\..\Resources\link.png">
       <Filter>LGML\Resources</Filter>
     </None>
     <None Include="..\..\Resources\play.png">

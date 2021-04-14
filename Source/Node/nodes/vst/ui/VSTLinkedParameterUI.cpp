@@ -76,3 +76,69 @@ void VSTParameterContainerEditor::fillPopupMenuForGroup(const AudioProcessorPara
 
     
 }
+
+VSTLinkedParameterEditor::VSTLinkedParameterEditor(VSTParameterLink* pLink, bool isRoot) :
+    ParameterEditor(pLink->param, isRoot),
+    pLink(pLink)
+{
+    pLink->addAsyncVSTParameterLinkListener(this);
+    linkBT.reset(AssetManager::getInstance()->getToggleBTImage(ImageCache::getFromMemory(BinaryData::link_png, BinaryData::link_pngSize)));
+    addAndMakeVisible(linkBT.get());
+    linkBT->addListener(this);
+}
+
+VSTLinkedParameterEditor::~VSTLinkedParameterEditor()
+{
+    pLink->removeAsyncVSTParameterLinkListener(this);
+}
+
+void VSTLinkedParameterEditor::paint(Graphics& g)
+{
+    Colour c = pLink->macroIndex == -1 ? NORMAL_COLOR : (pLink->macroIndex < pLink->maxMacros ? BLUE_COLOR : RED_COLOR);
+    g.setColour(c);
+    g.fillRoundedRectangle(linkBT->getBounds().withWidth(linkBT->getWidth()*2).toFloat(), 4);
+}
+
+void VSTLinkedParameterEditor::paintOverChildren(Graphics& g)
+{
+    if (pLink->macroIndex >= 0)
+    {
+        Rectangle<int> r = linkBT->getBounds().translated(linkBT->getWidth(), 0);
+        g.setFont(10);
+        g.setColour(Colours::white);
+        g.drawText(String(pLink->macroIndex + 1), r.toFloat(), Justification::centred);
+    }
+}
+
+void VSTLinkedParameterEditor::resizedInternal(Rectangle<int>& r)
+{
+    ParameterEditor::resizedInternal(r);
+    r.removeFromRight(r.getHeight());
+    linkBT->setBounds(r.removeFromRight(r.getHeight()).reduced(1));
+}
+
+void VSTLinkedParameterEditor::buttonClicked(Button* b)
+{
+    ParameterEditor::buttonClicked(b);
+    if (b == linkBT.get())
+    {
+        PopupMenu m;
+        for (int i = 0; i < pLink->maxMacros; i++)
+        {
+            m.addItem(i + 1, "Macro " + String(i + 1));
+        }
+        m.addItem(-1, "Unlink");
+
+        if(int result = m.show())
+        {
+
+            if (result == -1) pLink->setMacroIndex(-1);
+            else pLink->setMacroIndex(result - 1);
+        }
+    }
+}
+
+void VSTLinkedParameterEditor::newMessage(const VSTParameterLink::VSTParameterLinkEvent& e)
+{
+    repaint();
+}

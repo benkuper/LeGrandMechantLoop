@@ -18,6 +18,7 @@
 #include "nodes/vst/VSTNode.h"
 #include "nodes/container/ContainerNode.h"
 #include "nodes/router/AudioRouterNode.h"
+#include "nodes/sampler/SamplerNode.h"
 
 juce_ImplementSingleton(NodeFactory)
 
@@ -27,6 +28,7 @@ NodeFactory::NodeFactory()
     defs.add(Definition::createDef<AudioInputNode>("Audio", AudioInputNode::getTypeStringStatic()));
     defs.add(Definition::createDef<AudioOutputNode>("Audio", AudioOutputNode::getTypeStringStatic()));
     defs.add(Definition::createDef<AudioLooperNode>("Audio", AudioLooperNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<SamplerNode>("Audio", SamplerNode::getTypeStringStatic()));
     defs.add(Definition::createDef<VSTNode>("Audio", VSTNode::getTypeStringStatic()));
     defs.add(Definition::createDef<MixerNode>("Audio", MixerNode::getTypeStringStatic()));
     defs.add(Definition::createDef<SpatNode>("Audio", SpatNode::getTypeStringStatic()));

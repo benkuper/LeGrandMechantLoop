@@ -2,13 +2,14 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b37" cppLanguageStandard="17">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b38" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="ZG9FoU" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
       <FILE id="fut9ay" name="default.lgmllayout" compile="0" resource="1"
             file="Resources/default.lgmllayout"/>
       <FILE id="k24oFh" name="icon.png" compile="0" resource="1" file="Resources/icon.png"/>
+      <FILE id="Z5OneV" name="link.png" compile="0" resource="1" file="Resources/link.png"/>
       <FILE id="FbFKZX" name="play.png" compile="0" resource="1" file="Resources/play.png"/>
       <FILE id="HmeOao" name="stop.png" compile="0" resource="1" file="Resources/stop.png"/>
     </GROUP>
@@ -160,6 +161,15 @@
           <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
         </GROUP>
         <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
+          <GROUP id="{D1430F38-6887-956D-6593-21EC64B08E54}" name="sampler">
+            <GROUP id="{E455340A-4139-C227-C28B-6B955B944018}" name="ui">
+              <FILE id="Vj4PTO" name="SamplerNodeUI.cpp" compile="1" resource="0"
+                    file="Source/Node/nodes/sampler/ui/SamplerNodeUI.cpp"/>
+              <FILE id="RLUxD5" name="SamplerNodeUI.h" compile="0" resource="0" file="Source/Node/nodes/sampler/ui/SamplerNodeUI.h"/>
+            </GROUP>
+            <FILE id="iPF7M7" name="SamplerNode.cpp" compile="1" resource="0" file="Source/Node/nodes/sampler/SamplerNode.cpp"/>
+            <FILE id="XUKUST" name="SamplerNode.h" compile="0" resource="0" file="Source/Node/nodes/sampler/SamplerNode.h"/>
+          </GROUP>
           <GROUP id="{E64011D1-E57A-B4BF-FEA2-987CB75B9AD0}" name="looper">
             <GROUP id="{D0916EDF-EA50-67D7-5292-E5B4E8C929BE}" name="ui">
               <FILE id="L5Hqiu" name="LooperNodeViewUI.cpp" compile="1" resource="0"
