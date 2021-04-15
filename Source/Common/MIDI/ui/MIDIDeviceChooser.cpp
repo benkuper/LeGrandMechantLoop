@@ -150,7 +150,6 @@ void MIDIDeviceChooser::comboBoxChanged(ComboBox * cb)
 		currentOutputDevice = deviceIndex >= 0 ? MIDIManager::getInstance()->outputs[deviceIndex] : nullptr;
 		chooserListeners.call(&ChooserListener::midiDeviceOutSelected, currentOutputDevice);
 	}
-
 }
 
 void MIDIDeviceChooser::midiDeviceInAdded(MIDIInputDevice *)

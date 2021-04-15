@@ -35,7 +35,6 @@ void MIDIDeviceParameterUI::resized()
 
 void MIDIDeviceParameterUI::valueChanged(const var & /*value*/)
 {
-
 	chooser.setSelectedInputDevice(midiParam->inputDevice);
 	chooser.setSelectedOutputDevice(midiParam->outputDevice);
 	chooser.setGhostValues(midiParam->ghostDeviceIn, midiParam->ghostDeviceOut);

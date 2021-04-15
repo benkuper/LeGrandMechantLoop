@@ -24,6 +24,8 @@ LGMLEngine::LGMLEngine() :
 {
     mainEngine = this;
 
+    MIDIManager::getInstance(); //force init
+
     addChildControllableContainer(RootNodeManager::getInstance());
     addChildControllableContainer(InterfaceManager::getInstance());
     addChildControllableContainer(Transport::getInstance());

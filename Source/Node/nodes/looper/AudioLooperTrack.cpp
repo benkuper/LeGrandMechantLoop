@@ -57,7 +57,6 @@ void AudioLooperTrack::startRecordingInternal()
 	{
 		preRecBuffer.setSize(buffer.getNumChannels(), fadeNumSamples, false, true);
 		audioLooper->ringBuffer->readSamples(preRecBuffer, fadeNumSamples);
-		DBG(preRecBuffer.getMagnitude(0, fadeNumSamples));
 	}
 }
 
