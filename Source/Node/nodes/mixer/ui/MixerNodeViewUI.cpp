@@ -115,15 +115,15 @@ void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 
     if (exclusivesUI.size() > 0)
     {
-        Rectangle<int> er = r.removeFromBottom(30).reduced(2);
+        Rectangle<int> er = r.removeFromBottom(30).reduced(1);
         int sizePerGain = jmin(er.getWidth() / exclusivesUI.size(), 30);
 
         for (int i = 0; i < exclusivesUI.size(); i++)
         {
-            exclusivesUI[i]->setBounds(er.removeFromLeft(sizePerGain).reduced(2));
+            exclusivesUI[i]->setBounds(er.removeFromLeft(sizePerGain).reduced(1));
         }
     }
-    for (auto& line : gainLines) line->setBounds(r.removeFromTop(lineHeight).reduced(2));
+    for (auto& line : gainLines) line->setBounds(r.removeFromTop(lineHeight).reduced(1));
 
 }
 
@@ -185,14 +185,14 @@ void MixerNodeViewUI::OutputGainLine::paint(Graphics& g)
     Rectangle<float> r = getLocalBounds().toFloat();
     if(outUI != nullptr) r.removeFromRight(40).toFloat();
 
-    g.drawRoundedRectangle(r, 2, 1);
+    g.drawRoundedRectangle(r, 2, .5);
 }
 
 void MixerNodeViewUI::OutputGainLine::resized()
 {
     if (itemsUI.size() == 0) return;
 
-    Rectangle<int> r = getLocalBounds().reduced(2);
+    Rectangle<int> r = getLocalBounds().reduced(1);
 
     if (outUI != nullptr )
     {

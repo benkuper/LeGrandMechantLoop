@@ -30,6 +30,8 @@ MixerNode::MixerNode(var params) :
 	itemsCC.editorIsCollapsed = true;
 
 	addChildControllableContainer(&exclusivesCC);
+
+	viewUISize->setValue(170, 350);
 }
 
 void MixerNode::updateAudioInputsInternal()

@@ -38,13 +38,13 @@ void LooperTrackUI::paint(Graphics& g)
     }
 
     g.setColour(feedback.contourColor);
-    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(1), 2, 1);
+    g.drawRoundedRectangle(getLocalBounds().toFloat().reduced(1), 2, .5);
 
 }
 
 void LooperTrackUI::resized()
 {
-    Rectangle<int> r = getLocalBounds().reduced(4);
+    Rectangle<int> r = getLocalBounds().reduced(2);
     //Rectangle<int> vr = r.removeFromRight(30).reduced(1);
 
     feedback.setBounds(r.removeFromTop(10).reduced(1));
@@ -111,7 +111,7 @@ void LooperTrackUI::setViewedComponents(bool showRec, bool showStopClear, bool s
     {
         if (volumeUI == nullptr)
         {
-            volumeUI.reset(new VolumeControlUI(track));
+            volumeUI.reset(new VolumeControlUI(track, false));
             volumeUI->activeUI->customLabel = String(track->index + 1);
             volumeUI->activeUI->useCustomFGColor = true;
             volumeUI->activeUI->customFGColor = HIGHLIGHT_COLOR.darker(.25f);

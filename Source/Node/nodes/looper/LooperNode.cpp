@@ -81,7 +81,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	showTrackRMS = viewCC.addBoolParameter("Show Tracks RMS", "Show Tracks RMS", true);
 
 	Transport::getInstance()->addTransportListener(this);
-	viewUISize->setPoint(360, 260);
+	viewUISize->setPoint(360, 290);
 }
 
 LooperNode::~LooperNode()

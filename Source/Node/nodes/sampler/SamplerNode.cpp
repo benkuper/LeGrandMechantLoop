@@ -75,6 +75,11 @@ void SamplerNode::midiMessageReceived(const MidiMessage& m)
 	midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
 }
 
+void SamplerNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
+{
+	if (sampleRate != 0) midiCollector.reset(sampleRate);
+}
+
 void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	if (currentDevice != nullptr)

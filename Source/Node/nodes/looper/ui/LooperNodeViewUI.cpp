@@ -149,12 +149,12 @@ void LooperNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 		cr.setWidth(jmin(cr.getWidth(), 70));
 		playAllUI->setBounds(cr.removeFromTop(cr.getHeight() / 2).reduced(1));
 		stopAllUI->setBounds(cr.reduced(1));
-		r.removeFromTop(2);
+		r.removeFromTop(1);
 	}
 
 	if (node->showTracks->boolValue())
 	{
-		const int maxTracksPerLine = 16;
+		const int maxTracksPerLine = 8;
 		const int trackWidth = jmin<int>(floor((r.getWidth() - 4) / jmax(jmin(maxTracksPerLine, tracksUI.size()), 1)), 40);
 
 		int numLines = ceil(tracksUI.size() * 1.0f / maxTracksPerLine);
@@ -163,7 +163,7 @@ void LooperNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 		int index = 0;
 		for (int i = 0; i < numLines; i++)
 		{
-			Rectangle<int> lr = r.removeFromTop(lineHeight).reduced(2);
+			Rectangle<int> lr = r.removeFromTop(lineHeight).reduced(1);
 
 			for (int j = 0; j < maxTracksPerLine && index < tracksUI.size(); j++)
 			{

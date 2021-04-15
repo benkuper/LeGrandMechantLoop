@@ -66,10 +66,11 @@ class VolumeControlUI :
     public Component
 {
 public:
-    VolumeControlUI(VolumeControl* item);
+    VolumeControlUI(VolumeControl* item, bool showContour = true);
     ~VolumeControlUI() {}
 
     VolumeControl * item;
+    bool showContour;
 
     std::unique_ptr<DecibelSliderUI> gainUI;
     std::unique_ptr<RMSSliderUI> rmsUI;

@@ -202,7 +202,7 @@ void BaseNodeViewUI::viewFilterUpdated()
 	{
 		if (outControlUI == nullptr)
 		{
-			outControlUI.reset(new VolumeControlUI(item->outControl.get()));
+			outControlUI.reset(new VolumeControlUI(item->outControl.get(), false));
 			contentComponents.add(outControlUI.get());
 			addAndMakeVisible(outControlUI.get());
 		}
@@ -226,8 +226,9 @@ void BaseNodeViewUI::newMessage(const Node::NodeEvent& e)
 }
 
 
-VolumeControlUI::VolumeControlUI(VolumeControl* item) :
-	item(item)
+VolumeControlUI::VolumeControlUI(VolumeControl* item, bool showContour) :
+	item(item),
+	showContour(showContour)
 {
 	setViewedComponents(true, true, true);
 }
@@ -298,23 +299,28 @@ void VolumeControlUI::setViewedComponents(bool showGain, bool showRMS, bool show
 
 void VolumeControlUI::paint(Graphics& g)
 {
-	g.setColour(NORMAL_COLOR);
-	g.drawRoundedRectangle(getLocalBounds().reduced(1).toFloat(), 2, 1);
+	if (showContour)
+	{
+		g.setColour(NORMAL_COLOR);
+		g.drawRoundedRectangle(getLocalBounds().reduced(1).toFloat(), 2, .5f);
+	}
 }
 
 void VolumeControlUI::resized()
 {
-	Rectangle<int> r = getLocalBounds().reduced(2);
-	if(activeUI != nullptr) activeUI->setBounds(r.removeFromBottom(r.getWidth()).reduced(2));
+	Rectangle<int> r = getLocalBounds();
+	if (showContour) r.reduce(2, 2);
+
+	if(activeUI != nullptr) activeUI->setBounds(r.removeFromBottom(r.getWidth()).reduced(1));
 
 	if (rmsUI != nullptr)
 	{
 		rmsUI->setBounds(r.removeFromRight(6));
-		r.removeFromRight(2);
+		r.removeFromRight(1);
 	}
 	else
 	{
-		r.reduce(2, 0);
+		r.reduce(1, 0);
 	}
 
 	if(gainUI != nullptr) gainUI->setBounds(r);

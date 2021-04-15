@@ -35,8 +35,6 @@ float DecibelSliderUI::getNormalizedValueFromMouseDrag(const MouseEvent &e)
     float val = Decibels::decibelsToGain(mapVal);
     float normVal = jmap<float>(val, 0, 2, 0, 1);
 
-    DBG("Value from pos : " << initValPos << " / " << offset << " / " << targetPos << " / " << relVal << " / " << mapVal << " / " << val << " / " << normVal);
-
     return normVal;
 }
 
