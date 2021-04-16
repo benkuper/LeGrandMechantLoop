@@ -61,6 +61,7 @@ SamplerNode::SamplerNode(var params) :
 
 		samplerNotes[i]->state = noteStatesCC.addEnumParameter(MidiMessage::getMidiNoteName(i,true, true, 3), "State for this note");
 		samplerNotes[i]->state->addOption("Empty", EMPTY)->addOption("Recording", RECORDING)->addOption("Filled", FILLED)->addOption("Playing", PLAYING);
+		samplerNotes[i]->state->setControllableFeedbackOnly(true);
 	}
 
 
@@ -73,6 +74,8 @@ SamplerNode::SamplerNode(var params) :
 
 	setAudioInputs(numChannels->intValue());
 	setAudioOutputs(numChannels->intValue());
+
+	addChildControllableContainer(&noteStatesCC);
 
 	setMIDIIO(true, true);
 }
@@ -89,7 +92,7 @@ void SamplerNode::clearNote(int note)
 	ScopedSuspender sp(processor);
 	samplerNotes[note]->adsr.reset();
 	samplerNotes[note]->buffer.setSize(0, 0);
-	samplerNotes[note]->state->setValue(EMPTY);
+	samplerNotes[note]->state->setValueWithData(EMPTY);
 
 }
 
@@ -100,7 +103,7 @@ void SamplerNode::clearAllNotes()
 	{
 		n->adsr.reset();
 		n->buffer.setSize(0,0);
-		n->state->setValue(EMPTY);
+		n->state->setValueWithData(EMPTY);
 	}
 }
 
@@ -129,7 +132,7 @@ void SamplerNode::startRecording(int note)
 	int recNumSamples = processor->getSampleRate() * 60; // 1 min rec samples
 
 	SamplerNote* samplerNote = samplerNotes[note];
-	samplerNote->state->setValue(RECORDING);
+	samplerNote->state->setValueWithData(RECORDING);
 
 	samplerNote->buffer.setSize(numChannels->intValue(), recNumSamples, false, true);
 
@@ -175,7 +178,7 @@ void SamplerNode::stopRecording()
 		preRecBuffer.clear();
 	}
 	
-	samplerNote->state->setValue(FILLED);
+	samplerNote->state->setValueWithData(FILLED);
 	lastRecordedNote = recordingNote;
 	recordingNote = -1;
 	isRecording->setValue(false);
@@ -268,7 +271,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 		if (pm == HIT) samplerNotes[midiNoteNumber]->playingSample = 0;
 		samplerNotes[midiNoteNumber]->velocity = velocity;
 		samplerNotes[midiNoteNumber]->adsr.noteOn();
-		samplerNotes[midiNoteNumber]->state->setValue(PLAYING);
+		samplerNotes[midiNoteNumber]->state->setValueWithData(PLAYING);
 	}
 
 }
@@ -279,7 +282,7 @@ void SamplerNode::handleNoteOff(MidiKeyboardState* source, int midiChannel, int 
 	else if(samplerNotes[midiNoteNumber]->hasContent())
 	{
 		samplerNotes[midiNoteNumber]->adsr.noteOff();
-		samplerNotes[midiNoteNumber]->state->setValue(FILLED);
+		samplerNotes[midiNoteNumber]->state->setValueWithData(FILLED);
 	}
 }
 
