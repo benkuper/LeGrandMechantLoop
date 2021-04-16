@@ -46,7 +46,7 @@ void IONodeViewUI::updateUI()
 
     for (int i = 0; i < numChannels; i++)
     {
-        VolumeControlUI* channelUI = new VolumeControlUI((VolumeControl*)node->channelsCC.controllableContainers[i].get());
+        VolumeControlUI* channelUI = new VolumeControlUI((VolumeControl*)node->channelsCC.controllableContainers[i].get(), true, String(i+1));
         if (i >= realNumChannels)
         {
             channelUI->gainUI->useCustomFGColor = true;

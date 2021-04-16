@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\Source\Common\Serial\SerialDevice.cpp"/>
     <ClCompile Include="..\..\Source\Common\Serial\SerialDeviceParameter.cpp"/>
     <ClCompile Include="..\..\Source\Common\Serial\SerialManager.cpp"/>
+    <ClCompile Include="..\..\Source\Common\AudioHelpers.cpp"/>
     <ClCompile Include="..\..\Source\Common\AudioUIHelpers.cpp"/>
     <ClCompile Include="..\..\Source\Common\ConnectionUIHelper.cpp"/>
     <ClCompile Include="..\..\Source\Engine\ui\AudioManagerEditor.cpp"/>
@@ -2900,6 +2901,7 @@
     <ClInclude Include="..\..\Source\Common\Serial\SerialDevice.h"/>
     <ClInclude Include="..\..\Source\Common\Serial\SerialDeviceParameter.h"/>
     <ClInclude Include="..\..\Source\Common\Serial\SerialManager.h"/>
+    <ClInclude Include="..\..\Source\Common\AudioHelpers.h"/>
     <ClInclude Include="..\..\Source\Common\AudioUIHelpers.h"/>
     <ClInclude Include="..\..\Source\Common\ConnectionUIHelper.h"/>
     <ClInclude Include="..\..\Source\Common\RingBuffer.h"/>

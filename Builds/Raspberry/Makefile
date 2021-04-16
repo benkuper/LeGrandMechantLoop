@@ -85,6 +85,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/SerialDevice_e404848a.o \
   $(JUCE_OBJDIR)/SerialDeviceParameter_2de97789.o \
   $(JUCE_OBJDIR)/SerialManager_fd829543.o \
+  $(JUCE_OBJDIR)/AudioHelpers_2fe24474.o \
   $(JUCE_OBJDIR)/AudioUIHelpers_649d86e0.o \
   $(JUCE_OBJDIR)/ConnectionUIHelper_6e07d265.o \
   $(JUCE_OBJDIR)/AudioManagerEditor_a51b563b.o \
@@ -262,6 +263,11 @@ $(JUCE_OBJDIR)/SerialDeviceParameter_2de97789.o: ../../Source/Common/Serial/Seri
 $(JUCE_OBJDIR)/SerialManager_fd829543.o: ../../Source/Common/Serial/SerialManager.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
 	@echo "Compiling SerialManager.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/AudioHelpers_2fe24474.o: ../../Source/Common/AudioHelpers.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling AudioHelpers.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/AudioUIHelpers_649d86e0.o: ../../Source/Common/AudioUIHelpers.cpp

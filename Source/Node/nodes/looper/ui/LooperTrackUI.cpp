@@ -111,8 +111,7 @@ void LooperTrackUI::setViewedComponents(bool showRec, bool showStopClear, bool s
     {
         if (volumeUI == nullptr)
         {
-            volumeUI.reset(new VolumeControlUI(track, false));
-            volumeUI->activeUI->customLabel = String(track->index + 1);
+            volumeUI.reset(new VolumeControlUI(track, false, String(track->index + 1)));
             volumeUI->activeUI->useCustomFGColor = true;
             volumeUI->activeUI->customFGColor = HIGHLIGHT_COLOR.darker(.25f);
             addAndMakeVisible(volumeUI.get());

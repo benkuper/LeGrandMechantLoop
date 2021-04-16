@@ -60,6 +60,11 @@ SamplerNode::SamplerNode(var params) :
 	}
 
 
+	for (int i = 0; i < 100; i++)
+	{
+		LOG(i << " > " << outControl->gain->valueToDecibels(i / 100.0f));
+	}
+
 	updateBuffers();
 
 	setAudioInputs(numChannels->intValue());
@@ -108,6 +113,8 @@ void SamplerNode::updateRingBuffer()
 
 void SamplerNode::startRecording(int note)
 {
+	if (recordingNote != -1) return;
+
 	ScopedSuspender sp(processor);
 	isRecording->setValue(true);
 	recordingNote = note;
@@ -131,8 +138,9 @@ void SamplerNode::startRecording(int note)
 
 void SamplerNode::stopRecording()
 {
-	ScopedSuspender sp(processor);
+	if (recordingNote == -1) return;
 
+	ScopedSuspender sp(processor);
 	recordedSamples = recordedSamples - (recordedSamples % processor->getBlockSize()); //fit to blockSize
 
 
@@ -216,7 +224,7 @@ void SamplerNode::onContainerParameterChangedInternal(Parameter* p)
 	{
 		for (int i = 0; i < 128; i++)
 		{
-			samplerNotes[i]->adsr.setParameters(ADSR::Parameters(attack->floatValue(), decay->floatValue(), sustain->floatValue(), release->floatValue()));
+			samplerNotes[i]->adsr.setParameters(ADSR::Parameters(attack->floatValue(), decay->floatValue(), sustain->gain, release->floatValue()));
 		}
 
 	}
@@ -307,40 +315,38 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 
 	AudioSampleBuffer tmpNoteBuffer(buffer.getNumChannels(), blockSize);
 
-	if (!isRecording->boolValue())
+	PlayMode pm = playMode->getValueDataAsEnum<PlayMode>();
+
+	for (int i = 0; i < 128; i++)
 	{
-		PlayMode pm = playMode->getValueDataAsEnum<PlayMode>();
+		SamplerNote* s = samplerNotes[i];
 
-		for (int i = 0; i < 128; i++)
+		if (s->isRecording) continue;
+
+		if (!s->adsr.isActive())
 		{
-			SamplerNote* s = samplerNotes[i];
-
-			if (!s->adsr.isActive())
+			if (pm == LOOP)
 			{
-				if (pm == LOOP)
-				{
-					s->playingSample += blockSize;
-					if (s->playingSample >= s->buffer.getNumSamples()) s->playingSample = 0;
-				}
-				continue;
+				s->playingSample += blockSize;
+				if (s->playingSample >= s->buffer.getNumSamples()) s->playingSample = 0;
 			}
-
-			for (int j = 0; j < buffer.getNumChannels(); j++)
-			{
-				tmpNoteBuffer.copyFrom(j, 0, s->buffer, j, s->playingSample, blockSize);
-			}
-			
-			s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
-
-			for (int j = 0; j < buffer.getNumChannels(); j++)
-			{
-				buffer.addFrom(j, 0, tmpNoteBuffer, j, 0, blockSize, s->velocity);
-			}
-
-			s->playingSample += blockSize;
-			if (s->playingSample >= s->buffer.getNumSamples()) s->playingSample = 0;
-
+			continue;
 		}
+
+		for (int j = 0; j < buffer.getNumChannels(); j++)
+		{
+			tmpNoteBuffer.copyFrom(j, 0, s->buffer, j, s->playingSample, blockSize);
+		}
+			
+		s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
+		for (int j = 0; j < buffer.getNumChannels(); j++)
+		{
+			buffer.addFrom(j, 0, tmpNoteBuffer, j, 0, blockSize, s->velocity);
+		}
+
+		s->playingSample += blockSize;
+		if (s->playingSample >= s->buffer.getNumSamples()) s->playingSample = 0;
+
 	}
 
 	if (!inMidiBuffer.isEmpty())

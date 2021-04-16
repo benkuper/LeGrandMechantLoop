@@ -36,7 +36,7 @@ public:
 
     FloatParameter* attack;
     FloatParameter* decay;
-    FloatParameter* sustain;
+    DecibelFloatParameter* sustain;
     FloatParameter* release;
 
     BoolParameter * isRecording;

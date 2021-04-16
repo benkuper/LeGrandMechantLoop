@@ -35,6 +35,7 @@
 		450AD1E593412651BDCA2C4F /* ../../JuceLibraryCode/include_juce_audio_devices.mm */ = {isa = PBXBuildFile; fileRef = C6194CC60A33215D7E62429B; };
 		4587F11EFF24223DE0726BE5 /* System/Library/Frameworks/DiscRecording.framework */ = {isa = PBXBuildFile; fileRef = C1506F409953753093758A71; };
 		463B977C5D27873BF4673B92 /* ../../Source/Interface/ui/InterfaceUI.cpp */ = {isa = PBXBuildFile; fileRef = 916E75D0D07D60EB2A455F8B; };
+		476A3EE18EAE02C3BB419F9D /* ../../Source/Common/AudioHelpers.cpp */ = {isa = PBXBuildFile; fileRef = 7B0FD2332F68D984B42CB497; };
 		48DC06C4B7D4BC49FBDD09A7 /* ../../JuceLibraryCode/include_juce_gui_extra.mm */ = {isa = PBXBuildFile; fileRef = BEC21D9389CC84DE2A6A22C6; };
 		49938A408150C04CAE1280A4 /* ../../Source/Common/Serial/lib/serial/impl/list_ports/list_ports_linux.cc */ = {isa = PBXBuildFile; fileRef = 2A00FB335325AFC037E3C916; };
 		4EFDBFD373DED0858C08703B /* Icon.icns */ = {isa = PBXBuildFile; fileRef = 091EEE0FF52DF9B2CE28BCBE; };
@@ -193,6 +194,7 @@
 		488A1FB6D629F4C2D3640F0E /* ../../Source/Node/nodes/io/MIDIIONode.cpp */ /* MIDIIONode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MIDIIONode.cpp; path = ../../Source/Node/nodes/io/MIDIIONode.cpp; sourceTree = SOURCE_ROOT; };
 		498A61F43013F8E31F2027EC /* ../../Source/Node/nodes/container/ui/ContainerNodeUI.cpp */ /* ContainerNodeUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ContainerNodeUI.cpp; path = ../../Source/Node/nodes/container/ui/ContainerNodeUI.cpp; sourceTree = SOURCE_ROOT; };
 		4B982CEDC55A9BE7B87BCC59 /* ../../Source/MainComponent.cpp */ /* MainComponent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MainComponent.cpp; path = ../../Source/MainComponent.cpp; sourceTree = SOURCE_ROOT; };
+		4DBCD849176092A5C7EA5C1C /* ../../Source/Common/AudioHelpers.h */ /* AudioHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioHelpers.h; path = ../../Source/Common/AudioHelpers.h; sourceTree = SOURCE_ROOT; };
 		4E67D17383B701E0FFD53754 /* System/Library/Frameworks/Accelerate.framework */ /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		4E745442DDAFDF4E04490267 /* ../../JuceLibraryCode/include_juce_core.mm */ /* include_juce_core.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_core.mm; path = ../../JuceLibraryCode/include_juce_core.mm; sourceTree = SOURCE_ROOT; };
 		4F1A28AA9EE3359DCD52B0BC /* ../../Source/Node/Connection/NodeConnectionManager.cpp */ /* NodeConnectionManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NodeConnectionManager.cpp; path = ../../Source/Node/Connection/NodeConnectionManager.cpp; sourceTree = SOURCE_ROOT; };
@@ -224,6 +226,7 @@
 		77EAF3995CFF0123B871E786 /* ../../Source/Common/MIDI/MIDIDevice.h */ /* MIDIDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MIDIDevice.h; path = ../../Source/Common/MIDI/MIDIDevice.h; sourceTree = SOURCE_ROOT; };
 		7826B6FB3EABEC03F4E90C48 /* ../../Source/Common/Serial/lib/serial/impl/unix.cc */ /* unix.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = unix.cc; path = ../../Source/Common/Serial/lib/serial/impl/unix.cc; sourceTree = SOURCE_ROOT; };
 		78D14554A5AB9F38E531B5BB /* ../../Source/Node/Connection/ui/NodeConnector.cpp */ /* NodeConnector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NodeConnector.cpp; path = ../../Source/Node/Connection/ui/NodeConnector.cpp; sourceTree = SOURCE_ROOT; };
+		7B0FD2332F68D984B42CB497 /* ../../Source/Common/AudioHelpers.cpp */ /* AudioHelpers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AudioHelpers.cpp; path = ../../Source/Common/AudioHelpers.cpp; sourceTree = SOURCE_ROOT; };
 		7DB2AC6358846EAA873A9436 /* ../../Source/Interface/InterfaceManager.cpp */ /* InterfaceManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = InterfaceManager.cpp; path = ../../Source/Interface/InterfaceManager.cpp; sourceTree = SOURCE_ROOT; };
 		7E6641CABABC875FA8969C40 /* ../../Source/Node/NodeFactory.h */ /* NodeFactory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NodeFactory.h; path = ../../Source/Node/NodeFactory.h; sourceTree = SOURCE_ROOT; };
 		7E797A2782749B5536F25F2E /* ../../Source/Node/nodes/looper/LooperTrack.h */ /* LooperTrack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LooperTrack.h; path = ../../Source/Node/nodes/looper/LooperTrack.h; sourceTree = SOURCE_ROOT; };
@@ -563,6 +566,8 @@
 			children = (
 				6A34FB08D1CC756AA228A248,
 				C82E8E3DD8C513FE3B127D2B,
+				7B0FD2332F68D984B42CB497,
+				4DBCD849176092A5C7EA5C1C,
 				873A7EC76C6DB60E6CD566A4,
 				00A2F0B94E896892BD218107,
 				4512B8F41500EB4419C62669,
@@ -1029,6 +1034,7 @@
 				BCC7001D3B9642B090090273,
 				9A917147555923500B7CA828,
 				43DDA6E2A14AA77FC2D35C17,
+				476A3EE18EAE02C3BB419F9D,
 				8F605F1CD41779C2757D5AB1,
 				8E0542A2F682BF40C9A0E4EF,
 				996D4E28B6274DB5B3FF3B63,

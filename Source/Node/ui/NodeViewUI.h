@@ -14,7 +14,6 @@
 #include "Common/AudioUIHelpers.h"
 
 class NodeConnector;
-class VolumeControlUI;
 
 class BaseNodeViewUI:
     public BaseItemUI<Node>,
@@ -60,24 +59,4 @@ public:
     NodeViewUI(T *node) : BaseNodeViewUI(node), node(node) {}
     ~NodeViewUI() {}
     T* node;
-};
-
-class VolumeControlUI :
-    public Component
-{
-public:
-    VolumeControlUI(VolumeControl* item, bool showContour = true);
-    ~VolumeControlUI() {}
-
-    VolumeControl * item;
-    bool showContour;
-
-    std::unique_ptr<DecibelSliderUI> gainUI;
-    std::unique_ptr<RMSSliderUI> rmsUI;
-    std::unique_ptr<BoolButtonToggleUI> activeUI;
-
-    void setViewedComponents(bool showGain, bool showRMS, bool showActive);
-
-    void paint(Graphics& g) override;
-    void resized() override;
 };
