@@ -11,6 +11,23 @@
 #pragma once
 #include "JuceHeader.h"
 
+class DecibelsHelpers
+{
+public:
+    static Point<float> start;
+    static Point<float> mid1;
+    static Point<float> mid2;
+    static Point<float> end; 
+    
+    dsp::LookupTableTransform<float> valToDecLut;
+
+    static void init();
+    static float valueToDecibels(float val);
+    static float decibelsToValue(float decibels);
+    static float valueToGain(float value);
+    static float gainToValue(float gain);
+};
+
 class DecibelFloatParameter :
     public FloatParameter
 {
@@ -23,9 +40,6 @@ public:
 
     void setGain(float gain);
     void setValueInternal(var& val) override;
-
-    float valueToDecibels(float val);
-    float decibelsToValue(float decibels);
 
     ControllableUI* createDefaultUI() override;
 };

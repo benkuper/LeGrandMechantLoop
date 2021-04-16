@@ -29,7 +29,7 @@ void DecibelSliderUI::drawBG(Graphics& g)
 	FloatSliderUI::drawBG(g);
 
     Rectangle<int> r = getLocalBounds();
-    for (int i = -100; i <= 0; i+=6)
+    for (int i = 0; i >= -100; i -=6)
     {
 		Colour c = NORMAL_COLOR.withAlpha(i == 0 ? .5f : .2f);
         g.setColour(c);
@@ -37,13 +37,13 @@ void DecibelSliderUI::drawBG(Graphics& g)
 		int tPos = 0;
 		if (orientation == HORIZONTAL)
 		{
-			tPos = decibelParam->decibelsToValue(i) * r.getWidth();
-			g.drawVerticalLine(tPos, 2, r.getHeight() - 2);
+			tPos = DecibelsHelpers::decibelsToValue(i) * r.getWidth();
+			g.drawVerticalLine(tPos, 1, r.getHeight() - 1);
 		}
 		else
 		{
-			tPos = (1-decibelParam->decibelsToValue(i)) * r.getHeight();
-			g.drawHorizontalLine(tPos, 2, r.getWidth() - 2);
+			tPos = (1-DecibelsHelpers::decibelsToValue(i)) * r.getHeight();
+			g.drawHorizontalLine(tPos, 1, r.getWidth() - 1);
 		}
     }
 }

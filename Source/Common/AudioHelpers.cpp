@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    AudioHelpers.cpp
-    Created: 16 Apr 2021 2:55:07pm
-    Author:  bkupe
+	AudioHelpers.cpp
+	Created: 16 Apr 2021 2:55:07pm
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -11,11 +11,17 @@
 #include "AudioHelpers.h"
 #include "AudioUIHelpers.h"
 
+Point<float> DecibelsHelpers::start = Point<float>(-100, 0);
+Point<float> DecibelsHelpers::mid1 = Point<float>(-42, .14f);
+Point<float> DecibelsHelpers::mid2 = Point<float>(-18, .4f);
+Point<float> DecibelsHelpers::end = Point<float>(6, 1);
+
+
 DecibelFloatParameter::DecibelFloatParameter(const String& niceName, const String& description, float initValue) :
 	FloatParameter(niceName, description, initValue, 0, 1)
 {
-	decibels = valueToDecibels(value);
-	gain = Decibels::decibelsToGain(valueToDecibels(value), -100.f);
+	decibels = DecibelsHelpers::valueToDecibels(value);
+	gain = DecibelsHelpers::valueToGain(value);
 }
 
 DecibelFloatParameter::~DecibelFloatParameter()
@@ -24,39 +30,16 @@ DecibelFloatParameter::~DecibelFloatParameter()
 
 void DecibelFloatParameter::setGain(float newGain)
 {
-	setValue(decibelsToValue(Decibels::gainToDecibels(newGain, -100.0f)));
+	setValue(DecibelsHelpers::gainToValue(newGain));
 }
 
 void DecibelFloatParameter::setValueInternal(var& val)
 {
 	FloatParameter::setValueInternal(val);
-	decibels = valueToDecibels(value);
-	gain = Decibels::decibelsToGain(valueToDecibels(value), -100.f);
+	decibels = DecibelsHelpers::valueToDecibels(value);
+	gain = DecibelsHelpers::valueToGain(value);
 }
 
-float DecibelFloatParameter::valueToDecibels(float val)
-{
-	float lowFunc = jmin(jmap<float>(val, 0, .14f, -100, -42), -42.f);
-	float highFunc = jmax(jmap<float>(val, .4f, 1, -18, 6), -18.f);
-
-	if (val <= .14f) return lowFunc;
-	else if (val >= .4f) return highFunc;
-
-	float w = jlimit(0.f, 1.f, jmap(val, .14f, .4f, 0.f, 1.f));
-	return lowFunc * (1 - w) + highFunc * w;
-}
-
-float DecibelFloatParameter::decibelsToValue(float decibels)
-{
-	float lowFunc = jmin(jmap<float>(decibels, -100, -42, 0, .14f), .14f);
-	float highFunc = jmax(jmap<float>(decibels, -18, 6, .4f, 1), .4f);
-
-	if (decibels <= -42) return lowFunc;
-	else if (decibels >= -18) return highFunc;
-
-	float w = jlimit(0.f, 1.f, jmap(decibels, -42.0f, -18.0f, 0.f, 1.f));
-	return lowFunc * (1 - w) + highFunc * w;
-}
 
 ControllableUI* DecibelFloatParameter::createDefaultUI()
 {
@@ -84,6 +67,63 @@ VolumeControl::VolumeControl(const String& name, bool hasRMS) :
 	}
 }
 
+void DecibelsHelpers::init()
+{
+	
+}
+
+float DecibelsHelpers::valueToDecibels(float val)
+{
+	//y is val and x is decibel
+	if (val <= mid1.y) return jmap<float>(val, start.y, mid1.y, start.x, mid1.x);
+	else if (val >= mid2.y) return jmap<float>(val, mid2.y, end.y, mid2.x, end.x);
+
+	return jmap<float>(val, mid1.y, mid2.y, mid1.x, mid2.x);
+}
+
+float DecibelsHelpers::decibelsToValue(float decibels)
+{
+	//y is val and x is decibel
+	float lowCurve = jmap<float>(decibels, start.x, mid1.x, start.y, mid1.y);
+	float highCurve = jmap<float>(decibels, mid2.x, end.x, mid2.y, end.y);
+
+	if (decibels <= mid1.x) return lowCurve;// jmap<float>(decibels, start.x, mid1.x, start.y, mid1.y);
+	else if (decibels >= mid2.x) return highCurve;// jmap<float>(decibels, mid2.x, end.x, mid2.y, end.y);
+
+	return jmap<float>(decibels, mid1.x, mid2.x, mid1.y, mid2.y);
+
+	//float w = jmap(decibels, mid1.x, mid2.x, 0.0f, 1.0f);
+	//float smoothness = 1;
+	//float sw = 1 / exp(-smoothness * (w - .5f));
+	//return lowCurve * (1 - sw) + highCurve * sw;
+
+	//float valAtDecLow0 = jmap<float>(0, start.x, mid1.x, start.y, mid1.y);
+	//float valAtDecHigh0 = jmap<float>(0, mid2.x, end.x, mid2.y, end.y);
+
+
+	//float p1 = (mid1.y - start.y) / (mid1.x - start.x);
+	//float p2 = (end.y - mid2.y) / (end.x - mid2.x);
+	//float a = (p2 - p1) / (mid2.x - mid1.x);
+	//float b = p1 - a * mid1.x;
+
+	//float c = mid1.y - a * mid1.x * mid1.x / 2 - b * mid1.x;
+	//float diffMid2 = mid2.y - (a * mid2.x * mid2.x / 2 + b * mid2.x + c);
+	//
+	//float rawResult = a * decibels * decibels / 2 + b * decibels + c;
+	//float result = (a * decibels + b) * decibels + 0;//jmap(rawResult, mid1.x, mid2.x, 0.f, 1.f);
+	//return result;
+}
+
+float DecibelsHelpers::valueToGain(float value)
+{
+	return Decibels::decibelsToGain(valueToDecibels(value), start.x);
+}
+
+float DecibelsHelpers::gainToValue(float gain)
+{
+	return decibelsToValue(Decibels::gainToDecibels(gain, start.x));
+}
+
 VolumeControl::~VolumeControl()
 {
 }
@@ -91,7 +131,7 @@ VolumeControl::~VolumeControl()
 float VolumeControl::getGain()
 {
 	if (active == nullptr || gain == nullptr) return 0;
-	return active->boolValue() ? gain->floatValue() : 0;
+	return active->boolValue() ? gain->gain : 0;
 }
 
 void VolumeControl::resetGainAndActive()
@@ -135,7 +175,7 @@ void VolumeControl::updateRMS(AudioSampleBuffer& buffer, int channel, int startS
 		{
 			float rmsGainVal = rms->gain + (rmsMax - rms->gain) * (rmsMax > rms->gain ? .8f : .2f);
 			rms->setGain(rmsMax);
-			
+
 			rmsSampleCount = 0;
 			rmsMax = 0;
 		}

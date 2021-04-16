@@ -18,11 +18,14 @@
 #include "VSTManager.h"
 #include "LGMLSettings.h"
 #include "Common/MIDI/MIDIManager.h"
+#include "Common/AudioHelpers.h"
 
 LGMLEngine::LGMLEngine() :
     Engine("LGML File",".lgml")
 {
     mainEngine = this;
+
+    DecibelsHelpers::init();
 
     MIDIManager::getInstance(); //force init
 

@@ -65,10 +65,12 @@ SamplerNode::SamplerNode(var params) :
 	}
 
 
-	for (int i = 0; i < 100; i++)
-	{
-		LOG(i << " > " << outControl->gain->valueToDecibels(i / 100.0f));
-	}
+	//for (float i = -50; i <= -6; i+=.25f)
+	//{
+	//	float values = DecibelsHelpers::decibelsToValue(i);
+	//	float decibels = DecibelsHelpers::valueToDecibels(values);
+	//	LOG(i << "\t" << values << "\t" << decibels);
+	//}
 
 	updateBuffers();
 
