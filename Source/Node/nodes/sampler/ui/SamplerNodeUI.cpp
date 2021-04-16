@@ -57,7 +57,8 @@ void SamplerMidiKeyboardComponent::drawWhiteNote(int midiNoteNumber, Graphics& g
 {
     auto c = samplerNode->samplerNotes[midiNoteNumber]->hasContent()?BLUE_COLOR.brighter():Colours::transparentWhite;
 
-    if (isDown) c = samplerNode->samplerNotes[midiNoteNumber]->isRecording ? RED_COLOR : GREEN_COLOR;
+    SamplerNode::NoteState s = samplerNode->samplerNotes[midiNoteNumber]->state->getValueDataAsEnum<SamplerNode::NoteState>();
+    if (isDown) c = s == SamplerNode::RECORDING ? RED_COLOR : GREEN_COLOR;
     if (isOver)  c = c.overlaidWith(findColour(mouseOverKeyOverlayColourId));
 
     g.setColour(c);
@@ -111,8 +112,8 @@ void SamplerMidiKeyboardComponent::drawBlackNote(int midiNoteNumber, Graphics& g
 {
     auto c = samplerNode->samplerNotes[midiNoteNumber]->hasContent() ? BLUE_COLOR.darker() : noteFillColour;
 
-    if (isDown) c = samplerNode->samplerNotes[midiNoteNumber]->isRecording ? RED_COLOR : GREEN_COLOR; 
-    
+    SamplerNode::NoteState s = samplerNode->samplerNotes[midiNoteNumber]->state->getValueDataAsEnum<SamplerNode::NoteState>();
+    if (isDown) c = s == SamplerNode::RECORDING ? RED_COLOR : GREEN_COLOR; 
     if (isOver)  c = c.overlaidWith(findColour(mouseOverKeyOverlayColourId));
 
     g.setColour(c);

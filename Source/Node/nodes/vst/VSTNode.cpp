@@ -408,7 +408,6 @@ void VSTNode::loadJSONDataItemInternal(var data)
 	if (vstParamsCC != nullptr) vstParamsCC->loadJSONData(data.getProperty("vstParams", var()));
 	
 	macrosCC.loadJSONData(data.getProperty("macros", var()));
-	macrosCC.loadJSONData(data.getProperty("macros", var()));
 
 	presets.clear();
 	var presetData = data.getProperty("presets", var());

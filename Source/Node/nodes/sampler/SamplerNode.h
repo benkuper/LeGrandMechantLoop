@@ -38,15 +38,17 @@ public:
     FloatParameter* decay;
     DecibelFloatParameter* sustain;
     FloatParameter* release;
+    ControllableContainer noteStatesCC;
 
     BoolParameter * isRecording;
     int recordingNote;
     int lastRecordedNote;
 
+    enum NoteState { EMPTY, RECORDING, FILLED, PLAYING };
     struct SamplerNote
     {
     public:
-        bool isRecording = false;
+        EnumParameter* state;
         int playingSample = 0;
         float velocity = 0;
         ADSR adsr;

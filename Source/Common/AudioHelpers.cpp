@@ -11,11 +11,11 @@
 #include "AudioHelpers.h"
 #include "AudioUIHelpers.h"
 
-DecibelFloatParameter::DecibelFloatParameter(const String& niceName, const String& description) :
-	FloatParameter(niceName, description, .85f, 0, 1),
-	gain(1),
-	decibels(0)
+DecibelFloatParameter::DecibelFloatParameter(const String& niceName, const String& description, float initValue) :
+	FloatParameter(niceName, description, initValue, 0, 1)
 {
+	decibels = valueToDecibels(value);
+	gain = Decibels::decibelsToGain(valueToDecibels(value), -100.f);
 }
 
 DecibelFloatParameter::~DecibelFloatParameter()
