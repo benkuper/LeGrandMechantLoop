@@ -172,7 +172,7 @@ jobs:
             sudo apt-get install -qy g++-arm-linux-gnueabihf
 
             echo "Installing extra lib dependencies"
-            sudo apt-get install -qyf libgdk-pixbuf2.0-dev:armhf libpango1.0-dev:armhf libsoup2.4-dev:armhf libharfbuzz-dev:armhf libxml2-dev:armhf libicu-dev:armhf libc6-dev:armhf libxft-dev:armhf
+            sudo apt-get install -qyf libgdk-pixbuf2.0-dev:armhf libpango1.0-dev:armhf libsoup2.4-dev:armhf libharfbuzz-dev:armhf libicu-dev:armhf libc6-dev:armhf libxft-dev:armhf
 
             echo "Downloading AppImage runtime for armhf"
             cd ${{ github.workspace }}
