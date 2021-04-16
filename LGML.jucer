@@ -72,6 +72,8 @@
                 file="Source/Common/Serial/SerialManager.cpp"/>
           <FILE id="yu5loP" name="SerialManager.h" compile="0" resource="0" file="Source/Common/Serial/SerialManager.h"/>
         </GROUP>
+        <FILE id="MqEFd5" name="ADSR.cpp" compile="1" resource="0" file="Source/Common/ADSR.cpp"/>
+        <FILE id="ZBvaVV" name="ADSR.h" compile="0" resource="0" file="Source/Common/ADSR.h"/>
         <FILE id="B7OoYH" name="AudioHelpers.cpp" compile="1" resource="0"
               file="Source/Common/AudioHelpers.cpp"/>
         <FILE id="FAT7tz" name="AudioHelpers.h" compile="0" resource="0" file="Source/Common/AudioHelpers.h"/>

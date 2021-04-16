@@ -952,6 +952,9 @@
     <ClCompile Include="..\..\Source\Common\Serial\SerialManager.cpp">
       <Filter>LGML\Source\Common\Serial</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Common\ADSR.cpp">
+      <Filter>LGML\Source\Common</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Common\AudioHelpers.cpp">
       <Filter>LGML\Source\Common</Filter>
     </ClCompile>
@@ -4022,6 +4025,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Common\Serial\SerialManager.h">
       <Filter>LGML\Source\Common\Serial</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Common\ADSR.h">
+      <Filter>LGML\Source\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Common\AudioHelpers.h">
       <Filter>LGML\Source\Common</Filter>

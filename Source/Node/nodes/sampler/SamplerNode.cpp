@@ -42,6 +42,8 @@ SamplerNode::SamplerNode(var params) :
 	attack = addFloatParameter("Attack", "Time of the attack in seconds", .01f, 0);
 	attack->defaultUI = FloatParameter::TIME;
 
+	attackCurve = addFloatParameter("Attack Curve", "Bend the attack", 0, 0, 0.1);
+
 	decay = addFloatParameter("Decay", "Time of decay in seconds", .2f, 0);
 	decay->defaultUI = FloatParameter::TIME;
 
@@ -51,13 +53,22 @@ SamplerNode::SamplerNode(var params) :
 	release = addFloatParameter("Release", "Time of the release in seconds", .2f, 0);
 	release->defaultUI = FloatParameter::TIME;
 
+	releaseCurve = addFloatParameter("ReleaseCurve", "Bend the release", 0, 0, 0.1);
+
 	keyboardState.addListener(this);
+
+	int sr = processor->getSampleRate();
 
 	for (int i = 0; i < 128; i++)
 	{
 		samplerNotes.add(new SamplerNote());
 		samplerNotes[i]->buffer.clear();
-		samplerNotes[i]->adsr.setParameters(ADSR::Parameters(attack->floatValue(), decay->floatValue(), sustain->floatValue(), release->floatValue()));
+		samplerNotes[i]->adsr.setAttackRate(attack->floatValue() * sr);
+		samplerNotes[i]->adsr.setTargetRatioA(attackCurve->floatValue());
+		samplerNotes[i]->adsr.setDecayRate(decay->floatValue() * sr);
+		samplerNotes[i]->adsr.setSustainLevel(sustain->gain);
+		samplerNotes[i]->adsr.setReleaseRate(release->floatValue() * sr);
+		samplerNotes[i]->adsr.setTargetRatioDR(releaseCurve->floatValue());
 
 		samplerNotes[i]->state = noteStatesCC.addEnumParameter(MidiMessage::getMidiNoteName(i,true, true, 3), "State for this note");
 		samplerNotes[i]->state->addOption("Empty", EMPTY)->addOption("Recording", RECORDING)->addOption("Filled", FILLED)->addOption("Playing", PLAYING);
@@ -232,11 +243,17 @@ void SamplerNode::onContainerParameterChangedInternal(Parameter* p)
 		setAudioOutputs(numChannels->intValue());
 		updateBuffers();
 	}
-	else if (p == attack || p == decay || p == sustain || p == release)
+	else if (p == attack || p == decay || p == sustain || p == release || p == attackCurve || p == releaseCurve)
 	{
+		int sr = processor->getSampleRate();
 		for (int i = 0; i < 128; i++)
 		{
-			samplerNotes[i]->adsr.setParameters(ADSR::Parameters(attack->floatValue(), decay->floatValue(), sustain->gain, release->floatValue()));
+			if(p == attack) samplerNotes[i]->adsr.setAttackRate(attack->floatValue() * sr);
+			else if(p == attackCurve) samplerNotes[i]->adsr.setTargetRatioA(attackCurve->floatValue());
+			else if(p == decay) samplerNotes[i]->adsr.setDecayRate(decay->floatValue() * sr);
+			else if (p == sustain) samplerNotes[i]->adsr.setSustainLevel(sustain->gain);
+			else if (p == release) samplerNotes[i]->adsr.setReleaseRate(release->floatValue() * sr);
+			else if (p == releaseCurve) samplerNotes[i]->adsr.setTargetRatioDR(releaseCurve->floatValue());
 		}
 
 	}
@@ -272,7 +289,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 	{
 		if (pm == HIT) samplerNotes[midiNoteNumber]->playingSample = 0;
 		samplerNotes[midiNoteNumber]->velocity = velocity;
-		samplerNotes[midiNoteNumber]->adsr.noteOn();
+		samplerNotes[midiNoteNumber]->adsr.gate(1);
 		samplerNotes[midiNoteNumber]->state->setValueWithData(PLAYING);
 	}
 
@@ -283,7 +300,7 @@ void SamplerNode::handleNoteOff(MidiKeyboardState* source, int midiChannel, int 
 	if (samplerNotes[midiNoteNumber]->state->getValueDataAsEnum<NoteState>() == RECORDING) stopRecording();
 	else if(samplerNotes[midiNoteNumber]->hasContent())
 	{
-		samplerNotes[midiNoteNumber]->adsr.noteOff();
+		samplerNotes[midiNoteNumber]->adsr.gate(0);
 		samplerNotes[midiNoteNumber]->state->setValueWithData(FILLED);
 	}
 }
@@ -297,7 +314,17 @@ int SamplerNode::getFadeNumSamples()
 void SamplerNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
 	if (sampleRate != 0) midiCollector.reset(sampleRate);
-	for (int i = 0; i < 128; i++) samplerNotes[i]->adsr.setSampleRate(sampleRate);
+
+	for (int i = 0; i < 128; i++)
+	{
+		samplerNotes[i]->adsr.setAttackRate(attack->floatValue() * sampleRate);
+		samplerNotes[i]->adsr.setTargetRatioA(attackCurve->floatValue());
+		samplerNotes[i]->adsr.setDecayRate(decay->floatValue() * sampleRate);
+		samplerNotes[i]->adsr.setSustainLevel(sustain->gain);
+		samplerNotes[i]->adsr.setReleaseRate(release->floatValue() * sampleRate);
+		samplerNotes[i]->adsr.setTargetRatioDR(releaseCurve->floatValue());
+	}
+	//for (int i = 0; i < 128; i++) samplerNotes[i]->adsr.setSampleRate(sampleRate);
 }
 
 void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -338,7 +365,7 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 		NoteState st = s->state->getValueDataAsEnum<NoteState>();
 		if(st == EMPTY || st == RECORDING) continue;
 
-		if (!s->adsr.isActive())
+		if (s->adsr.getState() == CurvedADSR::env_idle)
 		{
 			if (pm == LOOP)
 			{

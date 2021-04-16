@@ -13,6 +13,7 @@
 #include "../../Node.h"
 #include "Common/MIDI/MIDIDeviceParameter.h"
 #include "Common/RingBuffer.h"
+#include "Common/ADSR.h"
 
 class SamplerNode :
     public Node,
@@ -35,9 +36,11 @@ public:
     Trigger* clearAllNotesTrigger;
 
     FloatParameter* attack;
+    FloatParameter* attackCurve;
     FloatParameter* decay;
     DecibelFloatParameter* sustain;
     FloatParameter* release;
+    FloatParameter* releaseCurve;
     ControllableContainer noteStatesCC;
 
     BoolParameter * isRecording;
@@ -51,7 +54,7 @@ public:
         EnumParameter* state;
         int playingSample = 0;
         float velocity = 0;
-        ADSR adsr;
+        CurvedADSR adsr;
         AudioSampleBuffer buffer;
         bool hasContent() { return buffer.getNumSamples() > 0; }
     };
