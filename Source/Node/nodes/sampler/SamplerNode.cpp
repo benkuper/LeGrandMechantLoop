@@ -20,7 +20,8 @@ SamplerNode::SamplerNode(var params) :
 	lastRecordedNote(-1),
 	lastPlayedNote(-1),
 	recordedSamples(0),
-	noteStatesCC("Notes")
+	noteStatesCC("Notes"),
+	viewStartKey(20)
 {
 	numChannels = addIntParameter("Num Channels", "Num Channels to use for recording and playing", 1);
 
@@ -325,6 +326,19 @@ void SamplerNode::handleNoteOff(MidiKeyboardState* source, int midiChannel, int 
 int SamplerNode::getFadeNumSamples()
 {
 	return fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000;
+}
+
+var SamplerNode::getJSONData()
+{
+	var data = Node::getJSONData();
+	data.getDynamicObject()->setProperty("viewStartKey", viewStartKey);
+	return data;
+}
+
+void SamplerNode::loadJSONDataItemInternal(var data)
+{
+	Node::loadJSONDataItemInternal(data);
+	viewStartKey = data.getProperty("viewStartKey", viewStartKey);
 }
 
 void SamplerNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)

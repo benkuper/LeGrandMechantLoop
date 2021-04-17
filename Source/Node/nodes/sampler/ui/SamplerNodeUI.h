@@ -34,7 +34,8 @@ protected :
 };
 
 class SamplerNodeViewUI :
-    public NodeViewUI<SamplerNode>
+    public NodeViewUI<SamplerNode>,
+    public ChangeListener
 {
 public:
     SamplerNodeViewUI(SamplerNode* n);
@@ -48,4 +49,9 @@ public:
     void resizedInternalHeader(Rectangle<int>& r) override;
     void resizedInternalContentNode(Rectangle<int>& r) override;
     void controllableFeedbackUpdateInternal(Controllable* c) override;
+
+
+    // Inherited via ChangeListener
+    virtual void changeListenerCallback(ChangeBroadcaster* source) override;
+
 };

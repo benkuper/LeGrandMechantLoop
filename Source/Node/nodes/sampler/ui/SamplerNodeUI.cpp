@@ -19,6 +19,9 @@ SamplerNodeViewUI::SamplerNodeViewUI(SamplerNode* n) :
     addAndMakeVisible(midiParamUI.get());
 
     addAndMakeVisible(&midiComp);
+    midiComp.addChangeListener(this);
+
+    midiComp.setLowestVisibleKey(node->viewStartKey);
 
     contentComponents.add(midiParamUI.get());
     contentComponents.add(&midiComp);
@@ -43,6 +46,15 @@ void SamplerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 void SamplerNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
     NodeViewUI::controllableFeedbackUpdateInternal(c);
+    if (c->parentContainer == &node->noteStatesCC) midiComp.repaint();
+}
+
+void SamplerNodeViewUI::changeListenerCallback(ChangeBroadcaster* source)
+{
+    if (source == &midiComp)
+    {
+        node->viewStartKey = midiComp.getLowestVisibleKey();
+    }
 }
 
 

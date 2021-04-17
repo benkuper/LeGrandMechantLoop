@@ -51,6 +51,8 @@ public:
     int lastRecordedNote;
     int lastPlayedNote;
 
+    int viewStartKey;
+
     enum NoteState { EMPTY, RECORDING, FILLED, PLAYING };
     struct SamplerNote
     {
@@ -102,6 +104,8 @@ public:
 
     virtual int getFadeNumSamples(); //for ring buffer fade
 
+    var getJSONData() override;
+    void loadJSONDataItemInternal(var data) override;
 
     void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
