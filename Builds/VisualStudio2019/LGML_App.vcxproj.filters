@@ -5,6 +5,15 @@
     <Filter Include="LGML\Resources">
       <UniqueIdentifier>{CAFC601F-9204-A3D8-32F6-D63743890420}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Outliner">
+      <UniqueIdentifier>{780D62ED-7738-2C57-3A43-E8317A7BDC96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Preset\ui">
+      <UniqueIdentifier>{06A30504-D27D-7B7F-11FA-148674F21ADE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Preset">
+      <UniqueIdentifier>{037A818D-A888-D37D-4D13-B8EBDAB749FA}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Common\MIDI\ui">
       <UniqueIdentifier>{F08336EF-88D4-C671-245E-F4FAF4F4C16C}</UniqueIdentifier>
     </Filter>
@@ -901,6 +910,21 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Outliner\LGMLOutliner.cpp">
+      <Filter>LGML\Source\Outliner</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Preset\ui\PresetManagerUI.cpp">
+      <Filter>LGML\Source\Preset\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Preset\ui\PresetUI.cpp">
+      <Filter>LGML\Source\Preset\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Preset\Preset.cpp">
+      <Filter>LGML\Source\Preset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Preset\PresetManager.cpp">
+      <Filter>LGML\Source\Preset</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.cpp">
       <Filter>LGML\Source\Common\MIDI\ui</Filter>
     </ClCompile>
@@ -3993,6 +4017,21 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Outliner\LGMLOutliner.h">
+      <Filter>LGML\Source\Outliner</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Preset\ui\PresetManagerUI.h">
+      <Filter>LGML\Source\Preset\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Preset\ui\PresetUI.h">
+      <Filter>LGML\Source\Preset\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Preset\Preset.h">
+      <Filter>LGML\Source\Preset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Preset\PresetManager.h">
+      <Filter>LGML\Source\Preset</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.h">
       <Filter>LGML\Source\Common\MIDI\ui</Filter>
     </ClInclude>
@@ -10113,6 +10152,9 @@
       <Filter>LGML\Resources</Filter>
     </None>
     <None Include="..\..\Resources\link.png">
+      <Filter>LGML\Resources</Filter>
+    </None>
+    <None Include="..\..\Resources\p.png">
       <Filter>LGML\Resources</Filter>
     </None>
     <None Include="..\..\Resources\play.png">

@@ -19,6 +19,7 @@
 #include "LGMLSettings.h"
 #include "Common/MIDI/MIDIManager.h"
 #include "Common/AudioHelpers.h"
+#include "Preset/PresetManager.h"
 
 LGMLEngine::LGMLEngine() :
     Engine("LGML File",".lgml")
@@ -32,6 +33,7 @@ LGMLEngine::LGMLEngine() :
     addChildControllableContainer(RootNodeManager::getInstance());
     addChildControllableContainer(InterfaceManager::getInstance());
     addChildControllableContainer(Transport::getInstance());
+    addChildControllableContainer(RootPresetManager::getInstance());
 
     ProjectSettings::getInstance()->addChildControllableContainer(AudioManager::getInstance());
     GlobalSettings::getInstance()->addChildControllableContainer(LGMLSettings::getInstance());
@@ -46,6 +48,7 @@ LGMLEngine::LGMLEngine() :
 LGMLEngine::~LGMLEngine()
 {
     isClearing = true; 
+    RootPresetManager::deleteInstance();
     RootNodeManager::deleteInstance();
     InterfaceManager::deleteInstance();
     Transport::deleteInstance();
@@ -60,6 +63,7 @@ LGMLEngine::~LGMLEngine()
 
 void LGMLEngine::clearInternal()
 {
+    RootPresetManager::getInstance()->clear();
     RootNodeManager::getInstance()->clear();
     InterfaceManager::getInstance()->clear();
     Transport::getInstance()->clear();

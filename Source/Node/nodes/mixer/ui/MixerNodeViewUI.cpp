@@ -35,7 +35,7 @@ void MixerNodeViewUI::nodeOutputsChanged()
 
 void MixerNodeViewUI::updateLines()
 {
-    int numLines = node->outputLines.size();
+    int numLines = node->getNumAudioInputs();
     while (gainLines.size() > numLines)
     {
         Component* c = gainLines[gainLines.size() - 1];
@@ -48,7 +48,7 @@ void MixerNodeViewUI::updateLines()
 
     while (gainLines.size() < numLines)
     {
-        OutputGainLine* line = new OutputGainLine(node, node->outputLines[gainLines.size()]);
+        OutputGainLine* line = new OutputGainLine(node, gainLines.size());
         contentComponents.add(line);
         addAndMakeVisible(line);
         gainLines.add(line);
@@ -64,20 +64,17 @@ void MixerNodeViewUI::updateExclusives()
 
     if (node->showOutputExclusives->boolValue())
     {
-        while (exclusivesUI.size() > node->exclusiveModes.size())
+        while (exclusivesUI.size() > node->inputLines.size())
         {
-            BoolButtonToggleUI* eui = exclusivesUI[exclusivesUI.size() - 1];
+            IntParameterLabelUI * eui = exclusivesUI[exclusivesUI.size() - 1];
             contentComponents.removeAllInstancesOf(eui);
             removeChildComponent(eui);
             exclusivesUI.removeObject(eui);
         }
 
-        while (exclusivesUI.size() < node->exclusiveModes.size())
+        while (exclusivesUI.size() < node->inputLines.size())
         {
-            BoolButtonToggleUI* eui = node->exclusiveModes[exclusivesUI.size()]->createButtonToggle();
-            eui->useCustomFGColor = true;
-            eui->customFGColor = Colours::purple.brighter(.2f);
-            eui->customLabel = "Ex.";
+            IntParameterLabelUI* eui = node->inputLines[exclusivesUI.size()]->exclusiveIndex->createLabelUI();
             exclusivesUI.add(eui);
             contentComponents.add(eui);
             addAndMakeVisible(eui);
@@ -111,11 +108,11 @@ void MixerNodeViewUI::paint(Graphics& g)
 void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
     if (gainLines.size() == 0) return;
-    int lineHeight = jmin((r.getHeight() - 32) / gainLines.size(), 140);
+    int lineHeight = jmin((r.getHeight() - 16) / gainLines.size(), 140);
 
     if (exclusivesUI.size() > 0)
     {
-        Rectangle<int> er = r.removeFromBottom(30).reduced(1);
+        Rectangle<int> er = r.removeFromBottom(16).reduced(1);
         int sizePerGain = jmin(er.getWidth() / exclusivesUI.size(), 30);
 
         for (int i = 0; i < exclusivesUI.size(); i++)
@@ -123,6 +120,7 @@ void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
             exclusivesUI[i]->setBounds(er.removeFromLeft(sizePerGain).reduced(1));
         }
     }
+
     for (auto& line : gainLines) line->setBounds(r.removeFromTop(lineHeight).reduced(1));
 
 }
@@ -130,9 +128,9 @@ void MixerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 
 // INPUT GAIN LINE
 
-MixerNodeViewUI::OutputGainLine::OutputGainLine(MixerNode * node, OutputLineCC * outputLine) :
+MixerNodeViewUI::OutputGainLine::OutputGainLine(MixerNode * node, int outputIndex) :
     node(node),
-    outputLine(outputLine)
+    outputIndex(outputIndex)
 {
     rebuild();
 }
@@ -146,7 +144,7 @@ void MixerNodeViewUI::OutputGainLine::rebuild()
     {
         if (outUI == nullptr)
         {
-            outUI.reset(new VolumeControlUI(&outputLine->out));
+            outUI.reset(new VolumeControlUI(node->mainOuts[outputIndex]));
             addAndMakeVisible(outUI.get());
         }
         
@@ -167,9 +165,9 @@ void MixerNodeViewUI::OutputGainLine::rebuild()
 
     if (node->showItemGains->boolValue() || node->showItemActives->boolValue())
     {
-        for (auto& mi : outputLine->mixerItems)
+        for (int i = 0; i < node->getNumAudioOutputs(); i++)
         {
-            VolumeControlUI* mui = new VolumeControlUI(mi);
+            VolumeControlUI* mui = new VolumeControlUI(node->getMixerItem(i, outputIndex));
             mui->setViewedComponents(node->showItemGains->boolValue(), false, node->showItemActives->boolValue());
             itemsUI.add(mui);
             addAndMakeVisible(mui);

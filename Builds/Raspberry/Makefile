@@ -68,6 +68,11 @@ ifeq ($(CONFIG),Debug)
 endif
 
 OBJECTS_APP := \
+  $(JUCE_OBJDIR)/LGMLOutliner_ca11290a.o \
+  $(JUCE_OBJDIR)/PresetManagerUI_9055fc58.o \
+  $(JUCE_OBJDIR)/PresetUI_9483ea47.o \
+  $(JUCE_OBJDIR)/Preset_bc005410.o \
+  $(JUCE_OBJDIR)/PresetManager_886e07.o \
   $(JUCE_OBJDIR)/MIDIDeviceChooser_959781bc.o \
   $(JUCE_OBJDIR)/MIDIDeviceParameterUI_bf16f57e.o \
   $(JUCE_OBJDIR)/MIDIDevice_3c053f6a.o \
@@ -180,6 +185,31 @@ $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) : $(OBJECTS_APP) $(RESOURCES)
 	-$(V_AT)mkdir -p $(JUCE_LIBDIR)
 	-$(V_AT)mkdir -p $(JUCE_OUTDIR)
 	$(V_AT)$(CXX) -o $(JUCE_OUTDIR)/$(JUCE_TARGET_APP) $(OBJECTS_APP) $(JUCE_LDFLAGS) $(JUCE_LDFLAGS_APP) $(RESOURCES) $(TARGET_ARCH)
+
+$(JUCE_OBJDIR)/LGMLOutliner_ca11290a.o: ../../Source/Outliner/LGMLOutliner.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling LGMLOutliner.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/PresetManagerUI_9055fc58.o: ../../Source/Preset/ui/PresetManagerUI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling PresetManagerUI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/PresetUI_9483ea47.o: ../../Source/Preset/ui/PresetUI.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling PresetUI.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/Preset_bc005410.o: ../../Source/Preset/Preset.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling Preset.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/PresetManager_886e07.o: ../../Source/Preset/PresetManager.cpp
+	-$(V_AT)mkdir -p $(JUCE_OBJDIR)
+	@echo "Compiling PresetManager.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/MIDIDeviceChooser_959781bc.o: ../../Source/Common/MIDI/ui/MIDIDeviceChooser.cpp
 	-$(V_AT)mkdir -p $(JUCE_OBJDIR)

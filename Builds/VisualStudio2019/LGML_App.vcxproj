@@ -156,6 +156,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Outliner\LGMLOutliner.cpp"/>
+    <ClCompile Include="..\..\Source\Preset\ui\PresetManagerUI.cpp"/>
+    <ClCompile Include="..\..\Source\Preset\ui\PresetUI.cpp"/>
+    <ClCompile Include="..\..\Source\Preset\Preset.cpp"/>
+    <ClCompile Include="..\..\Source\Preset\PresetManager.cpp"/>
     <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.cpp"/>
     <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceParameterUI.cpp"/>
     <ClCompile Include="..\..\Source\Common\MIDI\MIDIDevice.cpp"/>
@@ -2891,6 +2896,11 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_simpleweb2.cpp"/>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Outliner\LGMLOutliner.h"/>
+    <ClInclude Include="..\..\Source\Preset\ui\PresetManagerUI.h"/>
+    <ClInclude Include="..\..\Source\Preset\ui\PresetUI.h"/>
+    <ClInclude Include="..\..\Source\Preset\Preset.h"/>
+    <ClInclude Include="..\..\Source\Preset\PresetManager.h"/>
     <ClInclude Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.h"/>
     <ClInclude Include="..\..\Source\Common\MIDI\ui\MIDIDeviceParameterUI.h"/>
     <ClInclude Include="..\..\Source\Common\MIDI\MIDIDevice.h"/>
@@ -4933,6 +4943,7 @@
     <None Include="..\..\Resources\default.lgmllayout"/>
     <None Include="..\..\Resources\icon.png"/>
     <None Include="..\..\Resources\link.png"/>
+    <None Include="..\..\Resources\p.png"/>
     <None Include="..\..\Resources\play.png"/>
     <None Include="..\..\Resources\stop.png"/>
     <None Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_devices\native\oboe\CMakeLists.txt"/>

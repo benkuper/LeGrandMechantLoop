@@ -24,10 +24,10 @@ public:
         public Component
     {
     public:
-        OutputGainLine(MixerNode * node, OutputLineCC * outputLine);
+        OutputGainLine(MixerNode * node, int outputIndex);
 
         MixerNode* node;
-        OutputLineCC * outputLine;
+        int outputIndex;
 
         OwnedArray<VolumeControlUI> itemsUI;
         std::unique_ptr<VolumeControlUI> outUI;
@@ -39,7 +39,7 @@ public:
     };
 
     OwnedArray<OutputGainLine> gainLines;
-    OwnedArray<BoolButtonToggleUI> exclusivesUI;
+    OwnedArray<IntParameterLabelUI> exclusivesUI;
 
     void nodeInputsChanged() override;
     void nodeOutputsChanged() override;

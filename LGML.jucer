@@ -10,10 +10,31 @@
             file="Resources/default.lgmllayout"/>
       <FILE id="k24oFh" name="icon.png" compile="0" resource="1" file="Resources/icon.png"/>
       <FILE id="Z5OneV" name="link.png" compile="0" resource="1" file="Resources/link.png"/>
+      <FILE id="xBqfPP" name="p.png" compile="0" resource="1" file="Resources/p.png"/>
       <FILE id="FbFKZX" name="play.png" compile="0" resource="1" file="Resources/play.png"/>
       <FILE id="HmeOao" name="stop.png" compile="0" resource="1" file="Resources/stop.png"/>
     </GROUP>
     <GROUP id="{644794F3-EEA3-18B3-8950-FB0E90CE6C1E}" name="Source">
+      <GROUP id="{59C161F0-4CB2-35D0-FE5F-332F9A45D1C0}" name="Outliner">
+        <FILE id="W7ygKg" name="LGMLOutliner.cpp" compile="1" resource="0"
+              file="Source/Outliner/LGMLOutliner.cpp"/>
+        <FILE id="jRfRNP" name="LGMLOutliner.h" compile="0" resource="0" file="Source/Outliner/LGMLOutliner.h"/>
+      </GROUP>
+      <GROUP id="{677BFD65-0317-EB0F-05B7-479459F4CC94}" name="Preset">
+        <GROUP id="{6A12F0D7-C0CF-931D-33B5-D181EF0371A7}" name="ui">
+          <FILE id="Ok4Lp9" name="PresetManagerUI.cpp" compile="1" resource="0"
+                file="Source/Preset/ui/PresetManagerUI.cpp"/>
+          <FILE id="gxP5tI" name="PresetManagerUI.h" compile="0" resource="0"
+                file="Source/Preset/ui/PresetManagerUI.h"/>
+          <FILE id="KTFTb9" name="PresetUI.cpp" compile="1" resource="0" file="Source/Preset/ui/PresetUI.cpp"/>
+          <FILE id="RybfUo" name="PresetUI.h" compile="0" resource="0" file="Source/Preset/ui/PresetUI.h"/>
+        </GROUP>
+        <FILE id="xmuL4C" name="Preset.cpp" compile="1" resource="0" file="Source/Preset/Preset.cpp"/>
+        <FILE id="DFJ4cq" name="Preset.h" compile="0" resource="0" file="Source/Preset/Preset.h"/>
+        <FILE id="pX7PU5" name="PresetManager.cpp" compile="1" resource="0"
+              file="Source/Preset/PresetManager.cpp"/>
+        <FILE id="ftwen7" name="PresetManager.h" compile="0" resource="0" file="Source/Preset/PresetManager.h"/>
+      </GROUP>
       <GROUP id="{C932F17D-F807-6D54-C9FE-636145A3A77A}" name="Common">
         <GROUP id="{E480E851-C0D7-5BFC-6813-470E7AF56BCA}" name="MIDI">
           <GROUP id="{828ADCCB-2C77-6F2A-EEFA-44566780C372}" name="ui">

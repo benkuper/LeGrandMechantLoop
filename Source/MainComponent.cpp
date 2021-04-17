@@ -6,6 +6,8 @@
 #include  "Node/ui/NodeManagerViewUI.h"
 #include "Interface/ui/InterfaceManagerUI.h"
 #include "Transport/ui/TransportUI.h"
+#include "Preset/ui/PresetManagerUI.h"
+#include "Outliner/LGMLOutliner.h"
 
 //==============================================================================
 String getAppVersion();
@@ -29,6 +31,7 @@ void MainComponent::init()
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Nodes (2D View)", &NodeManagerViewPanel::create));
 	//ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Interfaces", &InterfaceManagerUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Transport", &TransportUI::create));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Presets", &RootPresetManagerUI::create));
 	//ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Timeline", &TimelineU::create));
 
 
@@ -41,6 +44,11 @@ void MainComponent::init()
 		//WelcomeScreen w;
 		//DialogWindow::showModalDialog("Welcome", &w, getTopLevelComponent(), Colours::black, true);
 	}
+}
+
+Outliner* MainComponent::createOutliner(const String& contentName)
+{
+	return new LGMLOutliner(contentName);
 }
 
 LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent * mainComp, LGMLEngine * engine) :

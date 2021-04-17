@@ -35,6 +35,11 @@ VSTNode::VSTNode(var params) :
 	ControllableContainer::addParameter(midiParam);
 	presetEnum = addEnumParameter("Preset", "Load a preset");
 	numMacros = addIntParameter("Num Macros", "Choose the number of macros you want for this VST", 0, 0);
+	autoActivateMacroIndex = addIntParameter("Auto Bypass Macro", "Index of the macro that automatically bypasses the VST if value is in the range", 1, 1, 1, false);
+	autoActivateMacroIndex->canBeDisabledByUser = true;
+	autoActivateRange = addPoint2DParameter("Auto Bypass Range", "Range in which the VST is bypassed", false);
+	autoActivateRange->setBounds(0, 0, 1, 1);
+	autoActivateRange->setPoint(0, 0);
 
 	addChildControllableContainer(&macrosCC);
 
@@ -213,9 +218,19 @@ void VSTNode::updateMacros()
 
 	while (macrosCC.controllables.size() < numMacros->intValue())
 	{
-		FloatParameter* p = macrosCC.addFloatParameter("Macro " + String(macrosCC.controllables.size() + 1), "Macro", 0);
+		FloatParameter* p = macrosCC.addFloatParameter("Macro " + String(macrosCC.controllables.size() + 1), "Macro", 0, 0, 1);
 		p->isCustomizableByUser = true;
 	}
+
+	autoActivateMacroIndex->setRange(1, numMacros->intValue());
+}
+
+void VSTNode::checkAutoBypassFromMacro()
+{
+	if (!autoActivateMacroIndex->enabled || autoActivateMacroIndex->intValue() > macrosCC.controllables.size()) return;
+	float val = ((Parameter*)macrosCC.controllables[autoActivateMacroIndex->intValue()-1])->floatValue();
+	bool shouldBypass = val >= autoActivateRange->x && val <= autoActivateRange->y;
+	enabled->setValue(!shouldBypass);
 }
 
 void VSTNode::updatePlayConfigInternal()
@@ -290,6 +305,7 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 	{
 		updateMacros();
 	}
+	else if (p == autoActivateMacroIndex || p == autoActivateRange) checkAutoBypassFromMacro();
 }
 
 void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
@@ -316,6 +332,8 @@ void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Co
 		if (vstParamsCC != nullptr)
 		{
 			int index = macrosCC.controllables.indexOf(c);
+			if(autoActivateMacroIndex->enabled && index == autoActivateMacroIndex->intValue()-1) checkAutoBypassFromMacro();
+
 			HashMap<int, VSTParameterLink*>::Iterator it(vstParamsCC->idParamMap);
 			while (it.next())
 			{
@@ -326,12 +344,13 @@ void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Co
 	}
 }
 
-void VSTNode::controllableStateChanged(Controllable* c)
+void VSTNode::onControllableStateChanged(Controllable* c)
 {
-	ControllableContainer::controllableStateChanged(c);
+	Node::onControllableStateChanged(c);
 	if (c == numAudioInputs || c == numAudioOutputs) setIOFromVST();
+	else if (c == autoActivateMacroIndex) autoActivateRange->setEnabled(autoActivateMacroIndex->enabled);
+	if (c == autoActivateMacroIndex || c == autoActivateRange) checkAutoBypassFromMacro();
 }
-
 
 void VSTNode::midiMessageReceived(const MidiMessage& m)
 {

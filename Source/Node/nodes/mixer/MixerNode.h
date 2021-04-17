@@ -23,19 +23,25 @@ public:
 	int outputIndex;
 };
 
-class OutputLineCC :
+class InputLineCC :
 	public ControllableContainer
 {
 public:
-	OutputLineCC(int index);
-	~OutputLineCC();
+	InputLineCC(int index);
+	~InputLineCC();
 
 	int index;
 
 	Array<MixerItem*> mixerItems;
-	VolumeControl out;
+	IntParameter* exclusiveIndex;
 
-	void setInputNumber(int inputNumber);
+	void onContainerParameterChanged(Parameter* p) override;
+	void onControllableStateChanged(Controllable* p) override;
+	void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
+
+	void updateExclusiveOutput();
+
+	void setNumOutputs(int numOutputs);
 };
 
 class MixerNode :
@@ -45,11 +51,8 @@ public:
 	MixerNode(var params = var());
 	~MixerNode() {}
 
-	ControllableContainer itemsCC;
-	ControllableContainer exclusivesCC;
-
-	Array<OutputLineCC*> outputLines;
-	Array<BoolParameter*> exclusiveModes;
+	Array<InputLineCC*> inputLines;
+	Array<VolumeControl *> mainOuts;
 
 	BoolParameter* showOutputGains;
 	BoolParameter* showOutputRMS;
@@ -65,14 +68,9 @@ public:
 
 	MixerItem * getMixerItem(int inputIndex, int outputIndex);
 
-	void updateActiveInput(int inputIndex, int activeOutput = 0);
-
-	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
-
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
-	var getJSONData() override;
-	void loadJSONDataItemInternal(var data) override;
+	void afterLoadJSONDataInternal() override;
 
 	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "Mixer"; }

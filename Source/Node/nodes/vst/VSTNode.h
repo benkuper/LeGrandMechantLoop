@@ -27,6 +27,8 @@ public:
 	std::unique_ptr<VSTParameterContainer> vstParamsCC;
 	ControllableContainer macrosCC;
 	IntParameter * numMacros;
+	IntParameter* autoActivateMacroIndex;
+	Point2DParameter* autoActivateRange;
 
 	MIDIDeviceParameter* midiParam;
 
@@ -62,11 +64,13 @@ public:
 	void updatePresetEnum(const String & setPresetName = "");
 	void updateMacros();
 
+	void checkAutoBypassFromMacro();
+
 	void updatePlayConfigInternal() override;
 
 	void onContainerParameterChangedInternal(Parameter* p) override;
 	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
-	void controllableStateChanged(Controllable* c) override;
+	void onControllableStateChanged(Controllable* c) override;
 
 	void midiMessageReceived(const MidiMessage& m) override;
 

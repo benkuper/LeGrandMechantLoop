@@ -46,26 +46,7 @@ ControllableUI* DecibelFloatParameter::createDefaultUI()
 	return new DecibelSliderUI(this);
 }
 
-VolumeControl::VolumeControl(const String& name, bool hasRMS) :
-	ControllableContainer(name),
-	prevGain(1),
-	rms(nullptr),
-	rmsSampleCount(0),
-	rmsMax(0)
-{
-	gain = new DecibelFloatParameter("Gain", "Gain for this");
-	addParameter(gain);
-	active = addBoolParameter("Active", "Fast way to mute this", true);
 
-	if (hasRMS)
-	{
-		rms = new DecibelFloatParameter("RMS", "RMS for this");
-		addParameter(rms);
-		rms->setControllableFeedbackOnly(true);
-		rms->hideInRemoteControl = true; //hide by default
-		rms->defaultHideInRemoteControl = true; //hide by default
-	}
-}
 
 void DecibelsHelpers::init()
 {
@@ -122,6 +103,29 @@ float DecibelsHelpers::valueToGain(float value)
 float DecibelsHelpers::gainToValue(float gain)
 {
 	return decibelsToValue(Decibels::gainToDecibels(gain, start.x));
+}
+
+
+
+VolumeControl::VolumeControl(const String& name, bool hasRMS) :
+	ControllableContainer(name),
+	prevGain(1),
+	rms(nullptr),
+	rmsSampleCount(0),
+	rmsMax(0)
+{
+	gain = new DecibelFloatParameter("Gain", "Gain for this");
+	addParameter(gain);
+	active = addBoolParameter("Active", "Fast way to mute this", true);
+
+	if (hasRMS)
+	{
+		rms = new DecibelFloatParameter("RMS", "RMS for this", 0);
+		addParameter(rms);
+		rms->setControllableFeedbackOnly(true);
+		rms->hideInRemoteControl = true; //hide by default
+		rms->defaultHideInRemoteControl = true; //hide by default
+	}
 }
 
 VolumeControl::~VolumeControl()

@@ -42,6 +42,8 @@ public:
 
     void init() override;
 
+    Outliner* createOutliner(const String& contentName) override;
+
 private:
     //==============================================================================
     // Your private member variables go here...
