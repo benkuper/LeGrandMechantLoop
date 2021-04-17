@@ -140,7 +140,7 @@ void IONode::updateIO()
 
 		VolumeControl * channel = new VolumeControl(s, true);
 		channelsCC.addChildControllableContainer(channel, true);
-		if (index < gainGhostData.size()) channel->gain->setValue(gainGhostData[index]);
+		if (index < gainGhostData.size()) channel->gain->loadJSONData(gainGhostData[index]);
 	}
 }
 
@@ -165,7 +165,7 @@ var IONode::getJSONData()
 {
 	var data = Node::getJSONData();
 	var gainData;
-	for (auto& cc : channelsCC.controllableContainers) gainData.append(((VolumeControl*)cc.get())->gain->floatValue());
+	for (auto& cc : channelsCC.controllableContainers) gainData.append(((VolumeControl*)cc.get())->gain->getJSONData());
 	data.getDynamicObject()->setProperty("gains", gainData);
 	if (isRoot) data.getDynamicObject()->setProperty("numChannels", isInput ? numAudioOutputs->intValue() : numAudioInputs->intValue());
 	return data;

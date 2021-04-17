@@ -20,6 +20,7 @@ public:
     PresetManagerUI(PresetManager* manager);
     virtual ~PresetManagerUI();
 
+
     void addItemUIInternal(PresetUI* ui) override;
     void removeItemUIInternal(PresetUI* ui) override;
 };
@@ -30,6 +31,9 @@ class RootPresetManagerUI :
 public:
     RootPresetManagerUI();
     ~RootPresetManagerUI();
+    std::unique_ptr<TriggerUI> saveCurrentUI;
+
+    void resizedInternalHeader(Rectangle<int>& r) override;
 
     static RootPresetManagerUI* create(const String& name) { return new RootPresetManagerUI(); }
 };

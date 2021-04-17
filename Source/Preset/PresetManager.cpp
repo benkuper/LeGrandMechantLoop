@@ -15,6 +15,7 @@ juce_ImplementSingleton(RootPresetManager);
 PresetManager::PresetManager() :
     BaseManager("Presets")
 {
+    itemDataType = "Preset";
 }
 
 PresetManager::~PresetManager()
@@ -28,11 +29,18 @@ RootPresetManager::RootPresetManager() :
     PresetManager(),
     currentPreset(nullptr)
 {
+    saveCurrentTrigger = addTrigger("Save Current", "Save state to current preset");
 }
 
 RootPresetManager::~RootPresetManager()
 {
     setCurrentPreset(nullptr);
+}
+
+void RootPresetManager::clear()
+{
+    setCurrentPreset(nullptr);
+    BaseManager::clear();
 }
 
 void RootPresetManager::setCurrentPreset(Preset* p)
@@ -41,6 +49,7 @@ void RootPresetManager::setCurrentPreset(Preset* p)
     if (currentPreset != nullptr)
     {
         currentPreset->removeInspectableListener(this);
+        currentPreset->isCurrent->setValue(false);
     }
 
     currentPreset = p;
@@ -48,6 +57,16 @@ void RootPresetManager::setCurrentPreset(Preset* p)
     if (currentPreset != nullptr)
     {
         currentPreset->addInspectableListener(this);
+        currentPreset->isCurrent->setValue(true);
+        currentPreset->load();
+    }
+}
+
+void RootPresetManager::onContainerTriggerTriggered(Trigger* t)
+{
+    if (t == saveCurrentTrigger)
+    {
+        if (currentPreset != nullptr) currentPreset->save();
     }
 }
 

@@ -28,9 +28,13 @@ public:
     RootPresetManager();
     ~RootPresetManager();
 
+    Trigger* saveCurrentTrigger;
     Preset* currentPreset;
 
+    void clear() override;
+
     void setCurrentPreset(Preset* p);
+    void onContainerTriggerTriggered(Trigger* t) override;
 
     void inspectableDestroyed(Inspectable* i) override;
 };

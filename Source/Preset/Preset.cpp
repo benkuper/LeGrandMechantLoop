@@ -14,22 +14,47 @@
 Preset::Preset(var params) :
 	BaseItem("Preset", false)
 {
+	itemDataType = "Preset";
+
 	subPresets.reset(new PresetManager());
 	addChildControllableContainer(subPresets.get());
 	subPresets->addBaseManagerListener(this);
 
 	Random r;
-	color = addColorParameter("Color","Color for UI convenience", Colour::fromHSV(r.nextFloat(), .3f,.5f,1));
+	color = addColorParameter("Color", "Color for UI convenience", Colour::fromHSV(r.nextFloat(), .3f, .5f, 1));
+	color->forceSaveValue = true;
+	saveTrigger = addTrigger("Save", "Save the current state in this preset. If this is a sub-preset, this will only save overriden values");
+	loadTrigger = addTrigger("Load", "Load the values in this preset. It this is a sub-preset, this will fetch all values up to its root preset");
+	isCurrent = addBoolParameter("Is Current", "If this is the currently loaded preset", false);
+	isCurrent->setControllableFeedbackOnly(true);
+	listUISize->isSavable = false;
+
+	Engine::mainEngine->addControllableContainerListener(this);
 }
 
 Preset::~Preset()
 {
+	Engine::mainEngine->removeControllableContainerListener(this);
 }
 
-var Preset::getPresetData()
+void Preset::clearItem()
+{
+	BaseItem::clearItem();
+	HashMap<WeakReference<Parameter>, var>::Iterator it(dataMap);
+	while (it.next()) if (it.getKey() != nullptr && !it.getKey().wasObjectDeleted())
+	{
+		it.getKey()->removeInspectableListener(this);
+		it.getKey()->removeControllableListener(this);
+	}
+}
+
+var Preset::getPresetValues(bool includeParents)
 {
 	var data(new DynamicObject());
-	Array<Preset*> presets = getPresetChain();
+	Array<Preset*> presets;
+
+	if (includeParents) presets = getPresetChain();
+	else presets.add(this);
 
 	for (auto& p : presets)
 	{
@@ -43,9 +68,9 @@ var Preset::getPresetData()
 	return data;
 }
 
-var Preset::getPresetDataForControllable(Controllable* c)
+var Preset::getPresetValueForParameter(Parameter* p)
 {
-	String add = c->getControlAddress();
+	String add = p->getControlAddress();
 	Array<Preset*> presets = getPresetChain();
 	for (auto& p : presets) if (p->addressMap.contains(add)) return p->addressMap[add];
 	return var();
@@ -53,75 +78,218 @@ var Preset::getPresetDataForControllable(Controllable* c)
 
 void Preset::save(ControllableContainer* container, bool recursive)
 {
-	Array<WeakReference<Controllable>> cList = container->getAllControllables(recursive);
+	Array<WeakReference<Parameter>> cList = container->getAllParameters(recursive);
 	for (auto& c : cList) save(c);
 }
 
-void Preset::save(Controllable* controllable)
+void Preset::save(Parameter * parameter)
 {
-	if (controllable != nullptr)
+	if (parameter != nullptr)
 	{
-		dataMap.set(controllable, controllable->getJSONData());
-		if (!isMain()) overridenControllables.add(controllable->getControlAddress());
+		if (parameter->customData != "presettable") return;
+		addParameterToDataMap(parameter);
 	}
 	else
 	{
-		Array<WeakReference<Controllable>> controllables = Engine::mainEngine->getAllControllables(true);
+		if (!isCurrent->boolValue())
+		{
+			bool result = AlertWindow::showOkCancelBox(AlertWindow::WarningIcon, "Not the current preset", "This is not the currently loaded preset. Do you want still want to save to preset", "Yes", "No");
+			if (!result) return;
+		}
+		Array<WeakReference<Parameter>> params = Engine::mainEngine->getAllParameters(true);
 
 		dataMap.clear();
 		addressMap.clear();
 
 		bool main = isMain();
-		for (auto& c : controllables)
+
+		int numSaved = 0;
+		for (auto& p : params)
 		{
-			var d = c->getJSONData();
-			String add = c->getControlAddress();
-			if (!c->shouldBeSaved()) continue;
+			if (p->customData != "presettable") continue;
+			var d = p->value;
+			String add = p->getControlAddress();
+			if (!p->shouldBeSaved()) continue;
 			if (main || overridenControllables.contains(add))
 			{
-				dataMap.set(c, d);
-				addressMap.set(add, d);
+				addParameterToDataMap(p);
+				numSaved++;
 			}
 		}
+
+		NLOG(niceName, "Saved " << numSaved << " values.");
 	}
 }
 
 void Preset::load(ControllableContainer* container, bool recursive)
 {
-	Array<WeakReference<Controllable>> cList = container->getAllControllables(recursive);
-	for (auto& c : cList) load(c);
+	Array<WeakReference<Parameter>> pList = container->getAllParameters(recursive);
+	for (auto& p : pList) load(p);
 }
 
-void Preset::load(Controllable* controllable)
+void Preset::load(Parameter* parameter)
 {
-	if (controllable != nullptr)
+	if (parameter != nullptr)
 	{
-		var data = getPresetDataForControllable(controllable);
-		controllable->loadJSONData(data);
+		if (parameter->customData != "presettable") return;
+		var value = getPresetValueForParameter(parameter);
+		parameter->setValue(value);
 	}
 	else
 	{
-		var data = getPresetData();
+		int numLoaded = 0;
+		var data = getPresetValues();
 		NamedValueSet props = data.getDynamicObject()->getProperties();
 		for (auto& p : props)
 		{
-			if (Controllable* c = Engine::mainEngine->getControllableForAddress(p.name.toString()))
+			if (Parameter* tp = dynamic_cast<Parameter *>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
 			{
-				c->loadJSONData(p.value);
+				if (tp->customData != "presettable") return;
+				tp->setValue(p.value);
+				numLoaded++;
 			}
 		}
+
+		NLOG(niceName, "Loaded " << numLoaded << " values.");
 	}
 }
 
+
+void Preset::addParameterToDataMap(Parameter* p, var forceValue)
+{
+	if (p == nullptr) return;
+
+	var val = forceValue.isVoid() ? p->value : forceValue;
+
+	String add = p->getControlAddress();
+
+	dataMap.set(p, val);
+	addressMap.set(add, val);
+	paramGhostAddressMap.set(p, add);
+	lostParamAddresses.removeAllInstancesOf(add);
+	if (!isMain()) overridenControllables.addIfNotAlreadyThere(add);
+
+	p->addInspectableListener(this);
+	p->addControllableListener(this);
+}
+
+void Preset::updateParameterAddress(Parameter* p)
+{
+	if (p == nullptr) return;
+
+	if (paramGhostAddressMap.contains(p))
+	{
+		String oldAdd = paramGhostAddressMap[p];
+		var oldVal = addressMap[oldAdd];
+		removeAddressFromDataMap(oldAdd);
+		addParameterToDataMap(p, oldVal);
+	}
+}
+
+void Preset::removeParameterFromDataMap(Parameter* p)
+{
+	if (p == nullptr) return;
+
+	String add = p->getControlAddress();
+	dataMap.remove(p);
+	paramGhostAddressMap.remove(p);
+	p->removeInspectableListener(this);
+	p->removeControllableListener(this);
+	addressMap.remove(add);
+	lostParamAddresses.removeAllInstancesOf(add);
+	if (!isMain()) overridenControllables.removeAllInstancesOf(add);
+}
+
+void Preset::removeAddressFromDataMap(String address)
+{
+	if (Parameter* p = dynamic_cast<Parameter *>(Engine::mainEngine->getControllableForAddress(address)))
+	{
+		removeParameterFromDataMap(p);
+		return;
+	}
+
+	paramGhostAddressMap.removeValue(address);
+	addressMap.remove(address);
+	if (!isMain()) overridenControllables.removeAllInstancesOf(address);
+}
 
 bool Preset::isMain()
 {
 	return parentContainer == RootPresetManager::getInstance();
 }
 
+void Preset::onContainerTriggerTriggered(Trigger* t)
+{
+	if (t == saveTrigger) save();
+	else if (t == loadTrigger) RootPresetManager::getInstance()->setCurrentPreset(this);
+}
+
 void Preset::itemAdded(Preset* p)
 {
 	if(!isCurrentlyLoadingData) p->color->setColor(color->getColor().brighter(.3f));
+}
+
+var Preset::getJSONData()
+{
+	var data = BaseItem::getJSONData();
+	data.getDynamicObject()->setProperty("subPresets", subPresets->getJSONData());
+	data.getDynamicObject()->setProperty("values", getPresetValues(false));
+	return data;
+}
+
+void Preset::loadJSONDataItemInternal(var data)
+{
+	subPresets->loadJSONData(data["subPresets"]);
+	
+	var values = data["values"];
+	if (values.isObject())
+	{
+		NamedValueSet params = values.getDynamicObject()->getProperties();
+		for (auto& p : params)
+		{
+			if (Parameter* tp = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
+			{
+				addParameterToDataMap(tp, p.value);
+			}
+		}
+	}
+}
+
+void Preset::inspectableDestroyed(Inspectable* i)
+{
+
+}
+
+void Preset::controllableControlAddressChanged(Controllable* c)
+{
+	BaseItem::controllableControlAddressChanged(c);
+	if (Parameter* p = dynamic_cast<Parameter*>(c))
+	{
+		bool isAttachedToRoot = ControllableUtil::findParentAs<Engine>(p) != nullptr;
+		if (isAttachedToRoot && dataMap.contains(p)) updateParameterAddress(p);
+		else
+		{
+			//got detached, meaning it will be surely removed
+			if (dataMap.contains(p))
+			{
+				dataMap.remove(p);
+				lostParamAddresses.addIfNotAlreadyThere(paramGhostAddressMap[p]);
+				paramGhostAddressMap.remove(p);
+			}
+		}
+	}
+
+}
+
+void Preset::childStructureChanged(ControllableContainer* cc)
+{
+	for (auto& add : lostParamAddresses)
+	{
+		if (Parameter *p = dynamic_cast<Parameter *>(Engine::mainEngine->getControllableForAddress(add)))
+		{
+			addParameterToDataMap(p, addressMap.contains(add) ? addressMap[add] : var());
+		}
+	}
 }
 
 Array<Preset*> Preset::getPresetChain()

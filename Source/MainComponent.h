@@ -44,6 +44,9 @@ public:
 
     Outliner* createOutliner(const String& contentName) override;
 
+    static void addControllableMenuItems(ControllableUI * ui, PopupMenu * p);
+    static bool handleControllableMenuResult(ControllableUI* ui, int result);
+
 private:
     //==============================================================================
     // Your private member variables go here...

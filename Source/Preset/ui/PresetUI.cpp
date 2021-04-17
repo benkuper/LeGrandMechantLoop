@@ -21,6 +21,9 @@ PresetUI::PresetUI(Preset* p) :
 	colorUI.reset(item->color->createColorParamUI());
 	addAndMakeVisible(colorUI.get());
 
+	loadUI.reset(item->loadTrigger->createButtonUI());
+	addAndMakeVisible(loadUI.get());
+
 	pmui.reset(new PresetManagerUI(p->subPresets.get()));
 	contentComponents.add(pmui.get());
 	addAndMakeVisible(pmui.get());
@@ -32,6 +35,8 @@ PresetUI::PresetUI(Preset* p) :
 	pmui->resized();
 	updateManagerBounds();
 
+
+
 	bgColor = item->color->getColor();
 }
 
@@ -39,10 +44,39 @@ PresetUI::~PresetUI()
 {
 }
 
+void PresetUI::paintOverChildren(Graphics& g)
+{
+	BaseItemUI::paintOverChildren(g);
+	if (item->isCurrent->boolValue())
+	{
+		g.setColour(GREEN_COLOR);
+		g.drawRoundedRectangle(getLocalBounds().reduced(2).toFloat(), 2, 1);
+	}
+}
+
+void PresetUI::mouseDown(const MouseEvent& e)
+{
+	BaseItemUI::mouseDown(e);
+	if (e.eventComponent == this && e.mods.isLeftButtonDown() && e.mods.isAltDown()) item->loadTrigger->trigger();
+}
+
+void PresetUI::addContextMenuItems(PopupMenu& p)
+{
+	p.addItem(100, "Load");
+	p.addItem(101, "Save");
+}
+
+void PresetUI::handleContextMenuResult(int result)
+{
+	if (result == 100) item->loadTrigger->trigger();
+	else if (result == 101) item->saveTrigger->trigger();
+}
+
 void PresetUI::resizedInternalHeader(Rectangle<int>& r)
 {
 	addBT->setBounds(r.removeFromRight(r.getHeight()));
 	colorUI->setBounds(r.removeFromRight(r.getHeight()).reduced(1));
+	loadUI->setBounds(r.removeFromRight(80));
 }
 
 void PresetUI::resizedInternalContent(Rectangle<int>& r)
@@ -90,6 +124,10 @@ void PresetUI::controllableFeedbackUpdateInternal(Controllable* c)
 	if (c == item->color)
 	{
 		bgColor = item->color->getColor();
+		repaint();
+	}
+	else if (c == item->isCurrent)
+	{
 		repaint();
 	}
 }

@@ -31,7 +31,10 @@ public:
     EnumParameter* playMode;
     BoolParameter* monitor;
 
-    BoolParameter* clearMode;
+    BoolParameter * clearMode;
+
+    enum ClearMode { LAST_PLAYED, LAST_RECORDED };
+    EnumParameter * clearLastMode;
     Trigger* clearLastRecordedTrigger;
     Trigger* clearAllNotesTrigger;
 
@@ -46,6 +49,7 @@ public:
     BoolParameter * isRecording;
     int recordingNote;
     int lastRecordedNote;
+    int lastPlayedNote;
 
     enum NoteState { EMPTY, RECORDING, FILLED, PLAYING };
     struct SamplerNote

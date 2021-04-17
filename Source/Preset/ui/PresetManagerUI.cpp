@@ -14,6 +14,7 @@ PresetManagerUI::PresetManagerUI(PresetManager* manager) :
     BaseManagerUI(manager->niceName, manager, false)
 {
     //animateItemOnAdd = false;
+    addExistingItems();
 }
 
 PresetManagerUI::~PresetManagerUI()
@@ -33,8 +34,18 @@ void PresetManagerUI::removeItemUIInternal(PresetUI* ui)
 RootPresetManagerUI::RootPresetManagerUI() :
     BaseManagerShapeShifterUI(RootPresetManager::getInstance()->niceName, RootPresetManager::getInstance())
 {
+
+    saveCurrentUI.reset(RootPresetManager::getInstance()->saveCurrentTrigger->createButtonUI());
+    addAndMakeVisible(saveCurrentUI.get());
+    addExistingItems();
 }
 
 RootPresetManagerUI::~RootPresetManagerUI()
 {
+}
+
+void RootPresetManagerUI::resizedInternalHeader(Rectangle<int>& r)
+{
+    BaseManagerShapeShifterUI::resizedInternalHeader(r);
+    saveCurrentUI->setBounds(r.removeFromRight(80).reduced(2));
 }

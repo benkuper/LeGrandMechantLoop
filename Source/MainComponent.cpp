@@ -26,6 +26,8 @@ MainComponent::~MainComponent()
 
 void MainComponent::init()
 {
+	ControllableUI::customAddToContextMenuFunc = MainComponent::addControllableMenuItems;
+	ControllableUI::handleCustomContextMenuResultFunc = MainComponent::handleControllableMenuResult;
 
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Nodes (List View)", &NodeManagerPanel::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Nodes (2D View)", &NodeManagerViewPanel::create));
@@ -49,6 +51,62 @@ void MainComponent::init()
 Outliner* MainComponent::createOutliner(const String& contentName)
 {
 	return new LGMLOutliner(contentName);
+}
+
+void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
+{
+	if (ui->controllable->type == Controllable::TRIGGER) return;
+
+	bool isPresettable = ui->controllable->customData == "presettable";
+	p->addItem(0x5000, "Presettable", true, isPresettable);
+	
+	if (isPresettable)
+	{
+		Preset* preset = RootPresetManager::getInstance()->currentPreset;
+		String presetName = preset != nullptr ? preset->niceName : "No loaded preset";
+		String add = ui->controllable->getControlAddress();
+		bool canBeOverride = preset != nullptr && !preset->isMain();
+		bool isOverride = canBeOverride && preset->overridenControllables.contains(add);
+		p->addItem(0x5001, "Override (" + presetName + ")", canBeOverride, isOverride);
+	}
+}
+
+bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
+{
+	if (ui->controllable->type == Controllable::TRIGGER) return false;
+	
+	Parameter* p = (Parameter*)ui->controllable.get();
+	
+	if (result == 0x5000)
+	{
+		if (p->customData == "presettable") p->customData = var();
+		else p->customData = "presettable";
+		return true;
+	}
+	else if (result == 0x5001)
+	{
+		if (Preset* preset = RootPresetManager::getInstance()->currentPreset)
+		{
+			String add = p->getControlAddress();
+			if (preset->overridenControllables.contains(add))
+			{
+				preset->overridenControllables.removeAllInstancesOf(add);
+				preset->dataMap.remove(p);
+				preset->addressMap.remove(add);
+				preset->load(p);
+				LOG("Removed " << p->niceName << " override from preset " << preset->niceName);
+			}
+			else
+			{
+				preset->save(p);
+				LOG("Added " << p->niceName << " override to preset " << preset->niceName);
+			}
+
+		}
+		return true;
+	}
+
+	return false;
 }
 
 LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent * mainComp, LGMLEngine * engine) :

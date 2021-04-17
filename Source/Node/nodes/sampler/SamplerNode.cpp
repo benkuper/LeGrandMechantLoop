@@ -18,6 +18,7 @@ SamplerNode::SamplerNode(var params) :
 	currentDevice(nullptr),
 	recordingNote(-1),
 	lastRecordedNote(-1),
+	lastPlayedNote(-1),
 	recordedSamples(0),
 	noteStatesCC("Notes")
 {
@@ -35,8 +36,12 @@ SamplerNode::SamplerNode(var params) :
 	isRecording = addBoolParameter("Is Recording", "Is recording a note ?", false);
 	isRecording->setControllableFeedbackOnly(true);
 
-	clearMode = addBoolParameter("Clear Mode", "When checked, recorded notes are cleared", false);
-	clearLastRecordedTrigger = addTrigger("Clear Last", "Clear Last recorded note");
+	clearMode = addBoolParameter("Clear Mode", "When checked, recorded or played notes are cleared depending on clearing mode", false);
+
+	clearLastMode = addEnumParameter("Clearing Lat Mode", "The way to clear when clear last is triggered");
+	clearLastMode->addOption("Last Played", LAST_PLAYED)->addOption("Last Recorded", LAST_RECORDED);
+
+	clearLastRecordedTrigger = addTrigger("Clear Last", "Clear Last recorded or played note");
 	clearAllNotesTrigger = addTrigger("Clear All Notes", "Clear all recorded notes");
 
 	attack = addFloatParameter("Attack", "Time of the attack in seconds", .01f, 0);
@@ -193,6 +198,7 @@ void SamplerNode::stopRecording()
 	
 	samplerNote->state->setValueWithData(FILLED);
 	lastRecordedNote = recordingNote;
+	lastPlayedNote = recordingNote;
 	recordingNote = -1;
 	isRecording->setValue(false);
 }
@@ -225,7 +231,16 @@ void SamplerNode::onContainerTriggerTriggered(Trigger* t)
 {
 	if (t == clearLastRecordedTrigger)
 	{
-		clearNote(lastRecordedNote);
+		if (clearLastMode->getValueDataAsEnum<ClearMode>() == LAST_RECORDED)
+		{
+			clearNote(lastRecordedNote);
+			lastRecordedNote = -1;
+		}
+		else
+		{
+			clearNote(lastPlayedNote);
+			lastPlayedNote = -1;
+		}
 	}
 	else if (t == clearAllNotesTrigger)
 	{
@@ -290,6 +305,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 		if (pm == HIT) samplerNotes[midiNoteNumber]->playingSample = 0;
 		samplerNotes[midiNoteNumber]->velocity = velocity;
 		samplerNotes[midiNoteNumber]->adsr.gate(1);
+		lastPlayedNote = midiNoteNumber;
 		samplerNotes[midiNoteNumber]->state->setValueWithData(PLAYING);
 	}
 

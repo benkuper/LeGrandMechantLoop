@@ -11,6 +11,7 @@
 
 #include "MainComponent.h"
 #include "Transport/Transport.h"
+#include "Preset/PresetManager.h"
 
 namespace LGMLCommandIDs
 {
@@ -23,8 +24,7 @@ namespace LGMLCommandIDs
 	static const int showWelcome = 0x60006;
 	static const int gotoChangelog = 0x60007;
 
-	static const int guideStart = 0x300; //up to 0x300 +100
-	static const int exitGuide = 0x399;
+	static const int saveCurrentPreset = 0x70000;
 
 
 	static const int playPauseTransport = 0x501;
@@ -32,12 +32,6 @@ namespace LGMLCommandIDs
 
 void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& result)
 {
-	if (commandID >= LGMLCommandIDs::guideStart && commandID < LGMLCommandIDs::guideStart + 99)
-	{
-		//result.setInfo(Guider::getInstance()->getGuideName(commandID - LGMLCommandIDs::guideStart), "", "Guides", result.readOnlyInKeyEditor);
-		return;
-	}
-
 	switch (commandID)
 	{
 	//case LGMLCommandIDs::showAbout:
@@ -72,10 +66,9 @@ void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& 
 		result.setInfo("Post an issue on github", "", "Help", result.readOnlyInKeyEditor);
 		break;
 
-	case LGMLCommandIDs::exitGuide:
-		result.setInfo("Exit current guide", "", "Guides", result.readOnlyInKeyEditor);
-		result.addDefaultKeypress(KeyPress::escapeKey, ModifierKeys::noModifiers);
-		result.setActive(false);// Guider::getInstance()->guide != nullptr);
+	case LGMLCommandIDs::saveCurrentPreset:
+		result.setInfo("Save Current Preset", "", "Edit", result.readOnlyInKeyEditor);
+		result.addDefaultKeypress(KeyPress::createFromDescription("s").getKeyCode(), ModifierKeys::ctrlAltCommandModifiers);
 		break;
 
 	case LGMLCommandIDs::playPauseTransport:
@@ -97,6 +90,7 @@ void MainComponent::getAllCommands(Array<CommandID>& commands) {
 
 	const CommandID ids[] = {
 
+		LGMLCommandIDs::saveCurrentPreset,
 		LGMLCommandIDs::playPauseTransport,
 		//LGMLCommandIDs::showAbout,
 		//LGMLCommandIDs::showWelcome,
@@ -119,6 +113,7 @@ PopupMenu MainComponent::getMenuForIndex(int topLevelMenuIndex, const String& me
 
 	if (menuName == "Edit")
 	{
+		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::saveCurrentPreset);
 		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::playPauseTransport);
 	}else if (menuName == "Help")
 	{
@@ -205,6 +200,10 @@ bool MainComponent::perform(const InvocationInfo& info)
 
 	case LGMLCommandIDs::playPauseTransport:
 		Transport::getInstance()->togglePlayTrigger->trigger();
+		break;
+
+	case LGMLCommandIDs::saveCurrentPreset:
+		RootPresetManager::getInstance()->saveCurrentTrigger->trigger();
 		break;
 
 		//case LGMLCommandIDs::exitGuide:

@@ -75,6 +75,7 @@ var LGMLEngine::getJSONData()
     data.getDynamicObject()->setProperty(RootNodeManager::getInstance()->shortName, RootNodeManager::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(InterfaceManager::getInstance()->shortName, InterfaceManager::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(Transport::getInstance()->shortName, Transport::getInstance()->getJSONData());
+    data.getDynamicObject()->setProperty(RootPresetManager::getInstance()->shortName, RootPresetManager::getInstance()->getJSONData());
     return data;
 }
 
@@ -83,6 +84,7 @@ void LGMLEngine::loadJSONDataInternalEngine(var data, ProgressTask* loadingTask)
     RootNodeManager::getInstance()->loadJSONData(data.getProperty(RootNodeManager::getInstance()->shortName, var()));
     InterfaceManager::getInstance()->loadJSONData(data.getProperty(InterfaceManager::getInstance()->shortName, var()));
     Transport::getInstance()->loadJSONData(data.getProperty(Transport::getInstance()->shortName, var()));
+    RootPresetManager::getInstance()->loadJSONData(data.getProperty(RootPresetManager::getInstance()->shortName, var()));
 }
 
 void LGMLEngine::timerCallback(int timerID)

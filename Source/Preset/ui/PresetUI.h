@@ -25,6 +25,13 @@ public:
     std::unique_ptr<PresetManagerUI> pmui;
     std::unique_ptr<ImageButton> addBT;
     std::unique_ptr<ColorParameterUI> colorUI;
+    std::unique_ptr<TriggerButtonUI> loadUI;
+
+    void paintOverChildren(Graphics& g) override;
+
+    void mouseDown(const MouseEvent& e) override;
+    void addContextMenuItems(PopupMenu &p) override;
+    void handleContextMenuResult(int result) override;
 
     void resizedInternalHeader(Rectangle<int>& r) override;
     void resizedInternalContent(Rectangle<int> &r) override;
