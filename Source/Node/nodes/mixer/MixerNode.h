@@ -68,6 +68,8 @@ public:
 
 	MixerItem * getMixerItem(int inputIndex, int outputIndex);
 
+	void reorderContainers();
+
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
 	void afterLoadJSONDataInternal() override;

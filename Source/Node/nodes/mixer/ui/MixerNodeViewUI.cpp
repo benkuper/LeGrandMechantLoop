@@ -35,7 +35,7 @@ void MixerNodeViewUI::nodeOutputsChanged()
 
 void MixerNodeViewUI::updateLines()
 {
-    int numLines = node->getNumAudioInputs();
+    int numLines = node->getNumAudioOutputs();
     while (gainLines.size() > numLines)
     {
         Component* c = gainLines[gainLines.size() - 1];
@@ -165,7 +165,7 @@ void MixerNodeViewUI::OutputGainLine::rebuild()
 
     if (node->showItemGains->boolValue() || node->showItemActives->boolValue())
     {
-        for (int i = 0; i < node->getNumAudioOutputs(); i++)
+        for (int i = 0; i < node->getNumAudioInputs(); i++)
         {
             VolumeControlUI* mui = new VolumeControlUI(node->getMixerItem(i, outputIndex));
             mui->setViewedComponents(node->showItemGains->boolValue(), false, node->showItemActives->boolValue());

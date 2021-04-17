@@ -119,7 +119,7 @@ void VolumeControlUI::setViewedComponents(bool showGain, bool showRMS, bool show
 		{
 			activeUI.reset(item->active->createButtonToggle());
 			if (customActiveLabel.isNotEmpty()) activeUI->customLabel = customActiveLabel;
-			else activeUI->showLabel = true;
+			else activeUI->showLabel = false;
 			addAndMakeVisible(activeUI.get());
 		}
 	}

@@ -42,30 +42,47 @@ void MixerNode::updateAudioInputsInternal()
 		addChildControllableContainer(cc, true);
 		inputLines.add(cc);
 	}
+
+	reorderContainers();
 }
 
 void MixerNode::updateAudioOutputsInternal()
 {
 	for (auto& il : inputLines) il->setNumOutputs(getNumAudioOutputs());
 
-	while (mainOuts.size() > getNumAudioInputs())
+	while (mainOuts.size() > getNumAudioOutputs())
 	{
 		VolumeControl* vc = mainOuts[mainOuts.size() - 1];
 		removeChildControllableContainer(vc);
 		mainOuts.removeAllInstancesOf(vc);
 	}
 
-	while (mainOuts.size() < getNumAudioInputs())
+	while (mainOuts.size() < getNumAudioOutputs())
 	{
 		VolumeControl* o = new VolumeControl("Out" + String(mainOuts.size() + 1));
 		addChildControllableContainer(o, true);
 		mainOuts.add(o);
 	}
+
+	reorderContainers();
 }
 
 MixerItem* MixerNode::getMixerItem(int inputIndex, int outputIndex)
 {
 	return  inputLines[inputIndex]->mixerItems[outputIndex];
+}
+
+void MixerNode::reorderContainers()
+{
+	int index = 1;
+	
+	for (auto& il : inputLines) controllableContainers.removeAllInstancesOf(il);
+	for (auto& o : mainOuts) controllableContainers.removeAllInstancesOf(o);
+
+	for (auto& il : inputLines) controllableContainers.add(il);
+	for (auto& o : mainOuts) controllableContainers.add(o);
+
+	controllableContainerListeners.call(&ControllableContainerListener::controllableContainerReordered, this);
 }
 
 void MixerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -178,21 +195,23 @@ void InputLineCC::updateExclusiveOutput()
 	}
 }
 
-void InputLineCC::setNumOutputs(int inputNumber)
+void InputLineCC::setNumOutputs(int numOutputs)
 {
-	while (mixerItems.size() > inputNumber)
+	while (mixerItems.size() > numOutputs)
 	{
 		MixerItem* mi = mixerItems[mixerItems.size() - 1];
 		removeChildControllableContainer(mi);
 		mixerItems.removeAllInstancesOf(mi);
 	}
 
-	while (mixerItems.size() < inputNumber)
+	while (mixerItems.size() < numOutputs)
 	{
 		MixerItem* mi = new MixerItem(index, mixerItems.size());
 		addChildControllableContainer(mi, true);
 		mixerItems.add(mi);
 	}
+
+	LOG("Set num outputs in input : " << numOutputs);
 
 	exclusiveIndex->setRange(1, jmax(mixerItems.size(), 1));
 }

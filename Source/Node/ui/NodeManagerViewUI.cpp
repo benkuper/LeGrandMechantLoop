@@ -140,7 +140,7 @@ void NodeManagerViewPanel::updateCrumbs()
     {
         if (NodeManager* m = dynamic_cast<NodeManager*>(pc))
         {
-            String n = m == RootNodeManager::getInstance() ? "Root" : m->parentContainer->parentContainer->niceName; //container's name
+            String n = m == RootNodeManager::getInstance() ? "Root" : m->parentContainer->niceName; //container's name
 
             TextButton * bt = new TextButton(n);
             bt->addListener(this);

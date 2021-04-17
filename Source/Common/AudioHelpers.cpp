@@ -117,7 +117,6 @@ VolumeControl::VolumeControl(const String& name, bool hasRMS) :
 	gain = new DecibelFloatParameter("Gain", "Gain for this");
 	addParameter(gain);
 	active = addBoolParameter("Active", "Fast way to mute this", true);
-
 	if (hasRMS)
 	{
 		rms = new DecibelFloatParameter("RMS", "RMS for this", 0);
