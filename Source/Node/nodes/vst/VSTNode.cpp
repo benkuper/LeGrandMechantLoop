@@ -318,6 +318,7 @@ void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Co
 		{
 			if (pLink->macroIndex >= 0 && pLink->macroIndex < numMacros->intValue())
 			{
+				
 				if (!antiMacroFeedback)
 				{
 					antiMacroFeedback = true;
@@ -329,11 +330,11 @@ void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Co
 	}
 	else if (cc == &macrosCC)
 	{
+		int index = macrosCC.controllables.indexOf(c);
+		if (autoActivateMacroIndex->enabled && index == autoActivateMacroIndex->intValue() - 1) checkAutoBypassFromMacro();
+		
 		if (vstParamsCC != nullptr)
 		{
-			int index = macrosCC.controllables.indexOf(c);
-			if(autoActivateMacroIndex->enabled && index == autoActivateMacroIndex->intValue()-1) checkAutoBypassFromMacro();
-
 			HashMap<int, VSTParameterLink*>::Iterator it(vstParamsCC->idParamMap);
 			while (it.next())
 			{

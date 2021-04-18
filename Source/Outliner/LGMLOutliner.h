@@ -41,10 +41,6 @@ public:
     LGMLOutlinerItem(WeakReference<Controllable> controllable, bool parentsHaveHideInRemote, bool isFiltered);
     virtual ~LGMLOutlinerItem();
 
-
-    void togglePresettable();
-    bool isPresettable();
-
     Component* createItemComponent() override;
 
 };

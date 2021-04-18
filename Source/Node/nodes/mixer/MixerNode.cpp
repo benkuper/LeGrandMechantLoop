@@ -74,8 +74,6 @@ MixerItem* MixerNode::getMixerItem(int inputIndex, int outputIndex)
 
 void MixerNode::reorderContainers()
 {
-	int index = 1;
-	
 	for (auto& il : inputLines) controllableContainers.removeAllInstancesOf(il);
 	for (auto& o : mainOuts) controllableContainers.removeAllInstancesOf(o);
 

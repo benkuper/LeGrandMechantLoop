@@ -16,8 +16,7 @@ class PresetManager;
 
 class Preset :
     public BaseItem,
-    public BaseManager<Preset>::ManagerListener,
-    public Inspectable::InspectableListener
+    public BaseManager<Preset>::ManagerListener
 {
 public:
     Preset(var params = var());
@@ -61,7 +60,6 @@ public:
     var getJSONData() override;
     void loadJSONDataItemInternal(var data) override;
 
-    void inspectableDestroyed(Inspectable* i) override;
     void controllableControlAddressChanged(Controllable* c) override;
     
     void childStructureChanged(ControllableContainer* cc) override;

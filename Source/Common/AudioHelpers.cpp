@@ -174,9 +174,9 @@ void VolumeControl::updateRMS(AudioSampleBuffer& buffer, int channel, int startS
 		}
 
 		rmsSampleCount += buffer.getNumSamples();
-		if (rmsSampleCount > 4000) //~10fps @44100Hz
+		if (rmsSampleCount > 3000) //~10fps @44100Hz
 		{
-			float rmsGainVal = rms->gain + (rmsMax - rms->gain) * (rmsMax > rms->gain ? .8f : .2f);
+			//float rmsGainVal = rms->gain + (rmsMax - rms->gain) * (rmsMax > rms->gain ? 1: .4f);
 			rms->setGain(rmsMax);
 
 			rmsSampleCount = 0;

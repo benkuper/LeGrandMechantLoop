@@ -9,15 +9,16 @@
 */
 
 #include "LGMLOutliner.h"
+#include "Preset/PresetManager.h"
 
 LGMLOutlinerItemComponent::LGMLOutlinerItemComponent(LGMLOutlinerItem* item) :
     OutlinerItemComponent(item),
     lgmlItem(item)
 {
-    if (!item->isContainer && item->controllable->type != Controllable::TRIGGER)
+    if (!item->isContainer && item->controllable->type != Controllable::TRIGGER && !item->controllable->isControllableFeedbackOnly)
     {
         presetBT.reset(AssetManager::getInstance()->getToggleBTImage(ImageCache::getFromMemory(BinaryData::p_png, BinaryData::p_pngSize)));
-        presetBT->setToggleState(lgmlItem->isPresettable(), dontSendNotification);
+        presetBT->setToggleState(RootPresetManager::getInstance()->isParameterPresettable((Parameter *)item->controllable.get()), dontSendNotification);
         presetBT->addListener(this);
         addAndMakeVisible(presetBT.get());
     }
@@ -43,8 +44,8 @@ void LGMLOutlinerItemComponent::buttonClicked(Button* b)
 
     if (presetBT != nullptr && b == presetBT.get())
     {
-        lgmlItem->togglePresettable();
-        presetBT->setToggleState(lgmlItem->isPresettable(), dontSendNotification);
+        RootPresetManager::getInstance()->toggleParameterPresettable((Parameter *)lgmlItem->controllable.get());
+        presetBT->setToggleState(RootPresetManager::getInstance()->isParameterPresettable((Parameter*)item->controllable.get()), dontSendNotification);
     }
 }
 
@@ -62,20 +63,6 @@ LGMLOutlinerItem::LGMLOutlinerItem(WeakReference<Controllable> controllable, boo
 
 LGMLOutlinerItem::~LGMLOutlinerItem()
 {
-}
-
-void LGMLOutlinerItem::togglePresettable()
-{
-    Inspectable* i = isContainer ? (Inspectable *)container.get() : (Inspectable *)controllable.get();
-    if (isPresettable()) i->customData = var();
-    else i->customData = "presettable";
-    i->saveCustomData = true;
-}
-
-bool LGMLOutlinerItem::isPresettable()
-{
-    Inspectable* i = isContainer ? (Inspectable*)container.get() : (Inspectable*)controllable.get();
-    return i->customData == "presettable";
 }
 
 Component* LGMLOutlinerItem::createItemComponent()

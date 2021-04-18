@@ -170,34 +170,39 @@ void SamplerNode::stopRecording()
 	if (recordingNote == -1) return;
 
 	ScopedSuspender sp(processor);
+	SamplerNote* samplerNote = samplerNotes[recordingNote];
 	recordedSamples = recordedSamples - (recordedSamples % processor->getBlockSize()); //fit to blockSize
 
-
-	//fade with ring buffer using looper fadeTimeMS
-	int fadeNumSamples = getFadeNumSamples();
-
-	SamplerNote* samplerNote = samplerNotes[recordingNote];
-
-	samplerNote->buffer.setSize(samplerNote->buffer.getNumChannels(), recordedSamples, true);
-	
-	if (fadeNumSamples > 0)
+	if (recordedSamples > 0)
 	{
-		int cropFadeNumSamples = jmin(recordedSamples, fadeNumSamples);
-		int bufferStartSample = recordedSamples - cropFadeNumSamples;
+		//fade with ring buffer using looper fadeTimeMS
+		int fadeNumSamples = getFadeNumSamples();
+		samplerNote->buffer.setSize(samplerNote->buffer.getNumChannels(), recordedSamples, true);
 
-		int preRecStartSample = preRecBuffer.getNumSamples() - cropFadeNumSamples;
-
-		samplerNote->buffer.applyGainRamp(bufferStartSample, cropFadeNumSamples, 1, 0);
-
-		for (int i = 0; i < samplerNote->buffer.getNumChannels(); i++)
+		if (fadeNumSamples > 0)
 		{
-			samplerNote->buffer.addFromWithRamp(i, bufferStartSample, preRecBuffer.getReadPointer(i, preRecStartSample), cropFadeNumSamples, 0, 1);
-		}
+			int cropFadeNumSamples = jmin(recordedSamples, fadeNumSamples);
+			int bufferStartSample = recordedSamples - cropFadeNumSamples;
 
-		preRecBuffer.clear();
+			int preRecStartSample = preRecBuffer.getNumSamples() - cropFadeNumSamples;
+
+			samplerNote->buffer.applyGainRamp(bufferStartSample, cropFadeNumSamples, 1, 0);
+
+			for(int i = 0; i < samplerNote->buffer.getNumChannels(); i++)
+			{
+				samplerNote->buffer.addFromWithRamp(i, bufferStartSample, preRecBuffer.getReadPointer(i, preRecStartSample), cropFadeNumSamples, 0, 1);
+			}
+
+			preRecBuffer.clear();
+		}
+		
+		samplerNote->state->setValueWithData(FILLED);
+	}
+	else
+	{
+		samplerNote->state->setValueWithData(EMPTY);
 	}
 	
-	samplerNote->state->setValueWithData(FILLED);
 	lastRecordedNote = recordingNote;
 	lastPlayedNote = recordingNote;
 	recordingNote = -1;

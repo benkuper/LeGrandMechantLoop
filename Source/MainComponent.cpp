@@ -55,11 +55,12 @@ Outliner* MainComponent::createOutliner(const String& contentName)
 
 void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 {
-	if (ui->controllable->type == Controllable::TRIGGER) return;
+	if (ui->controllable->type == Controllable::TRIGGER && !ui->controllable->isControllableFeedbackOnly) return;
 
-	bool isPresettable = ui->controllable->customData == "presettable";
+	Parameter* param = (Parameter*)ui->controllable.get();
+	bool isPresettable = RootPresetManager::getInstance()->isParameterPresettable(param);
 	p->addItem(0x5000, "Presettable", true, isPresettable);
-	
+
 	if (isPresettable)
 	{
 		Preset* preset = RootPresetManager::getInstance()->currentPreset;
@@ -67,49 +68,65 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 		String add = ui->controllable->getControlAddress();
 		bool canBeOverride = preset != nullptr && !preset->isMain();
 		bool isOverride = canBeOverride && preset->overridenControllables.contains(add);
-		p->addItem(0x5001, "Override (" + presetName + ")", canBeOverride, isOverride);
+
+
+		bool canInterpolate = param->type != Parameter::BOOL && param->type != Parameter::ENUM && param->type != Parameter::STRING && param->type != Parameter::ENUM;
+		int option = RootPresetManager::getInstance()->getParameterPresetOption(param, "transition", (int)(canInterpolate ? RootPresetManager::INTERPOLATE : RootPresetManager::DEFAULT));
+		PopupMenu interpMenu;
+		interpMenu.addItem(0x5010, "Interpolate", canInterpolate, option == RootPresetManager::INTERPOLATE);
+		interpMenu.addItem(0x5013, "Default", !canInterpolate, option == RootPresetManager::DEFAULT);
+
+		interpMenu.addItem(0x5011, "Change at start", true, option == RootPresetManager::AT_START);
+		interpMenu.addItem(0x5012, "Chante at end", true, option == RootPresetManager::AT_END);
+		p->addSubMenu("Transition Mode", interpMenu);
+
+		p->addItem(0x5001, "Save to " + presetName + (canBeOverride ? " (Override)" : ""), true, isOverride);
+		if(isOverride) p->addItem(0x5002, "Remove override from " + presetName, isOverride);
 	}
 }
 
 bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 {
-	if (ui->controllable->type == Controllable::TRIGGER) return false;
-	
+	if (result < 0x5000 && result > 0x5020) return false;
+	if (ui->controllable->type == Controllable::TRIGGER) return true;
+
 	Parameter* p = (Parameter*)ui->controllable.get();
-	
+
 	if (result == 0x5000)
 	{
-		if (p->customData == "presettable") p->customData = var();
-		else p->customData = "presettable";
+		RootPresetManager::getInstance()->toggleParameterPresettable(p);
 		return true;
 	}
-	else if (result == 0x5001)
+	else if (result == 0x5001 || result  == 0x5002)
 	{
 		if (Preset* preset = RootPresetManager::getInstance()->currentPreset)
 		{
 			String add = p->getControlAddress();
-			if (preset->overridenControllables.contains(add))
-			{
-				preset->overridenControllables.removeAllInstancesOf(add);
-				preset->dataMap.remove(p);
-				preset->addressMap.remove(add);
-				preset->load(p);
-				LOG("Removed " << p->niceName << " override from preset " << preset->niceName);
-			}
-			else
+			if (result == 0x5001)
 			{
 				preset->save(p);
-				LOG("Added " << p->niceName << " override to preset " << preset->niceName);
+				LOG("Saved " << p->niceName << " to preset " << preset->niceName << (preset->isMain()?"":" (Override)"));
+			}
+			else if (result == 0x5002)
+			{
+				preset->removeParameterFromDataMap(p);
+				preset->load(p);
+				LOG("Removed " << p->niceName << " override from preset " << preset->niceName);
 			}
 
 		}
 		return true;
 	}
+	else if (result >= 0x5010 && result <= 0x5013)
+	{
+		int option = result - 0x5010;
+		RootPresetManager::getInstance()->setParameterPresetOption(p, "transition", option);
+	}
 
 	return false;
 }
 
-LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent * mainComp, LGMLEngine * engine) :
+LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent* mainComp, LGMLEngine* engine) :
 	Component("LGML Menu Bar")
 #if !JUCE_MAC
 	, menuBarComp(mainComp)
@@ -142,12 +159,12 @@ void LGMLMenuBarComponent::resized()
 {
 	Rectangle<int> r = getLocalBounds();
 #if !JUCE_MAC	
-	menuBarComp.setBounds(r); 
+	menuBarComp.setBounds(r);
 #endif
 	logOutUI->setBounds(r.removeFromRight(90).reduced(1)); //overlap but we don't care
 	r.removeFromRight(20);
 	logInUI->setBounds(r.removeFromRight(90).reduced(1)); //overlap but we don't care
 	r.removeFromRight(20);
 	cpuUsageUI->setBounds(r.removeFromRight(200).reduced(2)); //overlap but we don't care
-	
+
 }

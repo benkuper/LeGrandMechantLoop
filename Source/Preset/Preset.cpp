@@ -29,6 +29,8 @@ Preset::Preset(var params) :
 	isCurrent->setControllableFeedbackOnly(true);
 	listUISize->isSavable = false;
 
+	editorIsCollapsed = true;
+
 	Engine::mainEngine->addControllableContainerListener(this);
 }
 
@@ -43,7 +45,6 @@ void Preset::clearItem()
 	HashMap<WeakReference<Parameter>, var>::Iterator it(dataMap);
 	while (it.next()) if (it.getKey() != nullptr && !it.getKey().wasObjectDeleted())
 	{
-		it.getKey()->removeInspectableListener(this);
 		it.getKey()->removeControllableListener(this);
 	}
 }
@@ -86,7 +87,7 @@ void Preset::save(Parameter * parameter)
 {
 	if (parameter != nullptr)
 	{
-		if (parameter->customData != "presettable") return;
+		if (!RootPresetManager::getInstance()->isParameterPresettable(parameter)) return;
 		addParameterToDataMap(parameter);
 	}
 	else
@@ -106,7 +107,7 @@ void Preset::save(Parameter * parameter)
 		int numSaved = 0;
 		for (auto& p : params)
 		{
-			if (p->customData != "presettable") continue;
+			if (!RootPresetManager::getInstance()->isParameterPresettable(p)) continue;
 			var d = p->value;
 			String add = p->getControlAddress();
 			if (!p->shouldBeSaved()) continue;
@@ -131,7 +132,7 @@ void Preset::load(Parameter* parameter)
 {
 	if (parameter != nullptr)
 	{
-		if (parameter->customData != "presettable") return;
+		if (!RootPresetManager::getInstance()->isParameterPresettable(parameter)) return;
 		var value = getPresetValueForParameter(parameter);
 		parameter->setValue(value);
 	}
@@ -142,9 +143,9 @@ void Preset::load(Parameter* parameter)
 		NamedValueSet props = data.getDynamicObject()->getProperties();
 		for (auto& p : props)
 		{
-			if (Parameter* tp = dynamic_cast<Parameter *>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
+			if (Parameter* tp = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
 			{
-				if (tp->customData != "presettable") return;
+				if (!RootPresetManager::getInstance()->isParameterPresettable(tp)) continue;
 				tp->setValue(p.value);
 				numLoaded++;
 			}
@@ -153,7 +154,6 @@ void Preset::load(Parameter* parameter)
 		NLOG(niceName, "Loaded " << numLoaded << " values.");
 	}
 }
-
 
 void Preset::addParameterToDataMap(Parameter* p, var forceValue)
 {
@@ -169,7 +169,6 @@ void Preset::addParameterToDataMap(Parameter* p, var forceValue)
 	lostParamAddresses.removeAllInstancesOf(add);
 	if (!isMain()) overridenControllables.addIfNotAlreadyThere(add);
 
-	p->addInspectableListener(this);
 	p->addControllableListener(this);
 }
 
@@ -193,7 +192,6 @@ void Preset::removeParameterFromDataMap(Parameter* p)
 	String add = p->getControlAddress();
 	dataMap.remove(p);
 	paramGhostAddressMap.remove(p);
-	p->removeInspectableListener(this);
 	p->removeControllableListener(this);
 	addressMap.remove(add);
 	lostParamAddresses.removeAllInstancesOf(add);
@@ -255,11 +253,6 @@ void Preset::loadJSONDataItemInternal(var data)
 	}
 }
 
-void Preset::inspectableDestroyed(Inspectable* i)
-{
-
-}
-
 void Preset::controllableControlAddressChanged(Controllable* c)
 {
 	BaseItem::controllableControlAddressChanged(c);
@@ -273,6 +266,7 @@ void Preset::controllableControlAddressChanged(Controllable* c)
 			if (dataMap.contains(p))
 			{
 				dataMap.remove(p);
+				p->removeControllableListener(this);
 				lostParamAddresses.addIfNotAlreadyThere(paramGhostAddressMap[p]);
 				paramGhostAddressMap.remove(p);
 			}

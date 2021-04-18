@@ -21,7 +21,8 @@ public:
 
 class RootPresetManager :
     public PresetManager,
-    public Inspectable::InspectableListener
+    public Inspectable::InspectableListener,
+    public Thread
 {
 public:
     juce_DeclareSingleton(RootPresetManager, true);
@@ -31,11 +32,30 @@ public:
     Trigger* saveCurrentTrigger;
     Preset* currentPreset;
 
+    //Transition
+    FloatParameter* transitionTime;
+    Automation transition;
+    HashMap<WeakReference<Parameter>, var> initTargetMap;
+
+    enum TransitionMode {INTERPOLATE, AT_START, AT_END, DEFAULT};
+    EnumParameter* directTransitionMode;
+
     void clear() override;
 
     void setCurrentPreset(Preset* p);
     void onContainerTriggerTriggered(Trigger* t) override;
 
+    void toggleParameterPresettable(Parameter* p);
+    var getParameterPresetOption(Parameter* p, String option, var defaultVal);
+    void setParameterPresetOption(Parameter * p, String option, var val);
+    bool isParameterPresettable(Parameter *p);
+
     void inspectableDestroyed(Inspectable* i) override;
+
+    var getJSONData() override;
+    void loadJSONDataManagerInternal(var data) override;
+
+    void run() override;
+    void lerpParameters(float progression, float weight);
 };
 

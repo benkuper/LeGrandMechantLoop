@@ -21,7 +21,7 @@ public:
 
 	bool isInput;
 	ControllableContainer channelsCC;
-	var gainGhostData;
+	var channelsGhostData;
 	bool isRoot;
 
 	int realNumInputs;

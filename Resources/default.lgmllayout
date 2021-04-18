@@ -13,14 +13,14 @@
         "shifters": [
           {
             "type": 1,
-            "width": 253,
+            "width": 280,
             "height": 997,
             "direction": 2,
             "shifters": [
               {
                 "type": 0,
-                "width": 253,
-                "height": 122,
+                "width": 280,
+                "height": 176,
                 "currentContent": "Transport",
                 "tabs": [
                   {
@@ -30,19 +30,19 @@
               },
               {
                 "type": 0,
-                "width": 253,
-                "height": 200,
-                "currentContent": "Interfaces",
+                "width": 280,
+                "height": 350,
+                "currentContent": "Presets",
                 "tabs": [
                   {
-                    "name": "Interfaces"
+                    "name": "Presets"
                   }
                 ]
               },
               {
                 "type": 0,
-                "width": 253,
-                "height": 662,
+                "width": 280,
+                "height": 458,
                 "currentContent": "Outliner",
                 "tabs": [
                   {
@@ -57,7 +57,7 @@
           },
           {
             "type": 0,
-            "width": 1224,
+            "width": 1263,
             "height": 997,
             "currentContent": "Nodes (2D View)",
             "tabs": [
@@ -68,14 +68,14 @@
           },
           {
             "type": 1,
-            "width": 431,
+            "width": 365,
             "height": 997,
             "direction": 2,
             "shifters": [
               {
                 "type": 0,
-                "width": 431,
-                "height": 668,
+                "width": 365,
+                "height": 669,
                 "currentContent": "Inspector",
                 "tabs": [
                   {
@@ -85,8 +85,8 @@
               },
               {
                 "type": 0,
-                "width": 431,
-                "height": 322,
+                "width": 365,
+                "height": 321,
                 "currentContent": "Logger",
                 "tabs": [
                   {
