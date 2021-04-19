@@ -36,6 +36,7 @@ void MainComponent::init()
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Presets", &RootPresetManagerUI::create));
 	//ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Timeline", &TimelineU::create));
 
+	ControllableUI::drawContourOnInspectableHighlighted = true;
 
 	OrganicMainContentComponent::init();
 
@@ -80,8 +81,16 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 		interpMenu.addItem(0x5012, "Chante at end", true, option == RootPresetManager::AT_END);
 		p->addSubMenu("Transition Mode", interpMenu);
 
-		p->addItem(0x5001, "Save to " + presetName + (canBeOverride ? " (Override)" : ""), true, isOverride);
-		if(isOverride) p->addItem(0x5002, "Remove override from " + presetName, isOverride);
+		p->addItem(0x5001, "Save to current (" + presetName+")", true, isOverride);
+
+		PopupMenu saveToOtherMenu;
+		RootPresetManager::getInstance()->fillPresetMenu(saveToOtherMenu, 0x20000, param);
+		p->addSubMenu("Save to...", saveToOtherMenu);
+
+		p->addItem(0x5002, "Remove from current (" + presetName + ")", isOverride);
+		PopupMenu removeFromMenu;
+		RootPresetManager::getInstance()->fillPresetMenu(removeFromMenu, 0x30000, param);
+		p->addSubMenu("Remove from...", removeFromMenu);
 	}
 }
 
@@ -121,6 +130,14 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 	{
 		int option = result - 0x5010;
 		RootPresetManager::getInstance()->setParameterPresetOption(p, "transition", option);
+	}
+	else if (result >= 0x20000)
+	{
+		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x20000)) preset->save(p);
+	}
+	else if (result >= 0x30000)
+	{
+		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x30000)) preset->removeParameterFromDataMap(p);
 	}
 
 	return false;

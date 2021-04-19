@@ -24,7 +24,8 @@ namespace LGMLCommandIDs
 	static const int showWelcome = 0x60006;
 	static const int gotoChangelog = 0x60007;
 
-	static const int saveCurrentPreset = 0x70000;
+	static const int saveCurrentPreset = 0x61000;
+	static const int loadCurrentPreset = 0x61001;
 
 
 	static const int playPauseTransport = 0x501;
@@ -71,6 +72,11 @@ void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& 
 		result.addDefaultKeypress(KeyPress::createFromDescription("s").getKeyCode(), ModifierKeys::ctrlAltCommandModifiers);
 		break;
 
+	case LGMLCommandIDs::loadCurrentPreset:
+		result.setInfo("Load Current Preset", "", "Edit", result.readOnlyInKeyEditor);
+		result.addDefaultKeypress(KeyPress::createFromDescription("l").getKeyCode(), ModifierKeys::ctrlAltCommandModifiers);
+		break;
+
 	case LGMLCommandIDs::playPauseTransport:
 		result.setInfo("Play / Pause Transport", "", "Edit", 0);
 		result.addDefaultKeypress(KeyPress::spaceKey, ModifierKeys::noModifiers);
@@ -91,6 +97,7 @@ void MainComponent::getAllCommands(Array<CommandID>& commands) {
 	const CommandID ids[] = {
 
 		LGMLCommandIDs::saveCurrentPreset,
+		LGMLCommandIDs::loadCurrentPreset,
 		LGMLCommandIDs::playPauseTransport,
 		//LGMLCommandIDs::showAbout,
 		//LGMLCommandIDs::showWelcome,
@@ -113,8 +120,9 @@ PopupMenu MainComponent::getMenuForIndex(int topLevelMenuIndex, const String& me
 
 	if (menuName == "Edit")
 	{
-		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::saveCurrentPreset);
 		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::playPauseTransport);
+		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::saveCurrentPreset);
+		menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::loadCurrentPreset);
 	}else if (menuName == "Help")
 	{
 		//menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::showAbout);
@@ -204,6 +212,10 @@ bool MainComponent::perform(const InvocationInfo& info)
 
 	case LGMLCommandIDs::saveCurrentPreset:
 		RootPresetManager::getInstance()->saveCurrentTrigger->trigger();
+		break;
+
+	case LGMLCommandIDs::loadCurrentPreset:
+		RootPresetManager::getInstance()->loadCurrentTrigger->trigger();
 		break;
 
 		//case LGMLCommandIDs::exitGuide:

@@ -39,7 +39,7 @@ SamplerNode::SamplerNode(var params) :
 
 	clearMode = addBoolParameter("Clear Mode", "When checked, recorded or played notes are cleared depending on clearing mode", false);
 
-	clearLastMode = addEnumParameter("Clearing Lat Mode", "The way to clear when clear last is triggered");
+	clearLastMode = addEnumParameter("Clear Last Mode", "The way to clear when clear last is triggered");
 	clearLastMode->addOption("Last Played", LAST_PLAYED)->addOption("Last Recorded", LAST_RECORDED);
 
 	clearLastRecordedTrigger = addTrigger("Clear Last", "Clear Last recorded or played note");

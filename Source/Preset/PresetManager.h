@@ -30,6 +30,7 @@ public:
     ~RootPresetManager();
 
     Trigger* saveCurrentTrigger;
+    Trigger* loadCurrentTrigger;
     Preset* currentPreset;
 
     //Transition
@@ -51,6 +52,11 @@ public:
     bool isParameterPresettable(Parameter *p);
 
     void inspectableDestroyed(Inspectable* i) override;
+
+    Array<Preset*> getAllPresets(Preset * parent = nullptr);
+
+    void fillPresetMenu(PopupMenu & menu, int indexOffset, Parameter * targetParam = nullptr);
+    Preset * getPresetForMenuResult(int result);
 
     var getJSONData() override;
     void loadJSONDataManagerInternal(var data) override;

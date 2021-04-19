@@ -10,6 +10,7 @@
 
 #include "PresetUI.h"
 #include "PresetManagerUI.h"
+#include "Node/NodeManager.h"
 
 PresetUI::PresetUI(Preset* p) :
 	BaseItemUI(p, NONE, true)
@@ -35,8 +36,9 @@ PresetUI::PresetUI(Preset* p) :
 	pmui->resized();
 	updateManagerBounds();
 
+	highlightLinkedInspectablesOnOver = false;
 
-
+	setDisableDefaultMouseEvents(true);
 	bgColor = item->color->getColor();
 }
 
@@ -52,6 +54,18 @@ void PresetUI::paintOverChildren(Graphics& g)
 		g.setColour(GREEN_COLOR);
 		g.drawRoundedRectangle(getLocalBounds().reduced(2).toFloat(), 2, 1);
 	}
+}
+
+void PresetUI::mouseEnter(const MouseEvent& e)
+{
+	BaseItemUI::mouseEnter(e);
+	if (e.eventComponent == this) inspectable->highlightLinkedInspectables(true);
+}
+
+void PresetUI::mouseExit(const MouseEvent& e)
+{
+	BaseItemUI::mouseExit(e);
+	if (e.eventComponent == this) inspectable->highlightLinkedInspectables(false);
 }
 
 void PresetUI::mouseDown(const MouseEvent& e)
@@ -139,4 +153,73 @@ void PresetUI::buttonClicked(Button* b)
 	{
 		pmui->manager->addItem();
 	}
+}
+
+
+PresetEditor::PresetEditor(Preset* preset, bool isRoot) :
+	BaseItemEditor(preset, isRoot),
+	preset(preset),
+	valuesCC("Values")
+{
+	HashMap<WeakReference<Parameter>, var>::Iterator it(preset->dataMap);
+	while (it.next())
+	{
+		Parameter* op = it.getKey();
+		if(op == nullptr) continue;
+		Parameter* p = ControllableFactory::createParameterFrom(it.getKey().get(), false, true);
+		String s = op->niceName;
+		ControllableContainer* pc = op->parentContainer;
+		while(pc != nullptr && pc != RootNodeManager::getInstance())
+		{
+			if (dynamic_cast<NodeManager*>(pc))
+			{
+				pc = pc->parentContainer;
+				continue;
+			}
+
+			s = pc->niceName + ">" + s;
+			pc = pc->parentContainer;
+		}
+
+		p->setNiceName(s);
+		p->addAsyncParameterListener(this);
+		paramMap.set(p, op);
+		valuesCC.addParameter(p);
+	}
+
+	valuesCC.sortControllables();
+
+	resetAndBuild();
+}
+
+PresetEditor::~PresetEditor()
+{
+}
+
+void PresetEditor::resetAndBuild()
+{
+	BaseItemEditor::resetAndBuild();
+	GenericControllableContainerEditor * e = (GenericControllableContainerEditor *)addEditorUI(&valuesCC, true);
+	for (auto& ce : e->childEditors)
+	{
+		if (ControllableEditor* cce = dynamic_cast<ControllableEditor*>(ce)) cce->minLabelWidth = 250;
+	}
+}
+
+void PresetEditor::buildValuesCC()
+{
+
+}
+
+void PresetEditor::newMessage(const Parameter::ParameterEvent& e)
+{
+	if (e.type == Parameter::ParameterEvent::VALUE_CHANGED)
+	{
+		preset->addParameterToDataMap(paramMap[e.parameter], e.parameter->value);
+	}
+}
+
+void PresetEditor::resizedInternalContent(Rectangle<int>& r)
+{
+	BaseItemEditor::resizedInternalContent(r);
 }

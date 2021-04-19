@@ -28,7 +28,9 @@ public:
     std::unique_ptr<TriggerButtonUI> loadUI;
 
     void paintOverChildren(Graphics& g) override;
-
+    
+    void mouseEnter(const MouseEvent& e) override;
+    void mouseExit(const MouseEvent& e) override;
     void mouseDown(const MouseEvent& e) override;
     void addContextMenuItems(PopupMenu &p) override;
     void handleContextMenuResult(int result) override;
@@ -46,4 +48,26 @@ public:
     void controllableFeedbackUpdateInternal(Controllable * c) override;
 
     void buttonClicked(Button * b) override;
+};
+
+
+class PresetEditor :
+    public BaseItemEditor,
+    public Parameter::AsyncListener
+{
+public:
+    PresetEditor(Preset* preset, bool isRoot);
+    ~PresetEditor();
+
+    Preset* preset;
+
+    HashMap<Parameter*, Parameter*> paramMap;
+    ControllableContainer valuesCC;
+    
+    void resetAndBuild() override;
+    void buildValuesCC();
+
+    void newMessage(const Parameter::ParameterEvent& e) override;
+    
+    void resizedInternalContent(Rectangle<int> &r) override;
 };

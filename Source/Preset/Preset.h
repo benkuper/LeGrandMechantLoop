@@ -52,6 +52,7 @@ public:
     void removeAddressFromDataMap(String address);
 
     bool isMain(); //check if it's not an override
+    bool hasPresetParam(Parameter* p);
 
     void onContainerTriggerTriggered(Trigger* t) override;
 
@@ -65,6 +66,8 @@ public:
     void childStructureChanged(ControllableContainer* cc) override;
 
     Array<Preset*> getPresetChain();
+
+    InspectableEditor* getEditor(bool isRoot) override;
 
     String getTypeString() const override { return "Preset"; }
 };

@@ -10,6 +10,7 @@
 
 #include "Preset.h"
 #include "PresetManager.h"
+#include "ui/PresetUI.h"
 
 Preset::Preset(var params) :
 	BaseItem("Preset", false)
@@ -30,6 +31,8 @@ Preset::Preset(var params) :
 	listUISize->isSavable = false;
 
 	editorIsCollapsed = true;
+
+	highlightLinkedInspectableOnSelect = true;
 
 	Engine::mainEngine->addControllableContainerListener(this);
 }
@@ -170,6 +173,7 @@ void Preset::addParameterToDataMap(Parameter* p, var forceValue)
 	if (!isMain()) overridenControllables.addIfNotAlreadyThere(add);
 
 	p->addControllableListener(this);
+	registerLinkedInspectable(p);
 }
 
 void Preset::updateParameterAddress(Parameter* p)
@@ -193,6 +197,7 @@ void Preset::removeParameterFromDataMap(Parameter* p)
 	dataMap.remove(p);
 	paramGhostAddressMap.remove(p);
 	p->removeControllableListener(this);
+	unregisterLinkedInspectable(p);
 	addressMap.remove(add);
 	lostParamAddresses.removeAllInstancesOf(add);
 	if (!isMain()) overridenControllables.removeAllInstancesOf(add);
@@ -214,6 +219,11 @@ void Preset::removeAddressFromDataMap(String address)
 bool Preset::isMain()
 {
 	return parentContainer == RootPresetManager::getInstance();
+}
+
+bool Preset::hasPresetParam(Parameter* p)
+{
+	return dataMap.contains(p);
 }
 
 void Preset::onContainerTriggerTriggered(Trigger* t)
@@ -298,4 +308,9 @@ Array<Preset*> Preset::getPresetChain()
 	}
 
 	return result;
+}
+
+InspectableEditor* Preset::getEditor(bool isRoot)
+{
+	return new PresetEditor(this, isRoot);
 }

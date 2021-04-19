@@ -30,6 +30,7 @@ RootPresetManager::RootPresetManager() :
 	transition("Transition Curve")
 {
 	saveCurrentTrigger = addTrigger("Save Current", "Save state to current preset");
+	loadCurrentTrigger = addTrigger("Load Current", "Load state to current preset");
 	transitionTime = addFloatParameter("Transition Time", "Time to transition.", 0, 0);
 	directTransitionMode = addEnumParameter("Direct Transition Mode", "For Boolean, String, Enum and other non transitionnable parameters.");
 	directTransitionMode->addOption("Change at start", AT_START)->addOption("Change at end", AT_END);
@@ -76,7 +77,11 @@ void RootPresetManager::onContainerTriggerTriggered(Trigger* t)
 {
 	if (t == saveCurrentTrigger)
 	{
-		if (currentPreset != nullptr) currentPreset->save();
+		if (currentPreset != nullptr) currentPreset->saveTrigger->trigger();
+	}
+	else if (t == loadCurrentTrigger)
+	{
+		if (currentPreset != nullptr) currentPreset->loadTrigger->trigger();
 	}
 }
 
@@ -113,6 +118,30 @@ bool RootPresetManager::isParameterPresettable(Parameter* p)
 void RootPresetManager::inspectableDestroyed(Inspectable* i)
 {
 	if (i == currentPreset) setCurrentPreset(nullptr);
+}
+
+Array<Preset*> RootPresetManager::getAllPresets(Preset * parent)
+{
+	PresetManager* pm = parent == nullptr ? RootPresetManager::getInstance() : parent->subPresets.get();
+	Array<Preset*> result;
+	if(parent != nullptr) result.add(parent);
+	for (auto& sp : pm->items) result.addArray(getAllPresets(sp));
+
+	return result;
+}
+
+
+void RootPresetManager::fillPresetMenu(PopupMenu& menu, int indexOffset, Parameter* targetParam)
+{
+	Array<Preset*> presets = getAllPresets();
+	int index = indexOffset;
+	for (auto& p : presets) menu.addItem(index++, p->niceName, true, p->hasPresetParam(targetParam));
+}
+
+Preset * RootPresetManager::getPresetForMenuResult(int result)
+{
+	Array<Preset*> presets = getAllPresets();
+	return presets[result];
 }
 
 var RootPresetManager::getJSONData()
