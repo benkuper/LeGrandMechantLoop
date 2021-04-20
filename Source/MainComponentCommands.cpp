@@ -69,12 +69,12 @@ void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& 
 
 	case LGMLCommandIDs::saveCurrentPreset:
 		result.setInfo("Save Current Preset", "", "Edit", result.readOnlyInKeyEditor);
-		result.addDefaultKeypress(KeyPress::createFromDescription("s").getKeyCode(), ModifierKeys::ctrlAltCommandModifiers);
+		result.addDefaultKeypress(KeyPress::createFromDescription("s").getKeyCode(), ModifierKeys::commandModifier | ModifierKeys::altModifier);
 		break;
 
 	case LGMLCommandIDs::loadCurrentPreset:
 		result.setInfo("Load Current Preset", "", "Edit", result.readOnlyInKeyEditor);
-		result.addDefaultKeypress(KeyPress::createFromDescription("l").getKeyCode(), ModifierKeys::ctrlAltCommandModifiers);
+		result.addDefaultKeypress(KeyPress::createFromDescription("l").getKeyCode(), ModifierKeys::commandModifier | ModifierKeys::altModifier);
 		break;
 
 	case LGMLCommandIDs::playPauseTransport:
