@@ -163,8 +163,8 @@ void VSTNode::setIOFromVST()
 	}
 	else
 	{
-		setAudioInputs(0);// vst->getTotalNumInputChannels());
-		setAudioOutputs(0);// vst->getTotalNumOutputChannels());
+		setAudioInputs(2);//2 for basic setup without having to put a vst vst->getTotalNumInputChannels());
+		setAudioOutputs(2);//2 for basic setup without having to put a vst// vst->getTotalNumOutputChannels());
 		setMIDIIO(false, false);
 	}
 	
@@ -385,14 +385,7 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, bool bypassed)
 
 		if (!bypassed)
 		{
-			if (vst->getTotalNumInputChannels() != buffer.getNumChannels())
-			{
-				LOGWARNING("Num channels different with VST !");
-			}
-			else
-			{
-				vst->processBlock(buffer, inMidiBuffer);
-			}
+			vst->processBlock(buffer, inMidiBuffer);
 		}
 
 		if (vst->producesMidi())
