@@ -319,7 +319,6 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		}
 	}
 
-	//float rms = 0;
 	connectionsActivityLevels.fill(0);
 	int numOutConnections = outAudioConnections.size();
 
