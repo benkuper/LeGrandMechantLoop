@@ -93,6 +93,7 @@ void RootPresetManager::toggleParameterPresettable(Parameter* p)
 	{
 		p->customData = var(new DynamicObject());
 		p->customData.getDynamicObject()->setProperty("presettable", true);
+		p->isOverriden = true;
 	}
 }
 

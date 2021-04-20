@@ -166,7 +166,8 @@ PresetEditor::PresetEditor(Preset* preset, bool isRoot) :
 	{
 		Parameter* op = it.getKey();
 		if(op == nullptr) continue;
-		Parameter* p = ControllableFactory::createParameterFrom(it.getKey().get(), false, true);
+		Parameter* p = ControllableFactory::createParameterFrom(it.getKey().get(), false, false);
+		p->setValue(it.getValue());
 		String s = op->niceName;
 		ControllableContainer* pc = op->parentContainer;
 		while(pc != nullptr && pc != RootNodeManager::getInstance())

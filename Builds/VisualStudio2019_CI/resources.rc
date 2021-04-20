@@ -9,16 +9,16 @@
 #include <windows.h>
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION  1,0,0b46,0
+FILEVERSION  1,0,0b47,0
 BEGIN
   BLOCK "StringFileInfo"
   BEGIN
     BLOCK "040904E4"
     BEGIN
       VALUE "FileDescription",  "LGML\0"
-      VALUE "FileVersion",  "1.0.0b46\0"
+      VALUE "FileVersion",  "1.0.0b47\0"
       VALUE "ProductName",  "LGML\0"
-      VALUE "ProductVersion",  "1.0.0b46\0"
+      VALUE "ProductVersion",  "1.0.0b47\0"
     END
   END
 
