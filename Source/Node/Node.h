@@ -63,7 +63,8 @@ public:
     ControllableContainer viewCC;
     BoolParameter* showOutControl;
 
-    bool wasEnabled; //anti-click on processBlcok
+    const int anticlickBlocks = 10; //number of blocks to do the transition
+    int bypassAntiClickCount; //anti-click on processBlock
 
     virtual void init(AudioProcessorGraph* graph);
     virtual void initInternal() {}

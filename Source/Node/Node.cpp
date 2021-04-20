@@ -26,7 +26,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	numAudioOutputs(nullptr),
 	viewCC("View"),
 	showOutControl(nullptr),
-	wasEnabled(true),
+	bypassAntiClickCount(anticlickBlocks),
 	nodeNotifier(5)
 {
 	processor = new NodeAudioProcessor(this);
@@ -91,10 +91,10 @@ void Node::init(AudioProcessorGraph* _graph)
 
 	initInternal();
 
-	if (numAudioInputs != nullptr) autoSetNumAudioInputs();
+	if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
 	else updateAudioInputs(false);
 
-	if (numAudioOutputs != nullptr) autoSetNumAudioOutputs();
+	if (numAudioOutputs != nullptr && numAudioInputs->enabled) autoSetNumAudioOutputs();
 	else updateAudioOutputs(false);
 
 	updatePlayConfig();
@@ -113,11 +113,11 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 	}
 	else if (p == numAudioInputs)
 	{
-		autoSetNumAudioInputs();
+		if(numAudioInputs->enabled) autoSetNumAudioInputs();
 	}
 	else if (p == numAudioOutputs)
 	{
-		autoSetNumAudioOutputs();
+		if (numAudioOutputs->enabled) autoSetNumAudioOutputs();
 	}
 }
 
@@ -284,7 +284,8 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	}
 
 	bool isEnabled = enabled->boolValue();
-	if (isEnabled == wasEnabled)
+	bool antiClickFinished = bypassAntiClickCount == (isEnabled ? anticlickBlocks : 0);
+	if (antiClickFinished)
 	{
 		if (isEnabled)
 		{
@@ -299,18 +300,23 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	}
 	else
 	{
-		AudioSampleBuffer b1(buffer);
-		AudioSampleBuffer b2(buffer);
+		AudioSampleBuffer b1;
+		b1.makeCopyOf(buffer);
+		AudioSampleBuffer b2;
+		b2.makeCopyOf(buffer);
 		processBlockInternal(b1, midiMessages);
 		processBlockBypassed(b2, inMidiBuffer);
 		buffer.clear();
-		int val = wasEnabled ? 1 : 0;
+
+		float curVal = bypassAntiClickCount * 1.0f/ anticlickBlocks;
+		bypassAntiClickCount += isEnabled ? 1 : -1;
+		float nextVal = bypassAntiClickCount *1.0f/ anticlickBlocks;
+
 		for (int i = 0; i < buffer.getNumChannels(); i++)
 		{
-			buffer.addFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), val, 1 - val);
-			buffer.addFromWithRamp(i, 0, b2.getReadPointer(i), buffer.getNumSamples(), 1 - val, val);
+			buffer.addFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), curVal, nextVal);
+			buffer.addFromWithRamp(i, 0, b2.getReadPointer(i), buffer.getNumSamples(), 1-curVal, 1-nextVal);
 		}
-		wasEnabled = isEnabled;
 	}
 
 	//float rms = 0;

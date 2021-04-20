@@ -247,7 +247,6 @@ void VSTNode::updatePlayConfigInternal()
 			vst->prepareToPlay(processor->getSampleRate(), processor->getBlockSize());
 
 		}
-		
 	}
 }
 
@@ -384,7 +383,17 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, bool bypassed)
 			midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
 		}
 
-		if(!bypassed) vst->processBlock(buffer, inMidiBuffer);
+		if (!bypassed)
+		{
+			if (vst->getTotalNumInputChannels() != buffer.getNumChannels())
+			{
+				LOGWARNING("Num channels different with VST !");
+			}
+			else
+			{
+				vst->processBlock(buffer, inMidiBuffer);
+			}
+		}
 
 		if (vst->producesMidi())
 		{

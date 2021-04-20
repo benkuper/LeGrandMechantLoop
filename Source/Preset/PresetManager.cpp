@@ -32,6 +32,8 @@ RootPresetManager::RootPresetManager() :
 	saveCurrentTrigger = addTrigger("Save Current", "Save state to current preset");
 	loadCurrentTrigger = addTrigger("Load Current", "Load state to current preset");
 	transitionTime = addFloatParameter("Transition Time", "Time to transition.", 0, 0);
+	transitionTime->defaultUI = FloatParameter::TIME;
+
 	directTransitionMode = addEnumParameter("Direct Transition Mode", "For Boolean, String, Enum and other non transitionnable parameters.");
 	directTransitionMode->addOption("Change at start", AT_START)->addOption("Change at end", AT_END);
 	transition.addKey(0, 0);
