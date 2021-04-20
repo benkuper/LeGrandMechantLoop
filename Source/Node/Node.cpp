@@ -288,13 +288,13 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	{
 		if (isEnabled)
 		{
-			processBlockBypassed(buffer, midiMessages);
-			if (outControl != nullptr) outControl->updateRMS(buffer);
+			processBlockInternal(buffer, inMidiBuffer);
+			if (outControl != nullptr) outControl->applyGain(buffer); 
 		}
 		else
 		{
-			processBlockInternal(buffer, inMidiBuffer);
-			if (outControl != nullptr) outControl->applyGain(buffer);
+			processBlockBypassed(buffer, midiMessages);
+			if (outControl != nullptr) outControl->updateRMS(buffer);
 		}
 	}
 	else
