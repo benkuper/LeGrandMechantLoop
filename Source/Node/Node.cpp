@@ -26,6 +26,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	numAudioOutputs(nullptr),
 	viewCC("View"),
 	showOutControl(nullptr),
+	wasEnabled(true),
 	nodeNotifier(5)
 {
 	processor = new NodeAudioProcessor(this);
@@ -259,10 +260,8 @@ void Node::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)
 }
 
 
-
 void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-
 	if (processor->isSuspended())
 	{
 		LOGWARNING("Processor should be suspended, should not be here...");
@@ -284,15 +283,34 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		return;
 	}
 
-	if (!enabled->boolValue())
+	bool isEnabled = enabled->boolValue();
+	if (isEnabled == wasEnabled)
 	{
-		processBlockBypassed(buffer, midiMessages);
-		if (outControl != nullptr) outControl->updateRMS(buffer);
+		if (isEnabled)
+		{
+			processBlockBypassed(buffer, midiMessages);
+			if (outControl != nullptr) outControl->updateRMS(buffer);
+		}
+		else
+		{
+			processBlockInternal(buffer, inMidiBuffer);
+			if (outControl != nullptr) outControl->applyGain(buffer);
+		}
 	}
 	else
 	{
-		processBlockInternal(buffer, inMidiBuffer);
-		if (outControl != nullptr) outControl->applyGain(buffer);
+		AudioSampleBuffer b1(buffer);
+		AudioSampleBuffer b2(buffer);
+		processBlockInternal(b1, midiMessages);
+		processBlockBypassed(b2, inMidiBuffer);
+		buffer.clear();
+		int val = wasEnabled ? 1 : 0;
+		for (int i = 0; i < buffer.getNumChannels(); i++)
+		{
+			buffer.addFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), val, 1 - val);
+			buffer.addFromWithRamp(i, 0, b2.getReadPointer(i), buffer.getNumSamples(), 1 - val, val);
+		}
+		wasEnabled = isEnabled;
 	}
 
 	//float rms = 0;

@@ -63,6 +63,8 @@ public:
     ControllableContainer viewCC;
     BoolParameter* showOutControl;
 
+    bool wasEnabled; //anti-click on processBlcok
+
     virtual void init(AudioProcessorGraph* graph);
     virtual void initInternal() {}
 
