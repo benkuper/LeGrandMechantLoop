@@ -14,8 +14,6 @@
 MixerNode::MixerNode(var params) :
 	Node(getTypeString(), params, true, true, true, true)
 {
-	saveAndLoadRecursiveData = true;
-
 	showOutputGains = viewCC.addBoolParameter("Show Outputs Gain", "Show Output Gain", true);
 	showOutputRMS = viewCC.addBoolParameter("Show Outputs RMS", "Show Output RMS", true);
 	showOutputActives = viewCC.addBoolParameter("Show Outputs Active", "Show Output Active", true);
@@ -113,11 +111,35 @@ void MixerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& mid
 	}
 }
 
+var MixerNode::getJSONData()
+{
+	var data = Node::getJSONData();
+	var inData;
+	var outData;
+	for (auto& il : inputLines) inData.append(il->getJSONData());
+	for (auto& o : mainOuts) outData.append(o->getJSONData());
+	data.getDynamicObject()->setProperty("items", inData);
+	data.getDynamicObject()->setProperty("mainOuts", outData);
+	return data;
+}
+
+void MixerNode::loadJSONDataItemInternal(var data)
+{
+	Node::loadJSONDataItemInternal(data);
+	autoSetNumAudioOutputs();
+	autoSetNumAudioInputs();
+
+	var inData = data.getProperty("items", var());
+	var outData = data.getProperty("mainOuts", var());
+	for (int i = 0; i < inData.size() && i < inputLines.size(); i++) inputLines[i]->loadJSONData(inData[i]);
+	for (int i = 0; i < outData.size() && i < mainOuts.size(); i++) mainOuts[i]->loadJSONData(outData[i]);
+
+	saveAndLoadRecursiveData = false; //tmp fix force here because previous versions had "containers" property which would force recursiveSave to true in CC::loadJSONData
+}
+
 void MixerNode::afterLoadJSONDataInternal()
 {
-	Node::afterLoadJSONDataInternal();
-	autoSetNumAudioInputs();
-	autoSetNumAudioOutputs();
+	
 }
 
 BaseNodeViewUI* MixerNode::createViewUI()
@@ -143,6 +165,7 @@ InputLineCC::InputLineCC(int index) :
 	saveAndLoadRecursiveData = true;
 	exclusiveIndex = addIntParameter("Index", "Exclusive Index", 1, 1, 1, false);
 	exclusiveIndex->canBeDisabledByUser = true;
+	exclusiveIndex->forceSaveValue = true;
 }
 
 InputLineCC::~InputLineCC()
@@ -169,7 +192,7 @@ void InputLineCC::onControllableFeedbackUpdate(ControllableContainer* cc, Contro
 			{
 				if (exclusiveIndex->enabled && mixerItems.indexOf(mi) != exclusiveIndex->intValue() - 1)
 				{
-					exclusiveIndex->setValue(mixerItems.indexOf(mi)+1);
+					if(!isCurrentlyLoadingData) exclusiveIndex->setValue(mixerItems.indexOf(mi)+1);
 				}
 			}
 		}
@@ -183,7 +206,8 @@ void InputLineCC::updateExclusiveOutput()
 	int index = jlimit(0, mixerItems.size(), exclusiveIndex->intValue() - 1);
 	
 	MixerItem* item = mixerItems[index];
-	
+	if (item == nullptr) return;
+
 	item->active->setValue(true); 
 	
 	for (auto& mi : mixerItems)
