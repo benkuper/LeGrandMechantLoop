@@ -48,6 +48,7 @@ void AudioLooperTrack::clearTrack()
 	if (antiClickFadeBeforeClear)
 	{
 		LooperTrack::clearTrack();
+		
 	}
 	else
 	{
@@ -57,12 +58,10 @@ void AudioLooperTrack::clearTrack()
 
 void AudioLooperTrack::startRecordingInternal()
 {
-	int recNumSamples = looper->processor->getSampleRate() * 60; // 1 min rec samples
-
-	updateBufferSize(recNumSamples);
-
-	clearBuffer(false);
 	antiClickFadeBeforeClear = false;
+
+	int recNumSamples = looper->processor->getSampleRate() * 60; // 1 min rec samples
+	updateBufferSize(recNumSamples);
 
 	//Store a snapshot of the ring buffer that will be faded at the end of the recorded buffer
 	int fadeNumSamples = audioLooper->getFadeNumSamples();
@@ -133,10 +132,17 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		&& looper->firstRecVolumeThreshold->enabled)
 	{
 		float mag = inputBuffer.getMagnitude(0, blockSize);
-		if (mag >= looper->firstRecVolumeThreshold->floatValue()) startRecording();
+		if (mag >= looper->firstRecVolumeThreshold->floatValue())
+		{
+			startRecording();
+			return;
+		}
 	}
 
-	if (buffer.getNumSamples() == 0) return;
+	if (buffer.getNumSamples() == 0)
+	{
+		return;
+	}
 
 	if (isRecording(false))
 	{
@@ -183,19 +189,18 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 	{
 		vol = 0;
 	}
-	{
-		if (firstPlayAfterStop || s == WILL_STOP)
-		{
-			int fadeSamples = looper->playStopFadeMS->intValue() * blockSize;
-			if (firstPlayAfterStop || WILL_STOP)
-			{
-				if (curReadSample < fadeSamples) vol *= curReadSample * 1.0 / fadeSamples;
-			}
 
-			if (s == WILL_STOP)
-			{
-				if (curReadSample > bufferNumSamples - fadeSamples) vol *= (bufferNumSamples - curReadSample) * 1.0 / fadeSamples;
-			}
+	if (firstPlayAfterStop || s == WILL_STOP)
+	{
+		int fadeSamples = looper->playStopFadeMS->intValue() * blockSize;
+		if (firstPlayAfterStop || WILL_STOP)
+		{
+			if (curReadSample < fadeSamples) vol *= curReadSample * 1.0 / fadeSamples;
+		}
+
+		if (s == WILL_STOP)
+		{
+			if (curReadSample > bufferNumSamples - fadeSamples) vol *= (bufferNumSamples - curReadSample) * 1.0 / fadeSamples;
 		}
 	}
 
@@ -233,9 +238,13 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 	prevGain = vol;
 
+	
+
 	if (antiClickFadeBeforeClear)
 	{
 		clearTrack();
 		antiClickFadeBeforeClear = false;
 	}
+
+
 }

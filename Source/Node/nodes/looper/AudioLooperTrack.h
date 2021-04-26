@@ -28,6 +28,7 @@ public:
     AudioBuffer<float> preRecBuffer; //a snapshot of the looper's ringbuffer just before recording. This allows for delay adjustement and nice fades for the end of the loop
     
     bool antiClickFadeBeforeClear;
+    bool recordOnNextSample;
 
     void setNumChannels(int num);
     void updateBufferSize(int newSize);
