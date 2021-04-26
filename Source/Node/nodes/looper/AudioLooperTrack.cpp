@@ -62,6 +62,7 @@ void AudioLooperTrack::startRecordingInternal()
 	updateBufferSize(recNumSamples);
 
 	clearBuffer(false);
+	antiClickFadeBeforeClear = false;
 
 	//Store a snapshot of the ring buffer that will be faded at the end of the recorded buffer
 	int fadeNumSamples = audioLooper->getFadeNumSamples();
