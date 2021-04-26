@@ -400,8 +400,8 @@ var LooperNode::getJSONData()
 void LooperNode::loadJSONDataItemInternal(var data)
 {
 	Node::loadJSONDataItemInternal(data);
-	trackParamsCC.loadJSONData(trackParamsCC.shortName, var());
-	recordCC.loadJSONData(recordCC.shortName, var());
+	trackParamsCC.loadJSONData(data.getProperty(trackParamsCC.shortName, var()));
+	recordCC.loadJSONData(data.getProperty(recordCC.shortName, var()));
 	
 	updateLooperTracks();
 
