@@ -57,6 +57,14 @@ Transport::Transport() :
 	quantization = addEnumParameter("Quantization", "Default quantization for nodes.");
 	quantization->addOption("Bar", BAR)->addOption("Beat", BEAT)->addOption("Free", FREE);
 
+	recQuantization = addEnumParameter("Rec Quantization Mode", "Quantization mode when setting tempo on rec");
+	recQuantization->addOption("Auto", REC_AUTO)->addOption("Bar", REC_BAR)->addOption("Beat", REC_BEAT);
+
+	recQuantizBPMRange = addPoint2DParameter("Auto Quantiz BPM Range","Range to auto setting tempo on rec");
+	recQuantizBPMRange->setBounds(20, 20, 500, 500);
+	recQuantizBPMRange->setPoint(50, 190);
+	recQuantizCount = addIntParameter("Manual Quantiz Count", "", 1, 1, 100, false);
+
 	AudioManager::getInstance()->am.addAudioCallback(this);
 
 }
@@ -90,6 +98,7 @@ void Transport::play(bool startTempoSet, bool playFromStart)
 		timeInSamples = 0;
 
 		isCurrentlyPlaying->setValue(true);
+		transportListeners.call(&TransportListener::playStateChanged, isCurrentlyPlaying->boolValue(), playFromStart);
 	}
 	else setTempoSampleCount = 0;
 }
@@ -110,10 +119,47 @@ void Transport::stop()
 void Transport::finishSetTempo(bool startPlaying)
 {
 	if (blockSize == 0) return;
+	
 	isSettingTempo = false;
-	int rawSamplesPerBeat = floor(setTempoSampleCount / beatsPerBar->intValue());
+	
+	RecQuantization rq = recQuantization->getValueDataAsEnum<RecQuantization>();
+	int targetNumBeats = 0;
+	if (rq == REC_AUTO)
+	{
+		targetNumBeats = beatsPerBar->intValue();
+		int targetRawSamplesPerBeat = floor(setTempoSampleCount / targetNumBeats);
+		float targetSamplesPerBeat = targetRawSamplesPerBeat - targetRawSamplesPerBeat % blockSize;
+		float expectedBPM = 60.0 / getTimeForSamples(targetSamplesPerBeat);
+
+		if (expectedBPM < recQuantizBPMRange->x)
+		{
+			while (expectedBPM < recQuantizBPMRange->x)
+			{
+				targetNumBeats *= 2;
+				expectedBPM *= 2;
+			}
+		}
+		else if (expectedBPM > recQuantizBPMRange->y)
+		{
+			targetNumBeats /= beatsPerBar->intValue();
+			expectedBPM /= beatsPerBar->intValue();
+
+			if (expectedBPM < recQuantizBPMRange->x)
+			{
+				targetNumBeats *= 2;
+				expectedBPM *= 2;
+			}
+		}
+	}
+	else if (rq == REC_BAR || rq == REC_BEAT)
+	{
+		targetNumBeats = recQuantizCount->intValue() * (rq == REC_BAR ? beatsPerBar->intValue() : 1);
+	}
+	
+	int rawSamplesPerBeat = floor(setTempoSampleCount / targetNumBeats);
 	numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
-	bpm->setValue(60.0 / getTimeForSamples(numSamplesPerBeat));
+	float targetBPM = 60.0 / getTimeForSamples(numSamplesPerBeat);
+	bpm->setValue(targetBPM);
 	timeInSamples = 0;
 	
 	jassert(numSamplesPerBeat % blockSize == 0);
@@ -170,7 +216,13 @@ void Transport::onContainerParameterChanged(Parameter* p)
 {
 	if (p == isCurrentlyPlaying)
 	{
-		transportListeners.call(&TransportListener::playStateChanged, isCurrentlyPlaying->boolValue());
+		transportListeners.call(&TransportListener::playStateChanged, isCurrentlyPlaying->boolValue(), false);
+	}
+	else if (p == recQuantization)
+	{
+		RecQuantization rq = recQuantization->getValueDataAsEnum<RecQuantization>();
+		recQuantizBPMRange->setEnabled(rq == REC_AUTO);
+		recQuantizCount->setEnabled(rq != REC_AUTO);
 	}
 }
 

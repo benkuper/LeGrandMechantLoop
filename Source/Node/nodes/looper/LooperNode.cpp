@@ -15,11 +15,11 @@
 LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	Node(name, params, looperType == AUDIO, looperType == AUDIO, false, looperType == AUDIO),
 	looperType(looperType),
-    currentTrack(nullptr),
+	currentTrack(nullptr),
 	trackParamsCC("Track Parameters"),
 	recordCC("Recording"),
 	controlsCC("Controls"),
-    tracksCC("Tracks")
+	tracksCC("Tracks")
 {
 	const int defaultNumTracks = 8;
 
@@ -36,14 +36,14 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 	quantization = recordCC.addEnumParameter("Quantization", "The way to know when to stop recording. Default means getting the quantization from the Transport.\nBar/beat means it will stop the recording to fill an round number of bar/beat, even if you stop before. Free means it will stop instantly.");
 	quantization->addOption("Default", Transport::DEFAULT)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Free", Transport::FREE);
-	
+
 	freeFillMode = recordCC.addEnumParameter("Fill Mode", "In free mode, allows to fill the buffer with empty data to complete a bar or a beat.", getQuantization() == Transport::FREE);
 	freeFillMode->addOption("From Quantization", Transport::DEFAULT)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Direct", Transport::FREE);
 
 	doubleRecMode = recordCC.addEnumParameter("Double Rec Mode", "This decides what to do when hitting rec when the track is already preparing for recoring. This allow for nice behaviour such as automatically finish the record after one bar");
 	doubleRecMode->addOption("Record X bars", AUTO_STOP_BAR)->addOption("Record X beats", AUTO_STOP_BEAT)->addOption("Do nothing", NOTHING);
 	doubleRecVal = recordCC.addIntParameter("Double Rec Value", "This is the number of bar or beats to record if Double Rec Mode is set to bar or beat.", 1, 1);
-	
+
 	tmpMuteMode = recordCC.addEnumParameter("Temp Mute Mode", "This is a convenient way of muting until next bar or next beat. This is trigger by the 'Controls > Temp Mute' trigger.");
 	tmpMuteMode->addOption("Next Bar", NEXT_BAR)->addOption("Next Beat", NEXT_BEAT);
 
@@ -57,7 +57,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	fadeTimeMS = recordCC.addIntParameter("Fade Time", "Number of ms to fade between start and end of the loop", 20, 0, 2000);
 
 	recTrigger = controlsCC.addTrigger("Rec", "Record to the current track");
-	clearCurrentTrigger = controlsCC.addTrigger("Clear","Clear the current track if not empty, otherwise clear the past one");
+	clearCurrentTrigger = controlsCC.addTrigger("Clear", "Clear the current track if not empty, otherwise clear the past one");
 	playAllTrigger = controlsCC.addTrigger("Play All", "Stop all tracks");
 	playCurrentSectionTrigger = controlsCC.addTrigger("Play Current Section", "This will play tracks in current section and stop all others");
 	stopAllTrigger = controlsCC.addTrigger("Stop All", "Stop all tracks");
@@ -75,7 +75,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	showGlobalControl = viewCC.addBoolParameter("Show Global Controls", "Show Global Controls", true);
 	showTracks = viewCC.addBoolParameter("Show Tracks", "Shows the tracks in view", true);
 	showTrackRec = viewCC.addBoolParameter("Show Tracks Rec", "Show Tracks Rec Control", true);
-	showTrackStopClear= viewCC.addBoolParameter("Show Tracks Stop/Clear", "Show Tracks other controls", true);
+	showTrackStopClear = viewCC.addBoolParameter("Show Tracks Stop/Clear", "Show Tracks other controls", true);
 	showTrackActives = viewCC.addBoolParameter("Show Tracks Active", "Show Tracks Active", true);
 	showTrackGains = viewCC.addBoolParameter("Show Tracks Gain", "Show Tracks Gain", true);
 	showTrackRMS = viewCC.addBoolParameter("Show Tracks RMS", "Show Tracks RMS", true);
@@ -222,7 +222,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			((LooperTrack*)cc.get())->clearTrigger->trigger();
 		}
 
-		setCurrentTrackToFirstEmpty();
+		currentTrackIndex->setValue(1);
 		if (outControl != nullptr) outControl->resetGainAndActive();
 	}
 	else if (c == playAllTrigger)
@@ -284,7 +284,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 void LooperNode::beatChanged(bool isNewBar)
 {
 	for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->handleBeatChanged(isNewBar);
-	
+
 	TempMuteMode m = tmpMuteMode->getValueDataAsEnum<TempMuteMode>();
 	if (m == NEXT_BEAT || (m == NEXT_BAR && isNewBar))
 	{
@@ -293,8 +293,16 @@ void LooperNode::beatChanged(bool isNewBar)
 	}
 }
 
-void LooperNode::playStateChanged(bool isPlaying)
+void LooperNode::playStateChanged(bool isPlaying, bool forceRestart)
 {
+	if (isPlaying && forceRestart)
+	{
+		for (auto& cc : tracksCC.controllableContainers)
+		{
+			LooperTrack* tc = (LooperTrack*)cc.get();
+			if (tc->isPlaying(true) && tc->playQuantization != Transport::FREE) tc->startPlaying();
+		}
+	}
 	//if (!isPlaying)
 	//{
 	//	for (auto& cc : tracksCC.controllableContainers)
@@ -402,7 +410,7 @@ void LooperNode::loadJSONDataItemInternal(var data)
 	Node::loadJSONDataItemInternal(data);
 	trackParamsCC.loadJSONData(data.getProperty(trackParamsCC.shortName, var()));
 	recordCC.loadJSONData(data.getProperty(recordCC.shortName, var()));
-	
+
 	updateLooperTracks();
 
 	var tracksData = data.getProperty("tracks", var());

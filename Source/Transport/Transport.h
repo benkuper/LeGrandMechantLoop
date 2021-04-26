@@ -26,6 +26,11 @@ public:
 	enum Quantization { BAR, BEAT, FREE, DEFAULT };
 	EnumParameter* quantization;
 
+	enum RecQuantization { REC_AUTO, REC_BAR, REC_BEAT };
+	EnumParameter* recQuantization;
+	IntParameter* recQuantizCount;
+	Point2DParameter* recQuantizBPMRange;
+
 	FloatParameter* bpm;
 	IntParameter* beatsPerBar; //first part of time signature
 	IntParameter* beatUnit; //2nd part of time signature
@@ -113,7 +118,7 @@ public:
 		virtual ~TransportListener() {}
 		virtual void beatNumSamplesChanged() {}
 		virtual void beatChanged(bool isNewBar) {} //this allow for event after both bar and beat have been updated
-		virtual void playStateChanged(bool isPlaying) {}
+		virtual void playStateChanged(bool isPlaying, bool forceRestart) {}
 	};
 
 	ListenerList<TransportListener> transportListeners;

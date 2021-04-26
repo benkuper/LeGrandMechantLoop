@@ -87,7 +87,7 @@ public:
     virtual void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
     virtual void beatChanged(bool isNewBar) override;
-    virtual void playStateChanged(bool isPlaying) override;
+    virtual void playStateChanged(bool isPlaying, bool forceRestart) override;
 
     //helpers
     virtual bool hasContent(bool includeFreeTracks = true);

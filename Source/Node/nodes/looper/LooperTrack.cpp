@@ -288,6 +288,7 @@ void LooperTrack::startPlaying()
 	loopBar->setValue(0);
 	loopBeat->setValue(0);
 	loopProgression->setValue(0);
+	curSample = 0;
 
 	Transport::Quantization q = looper->getQuantization();
 	Transport::Quantization fillMode = looper->getFreeFillMode();
