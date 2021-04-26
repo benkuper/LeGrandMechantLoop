@@ -28,7 +28,7 @@ SamplerNode::SamplerNode(var params) :
 	monitor = addBoolParameter("Monitor", "Monitor input audio", true);
 
 	playMode = addEnumParameter("Play Mode", "How samples are treated");
-	playMode->addOption("Hit", HIT)->addOption("Loop", LOOP)->addOption("Hold", HOLD);
+	playMode->addOption("Hit (Loop)", HIT_LOOP)->addOption("Hit (One shot)", HIT_ONESHOT)->addOption("Peek (Continuous)", PEEK)->addOption("Keep (Hold)",KEEP);
 	midiParam = new MIDIDeviceParameter("MIDI Device", true, false);
 	ControllableContainer::addParameter(midiParam);
 
@@ -67,18 +67,22 @@ SamplerNode::SamplerNode(var params) :
 
 	for (int i = 0; i < 128; i++)
 	{
-		samplerNotes.add(new SamplerNote());
-		samplerNotes[i]->buffer.clear();
-		samplerNotes[i]->adsr.setAttackRate(attack->floatValue() * sr);
-		samplerNotes[i]->adsr.setTargetRatioA(attackCurve->floatValue());
-		samplerNotes[i]->adsr.setDecayRate(decay->floatValue() * sr);
-		samplerNotes[i]->adsr.setSustainLevel(sustain->gain);
-		samplerNotes[i]->adsr.setReleaseRate(release->floatValue() * sr);
-		samplerNotes[i]->adsr.setTargetRatioDR(releaseCurve->floatValue());
+		SamplerNote* sn = new SamplerNote();
+		sn->buffer.clear();
+		sn->adsr.setAttackRate(attack->floatValue() * sr);
+		sn->adsr.setTargetRatioA(attackCurve->floatValue());
+		sn->adsr.setDecayRate(decay->floatValue() * sr);
+		sn->adsr.setSustainLevel(sustain->gain);
+		sn->adsr.setReleaseRate(release->floatValue() * sr);
+		sn->adsr.setTargetRatioDR(releaseCurve->floatValue());
 
-		samplerNotes[i]->state = noteStatesCC.addEnumParameter(MidiMessage::getMidiNoteName(i,true, true, 3), "State for this note");
-		samplerNotes[i]->state->addOption("Empty", EMPTY)->addOption("Recording", RECORDING)->addOption("Filled", FILLED)->addOption("Playing", PLAYING);
-		samplerNotes[i]->state->setControllableFeedbackOnly(true);
+		sn->state = noteStatesCC.addEnumParameter(MidiMessage::getMidiNoteName(i,true, true, 3), "State for this note");
+		sn->state->addOption("Empty", EMPTY)->addOption("Recording", RECORDING)->addOption("Filled", FILLED)->addOption("Playing", PLAYING);
+		sn->state->setControllableFeedbackOnly(true);
+
+		sn->oneShotted = false;
+
+		samplerNotes.add(sn);
 	}
 
 
@@ -144,7 +148,10 @@ void SamplerNode::startRecording(int note)
 {
 	if (recordingNote != -1) return;
 
-	ScopedSuspender sp(processor);
+	//ScopedSuspender sp(processor);
+	
+	GenericScopedLock<SpinLock> lock(recLock);
+
 	isRecording->setValue(true);
 	recordingNote = note;
 
@@ -169,7 +176,10 @@ void SamplerNode::stopRecording()
 {
 	if (recordingNote == -1) return;
 
-	ScopedSuspender sp(processor);
+	//ScopedSuspender sp(processor);
+	
+	GenericScopedTryLock<SpinLock> lock(recLock);
+	
 	SamplerNote* samplerNote = samplerNotes[recordingNote];
 	recordedSamples = recordedSamples - (recordedSamples % processor->getBlockSize()); //fit to blockSize
 
@@ -308,7 +318,12 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 	}
 	else
 	{
-		if (pm == HIT) samplerNotes[midiNoteNumber]->playingSample = 0;
+		if (pm == HIT_LOOP || pm == HIT_ONESHOT)
+		{
+			samplerNotes[midiNoteNumber]->playingSample = 0;
+			samplerNotes[midiNoteNumber]->oneShotted = false;
+		}
+
 		samplerNotes[midiNoteNumber]->velocity = velocity;
 		samplerNotes[midiNoteNumber]->adsr.gate(1);
 		lastPlayedNote = midiNoteNumber;
@@ -370,14 +385,19 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 
 	if (isRecording->boolValue())
 	{
-		SamplerNote * samplerNote = samplerNotes[recordingNote];
+		GenericScopedTryLock<SpinLock> lock(recLock);
 
-		for (int i = 0; i < buffer.getNumChannels(); i++)
+		if (lock.isLocked())
 		{
-			samplerNote->buffer.copyFrom(i, recordedSamples, buffer, i, 0, blockSize);
-		}
+			SamplerNote* samplerNote = samplerNotes[recordingNote];
 
-		recordedSamples += blockSize;
+			for (int i = 0; i < buffer.getNumChannels(); i++)
+			{
+				samplerNote->buffer.copyFrom(i, recordedSamples, buffer, i, 0, blockSize);
+			}
+
+			recordedSamples += blockSize;
+		}
 	}
 
 	if (!monitor->boolValue()) buffer.clear();
@@ -402,7 +422,7 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 
 		if (s->adsr.getState() == CurvedADSR::env_idle)
 		{
-			if (pm == LOOP)
+			if (pm == PEEK)
 			{
 				s->playingSample += blockSize;
 				if (s->playingSample >= s->buffer.getNumSamples()) s->playingSample = 0;
@@ -410,20 +430,26 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			continue;
 		}
 
-		for (int j = 0; j < buffer.getNumChannels(); j++)
+		if (pm != HIT_ONESHOT || !s->oneShotted)
 		{
-			tmpNoteBuffer.copyFrom(j, 0, s->buffer, j, s->playingSample, blockSize);
-		}
-			
-		s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
-		for (int j = 0; j < buffer.getNumChannels(); j++)
-		{
-			buffer.addFrom(j, 0, tmpNoteBuffer, j, 0, blockSize, s->velocity);
-		}
+			for (int j = 0; j < buffer.getNumChannels(); j++)
+			{
+				tmpNoteBuffer.copyFrom(j, 0, s->buffer, j, s->playingSample, blockSize);
+			}
 
-		s->playingSample += blockSize;
-		if (s->playingSample >= s->buffer.getNumSamples()) s->playingSample = 0;
+			s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
+			for (int j = 0; j < buffer.getNumChannels(); j++)
+			{
+				buffer.addFrom(j, 0, tmpNoteBuffer, j, 0, blockSize, s->velocity);
+			}
 
+			s->playingSample += blockSize;
+			if (s->playingSample >= s->buffer.getNumSamples())
+			{
+				if (pm == HIT_ONESHOT) s->oneShotted = true;
+				s->playingSample = 0;
+			}
+		}
 	}
 
 	if (!inMidiBuffer.isEmpty())

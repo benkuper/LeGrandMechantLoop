@@ -18,7 +18,8 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 	VolumeControl(String(index + 1), false),
 	looper(looper),
 	index(index),
-	firstPlay(false),
+	firstPlayAfterRecord(false),
+	firstPlayAfterStop(false),
     curSample(0),
     bufferNumSamples(0),
     freeRecStartOffset(0),
@@ -156,7 +157,7 @@ void LooperTrack::stateChanged()
 	break;
 
 	case WILL_PLAY:
-		firstPlay = true;
+		firstPlayAfterStop = true;
 
 		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
 		{
@@ -259,6 +260,7 @@ void LooperTrack::finishRecordingAndPlay()
 
 	playQuantization = q != Transport::FREE ? q : fillMode;
 
+	firstPlayAfterRecord = true;
 	startPlaying();
 
 	finishRecordLock = false;
@@ -439,7 +441,7 @@ void LooperTrack::processTrack(int blockSize)
 			if (curSample >= bufferNumSamples)
 			{
 				curSample = 0;
-				firstPlay = false;
+				firstPlayAfterStop = false;
 			}
 
 			startReadSample = curSample;

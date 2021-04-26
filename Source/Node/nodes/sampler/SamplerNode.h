@@ -24,7 +24,7 @@ public:
     SamplerNode(var params);
     virtual ~SamplerNode();
 
-    enum PlayMode { HIT, LOOP, HOLD};
+    enum PlayMode { HIT_LOOP, HIT_ONESHOT, PEEK, KEEP };
 
     IntParameter* numChannels;
     BoolParameter* showKeyboard;
@@ -53,6 +53,8 @@ public:
 
     int viewStartKey;
 
+    SpinLock recLock;
+
     enum NoteState { EMPTY, RECORDING, FILLED, PLAYING };
     struct SamplerNote
     {
@@ -62,6 +64,7 @@ public:
         float velocity = 0;
         CurvedADSR adsr;
         AudioSampleBuffer buffer;
+        bool oneShotted;
         bool hasContent() { return buffer.getNumSamples() > 0; }
     };
 
