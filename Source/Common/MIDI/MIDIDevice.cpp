@@ -191,3 +191,9 @@ void MIDIOutputDevice::sendAfterTouch(int channel, int note, int value)
 	if (device == nullptr) return;
 	device->sendMessageNow(MidiMessage::aftertouchChange(channel, note, value));
 }
+
+void MIDIOutputDevice::sendMessage(const MidiMessage& m)
+{
+	if (device == nullptr) return;
+	device->sendMessageNow(m);
+}

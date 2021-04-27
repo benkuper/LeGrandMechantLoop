@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b54" cppLanguageStandard="17">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b55" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="ZG9FoU" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
@@ -47,6 +47,8 @@
             <FILE id="dTDnMz" name="MIDIDeviceParameterUI.h" compile="0" resource="0"
                   file="Source/Common/MIDI/ui/MIDIDeviceParameterUI.h"/>
           </GROUP>
+          <FILE id="pDhwzs" name="MIDIClock.cpp" compile="1" resource="0" file="Source/Common/MIDI/MIDIClock.cpp"/>
+          <FILE id="W7ISs5" name="MIDIClock.h" compile="0" resource="0" file="Source/Common/MIDI/MIDIClock.h"/>
           <FILE id="crLjni" name="MIDIDevice.cpp" compile="1" resource="0" file="Source/Common/MIDI/MIDIDevice.cpp"/>
           <FILE id="bCg7Dg" name="MIDIDevice.h" compile="0" resource="0" file="Source/Common/MIDI/MIDIDevice.h"/>
           <FILE id="X7dKLW" name="MIDIDeviceParameter.cpp" compile="1" resource="0"

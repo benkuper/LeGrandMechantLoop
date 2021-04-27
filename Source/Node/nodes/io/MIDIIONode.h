@@ -11,6 +11,7 @@
 #pragma once
 #include "../../Node.h"
 #include "Common/MIDI/MIDIDeviceParameter.h"
+#include "Common/MIDI/MIDIClock.h"
 
 class VSTParameterContainer;
 
@@ -22,6 +23,7 @@ public:
 	MIDIIONode(var params = var());
 	~MIDIIONode();
 
+	MIDIClock clock;
 	MIDIDeviceParameter* midiParam;
 
 	MIDIInputDevice* currentInDevice;

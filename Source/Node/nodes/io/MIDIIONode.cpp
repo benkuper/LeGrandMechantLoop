@@ -14,7 +14,8 @@
 MIDIIONode::MIDIIONode(var params) :
 	Node(getTypeString(), params, false, false, false, false),
 	currentInDevice(nullptr),
-	currentOutDevice(nullptr)
+	currentOutDevice(nullptr),
+	clock(true)
 {
 	midiParam = new MIDIDeviceParameter("MIDI Device", true, true);
 	ControllableContainer::addParameter(midiParam);
@@ -58,13 +59,16 @@ void MIDIIONode::setMIDIOutDevice(MIDIOutputDevice* d)
 	if (currentOutDevice != nullptr)
 	{
 		currentOutDevice->close();
+		clock.setOutput(nullptr);
 	}
 	currentOutDevice = d;
 
 	if (currentOutDevice != nullptr)
 	{
 		currentOutDevice->open();
+		clock.setOutput(currentOutDevice);
 	}
+
 	setIOFromDevices();
 }
 

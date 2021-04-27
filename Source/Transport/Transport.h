@@ -96,8 +96,11 @@ public:
 	double getTimeForSamples(int samples) const;
 
 	double getCurrentTime() const;
+	double getCurrentTimeInBeats() const;
+	double getCurrentTimeInBars() const;
 	double getTimeForBar(int bar = -1) const;
 	double getTimeForBeat(int beat = -1, int bar = -1, bool relative = true) const;
+	
 	int getBarForTime(double time, bool floorResult = true) const;
 	int getBeatForTime(double time, bool relative = true, bool floorResult = true) const;
 
@@ -117,6 +120,7 @@ public:
 	public:
 		virtual ~TransportListener() {}
 		virtual void beatNumSamplesChanged() {}
+		virtual void bpmChanged() {}
 		virtual void beatChanged(bool isNewBar) {} //this allow for event after both bar and beat have been updated
 		virtual void playStateChanged(bool isPlaying, bool forceRestart) {}
 	};

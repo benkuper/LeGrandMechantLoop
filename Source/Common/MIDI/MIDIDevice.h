@@ -87,6 +87,7 @@ public:
 	void sendPitchWheel(int channel, int value);
 	void sendChannelPressure(int channel, int value);
 	void sendAfterTouch(int channel, int note, int value);
+	void sendMessage(const MidiMessage& m);
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MIDIOutputDevice)
 };

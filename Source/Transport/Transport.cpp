@@ -224,6 +224,10 @@ void Transport::onContainerParameterChanged(Parameter* p)
 		recQuantizBPMRange->setEnabled(rq == REC_AUTO);
 		recQuantizCount->setEnabled(rq != REC_AUTO);
 	}
+	else if (p == bpm)
+	{
+		transportListeners.call(&TransportListener::bpmChanged);
+	}
 }
 
 int Transport::getBarNumSamples() const
@@ -316,6 +320,16 @@ double Transport::getTimeForSamples(int samples) const
 double Transport::getCurrentTime() const
 {
 	return getTimeForSamples(timeInSamples);
+}
+
+double Transport::getCurrentTimeInBeats() const
+{
+	return getCurrentTime() / getTimeForBeat(1);
+}
+
+double Transport::getCurrentTimeInBars() const
+{
+	return getCurrentTime() / getTimeForBar(1);
 }
 
 double Transport::getTimeForBar(int bar) const
