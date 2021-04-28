@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "SpatNode.h"
-#include "ui/SpatNodeViewUI.h"
-
 SpatNode::SpatNode(var params) :
     Node(getTypeString(), params, true, true, true, true),
     fadeCurve("Fade Curve",nullptr),

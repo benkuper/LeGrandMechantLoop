@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "AudioUIHelpers.h"
-
 DecibelSliderUI::DecibelSliderUI(DecibelFloatParameter* p) :
     FloatSliderUI(p),
     decibelParam(p)

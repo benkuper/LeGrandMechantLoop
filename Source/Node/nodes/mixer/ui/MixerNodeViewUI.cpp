@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "MixerNodeViewUI.h"
-
 MixerNodeViewUI::MixerNodeViewUI(MixerNode* n) :
     NodeViewUI(n)
 {

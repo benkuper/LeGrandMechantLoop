@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "LooperTrack.h"
-
 class AudioLooperNode;
 
 class AudioLooperTrack :

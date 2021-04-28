@@ -8,11 +8,6 @@
   ==============================================================================
 */
 
-#include "LooperTrackUI.h"
-#include "Common/AudioUIHelpers.h"
-#include "../LooperNode.h"
-#include "../AudioLooperTrack.h"
-
 LooperTrackUI::LooperTrackUI(LooperTrack* t) :
     InspectableContentComponent(t),
     track(t),

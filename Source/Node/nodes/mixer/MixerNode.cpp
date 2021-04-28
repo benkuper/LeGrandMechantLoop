@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "MixerNode.h"
-#include "ui/MixerNodeViewUI.h"
-
 MixerNode::MixerNode(var params) :
 	Node(getTypeString(), params, true, true, true, true)
 {
@@ -232,8 +229,6 @@ void InputLineCC::setNumOutputs(int numOutputs)
 		addChildControllableContainer(mi, true);
 		mixerItems.add(mi);
 	}
-
-	LOG("Set num outputs in input : " << numOutputs);
 
 	exclusiveIndex->setRange(1, jmax(mixerItems.size(), 1));
 }

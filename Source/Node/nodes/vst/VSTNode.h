@@ -9,9 +9,6 @@
 */
 
 #pragma once
-#include "../../Node.h"
-#include "Engine/VSTManager.h"
-#include "Common/MIDI/MIDIDeviceParameter.h"
 
 class VSTParameterContainer;
 

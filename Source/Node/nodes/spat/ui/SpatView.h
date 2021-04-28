@@ -10,9 +10,6 @@
 
 #pragma once
 
-#include "SpatItemUI.h"
-#include "../SpatNode.h"
-
 class SpatView :
     public Component
 {

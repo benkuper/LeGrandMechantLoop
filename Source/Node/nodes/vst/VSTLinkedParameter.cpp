@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "VSTLinkedParameter.h"
-#include "ui/VSTLinkedParameterUI.h"
-
 // Parameter Link
 VSTParameterLink::VSTParameterLink(AudioProcessorParameter* vstParam, Parameter* param) :
 	vstParam(vstParam),

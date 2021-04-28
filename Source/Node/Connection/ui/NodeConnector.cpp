@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "NodeConnector.h"
-#include "../../ui//NodeViewUI.h"
-
 NodeConnector::NodeConnector(BaseNodeViewUI* nodeViewUI, bool isInput, NodeConnection::ConnectionType connectionType) :
     connectionType(connectionType),
     isInput(isInput),

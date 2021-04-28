@@ -9,9 +9,6 @@
 */
 
 #pragma once
-#include "../MixerNode.h"
-#include "../../../ui/NodeViewUI.h"
-
 
 class MixerNodeViewUI :
     public NodeViewUI<MixerNode>

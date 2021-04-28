@@ -8,12 +8,6 @@
   ==============================================================================
 */
 
-#include "VSTNode.h"
-#include "ui/VSTNodeViewUI.h"
-#include "Transport/Transport.h"
-#include "VSTLinkedParameter.h"
-#include "Node/Connection/NodeConnection.h"
-
 VSTNode::VSTNode(var params) :
 	Node(getTypeString(), params, true, true, true),
 	currentDevice(nullptr),

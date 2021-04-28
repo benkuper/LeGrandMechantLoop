@@ -11,7 +11,7 @@
 
 #include "MainComponent.h"
 #include "Transport/Transport.h"
-#include "Preset/PresetManager.h"
+#include "Preset/PresetIncludes.h"
 
 namespace LGMLCommandIDs
 {

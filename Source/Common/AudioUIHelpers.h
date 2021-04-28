@@ -9,8 +9,6 @@
 */
 
 #pragma once
-#include "JuceHeader.h"
-#include "Node/Node.h"
 
 class DecibelSliderUI :
     public FloatSliderUI

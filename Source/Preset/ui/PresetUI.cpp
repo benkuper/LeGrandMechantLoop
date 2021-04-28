@@ -8,9 +8,7 @@
   ==============================================================================
 */
 
-#include "PresetUI.h"
-#include "PresetManagerUI.h"
-#include "Node/NodeManager.h"
+#include "Node/NodeIncludes.h"
 
 PresetUI::PresetUI(Preset* p) :
 	BaseItemUI(p, NONE, true)

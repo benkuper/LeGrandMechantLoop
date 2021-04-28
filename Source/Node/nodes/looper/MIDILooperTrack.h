@@ -10,9 +10,6 @@
 
 #pragma once
 
-
-#include "LooperTrack.h"
-
 class MIDILooperNode;
 
 class MIDILooperTrack :

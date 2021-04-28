@@ -20,10 +20,6 @@
 //  1.03  2020-04-08  njr   changed float to double; large target ratio and rate resulted in exp returning 1 in calcCoef
 //
 
-#include "ADSR.h"
-#include <math.h>
-
-
 CurvedADSR::CurvedADSR(void) {
     reset();
     setAttackRate(0);

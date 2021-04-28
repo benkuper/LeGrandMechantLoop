@@ -8,10 +8,6 @@
   ==============================================================================
 */
 
-#include "AudioLooperNode.h"
-#include "AudioLooperTrack.h"
-#include "Node/Node.h"
-
 AudioLooperNode::AudioLooperNode(var params) :
     LooperNode(getTypeString(), params, AUDIO)
 {

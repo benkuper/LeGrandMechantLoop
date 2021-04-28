@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b55" cppLanguageStandard="17">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b56" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="ZG9FoU" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
@@ -22,44 +22,48 @@
       </GROUP>
       <GROUP id="{677BFD65-0317-EB0F-05B7-479459F4CC94}" name="Preset">
         <GROUP id="{6A12F0D7-C0CF-931D-33B5-D181EF0371A7}" name="ui">
-          <FILE id="Ok4Lp9" name="PresetManagerUI.cpp" compile="1" resource="0"
+          <FILE id="Ok4Lp9" name="PresetManagerUI.cpp" compile="0" resource="0"
                 file="Source/Preset/ui/PresetManagerUI.cpp"/>
           <FILE id="gxP5tI" name="PresetManagerUI.h" compile="0" resource="0"
                 file="Source/Preset/ui/PresetManagerUI.h"/>
-          <FILE id="KTFTb9" name="PresetUI.cpp" compile="1" resource="0" file="Source/Preset/ui/PresetUI.cpp"/>
+          <FILE id="KTFTb9" name="PresetUI.cpp" compile="0" resource="0" file="Source/Preset/ui/PresetUI.cpp"/>
           <FILE id="RybfUo" name="PresetUI.h" compile="0" resource="0" file="Source/Preset/ui/PresetUI.h"/>
         </GROUP>
-        <FILE id="xmuL4C" name="Preset.cpp" compile="1" resource="0" file="Source/Preset/Preset.cpp"/>
+        <FILE id="xmuL4C" name="Preset.cpp" compile="0" resource="0" file="Source/Preset/Preset.cpp"/>
         <FILE id="DFJ4cq" name="Preset.h" compile="0" resource="0" file="Source/Preset/Preset.h"/>
-        <FILE id="pX7PU5" name="PresetManager.cpp" compile="1" resource="0"
+        <FILE id="PqHoAH" name="PresetIncludes.cpp" compile="1" resource="0"
+              file="Source/Preset/PresetIncludes.cpp"/>
+        <FILE id="s0nG9c" name="PresetIncludes.h" compile="0" resource="0"
+              file="Source/Preset/PresetIncludes.h"/>
+        <FILE id="pX7PU5" name="PresetManager.cpp" compile="0" resource="0"
               file="Source/Preset/PresetManager.cpp"/>
         <FILE id="ftwen7" name="PresetManager.h" compile="0" resource="0" file="Source/Preset/PresetManager.h"/>
       </GROUP>
       <GROUP id="{C932F17D-F807-6D54-C9FE-636145A3A77A}" name="Common">
         <GROUP id="{E480E851-C0D7-5BFC-6813-470E7AF56BCA}" name="MIDI">
           <GROUP id="{828ADCCB-2C77-6F2A-EEFA-44566780C372}" name="ui">
-            <FILE id="syPyqG" name="MIDIDeviceChooser.cpp" compile="1" resource="0"
+            <FILE id="syPyqG" name="MIDIDeviceChooser.cpp" compile="0" resource="0"
                   file="Source/Common/MIDI/ui/MIDIDeviceChooser.cpp"/>
             <FILE id="zucewM" name="MIDIDeviceChooser.h" compile="0" resource="0"
                   file="Source/Common/MIDI/ui/MIDIDeviceChooser.h"/>
-            <FILE id="Z0Mkjt" name="MIDIDeviceParameterUI.cpp" compile="1" resource="0"
+            <FILE id="Z0Mkjt" name="MIDIDeviceParameterUI.cpp" compile="0" resource="0"
                   file="Source/Common/MIDI/ui/MIDIDeviceParameterUI.cpp"/>
             <FILE id="dTDnMz" name="MIDIDeviceParameterUI.h" compile="0" resource="0"
                   file="Source/Common/MIDI/ui/MIDIDeviceParameterUI.h"/>
           </GROUP>
-          <FILE id="pDhwzs" name="MIDIClock.cpp" compile="1" resource="0" file="Source/Common/MIDI/MIDIClock.cpp"/>
+          <FILE id="pDhwzs" name="MIDIClock.cpp" compile="0" resource="0" file="Source/Common/MIDI/MIDIClock.cpp"/>
           <FILE id="W7ISs5" name="MIDIClock.h" compile="0" resource="0" file="Source/Common/MIDI/MIDIClock.h"/>
-          <FILE id="crLjni" name="MIDIDevice.cpp" compile="1" resource="0" file="Source/Common/MIDI/MIDIDevice.cpp"/>
+          <FILE id="crLjni" name="MIDIDevice.cpp" compile="0" resource="0" file="Source/Common/MIDI/MIDIDevice.cpp"/>
           <FILE id="bCg7Dg" name="MIDIDevice.h" compile="0" resource="0" file="Source/Common/MIDI/MIDIDevice.h"/>
-          <FILE id="X7dKLW" name="MIDIDeviceParameter.cpp" compile="1" resource="0"
+          <FILE id="X7dKLW" name="MIDIDeviceParameter.cpp" compile="0" resource="0"
                 file="Source/Common/MIDI/MIDIDeviceParameter.cpp"/>
           <FILE id="TS2zDx" name="MIDIDeviceParameter.h" compile="0" resource="0"
                 file="Source/Common/MIDI/MIDIDeviceParameter.h"/>
-          <FILE id="qOzjrk" name="MIDIManager.cpp" compile="1" resource="0" file="Source/Common/MIDI/MIDIManager.cpp"/>
+          <FILE id="qOzjrk" name="MIDIManager.cpp" compile="0" resource="0" file="Source/Common/MIDI/MIDIManager.cpp"/>
           <FILE id="mSTg6z" name="MIDIManager.h" compile="0" resource="0" file="Source/Common/MIDI/MIDIManager.h"/>
-          <FILE id="friONJ" name="MTCReceiver.cpp" compile="1" resource="0" file="Source/Common/MIDI/MTCReceiver.cpp"/>
+          <FILE id="friONJ" name="MTCReceiver.cpp" compile="0" resource="0" file="Source/Common/MIDI/MTCReceiver.cpp"/>
           <FILE id="zRe9Dm" name="MTCReceiver.h" compile="0" resource="0" file="Source/Common/MIDI/MTCReceiver.h"/>
-          <FILE id="bp7KL0" name="MTCSender.cpp" compile="1" resource="0" file="Source/Common/MIDI/MTCSender.cpp"/>
+          <FILE id="bp7KL0" name="MTCSender.cpp" compile="0" resource="0" file="Source/Common/MIDI/MTCSender.cpp"/>
           <FILE id="nrsxOp" name="MTCSender.h" compile="0" resource="0" file="Source/Common/MIDI/MTCSender.h"/>
         </GROUP>
         <GROUP id="{467FC2F5-FC75-E052-D866-6BFDA1CAC3A5}" name="Serial">
@@ -84,27 +88,31 @@
               <FILE id="uCr6iG" name="serial.cc" compile="1" resource="0" file="Source/Common/Serial/lib/serial/serial.cc"/>
             </GROUP>
           </GROUP>
-          <FILE id="b0I7pP" name="SerialDevice.cpp" compile="1" resource="0"
+          <FILE id="b0I7pP" name="SerialDevice.cpp" compile="0" resource="0"
                 file="Source/Common/Serial/SerialDevice.cpp"/>
           <FILE id="iDCf7N" name="SerialDevice.h" compile="0" resource="0" file="Source/Common/Serial/SerialDevice.h"/>
-          <FILE id="fjaaFu" name="SerialDeviceParameter.cpp" compile="1" resource="0"
+          <FILE id="fjaaFu" name="SerialDeviceParameter.cpp" compile="0" resource="0"
                 file="Source/Common/Serial/SerialDeviceParameter.cpp"/>
           <FILE id="qWW52s" name="SerialDeviceParameter.h" compile="0" resource="0"
                 file="Source/Common/Serial/SerialDeviceParameter.h"/>
-          <FILE id="Oh3ntE" name="SerialManager.cpp" compile="1" resource="0"
+          <FILE id="Oh3ntE" name="SerialManager.cpp" compile="0" resource="0"
                 file="Source/Common/Serial/SerialManager.cpp"/>
           <FILE id="yu5loP" name="SerialManager.h" compile="0" resource="0" file="Source/Common/Serial/SerialManager.h"/>
         </GROUP>
-        <FILE id="MqEFd5" name="ADSR.cpp" compile="1" resource="0" file="Source/Common/ADSR.cpp"/>
+        <FILE id="MqEFd5" name="ADSR.cpp" compile="0" resource="0" file="Source/Common/ADSR.cpp"/>
         <FILE id="ZBvaVV" name="ADSR.h" compile="0" resource="0" file="Source/Common/ADSR.h"/>
-        <FILE id="B7OoYH" name="AudioHelpers.cpp" compile="1" resource="0"
+        <FILE id="B7OoYH" name="AudioHelpers.cpp" compile="0" resource="0"
               file="Source/Common/AudioHelpers.cpp"/>
         <FILE id="FAT7tz" name="AudioHelpers.h" compile="0" resource="0" file="Source/Common/AudioHelpers.h"/>
-        <FILE id="doeACa" name="AudioUIHelpers.cpp" compile="1" resource="0"
+        <FILE id="doeACa" name="AudioUIHelpers.cpp" compile="0" resource="0"
               file="Source/Common/AudioUIHelpers.cpp"/>
         <FILE id="HiYVvF" name="AudioUIHelpers.h" compile="0" resource="0"
               file="Source/Common/AudioUIHelpers.h"/>
-        <FILE id="nwxncy" name="ConnectionUIHelper.cpp" compile="1" resource="0"
+        <FILE id="SL1KNF" name="CommonIncludes.cpp" compile="1" resource="0"
+              file="Source/Common/CommonIncludes.cpp"/>
+        <FILE id="HAUibW" name="CommonIncludes.h" compile="0" resource="0"
+              file="Source/Common/CommonIncludes.h"/>
+        <FILE id="nwxncy" name="ConnectionUIHelper.cpp" compile="0" resource="0"
               file="Source/Common/ConnectionUIHelper.cpp"/>
         <FILE id="kRFZbn" name="ConnectionUIHelper.h" compile="0" resource="0"
               file="Source/Common/ConnectionUIHelper.h"/>
@@ -131,190 +139,176 @@
         <FILE id="OcMMtw" name="VSTManager.cpp" compile="1" resource="0" file="Source/Engine/VSTManager.cpp"/>
         <FILE id="DdZTN2" name="VSTManager.h" compile="0" resource="0" file="Source/Engine/VSTManager.h"/>
       </GROUP>
-      <GROUP id="{6C239390-C9E1-1E07-B84F-09F2B750F52B}" name="Interface">
-        <GROUP id="{CE2F1281-172B-FC62-91EF-F50D7B79D742}" name="ui">
-          <FILE id="Evlv7x" name="InterfaceManagerUI.cpp" compile="1" resource="0"
-                file="Source/Interface/ui/InterfaceManagerUI.cpp"/>
-          <FILE id="Ni49bm" name="InterfaceManagerUI.h" compile="0" resource="0"
-                file="Source/Interface/ui/InterfaceManagerUI.h"/>
-          <FILE id="W8Ngez" name="InterfaceUI.cpp" compile="1" resource="0" file="Source/Interface/ui/InterfaceUI.cpp"/>
-          <FILE id="ET3PXs" name="InterfaceUI.h" compile="0" resource="0" file="Source/Interface/ui/InterfaceUI.h"/>
-        </GROUP>
-        <FILE id="zc5wen" name="Interface.cpp" compile="1" resource="0" file="Source/Interface/Interface.cpp"/>
-        <FILE id="Ync0lQ" name="Interface.h" compile="0" resource="0" file="Source/Interface/Interface.h"/>
-        <FILE id="RodVnT" name="InterfaceManager.cpp" compile="1" resource="0"
-              file="Source/Interface/InterfaceManager.cpp"/>
-        <FILE id="ehqmv2" name="InterfaceManager.h" compile="0" resource="0"
-              file="Source/Interface/InterfaceManager.h"/>
-      </GROUP>
       <GROUP id="{9B75D4BB-9C4F-ADB5-FC5D-824BE2B8FC85}" name="Node">
+        <FILE id="ruLDC5" name="NodeIncludes.cpp" compile="1" resource="0"
+              file="Source/Node/NodeIncludes.cpp"/>
+        <FILE id="VOZYRB" name="NodeIncludes.h" compile="0" resource="0" file="Source/Node/NodeIncludes.h"/>
         <GROUP id="{4AA5F20B-83CE-7D3B-F394-E0D299D8952F}" name="Connection">
           <GROUP id="{060F13A9-D934-2E45-F469-74F428771491}" name="ui">
-            <FILE id="BhTZWm" name="NodeConnectionEditor.cpp" compile="1" resource="0"
+            <FILE id="BhTZWm" name="NodeConnectionEditor.cpp" compile="0" resource="0"
                   file="Source/Node/Connection/ui/NodeConnectionEditor.cpp"/>
             <FILE id="jWEz6r" name="NodeConnectionEditor.h" compile="0" resource="0"
                   file="Source/Node/Connection/ui/NodeConnectionEditor.h"/>
-            <FILE id="oMxCsq" name="NodeConnectionManagerViewUI.cpp" compile="1"
+            <FILE id="oMxCsq" name="NodeConnectionManagerViewUI.cpp" compile="0"
                   resource="0" file="Source/Node/Connection/ui/NodeConnectionManagerViewUI.cpp"/>
             <FILE id="Rw4OTM" name="NodeConnectionManagerViewUI.h" compile="0"
                   resource="0" file="Source/Node/Connection/ui/NodeConnectionManagerViewUI.h"/>
-            <FILE id="MjSDOq" name="NodeConnectionViewUI.cpp" compile="1" resource="0"
+            <FILE id="MjSDOq" name="NodeConnectionViewUI.cpp" compile="0" resource="0"
                   file="Source/Node/Connection/ui/NodeConnectionViewUI.cpp"/>
             <FILE id="YjwbUR" name="NodeConnectionViewUI.h" compile="0" resource="0"
                   file="Source/Node/Connection/ui/NodeConnectionViewUI.h"/>
-            <FILE id="tfDurb" name="NodeConnector.cpp" compile="1" resource="0"
+            <FILE id="tfDurb" name="NodeConnector.cpp" compile="0" resource="0"
                   file="Source/Node/Connection/ui/NodeConnector.cpp"/>
             <FILE id="xjnISq" name="NodeConnector.h" compile="0" resource="0" file="Source/Node/Connection/ui/NodeConnector.h"/>
           </GROUP>
-          <FILE id="Mk1aGJ" name="NodeConnection.cpp" compile="1" resource="0"
+          <FILE id="Mk1aGJ" name="NodeConnection.cpp" compile="0" resource="0"
                 file="Source/Node/Connection/NodeConnection.cpp"/>
           <FILE id="djAYUc" name="NodeConnection.h" compile="0" resource="0"
                 file="Source/Node/Connection/NodeConnection.h"/>
-          <FILE id="ziZEoN" name="NodeConnectionManager.cpp" compile="1" resource="0"
+          <FILE id="ziZEoN" name="NodeConnectionManager.cpp" compile="0" resource="0"
                 file="Source/Node/Connection/NodeConnectionManager.cpp"/>
           <FILE id="DJHYYX" name="NodeConnectionManager.h" compile="0" resource="0"
                 file="Source/Node/Connection/NodeConnectionManager.h"/>
         </GROUP>
         <GROUP id="{DB856208-BADE-CF87-CC8F-7A9B348E2675}" name="ui">
-          <FILE id="ODUsMW" name="NodeManagerUI.cpp" compile="1" resource="0"
+          <FILE id="ODUsMW" name="NodeManagerUI.cpp" compile="0" resource="0"
                 file="Source/Node/ui/NodeManagerUI.cpp"/>
           <FILE id="zBdLn3" name="NodeManagerUI.h" compile="0" resource="0" file="Source/Node/ui/NodeManagerUI.h"/>
-          <FILE id="TjJD7q" name="NodeManagerViewUI.cpp" compile="1" resource="0"
+          <FILE id="TjJD7q" name="NodeManagerViewUI.cpp" compile="0" resource="0"
                 file="Source/Node/ui/NodeManagerViewUI.cpp"/>
           <FILE id="YWmqoA" name="NodeManagerViewUI.h" compile="0" resource="0"
                 file="Source/Node/ui/NodeManagerViewUI.h"/>
-          <FILE id="xvUFmm" name="NodeUI.cpp" compile="1" resource="0" file="Source/Node/ui/NodeUI.cpp"/>
+          <FILE id="xvUFmm" name="NodeUI.cpp" compile="0" resource="0" file="Source/Node/ui/NodeUI.cpp"/>
           <FILE id="maodP5" name="NodeUI.h" compile="0" resource="0" file="Source/Node/ui/NodeUI.h"/>
-          <FILE id="pMwVDF" name="NodeViewUI.cpp" compile="1" resource="0" file="Source/Node/ui/NodeViewUI.cpp"/>
+          <FILE id="pMwVDF" name="NodeViewUI.cpp" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.cpp"/>
           <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
         </GROUP>
         <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
           <GROUP id="{D1430F38-6887-956D-6593-21EC64B08E54}" name="sampler">
             <GROUP id="{E455340A-4139-C227-C28B-6B955B944018}" name="ui">
-              <FILE id="Vj4PTO" name="SamplerNodeUI.cpp" compile="1" resource="0"
+              <FILE id="Vj4PTO" name="SamplerNodeUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/sampler/ui/SamplerNodeUI.cpp"/>
               <FILE id="RLUxD5" name="SamplerNodeUI.h" compile="0" resource="0" file="Source/Node/nodes/sampler/ui/SamplerNodeUI.h"/>
             </GROUP>
-            <FILE id="iPF7M7" name="SamplerNode.cpp" compile="1" resource="0" file="Source/Node/nodes/sampler/SamplerNode.cpp"/>
+            <FILE id="iPF7M7" name="SamplerNode.cpp" compile="0" resource="0" file="Source/Node/nodes/sampler/SamplerNode.cpp"/>
             <FILE id="XUKUST" name="SamplerNode.h" compile="0" resource="0" file="Source/Node/nodes/sampler/SamplerNode.h"/>
           </GROUP>
           <GROUP id="{E64011D1-E57A-B4BF-FEA2-987CB75B9AD0}" name="looper">
             <GROUP id="{D0916EDF-EA50-67D7-5292-E5B4E8C929BE}" name="ui">
-              <FILE id="L5Hqiu" name="LooperNodeViewUI.cpp" compile="1" resource="0"
+              <FILE id="L5Hqiu" name="LooperNodeViewUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/looper/ui/LooperNodeViewUI.cpp"/>
               <FILE id="sYfJne" name="LooperNodeViewUI.h" compile="0" resource="0"
                     file="Source/Node/nodes/looper/ui/LooperNodeViewUI.h"/>
-              <FILE id="ViuVt6" name="LooperTrackUI.cpp" compile="1" resource="0"
+              <FILE id="ViuVt6" name="LooperTrackUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/looper/ui/LooperTrackUI.cpp"/>
               <FILE id="oXiVXz" name="LooperTrackUI.h" compile="0" resource="0" file="Source/Node/nodes/looper/ui/LooperTrackUI.h"/>
             </GROUP>
-            <FILE id="UohpXP" name="AudioLooperNode.cpp" compile="1" resource="0"
+            <FILE id="UohpXP" name="AudioLooperNode.cpp" compile="0" resource="0"
                   file="Source/Node/nodes/looper/AudioLooperNode.cpp"/>
             <FILE id="nIz1OM" name="AudioLooperNode.h" compile="0" resource="0"
                   file="Source/Node/nodes/looper/AudioLooperNode.h"/>
-            <FILE id="Ktw4tE" name="AudioLooperTrack.cpp" compile="1" resource="0"
+            <FILE id="Ktw4tE" name="AudioLooperTrack.cpp" compile="0" resource="0"
                   file="Source/Node/nodes/looper/AudioLooperTrack.cpp"/>
             <FILE id="giB1PC" name="AudioLooperTrack.h" compile="0" resource="0"
                   file="Source/Node/nodes/looper/AudioLooperTrack.h"/>
-            <FILE id="SBqo06" name="LooperNode.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperNode.cpp"/>
+            <FILE id="SBqo06" name="LooperNode.cpp" compile="0" resource="0" file="Source/Node/nodes/looper/LooperNode.cpp"/>
             <FILE id="MI1IfJ" name="LooperNode.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperNode.h"/>
-            <FILE id="Ufc6nf" name="LooperTrack.cpp" compile="1" resource="0" file="Source/Node/nodes/looper/LooperTrack.cpp"/>
+            <FILE id="Ufc6nf" name="LooperTrack.cpp" compile="0" resource="0" file="Source/Node/nodes/looper/LooperTrack.cpp"/>
             <FILE id="lQlMOU" name="LooperTrack.h" compile="0" resource="0" file="Source/Node/nodes/looper/LooperTrack.h"/>
-            <FILE id="KYUtps" name="MIDILooperNode.cpp" compile="1" resource="0"
+            <FILE id="KYUtps" name="MIDILooperNode.cpp" compile="0" resource="0"
                   file="Source/Node/nodes/looper/MIDILooperNode.cpp"/>
             <FILE id="FWoyQ0" name="MIDILooperNode.h" compile="0" resource="0"
                   file="Source/Node/nodes/looper/MIDILooperNode.h"/>
-            <FILE id="BEmcGZ" name="MIDILooperTrack.cpp" compile="1" resource="0"
+            <FILE id="BEmcGZ" name="MIDILooperTrack.cpp" compile="0" resource="0"
                   file="Source/Node/nodes/looper/MIDILooperTrack.cpp"/>
             <FILE id="vfdaTR" name="MIDILooperTrack.h" compile="0" resource="0"
                   file="Source/Node/nodes/looper/MIDILooperTrack.h"/>
           </GROUP>
           <GROUP id="{9F78E0B0-2904-96AB-DCE3-D8F72EA41A6A}" name="router">
             <GROUP id="{424502B2-0A02-FEB5-50FF-9462F3C242BC}" name="ui">
-              <FILE id="srEvjX" name="AudioRouterNodeUI.cpp" compile="1" resource="0"
+              <FILE id="srEvjX" name="AudioRouterNodeUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/router/ui/AudioRouterNodeUI.cpp"/>
               <FILE id="DmE32Z" name="AudioRouterNodeUI.h" compile="0" resource="0"
                     file="Source/Node/nodes/router/ui/AudioRouterNodeUI.h"/>
             </GROUP>
-            <FILE id="VaZHCY" name="AudioRouterNode.cpp" compile="1" resource="0"
+            <FILE id="VaZHCY" name="AudioRouterNode.cpp" compile="0" resource="0"
                   file="Source/Node/nodes/router/AudioRouterNode.cpp"/>
             <FILE id="eUo5gS" name="AudioRouterNode.h" compile="0" resource="0"
                   file="Source/Node/nodes/router/AudioRouterNode.h"/>
           </GROUP>
           <GROUP id="{2FECFF2B-11FE-FCF4-0756-A4D02F2AD957}" name="container">
             <GROUP id="{7D02B1C3-C669-1914-7556-D5092F0626BF}" name="ui">
-              <FILE id="TLZpQN" name="ContainerNodeUI.cpp" compile="1" resource="0"
+              <FILE id="TLZpQN" name="ContainerNodeUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/container/ui/ContainerNodeUI.cpp"/>
               <FILE id="GSCNiu" name="ContainerNodeUI.h" compile="0" resource="0"
                     file="Source/Node/nodes/container/ui/ContainerNodeUI.h"/>
             </GROUP>
-            <FILE id="q0nEXU" name="ContainerNode.cpp" compile="1" resource="0"
+            <FILE id="q0nEXU" name="ContainerNode.cpp" compile="0" resource="0"
                   file="Source/Node/nodes/container/ContainerNode.cpp"/>
             <FILE id="fp1jgF" name="ContainerNode.h" compile="0" resource="0" file="Source/Node/nodes/container/ContainerNode.h"/>
           </GROUP>
           <GROUP id="{AC321AE6-FB6A-AD04-F5D5-FC5C94A342F7}" name="vst">
             <GROUP id="{680507CD-BC08-6441-0592-037DA297C999}" name="ui">
-              <FILE id="xxsSYO" name="VSTLinkedParameterUI.cpp" compile="1" resource="0"
+              <FILE id="xxsSYO" name="VSTLinkedParameterUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/vst/ui/VSTLinkedParameterUI.cpp"/>
               <FILE id="Zb4Hqk" name="VSTLinkedParameterUI.h" compile="0" resource="0"
                     file="Source/Node/nodes/vst/ui/VSTLinkedParameterUI.h"/>
-              <FILE id="Pqn9oN" name="VSTNodeViewUI.cpp" compile="1" resource="0"
+              <FILE id="Pqn9oN" name="VSTNodeViewUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/vst/ui/VSTNodeViewUI.cpp"/>
               <FILE id="FTt0Ut" name="VSTNodeViewUI.h" compile="0" resource="0" file="Source/Node/nodes/vst/ui/VSTNodeViewUI.h"/>
             </GROUP>
-            <FILE id="eRODhs" name="VSTLinkedParameter.cpp" compile="1" resource="0"
+            <FILE id="eRODhs" name="VSTLinkedParameter.cpp" compile="0" resource="0"
                   file="Source/Node/nodes/vst/VSTLinkedParameter.cpp"/>
             <FILE id="oYtG2D" name="VSTLinkedParameter.h" compile="0" resource="0"
                   file="Source/Node/nodes/vst/VSTLinkedParameter.h"/>
-            <FILE id="EQgTho" name="VSTNode.cpp" compile="1" resource="0" file="Source/Node/nodes/vst/VSTNode.cpp"/>
+            <FILE id="EQgTho" name="VSTNode.cpp" compile="0" resource="0" file="Source/Node/nodes/vst/VSTNode.cpp"/>
             <FILE id="EvuefA" name="VSTNode.h" compile="0" resource="0" file="Source/Node/nodes/vst/VSTNode.h"/>
           </GROUP>
           <GROUP id="{0581DE71-D9D5-B444-9014-51F1CF249FDF}" name="spat">
             <GROUP id="{EB28E7A0-62EE-C45B-2B17-B1139A8A2EB9}" name="ui">
-              <FILE id="FUe1vb" name="SpatItemUI.cpp" compile="1" resource="0" file="Source/Node/nodes/spat/ui/SpatItemUI.cpp"/>
+              <FILE id="FUe1vb" name="SpatItemUI.cpp" compile="0" resource="0" file="Source/Node/nodes/spat/ui/SpatItemUI.cpp"/>
               <FILE id="Rm9MNw" name="SpatItemUI.h" compile="0" resource="0" file="Source/Node/nodes/spat/ui/SpatItemUI.h"/>
-              <FILE id="OuH1qb" name="SpatNodeViewUI.cpp" compile="1" resource="0"
+              <FILE id="OuH1qb" name="SpatNodeViewUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/spat/ui/SpatNodeViewUI.cpp"/>
               <FILE id="FCsfKU" name="SpatNodeViewUI.h" compile="0" resource="0"
                     file="Source/Node/nodes/spat/ui/SpatNodeViewUI.h"/>
-              <FILE id="Dn1IQC" name="SpatView.cpp" compile="1" resource="0" file="Source/Node/nodes/spat/ui/SpatView.cpp"/>
+              <FILE id="Dn1IQC" name="SpatView.cpp" compile="0" resource="0" file="Source/Node/nodes/spat/ui/SpatView.cpp"/>
               <FILE id="mcHWuX" name="SpatView.h" compile="0" resource="0" file="Source/Node/nodes/spat/ui/SpatView.h"/>
             </GROUP>
-            <FILE id="ztk9KN" name="SpatItem.cpp" compile="1" resource="0" file="Source/Node/nodes/spat/SpatItem.cpp"/>
+            <FILE id="ztk9KN" name="SpatItem.cpp" compile="0" resource="0" file="Source/Node/nodes/spat/SpatItem.cpp"/>
             <FILE id="C4UJc3" name="SpatItem.h" compile="0" resource="0" file="Source/Node/nodes/spat/SpatItem.h"/>
-            <FILE id="GJLVTB" name="SpatNode.cpp" compile="1" resource="0" file="Source/Node/nodes/spat/SpatNode.cpp"/>
+            <FILE id="GJLVTB" name="SpatNode.cpp" compile="0" resource="0" file="Source/Node/nodes/spat/SpatNode.cpp"/>
             <FILE id="WYOBmX" name="SpatNode.h" compile="0" resource="0" file="Source/Node/nodes/spat/SpatNode.h"/>
           </GROUP>
           <GROUP id="{2D31F0DA-C2F2-08CC-367A-B5883FBFC8AF}" name="mixer">
             <GROUP id="{0676496A-CE8C-BD35-6E63-34F4E3A25BF6}" name="ui">
-              <FILE id="EXG7a6" name="MixerNodeViewUI.cpp" compile="1" resource="0"
+              <FILE id="EXG7a6" name="MixerNodeViewUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/mixer/ui/MixerNodeViewUI.cpp"/>
               <FILE id="bL4fTC" name="MixerNodeViewUI.h" compile="0" resource="0"
                     file="Source/Node/nodes/mixer/ui/MixerNodeViewUI.h"/>
             </GROUP>
-            <FILE id="guTpjf" name="MixerNode.cpp" compile="1" resource="0" file="Source/Node/nodes/mixer/MixerNode.cpp"/>
+            <FILE id="guTpjf" name="MixerNode.cpp" compile="0" resource="0" file="Source/Node/nodes/mixer/MixerNode.cpp"/>
             <FILE id="OApgv4" name="MixerNode.h" compile="0" resource="0" file="Source/Node/nodes/mixer/MixerNode.h"/>
           </GROUP>
           <GROUP id="{8E064CC2-80BD-F968-71CB-1AA11CAF0F1A}" name="io">
             <GROUP id="{52D8FE12-4B2E-C2BA-DF83-2950672FE9EF}" name="ui">
-              <FILE id="MZalM1" name="IONodeViewUI.cpp" compile="1" resource="0"
+              <FILE id="MZalM1" name="IONodeViewUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/io/ui/IONodeViewUI.cpp"/>
               <FILE id="i5Hcrb" name="IONodeViewUI.h" compile="0" resource="0" file="Source/Node/nodes/io/ui/IONodeViewUI.h"/>
             </GROUP>
-            <FILE id="dghFwr" name="IONode.cpp" compile="1" resource="0" file="Source/Node/nodes/io/IONode.cpp"/>
+            <FILE id="dghFwr" name="IONode.cpp" compile="0" resource="0" file="Source/Node/nodes/io/IONode.cpp"/>
             <FILE id="TVvzsq" name="IONode.h" compile="0" resource="0" file="Source/Node/nodes/io/IONode.h"/>
-            <FILE id="Knlxdu" name="MIDIIONode.cpp" compile="1" resource="0" file="Source/Node/nodes/io/MIDIIONode.cpp"/>
+            <FILE id="Knlxdu" name="MIDIIONode.cpp" compile="0" resource="0" file="Source/Node/nodes/io/MIDIIONode.cpp"/>
             <FILE id="qVdD86" name="MIDIIONode.h" compile="0" resource="0" file="Source/Node/nodes/io/MIDIIONode.h"/>
           </GROUP>
         </GROUP>
-        <FILE id="YMfktw" name="Node.cpp" compile="1" resource="0" file="Source/Node/Node.cpp"/>
+        <FILE id="YMfktw" name="Node.cpp" compile="0" resource="0" file="Source/Node/Node.cpp"/>
         <FILE id="TfcTHt" name="Node.h" compile="0" resource="0" file="Source/Node/Node.h"/>
-        <FILE id="PkUUJk" name="NodeManager.cpp" compile="1" resource="0" file="Source/Node/NodeManager.cpp"/>
+        <FILE id="PkUUJk" name="NodeManager.cpp" compile="0" resource="0" file="Source/Node/NodeManager.cpp"/>
         <FILE id="Tonclt" name="NodeManager.h" compile="0" resource="0" file="Source/Node/NodeManager.h"/>
-        <FILE id="gA65mU" name="NodeFactory.cpp" compile="1" resource="0" file="Source/Node/NodeFactory.cpp"/>
+        <FILE id="gA65mU" name="NodeFactory.cpp" compile="0" resource="0" file="Source/Node/NodeFactory.cpp"/>
         <FILE id="ZkDJBy" name="NodeFactory.h" compile="0" resource="0" file="Source/Node/NodeFactory.h"/>
       </GROUP>
-      <GROUP id="{11FA575D-C131-1AC4-2204-E3ECCAA445DC}" name="Timeline"/>
       <GROUP id="{6FBA09ED-E5A2-3335-EDAC-250C2634A0CA}" name="Transport">
         <GROUP id="{1D23A54C-E33B-5C86-5FE2-AD7BB985ED08}" name="ui">
           <FILE id="snvSrt" name="TransportUI.cpp" compile="1" resource="0" file="Source/Transport/ui/TransportUI.cpp"/>

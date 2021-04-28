@@ -9,10 +9,6 @@
 */
 
 #pragma once
-#include "../IONode.h"
-#include "../../../ui/NodeViewUI.h"
-#include "Common/AudioUIHelpers.h"
-
 
 class IONodeViewUI :
     public NodeViewUI<IONode>

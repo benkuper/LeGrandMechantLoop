@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "AudioRouterNodeUI.h"
-
 AudioRouterNodeViewUI::AudioRouterNodeViewUI(AudioRouterNode * n) :
     NodeViewUI(n)
 {

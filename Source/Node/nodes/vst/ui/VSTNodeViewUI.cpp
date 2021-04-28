@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "VSTNodeViewUI.h"
-#include "Common/MIDI/ui/MIDIDeviceParameterUI.h"
 #include "Engine/ui/VSTManagerUI.h"
 
 VSTNodeViewUI::VSTNodeViewUI(VSTNode * n) :

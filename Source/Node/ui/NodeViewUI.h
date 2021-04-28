@@ -10,11 +10,6 @@
 
 #pragma once
 
-#include "../Node.h"
-#include "Common/AudioUIHelpers.h"
-
-class NodeConnector;
-
 class BaseNodeViewUI:
     public BaseItemUI<Node>,
     public Node::AsyncListener

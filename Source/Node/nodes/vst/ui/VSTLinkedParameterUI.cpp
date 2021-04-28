@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "VSTLinkedParameterUI.h"
-
 VSTParameterContainerEditor::VSTParameterContainerEditor(VSTParameterContainer* vstParamContainer, bool isRoot) :
     GenericControllableContainerEditor(vstParamContainer, isRoot),
     vstParamContainer(vstParamContainer)

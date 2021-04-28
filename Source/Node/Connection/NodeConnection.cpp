@@ -8,11 +8,6 @@
   ==============================================================================
 */
 
-#include "NodeConnection.h"
-#include "Engine/AudioManager.h"
-#include "Node/NodeManager.h"
-#include "ui/NodeConnectionEditor.h"
-
 NodeConnection::NodeConnection(NodeManager* nodeManager, Node* sourceNode, Node* destNode, ConnectionType ct) :
 	BaseItem("Connection", false, false),
 	nodeManager(nodeManager),

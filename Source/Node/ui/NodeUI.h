@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "../Node.h"
-
 class NodeUI :
     public BaseItemUI<Node>
 {

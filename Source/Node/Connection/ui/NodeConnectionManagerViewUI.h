@@ -10,10 +10,7 @@
 
 #pragma once
 
-#include "NodeConnectionViewUI.h"
-#include "../NodeConnectionManager.h"
-
-class NodeManagerViewUI;;
+class NodeManagerViewUI;
 
 class NodeConnectionManagerViewUI :
     public BaseManagerUI<NodeConnectionManager, NodeConnection, NodeConnectionViewUI>

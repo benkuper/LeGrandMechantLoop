@@ -8,11 +8,6 @@
   ==============================================================================
 */
 
-#include "MIDILooperNode.h"
-#include "MIDILooperTrack.h"
-#include "Node/Node.h"
-#include "Node/Connection/NodeConnection.h"
-
 MIDILooperNode::MIDILooperNode(var params) :
     LooperNode(getTypeString(), params, MIDI),
     currentDevice(nullptr)

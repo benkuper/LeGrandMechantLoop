@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "SpatNodeViewUI.h"
-
 SpatNodeViewUI::SpatNodeViewUI(SpatNode * n) :
     NodeViewUI(n),
     spatView(n)

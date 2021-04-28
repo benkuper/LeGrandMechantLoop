@@ -10,12 +10,6 @@
 
 #pragma once
 
-#include "../LooperNode.h"
-#include "../../../ui/NodeViewUI.h"
-#include "Common/MIDI/ui/MIDIDeviceParameterUI.h"
-
-class LooperTrackUI;
-
 class LooperNodeViewUI :
     public NodeViewUI<LooperNode>
 {

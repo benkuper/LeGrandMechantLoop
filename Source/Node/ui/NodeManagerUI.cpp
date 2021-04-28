@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "NodeManagerUI.h"
-
 NodeManagerUI::NodeManagerUI(NodeManager * manager) :
     BaseManagerUI(manager->niceName, manager)
 {

@@ -8,10 +8,6 @@
   ==============================================================================
 */
 
-#include "LooperNode.h"
-#include "ui/LooperNodeViewUI.h"
-#include "LooperTrack.h"
-
 LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	Node(name, params, looperType == AUDIO, looperType == AUDIO, false, looperType == AUDIO),
 	looperType(looperType),

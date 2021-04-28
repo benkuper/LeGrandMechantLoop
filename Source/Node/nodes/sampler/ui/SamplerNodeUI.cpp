@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "SamplerNodeUI.h"
-#include "Common/MIDI/ui/MIDIDeviceParameterUI.h"
-
 SamplerNodeViewUI::SamplerNodeViewUI(SamplerNode* n) :
     NodeViewUI(n),
     midiComp(n, n->keyboardState, MidiKeyboardComponent::horizontalKeyboard)

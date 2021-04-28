@@ -8,10 +8,6 @@
   ==============================================================================
 */
 
-#include "LooperNodeViewUI.h"
-#include "LooperTrackUI.h"
-#include "../MIDILooperNode.h"
-
 LooperNodeViewUI::LooperNodeViewUI(LooperNode* n) :
 	NodeViewUI(n)
 {

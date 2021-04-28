@@ -10,9 +10,6 @@
 
 #pragma once
 
-#include "../SamplerNode.h"
-#include "../../../ui/NodeViewUI.h"
-
 class SamplerMidiKeyboardComponent :
     public MidiKeyboardComponent
 {

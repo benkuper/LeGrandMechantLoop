@@ -10,9 +10,6 @@
 
 #pragma once
 
-#include "../PresetManager.h"
-#include "PresetUI.h"
-
 class PresetManagerUI :
     public BaseManagerUI<PresetManager, Preset, PresetUI>
 {

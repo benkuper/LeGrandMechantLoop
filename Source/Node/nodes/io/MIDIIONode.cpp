@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "MIDIIONode.h"
-#include "Node/Connection/NodeConnection.h"
-
 MIDIIONode::MIDIIONode(var params) :
 	Node(getTypeString(), params, false, false, false, false),
 	currentInDevice(nullptr),

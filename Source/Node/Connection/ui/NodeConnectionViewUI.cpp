@@ -8,10 +8,6 @@
   ==============================================================================
 */
 
-#include "NodeConnectionViewUI.h"
-#include "NodeConnector.h"
-#include "Common/ConnectionUIHelper.h"
-#include "../../ui/NodeViewUI.h"
 #include "Engine/LGMLSettings.h"
 
 NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConnector* _sourceConnector, NodeConnector* _destConnector) :

@@ -9,8 +9,6 @@
 */
 
 #pragma once
-#include "../../../ui/NodeViewUI.h"
-#include "../AudioRouterNode.h"
 
 class AudioRouterNodeViewUI :
     public NodeViewUI<AudioRouterNode>

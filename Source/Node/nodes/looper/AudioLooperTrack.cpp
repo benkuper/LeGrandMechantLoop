@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "AudioLooperTrack.h"
-#include "AudioLooperNode.h"
-
 AudioLooperTrack::AudioLooperTrack(AudioLooperNode* looper, int index, int numChannels) :
 	LooperTrack(looper, index),
 	audioLooper(looper),

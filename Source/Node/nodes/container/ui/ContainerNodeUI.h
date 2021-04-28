@@ -9,8 +9,6 @@
 */
 
 #pragma once
-#include "../ContainerNode.h"
-#include "../../../ui/NodeViewUI.h"
 
 class ContainerNodeViewUI :
     public NodeViewUI<ContainerNode>

@@ -10,16 +10,14 @@
 
 #include "LGMLEngine.h"
 
-#include "Node/NodeManager.h"
-#include "Node/NodeFactory.h"
-#include "Interface/InterfaceManager.h"
-#include "Transport/Transport.h"
 #include "AudioManager.h"
 #include "VSTManager.h"
 #include "LGMLSettings.h"
-#include "Common/MIDI/MIDIManager.h"
-#include "Common/AudioHelpers.h"
-#include "Preset/PresetManager.h"
+
+#include "Node/NodeIncludes.h"
+#include "Transport/Transport.h"
+#include "Common/CommonIncludes.h"
+#include "Preset/PresetIncludes.h"
 
 LGMLEngine::LGMLEngine() :
     Engine("LGML File",".lgml")
@@ -31,7 +29,6 @@ LGMLEngine::LGMLEngine() :
     MIDIManager::getInstance(); //force init
 
     addChildControllableContainer(RootNodeManager::getInstance());
-    addChildControllableContainer(InterfaceManager::getInstance());
     addChildControllableContainer(Transport::getInstance());
     addChildControllableContainer(RootPresetManager::getInstance());
 
@@ -50,7 +47,6 @@ LGMLEngine::~LGMLEngine()
     isClearing = true; 
     RootPresetManager::deleteInstance();
     RootNodeManager::deleteInstance();
-    InterfaceManager::deleteInstance();
     Transport::deleteInstance();
 
     AudioManager::deleteInstance();
@@ -65,7 +61,6 @@ void LGMLEngine::clearInternal()
 {
     RootPresetManager::getInstance()->clear();
     RootNodeManager::getInstance()->clear();
-    InterfaceManager::getInstance()->clear();
     Transport::getInstance()->clear();
 }
 
@@ -73,7 +68,6 @@ var LGMLEngine::getJSONData()
 {
     var data = Engine::getJSONData();
     data.getDynamicObject()->setProperty(RootNodeManager::getInstance()->shortName, RootNodeManager::getInstance()->getJSONData());
-    data.getDynamicObject()->setProperty(InterfaceManager::getInstance()->shortName, InterfaceManager::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(Transport::getInstance()->shortName, Transport::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(RootPresetManager::getInstance()->shortName, RootPresetManager::getInstance()->getJSONData());
     return data;
@@ -82,7 +76,6 @@ var LGMLEngine::getJSONData()
 void LGMLEngine::loadJSONDataInternalEngine(var data, ProgressTask* loadingTask)
 {
     RootNodeManager::getInstance()->loadJSONData(data.getProperty(RootNodeManager::getInstance()->shortName, var()));
-    InterfaceManager::getInstance()->loadJSONData(data.getProperty(InterfaceManager::getInstance()->shortName, var()));
     Transport::getInstance()->loadJSONData(data.getProperty(Transport::getInstance()->shortName, var()));
     RootPresetManager::getInstance()->loadJSONData(data.getProperty(RootPresetManager::getInstance()->shortName, var()));
 }

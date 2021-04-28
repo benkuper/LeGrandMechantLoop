@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "PresetManagerUI.h"
-
 PresetManagerUI::PresetManagerUI(PresetManager* manager) :
     BaseManagerUI(manager->niceName, manager, false)
 {

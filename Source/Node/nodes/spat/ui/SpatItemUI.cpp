@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "SpatItemUI.h"
-
 SpatItemUI::SpatItemUI(SpatItem* item) :
     InspectableContentComponent(item),
     item(item)

@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "SpatView.h"
-#include "../SpatNode.h"
-
 SpatView::SpatView(SpatNode* node) :
 	node(node)
 {

@@ -8,10 +8,6 @@
   ==============================================================================
 */
 
-#include "NodeConnectionEditor.h"
-#include "Node/Node.h"
-#include "Common/ConnectionUIHelper.h"
-
 NodeAudioConnectionEditor::NodeAudioConnectionEditor(NodeAudioConnection* connection, bool isRoot) :
     BaseItemEditor(connection, isRoot),
     connection(connection),

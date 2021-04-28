@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "ContainerNodeUI.h"
-#include "Node/ui/NodeManagerViewUI.h"
-
 ContainerNodeViewUI::ContainerNodeViewUI(ContainerNode* node) :
     NodeViewUI(node)
 {

@@ -10,10 +10,6 @@
 
 #pragma once
 
-#include "LooperNode.h"
-#include "Common/MIDI/MIDIDeviceParameter.h"
-class MIDILooperTrack;
-
 class MIDILooperNode :
     public LooperNode,
     public MIDIInputDevice::MIDIInputListener

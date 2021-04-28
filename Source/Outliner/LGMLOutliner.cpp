@@ -9,7 +9,7 @@
 */
 
 #include "LGMLOutliner.h"
-#include "Preset/PresetManager.h"
+#include "Preset/PresetIncludes.h"
 
 LGMLOutlinerItemComponent::LGMLOutlinerItemComponent(LGMLOutlinerItem* item) :
     OutlinerItemComponent(item),

@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "../SpatItem.h"
-
 class SpatItemUI :
     public InspectableContentComponent,
     public ContainerAsyncListener

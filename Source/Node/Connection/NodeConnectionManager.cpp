@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "NodeConnectionManager.h"
-
 NodeConnectionManager::NodeConnectionManager(NodeManager * nodeManager) :
     BaseManager("Connections"),
     nodeManager(nodeManager)

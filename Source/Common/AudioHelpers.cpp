@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "AudioHelpers.h"
-#include "AudioUIHelpers.h"
-
 Point<float> DecibelsHelpers::start = Point<float>(-100, 0);
 Point<float> DecibelsHelpers::mid1 = Point<float>(-42, .14f);
 Point<float> DecibelsHelpers::mid2 = Point<float>(-18, .4f);

@@ -8,10 +8,6 @@
   ==============================================================================
 */
 
-#include "ContainerNode.h"
-#include "../../NodeManager.h"
-#include "ui/ContainerNodeUI.h"
-
 ContainerNode::ContainerNode(var params) :
     Node(getTypeString(), params, true, true, true, true),
     inputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),

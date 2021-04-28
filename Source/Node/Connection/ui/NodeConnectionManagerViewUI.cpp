@@ -8,10 +8,6 @@
   ==============================================================================
 */
 
-#include "NodeConnectionManagerViewUI.h"
-#include "../../ui/NodeManagerViewUI.h"
-#include "NodeConnector.h"
-
 NodeConnectionManagerViewUI::NodeConnectionManagerViewUI(NodeManagerViewUI* nodeManagerUI, NodeConnectionManager* manager) :
 	BaseManagerUI(manager->niceName, manager, false),
 	nodeManagerUI(nodeManagerUI)

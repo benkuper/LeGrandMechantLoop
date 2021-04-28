@@ -20,11 +20,7 @@
 //  1.03  2020-04-08  njr   changed float to double; large target ratio and rate resulted in exp returning 1 in calcCoef
 //
 
-#ifndef ADRS_h
-#define ADRS_h
-
-#include <JuceHeader.h>
-
+#pragma once
 
 class CurvedADSR {
 public:
@@ -119,7 +115,3 @@ inline void CurvedADSR::reset() {
 inline double CurvedADSR::getOutput() {
 	return output;
 }
-
-
-
-#endif

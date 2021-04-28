@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "Common/AudioHelpers.h"
-
 class NodeConnection;
 class NodeAudioConnection;
 class NodeMIDIConnection;

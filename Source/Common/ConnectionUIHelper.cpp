@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "ConnectionUIHelper.h"
-
 Path PathHelpers::buildHitPath(Path* sourcePath)
 {
 	Path hitPath;

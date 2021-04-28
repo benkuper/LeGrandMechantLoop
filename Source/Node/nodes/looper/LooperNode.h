@@ -10,9 +10,6 @@
 
 #pragma once
 
-#include "../../Node.h"
-#include "Transport/Transport.h"
-
 class LooperTrack;
 
 class LooperNode :

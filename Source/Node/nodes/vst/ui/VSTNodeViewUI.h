@@ -10,9 +10,6 @@
 
 #pragma once
 
-#include "../VSTNode.h"
-#include "../../../ui/NodeViewUI.h"
-
 class PluginWindow :
     public DocumentWindow,
     public VSTNode::AsyncListener

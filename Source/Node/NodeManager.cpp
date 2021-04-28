@@ -8,15 +8,6 @@
   ==============================================================================
 */
 
-#include "NodeManager.h"
-#include "NodeFactory.h"
-#include "Engine/AudioManager.h"
-#include "Connection/NodeConnectionManager.h"
-#include "nodes/io/IONode.h"
-#include "Transport/Transport.h"
-#include "nodes/looper/LooperNode.h"
-#include "nodes/container/ContainerNode.h"
-
 juce_ImplementSingleton(RootNodeManager)
 
 NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID) :

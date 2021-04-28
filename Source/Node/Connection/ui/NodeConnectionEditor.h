@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "../NodeConnection.h"
-
 class NodeAudioConnectionEditor :
     public BaseItemEditor
 {

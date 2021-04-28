@@ -10,10 +10,6 @@
 
 #pragma once
 
-#include "JuceHeader.h"
-#include "Common/RingBuffer.h"
-#include "Transport/Transport.h"
-#include "../../Node.h"
 
 class LooperNode;
 

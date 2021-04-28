@@ -9,9 +9,6 @@
 */
 
 #pragma once
-#include "../NodeManager.h"
-#include "NodeViewUI.h"
-#include "../Connection/NodeConnection.h"
 
 class NodeConnectionManagerViewUI;
 

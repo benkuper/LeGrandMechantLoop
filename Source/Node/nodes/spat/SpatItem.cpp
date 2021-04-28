@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "SpatItem.h"
-#include "SpatNode.h"
-
 SpatItem::SpatItem(int index) :
 	ControllableContainer("Point " + String(index + 1)),
 	index(index)

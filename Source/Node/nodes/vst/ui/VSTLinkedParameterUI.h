@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "../VSTLinkedParameter.h"
-
 class VSTParameterContainerEditor :
     public GenericControllableContainerEditor
 {

@@ -10,9 +10,6 @@
 
 #pragma once
 
-#include "../LooperTrack.h"
-#include "Node/ui/NodeViewUI.h"
-
 class LooperTrackUI :
     public InspectableContentComponent,
     public ContainerAsyncListener

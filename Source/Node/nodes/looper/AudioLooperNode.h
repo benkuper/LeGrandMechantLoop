@@ -10,12 +10,6 @@
 
 #pragma once
 
-#include "LooperNode.h"
-#include "Common/RingBuffer.h"
-#include "Engine/AudioManager.h"
-
-class AudioLooperTrack;
-
 class AudioLooperNode :
     public LooperNode,
     public AudioManager::AudioManagerListener

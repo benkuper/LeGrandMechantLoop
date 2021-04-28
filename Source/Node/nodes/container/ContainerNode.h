@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "../../Node.h"
 class NodeManager;
 
 class ContainerNode :

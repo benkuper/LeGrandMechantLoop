@@ -9,7 +9,6 @@
 */
 
 #pragma once
-#include "Preset.h"
 
 class PresetManager :
     public BaseManager<Preset>

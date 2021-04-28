@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "IONodeViewUI.h"
-
 IONodeViewUI::IONodeViewUI(IONode * n) :
     NodeViewUI(n)
 {

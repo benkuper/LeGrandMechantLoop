@@ -69,7 +69,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_USE_DARK_SPLASH_SCREEN=1;JUCE_PROJUCER_VERSION=0x60008;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_MODULE_AVAILABLE_juce_organicui=1;JUCE_MODULE_AVAILABLE_juce_osc=1;JUCE_MODULE_AVAILABLE_juce_simpleweb=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_USE_WINRT_MIDI=1;JUCE_ASIO=1;JUCE_WASAPI=1;JUCE_DIRECTSOUND=1;JUCE_ALSA=1;JUCE_JACK=1;JUCE_PLUGINHOST_VST=1;JUCE_PLUGINHOST_VST3=1;JUCE_PLUGINHOST_AU=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;ORGANICUI_USE_SERVUS=1;ORGANICUI_USE_WEBSERVER=1;JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1;JUCE_ENABLE_BROADCAST_BY_DEFAULT=1;JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1;JUCE_IP_AND_PORT_DETECTION=1;JUCE_STANDALONE_APPLICATION=1;VST_LOGGING=0;JUCER_VS2019_78A6631F=1;JUCE_APP_VERSION=1.0.0b55;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_USE_DARK_SPLASH_SCREEN=1;JUCE_PROJUCER_VERSION=0x60008;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_MODULE_AVAILABLE_juce_organicui=1;JUCE_MODULE_AVAILABLE_juce_osc=1;JUCE_MODULE_AVAILABLE_juce_simpleweb=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_USE_WINRT_MIDI=1;JUCE_ASIO=1;JUCE_WASAPI=1;JUCE_DIRECTSOUND=1;JUCE_ALSA=1;JUCE_JACK=1;JUCE_PLUGINHOST_VST=1;JUCE_PLUGINHOST_VST3=1;JUCE_PLUGINHOST_AU=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;ORGANICUI_USE_SERVUS=1;ORGANICUI_USE_WEBSERVER=1;JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1;JUCE_ENABLE_BROADCAST_BY_DEFAULT=1;JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1;JUCE_IP_AND_PORT_DETECTION=1;JUCE_STANDALONE_APPLICATION=1;VST_LOGGING=0;JUCER_VS2019_78A6631F=1;JUCE_APP_VERSION=1.0.0b56;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -116,7 +116,7 @@
       <Optimization>Full</Optimization>
       <DebugInformationFormat>None</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_USE_DARK_SPLASH_SCREEN=1;JUCE_PROJUCER_VERSION=0x60008;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_MODULE_AVAILABLE_juce_organicui=1;JUCE_MODULE_AVAILABLE_juce_osc=1;JUCE_MODULE_AVAILABLE_juce_simpleweb=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_USE_WINRT_MIDI=1;JUCE_ASIO=1;JUCE_WASAPI=1;JUCE_DIRECTSOUND=1;JUCE_ALSA=1;JUCE_JACK=1;JUCE_PLUGINHOST_VST=1;JUCE_PLUGINHOST_VST3=1;JUCE_PLUGINHOST_AU=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;ORGANICUI_USE_SERVUS=1;ORGANICUI_USE_WEBSERVER=1;JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1;JUCE_ENABLE_BROADCAST_BY_DEFAULT=1;JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1;JUCE_IP_AND_PORT_DETECTION=1;JUCE_STANDALONE_APPLICATION=1;VST_LOGGING=0;JUCER_VS2019_78A6631F=1;JUCE_APP_VERSION=1.0.0b55;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_USE_DARK_SPLASH_SCREEN=1;JUCE_PROJUCER_VERSION=0x60008;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_MODULE_AVAILABLE_juce_organicui=1;JUCE_MODULE_AVAILABLE_juce_osc=1;JUCE_MODULE_AVAILABLE_juce_simpleweb=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_USE_WINRT_MIDI=1;JUCE_ASIO=1;JUCE_WASAPI=1;JUCE_DIRECTSOUND=1;JUCE_ALSA=1;JUCE_JACK=1;JUCE_PLUGINHOST_VST=1;JUCE_PLUGINHOST_VST3=1;JUCE_PLUGINHOST_AU=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;ORGANICUI_USE_SERVUS=1;ORGANICUI_USE_WEBSERVER=1;JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1;JUCE_ENABLE_BROADCAST_BY_DEFAULT=1;JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1;JUCE_IP_AND_PORT_DETECTION=1;JUCE_STANDALONE_APPLICATION=1;VST_LOGGING=0;JUCER_VS2019_78A6631F=1;JUCE_APP_VERSION=1.0.0b56;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -156,18 +156,43 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Outliner\LGMLOutliner.cpp"/>
-    <ClCompile Include="..\..\Source\Preset\ui\PresetManagerUI.cpp"/>
-    <ClCompile Include="..\..\Source\Preset\ui\PresetUI.cpp"/>
-    <ClCompile Include="..\..\Source\Preset\Preset.cpp"/>
-    <ClCompile Include="..\..\Source\Preset\PresetManager.cpp"/>
-    <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.cpp"/>
-    <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceParameterUI.cpp"/>
-    <ClCompile Include="..\..\Source\Common\MIDI\MIDIClock.cpp"/>
-    <ClCompile Include="..\..\Source\Common\MIDI\MIDIDevice.cpp"/>
-    <ClCompile Include="..\..\Source\Common\MIDI\MIDIDeviceParameter.cpp"/>
-    <ClCompile Include="..\..\Source\Common\MIDI\MIDIManager.cpp"/>
-    <ClCompile Include="..\..\Source\Common\MIDI\MTCReceiver.cpp"/>
-    <ClCompile Include="..\..\Source\Common\MIDI\MTCSender.cpp"/>
+    <ClCompile Include="..\..\Source\Preset\ui\PresetManagerUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Preset\ui\PresetUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Preset\Preset.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Preset\PresetIncludes.cpp"/>
+    <ClCompile Include="..\..\Source\Preset\PresetManager.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\ui\MIDIDeviceParameterUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MIDIClock.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MIDIDevice.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MIDIDeviceParameter.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MIDIManager.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MTCReceiver.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\MIDI\MTCSender.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Common\Serial\lib\cobs\cobs.cpp"/>
     <ClCompile Include="..\..\Source\Common\Serial\lib\serial\impl\list_ports\list_ports_linux.cc"/>
     <ClCompile Include="..\..\Source\Common\Serial\lib\serial\impl\list_ports\list_ports_osx.cc"/>
@@ -175,64 +200,158 @@
     <ClCompile Include="..\..\Source\Common\Serial\lib\serial\impl\unix.cc"/>
     <ClCompile Include="..\..\Source\Common\Serial\lib\serial\impl\win.cc"/>
     <ClCompile Include="..\..\Source\Common\Serial\lib\serial\serial.cc"/>
-    <ClCompile Include="..\..\Source\Common\Serial\SerialDevice.cpp"/>
-    <ClCompile Include="..\..\Source\Common\Serial\SerialDeviceParameter.cpp"/>
-    <ClCompile Include="..\..\Source\Common\Serial\SerialManager.cpp"/>
-    <ClCompile Include="..\..\Source\Common\ADSR.cpp"/>
-    <ClCompile Include="..\..\Source\Common\AudioHelpers.cpp"/>
-    <ClCompile Include="..\..\Source\Common\AudioUIHelpers.cpp"/>
-    <ClCompile Include="..\..\Source\Common\ConnectionUIHelper.cpp"/>
+    <ClCompile Include="..\..\Source\Common\Serial\SerialDevice.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\SerialDeviceParameter.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\Serial\SerialManager.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\ADSR.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\AudioHelpers.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\AudioUIHelpers.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Common\CommonIncludes.cpp"/>
+    <ClCompile Include="..\..\Source\Common\ConnectionUIHelper.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Engine\ui\AudioManagerEditor.cpp"/>
     <ClCompile Include="..\..\Source\Engine\ui\VSTManagerUI.cpp"/>
     <ClCompile Include="..\..\Source\Engine\AudioManager.cpp"/>
     <ClCompile Include="..\..\Source\Engine\LGMLEngine.cpp"/>
     <ClCompile Include="..\..\Source\Engine\LGMLSettings.cpp"/>
     <ClCompile Include="..\..\Source\Engine\VSTManager.cpp"/>
-    <ClCompile Include="..\..\Source\Interface\ui\InterfaceManagerUI.cpp"/>
-    <ClCompile Include="..\..\Source\Interface\ui\InterfaceUI.cpp"/>
-    <ClCompile Include="..\..\Source\Interface\Interface.cpp"/>
-    <ClCompile Include="..\..\Source\Interface\InterfaceManager.cpp"/>
-    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionEditor.cpp"/>
-    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionManagerViewUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionViewUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnector.cpp"/>
-    <ClCompile Include="..\..\Source\Node\Connection\NodeConnection.cpp"/>
-    <ClCompile Include="..\..\Source\Node\Connection\NodeConnectionManager.cpp"/>
-    <ClCompile Include="..\..\Source\Node\ui\NodeManagerUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\ui\NodeManagerViewUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\ui\NodeUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\sampler\ui\SamplerNodeUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\sampler\SamplerNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperNodeViewUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperTrackUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\AudioLooperNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\AudioLooperTrack.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\LooperNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\LooperTrack.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\MIDILooperNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\looper\MIDILooperTrack.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\router\ui\AudioRouterNodeUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\router\AudioRouterNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\container\ui\ContainerNodeUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\container\ContainerNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\vst\ui\VSTLinkedParameterUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\vst\ui\VSTNodeViewUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\vst\VSTLinkedParameter.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\vst\VSTNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\spat\ui\SpatItemUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\spat\ui\SpatNodeViewUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\spat\ui\SpatView.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\spat\SpatItem.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\spat\SpatNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\mixer\ui\MixerNodeViewUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\mixer\MixerNode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\io\ui\IONodeViewUI.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\io\IONode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\nodes\io\MIDIIONode.cpp"/>
-    <ClCompile Include="..\..\Source\Node\Node.cpp"/>
-    <ClCompile Include="..\..\Source\Node\NodeManager.cpp"/>
-    <ClCompile Include="..\..\Source\Node\NodeFactory.cpp"/>
+    <ClCompile Include="..\..\Source\Node\NodeIncludes.cpp"/>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionEditor.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionManagerViewUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnectionViewUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\ui\NodeConnector.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\NodeConnection.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Connection\NodeConnectionManager.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\ui\NodeManagerUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\ui\NodeManagerViewUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\ui\NodeUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\sampler\ui\SamplerNodeUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\sampler\SamplerNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperNodeViewUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\ui\LooperTrackUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\AudioLooperNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\AudioLooperTrack.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\LooperNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\LooperTrack.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\MIDILooperNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\looper\MIDILooperTrack.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\router\ui\AudioRouterNodeUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\router\AudioRouterNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\container\ui\ContainerNodeUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\container\ContainerNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\vst\ui\VSTLinkedParameterUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\vst\ui\VSTNodeViewUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\vst\VSTLinkedParameter.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\vst\VSTNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\spat\ui\SpatItemUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\spat\ui\SpatNodeViewUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\spat\ui\SpatView.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\spat\SpatItem.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\spat\SpatNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\mixer\ui\MixerNodeViewUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\mixer\MixerNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\io\ui\IONodeViewUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\io\IONode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\io\MIDIIONode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\Node.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\NodeManager.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\NodeFactory.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Transport\ui\TransportUI.cpp"/>
     <ClCompile Include="..\..\Source\Transport\Transport.cpp"/>
     <ClCompile Include="..\..\Source\Main.cpp"/>
@@ -2900,6 +3019,7 @@
     <ClInclude Include="..\..\Source\Preset\ui\PresetManagerUI.h"/>
     <ClInclude Include="..\..\Source\Preset\ui\PresetUI.h"/>
     <ClInclude Include="..\..\Source\Preset\Preset.h"/>
+    <ClInclude Include="..\..\Source\Preset\PresetIncludes.h"/>
     <ClInclude Include="..\..\Source\Preset\PresetManager.h"/>
     <ClInclude Include="..\..\Source\Common\MIDI\ui\MIDIDeviceChooser.h"/>
     <ClInclude Include="..\..\Source\Common\MIDI\ui\MIDIDeviceParameterUI.h"/>
@@ -2916,6 +3036,7 @@
     <ClInclude Include="..\..\Source\Common\ADSR.h"/>
     <ClInclude Include="..\..\Source\Common\AudioHelpers.h"/>
     <ClInclude Include="..\..\Source\Common\AudioUIHelpers.h"/>
+    <ClInclude Include="..\..\Source\Common\CommonIncludes.h"/>
     <ClInclude Include="..\..\Source\Common\ConnectionUIHelper.h"/>
     <ClInclude Include="..\..\Source\Common\RingBuffer.h"/>
     <ClInclude Include="..\..\Source\Engine\ui\AudioManagerEditor.h"/>
@@ -2924,10 +3045,7 @@
     <ClInclude Include="..\..\Source\Engine\LGMLEngine.h"/>
     <ClInclude Include="..\..\Source\Engine\LGMLSettings.h"/>
     <ClInclude Include="..\..\Source\Engine\VSTManager.h"/>
-    <ClInclude Include="..\..\Source\Interface\ui\InterfaceManagerUI.h"/>
-    <ClInclude Include="..\..\Source\Interface\ui\InterfaceUI.h"/>
-    <ClInclude Include="..\..\Source\Interface\Interface.h"/>
-    <ClInclude Include="..\..\Source\Interface\InterfaceManager.h"/>
+    <ClInclude Include="..\..\Source\Node\NodeIncludes.h"/>
     <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnectionEditor.h"/>
     <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnectionManagerViewUI.h"/>
     <ClInclude Include="..\..\Source\Node\Connection\ui\NodeConnectionViewUI.h"/>

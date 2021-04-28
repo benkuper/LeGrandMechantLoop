@@ -1,13 +1,10 @@
 #include "MainComponent.h"
 
 #include "Engine/LGMLEngine.h"
-
-#include  "Node/ui/NodeManagerUI.h"
-#include  "Node/ui/NodeManagerViewUI.h"
-#include "Interface/ui/InterfaceManagerUI.h"
-#include "Transport/ui/TransportUI.h"
-#include "Preset/ui/PresetManagerUI.h"
+#include "Node/NodeIncludes.h"
+#include "Preset/PresetIncludes.h"
 #include "Outliner/LGMLOutliner.h"
+#include "Transport/ui/TransportUI.h"
 
 //==============================================================================
 String getAppVersion();
@@ -31,10 +28,8 @@ void MainComponent::init()
 
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Nodes (List View)", &NodeManagerPanel::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Nodes (2D View)", &NodeManagerViewPanel::create));
-	//ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Interfaces", &InterfaceManagerUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Transport", &TransportUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Presets", &RootPresetManagerUI::create));
-	//ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Timeline", &TimelineU::create));
 
 	ControllableUI::drawContourOnInspectableHighlighted = true;
 

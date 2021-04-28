@@ -1,21 +1,18 @@
 /*
   ==============================================================================
 
-    Interface.h
-    Created: 15 Nov 2020 8:44:13am
+    PresetIncludes.h
+    Created: 28 Apr 2021 10:05:57am
     Author:  bkupe
 
   ==============================================================================
 */
 
 #pragma once
-
 #include "JuceHeader.h"
 
-class Interface :
-    public BaseItem
-{
-public:
-    Interface(StringRef name = "Interface", var params = var());
-    virtual ~Interface();
-};
+#include "Preset.h"
+#include "PresetManager.h"
+
+#include "ui/PresetUI.h"
+#include "ui/PresetManagerUI.h"

@@ -9,8 +9,6 @@
 */
 
 #pragma once
-#include "../NodeManager.h"
-#include "NodeUI.h"
 
 class NodeManagerUI :
     public BaseManagerUI<NodeManager, Node, NodeUI>

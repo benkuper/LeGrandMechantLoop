@@ -9,8 +9,6 @@
 */
 
 #pragma once
-#include "../../Node.h"
-#include "SpatItem.h"
 
 class SpatNode :
 	public Node

@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "PresetManager.h"
-
 juce_ImplementSingleton(RootPresetManager);
 
 PresetManager::PresetManager() :

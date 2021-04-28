@@ -8,18 +8,6 @@
   ==============================================================================
 */
 
-#include "NodeFactory.h"
-#include "nodes/io/IONode.h"
-#include "nodes/looper/AudioLooperNode.h"
-#include "nodes/looper/MIDILooperNode.h"
-#include "nodes/io/MIDIIONode.h"
-#include "nodes/mixer/MixerNode.h"
-#include "nodes/spat/SpatNode.h"
-#include "nodes/vst/VSTNode.h"
-#include "nodes/container/ContainerNode.h"
-#include "nodes/router/AudioRouterNode.h"
-#include "nodes/sampler/SamplerNode.h"
-
 juce_ImplementSingleton(NodeFactory)
 
 NodeFactory::NodeFactory()

@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <JuceHeader.h>
-
 /** A circular, lock-free buffer for multiple channels of audio.
  
     Supports a single writer (producer) and any number of readers (consumers).

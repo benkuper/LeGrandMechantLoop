@@ -8,11 +8,6 @@
   ==============================================================================
 */
 
-#include "SamplerNode.h"
-#include "ui/SamplerNodeUI.h"
-#include "../../Connection/NodeConnection.h"
-#include "Engine/AudioManager.h"
-
 SamplerNode::SamplerNode(var params) :
 	Node(getTypeStringStatic(), params, true, true, false, true),
 	currentDevice(nullptr),

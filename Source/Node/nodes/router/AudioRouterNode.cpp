@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "AudioRouterNode.h"
-#include "ui/AudioRouterNodeUI.h"
-
 AudioRouterNode::AudioRouterNode(var params) :
     Node(getTypeString(), params, true, true, true, true),
     timeAtTransition(0)

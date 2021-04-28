@@ -16,8 +16,6 @@
  ==============================================================================
  */
 
-#include "MIDIClock.h"
-
 static Array<MIDIClock*, CriticalSection> allClocks = {};
 
 class MIDIClockRunner : 

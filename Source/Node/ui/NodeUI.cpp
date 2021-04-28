@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "NodeUI.h"
-
 NodeUI::NodeUI(Node* node) :
     BaseItemUI(node)
 {

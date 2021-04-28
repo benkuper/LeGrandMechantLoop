@@ -10,9 +10,6 @@
 
 #pragma once
 
-#include "JuceHeader.h"
-#include "Node/Node.h"
-
 class NodeManager;
 
 class NodeConnection :

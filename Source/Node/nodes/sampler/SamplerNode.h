@@ -10,11 +10,6 @@
 
 #pragma once
 
-#include "../../Node.h"
-#include "Common/MIDI/MIDIDeviceParameter.h"
-#include "Common/RingBuffer.h"
-#include "Common/ADSR.h"
-
 class SamplerNode :
     public Node,
     public MIDIInputDevice::MIDIInputListener,

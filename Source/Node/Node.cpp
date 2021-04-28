@@ -8,12 +8,6 @@
   ==============================================================================
 */
 
-#include "Node.h"
-#include "Engine/AudioManager.h"
-#include "ui/NodeViewUI.h"
-#include "Connection/NodeConnection.h"
-#include "Transport/Transport.h"
-
 Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, bool userCanSetIO, bool useOutControl) :
 	BaseItem(name, true),
 	graph(nullptr),

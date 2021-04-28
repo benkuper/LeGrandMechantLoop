@@ -8,10 +8,6 @@
   ==============================================================================
 */
 
-#include "Preset.h"
-#include "PresetManager.h"
-#include "ui/PresetUI.h"
-
 Preset::Preset(var params) :
 	BaseItem("Preset", false)
 {

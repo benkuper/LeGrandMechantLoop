@@ -18,8 +18,6 @@
 
 #pragma once
 
-#include "Transport/Transport.h"
-#include "MIDIManager.h"
 
 constexpr int MIDI_SYNC_QUEUE_SIZE = 100;
 

@@ -8,9 +8,6 @@
   ==============================================================================
 */
 
-#include "IONode.h"
-#include "ui/IONodeViewUI.h"
-
 IONode::IONode(StringRef name, var params, bool isInput) :
 	Node(name, params, !isInput, isInput),
     isInput(isInput),
