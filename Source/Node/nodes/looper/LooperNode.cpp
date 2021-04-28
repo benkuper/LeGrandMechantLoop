@@ -9,7 +9,7 @@
 */
 
 LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
-	Node(name, params, looperType == AUDIO, looperType == AUDIO, false, looperType == AUDIO),
+	Node(name, params, looperType == AUDIO, looperType == AUDIO, false, looperType == AUDIO, looperType == MIDI, looperType == MIDI),
 	looperType(looperType),
 	currentTrack(nullptr),
 	trackParamsCC("Track Parameters"),

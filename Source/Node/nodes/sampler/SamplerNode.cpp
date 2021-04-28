@@ -9,8 +9,7 @@
 */
 
 SamplerNode::SamplerNode(var params) :
-	Node(getTypeStringStatic(), params, true, true, false, true),
-	currentDevice(nullptr),
+	Node(getTypeStringStatic(), params, true, true, false, true, true, true),
 	recordingNote(-1),
 	lastRecordedNote(-1),
 	lastPlayedNote(-1),
@@ -100,7 +99,6 @@ SamplerNode::SamplerNode(var params) :
 
 SamplerNode::~SamplerNode()
 {
-	setMIDIDevice(nullptr);
 	samplerNotes.clear();
 }
 
@@ -222,22 +220,6 @@ void SamplerNode::importSampleSet(File folder)
 {
 }
 
-void SamplerNode::setMIDIDevice(MIDIInputDevice* d)
-{
-	if (currentDevice == d) return;
-	if (currentDevice != nullptr)
-	{
-		currentDevice->removeMIDIInputListener(this);
-	}
-
-	currentDevice = d;
-
-	if (currentDevice != nullptr)
-	{
-		currentDevice->addMIDIInputListener(this);
-	}
-}
-
 void SamplerNode::onContainerTriggerTriggered(Trigger* t)
 {
 	if (t == clearLastRecordedTrigger)
@@ -262,8 +244,7 @@ void SamplerNode::onContainerTriggerTriggered(Trigger* t)
 void SamplerNode::onContainerParameterChangedInternal(Parameter* p)
 {
 	Node::onContainerParameterChangedInternal(p);
-	if (p == midiParam) setMIDIDevice(midiParam->inputDevice);
-	else if (p == numChannels)
+	if (p == numChannels)
 	{
 		setAudioInputs(numChannels->intValue());
 		setAudioOutputs(numChannels->intValue());
@@ -396,11 +377,6 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 	}
 
 	if (!monitor->boolValue()) buffer.clear();
-
-	if (currentDevice != nullptr)
-	{
-		midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
-	}
 
 	keyboardState.processNextMidiBuffer(inMidiBuffer, 0, buffer.getNumSamples(), false);
 

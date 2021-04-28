@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, bool userCanSetIO, bool useOutControl) :
+Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, bool userCanSetIO, bool useOutControl, bool canHaveMidiDeviceIn, bool canHaveMidiDeviceOut) :
 	BaseItem(name, true),
 	graph(nullptr),
 	nodeGraphID(AudioManager::getInstance()->getNewGraphID()),
@@ -18,6 +18,12 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	hasMIDIOutput(false),
 	numAudioInputs(nullptr),
 	numAudioOutputs(nullptr),
+	midiCC("MIDI"),
+	midiParam(nullptr),
+	currentInDevice(nullptr),
+	currentOutDevice(nullptr),
+	pedalSustain(nullptr),
+	forceSustain(nullptr),
 	viewCC("View"),
 	showOutControl(nullptr),
 	bypassAntiClickCount(anticlickBlocks),
@@ -47,8 +53,6 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 		}
 	}
 
-
-
 	if (useOutControl)
 	{
 		outControl.reset(new VolumeControl("Out", true));
@@ -61,6 +65,19 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	viewCC.defaultHideInRemoteControl = true;
 	addChildControllableContainer(&viewCC);
 
+	if (canHaveMidiDeviceIn || canHaveMidiDeviceOut)
+	{
+		midiParam = new MIDIDeviceParameter("MIDI Device", canHaveMidiDeviceIn, canHaveMidiDeviceOut);
+		midiCC.addParameter(midiParam);
+		pedalSustain = midiCC.addBoolParameter("Pedal Sustain", "If enabled, incoming CC64 midi messages from device will be treated as incoming pedal and this will be the feedback for its state", false);
+		pedalSustain->canBeDisabledByUser = true;
+		pedalSustain->setControllableFeedbackOnly(true);
+		forceSustain = midiCC.addBoolParameter("Force Sustain", "If checked, this will force sustain manually independent of the pedal", false);
+		
+		setMIDIIO(canHaveMidiDeviceIn, canHaveMidiDeviceOut);
+		addChildControllableContainer(&midiCC);
+	}
+
 }
 
 Node::~Node()
@@ -70,6 +87,8 @@ Node::~Node()
 void Node::clearItem()
 {
 	BaseItem::clearItem();
+	setMIDIInDevice(nullptr);
+	setMIDIOutDevice(nullptr);
 	if (nodeGraphPtr != nullptr && graph != nullptr) graph->removeNode(nodeGraphPtr.get());
 	masterReference.clear();
 }
@@ -119,7 +138,16 @@ void Node::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Contr
 {
 	if (cc == &viewCC)
 	{
-		if(!isCurrentlyLoadingData) nodeNotifier.addMessage(new NodeEvent(NodeEvent::VIEW_FILTER_UPDATED, this));
+		if (!isCurrentlyLoadingData) nodeNotifier.addMessage(new NodeEvent(NodeEvent::VIEW_FILTER_UPDATED, this));
+	}
+	else if (c == midiParam)
+	{
+		setMIDIInDevice(midiParam->inputDevice);
+		setMIDIOutDevice(midiParam->outputDevice);
+	}
+	else if (c == pedalSustain || c == forceSustain)
+	{
+		if (!forceSustain->boolValue()) updateSustainedNotes();
 	}
 }
 
@@ -229,6 +257,38 @@ void Node::setMIDIIO(bool hasInput, bool hasOutput)
 
 }
 
+void Node::setMIDIInDevice(MIDIInputDevice* d)
+{
+	if (currentInDevice == d) return;
+	if (currentInDevice != nullptr)
+	{
+		currentInDevice->removeMIDIInputListener(this);
+	}
+
+	currentInDevice = d;
+
+	if (currentInDevice != nullptr)
+	{
+		currentInDevice->addMIDIInputListener(this);
+	}
+}
+
+void Node::setMIDIOutDevice(MIDIOutputDevice* d)
+{
+	if (currentOutDevice == d) return;
+	if (currentOutDevice != nullptr)
+	{
+		currentOutDevice->close();
+	}
+	currentOutDevice = d;
+
+	if (currentOutDevice != nullptr)
+	{
+		currentOutDevice->open();
+	}
+}
+
+
 void Node::updatePlayConfig(bool notify)
 {
 	if (graph == nullptr)
@@ -250,9 +310,53 @@ void Node::updatePlayConfigInternal()
 
 void Node::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)
 {
+	if (!enabled->boolValue()) return;
 	inMidiBuffer.addEvents(inputBuffer, 0, processor->getBlockSize(), 0);
 }
 
+void Node::midiMessageReceived(const MidiMessage& m)
+{
+	if (!enabled->boolValue()) return;
+
+	bool addToQueue = true;
+
+	if (m.isSustainPedalOn() || m.isSustainPedalOff())
+	{
+		if (pedalSustain->enabled) pedalSustain->setValue(m.isSustainPedalOn());
+	}
+	
+	if (m.isNoteOff())
+	{
+		if (pedalSustain->boolValue() || forceSustain->boolValue())
+		{
+			sustainedNotes.set(m.getNoteNumber(), m.getChannel());
+			addToQueue = false;
+		}
+		else sustainedNotes.remove(m.getNoteNumber());
+	}
+	else if (m.isNoteOn())
+	{
+		sustainedNotes.remove(m.getNoteNumber());
+	}
+
+	if(addToQueue) midiCollector.addMessageToQueue(m);
+}
+
+void Node::updateSustainedNotes()
+{
+	if(!pedalSustain->boolValue() && !forceSustain->boolValue())
+	{
+		HashMap<int, int>::Iterator it(sustainedNotes);
+		while (it.next()) midiCollector.addMessageToQueue(MidiMessage::noteOff(it.getValue(), it.getKey()).withTimeStamp(Time::currentTimeMillis()));
+		sustainedNotes.clear();
+	}
+}
+
+
+void Node::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
+{
+	if (sampleRate != 0) midiCollector.reset(sampleRate);
+}
 
 void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
@@ -263,6 +367,9 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	}
 
 	ScopedLock sl(processor->getCallbackLock());
+
+	//MIDI
+	if (currentInDevice != nullptr) midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
 
 	int numInputs = getNumAudioInputs();
 	int numOutputs = getNumAudioOutputs();
@@ -319,7 +426,6 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	for (int i = 0; i < buffer.getNumChannels(); i++)
 	{
 		float channelRMS = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
-		//jassert(!isnan(channelRMS) && !isinf(channelRMS));
 		if (isinf(channelRMS) || isnan(channelRMS)) channelRMS = 0;
 
 		for (int c = 0; c < numOutConnections; c++)
@@ -329,8 +435,6 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 				if (cm.sourceChannel == i) connectionsActivityLevels.set(c, jmax(connectionsActivityLevels[c], channelRMS));
 			}
 		}
-
-		//rms = jmax(rms, channelRMS);
 	}
 
 	for (int i = 0; i < outAudioConnections.size(); i++)
@@ -341,14 +445,14 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		outAudioConnections[i]->activityLevel = curLevel + (level - curLevel) * .2f;
 	}
 
-	/*
-	if (outControl != nullptr && enabled->boolValue())
+	//MIDI
+	if (!inMidiBuffer.isEmpty() && hasMIDIOutput)
 	{
-		float curVal = outControl->rms->floatValue();
-		float targetVal = outControl->rms->getLerpValueTo(rms, rms > curVal ? .8f : .2f);
-		outControl->rms->setValue(targetVal);
+		for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
+		if (currentOutDevice != nullptr) currentOutDevice->device->sendBlockOfMessagesNow(inMidiBuffer);
 	}
-	*/
+
+	inMidiBuffer.clear();
 }
 
 void Node::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) 

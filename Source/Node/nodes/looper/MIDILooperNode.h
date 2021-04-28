@@ -11,17 +11,12 @@
 #pragma once
 
 class MIDILooperNode :
-    public LooperNode,
-    public MIDIInputDevice::MIDIInputListener
+    public LooperNode
 {
 public:
     MIDILooperNode(var params= var());
     ~MIDILooperNode();
 
-    MIDIDeviceParameter* midiParam;
-    MIDIInputDevice* currentDevice;
-
-    MidiMessageCollector collector;
     MidiMessageCollector cleanupCollector;
 
     struct NoteInfo { 
@@ -31,12 +26,10 @@ public:
     };
     Array<NoteInfo> currentNoteOns; //keeping track of onNotes to cleanup good
 
-    void setMIDIDevice(MIDIInputDevice* d);
-
     virtual LooperTrack* createLooperTrack(int index) override;
 
-    void midiMessageReceived(const MidiMessage& m) override;
-    void onContainerParameterChangedInternal(Parameter* p) override;
+   // virtual  void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer) override;
+    virtual void midiMessageReceived(const MidiMessage& m) override;
 
     void onControllableFeedbackUpdateInternal(ControllableContainer * cc, Controllable *c) override;
 

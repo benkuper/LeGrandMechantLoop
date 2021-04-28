@@ -19,14 +19,17 @@ class NodeAudioProcessor;
 
 
 class Node :
-    public BaseItem
+    public BaseItem,
+    public MIDIInputDevice::MIDIInputListener
 {
 public:
     Node(StringRef name = "Node",
         var params = var(),
         bool hasInput = true, bool hasOutput = true,
         bool userCanSetIO = false,
-        bool useOutControl = true);
+        bool useOutControl = true,
+        bool canHaveMidiDeviceIn = false,
+        bool canHaveMidiDeviceOut = false);
 
     virtual ~Node();
     virtual void clearItem() override;
@@ -51,7 +54,17 @@ public:
     Array<NodeMIDIConnection*> outMidiConnections;
     Array<float> connectionsActivityLevels;
 
+    
+    ControllableContainer midiCC;
+    MIDIDeviceParameter* midiParam;
+    BoolParameter* pedalSustain;
+    BoolParameter* forceSustain;
+
     MidiBuffer inMidiBuffer;
+    MIDIInputDevice* currentInDevice;
+    MIDIOutputDevice* currentOutDevice;
+    MidiMessageCollector midiCollector;
+    HashMap<int, int> sustainedNotes; //keep track of sustain
 
     BoolParameter* isNodePlaying;
     IntParameter* numAudioInputs; //if userCanSetIO
@@ -93,23 +106,25 @@ public:
     void removeOutConnection(NodeConnection* c);
 
     void setMIDIIO(bool hasInput, bool hasOutput);
+    virtual void setMIDIInDevice(MIDIInputDevice* d);
+    virtual void setMIDIOutDevice(MIDIOutputDevice* d);
 
-    //Audio and IO handling
+
     virtual void updatePlayConfig(bool notify = true);
     virtual void updatePlayConfigInternal();
 
-    
     //MIDI
-    void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer);
+    virtual void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer);
+    virtual void midiMessageReceived(const MidiMessage& m) override;
+    virtual void updateSustainedNotes();
 
     //AudioProcessor calls
-    virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) {}
+    virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock);
     virtual void releaseResources() {}
     virtual void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);
     virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {}
     virtual void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);
 
- 
     virtual var getJSONData() override;
     virtual void loadJSONDataItemInternal(var data) override;
 

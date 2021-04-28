@@ -12,7 +12,6 @@
 
 class SamplerNode :
     public Node,
-    public MIDIInputDevice::MIDIInputListener,
     public MidiKeyboardStateListener
 {
 public:
@@ -72,8 +71,6 @@ public:
     MIDIDeviceParameter* midiParam;
     IntParameter* fadeTimeMS;
 
-    MIDIInputDevice* currentDevice;
-    MidiMessageCollector midiCollector;
     MidiKeyboardState keyboardState;
 
     
@@ -88,8 +85,6 @@ public:
 
     void exportSampleSet(File folder);
     void importSampleSet(File folder);
-
-    void setMIDIDevice(MIDIInputDevice* d);
 
     void onContainerTriggerTriggered(Trigger* t) override;
     void onContainerParameterChangedInternal(Parameter* p) override;

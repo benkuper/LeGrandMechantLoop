@@ -9,8 +9,7 @@
 */
 
 VSTNode::VSTNode(var params) :
-	Node(getTypeString(), params, true, true, true),
-	currentDevice(nullptr),
+	Node(getTypeString(), params, true, true, true, true, true, true),
 	isSettingVST(false),
 	currentPreset(nullptr),
 	macrosCC("Macros"),
@@ -25,8 +24,7 @@ VSTNode::VSTNode(var params) :
 	pluginParam = new VSTPluginParameter("VST", "The VST to use");
 	ControllableContainer::addParameter(pluginParam);
 
-	midiParam = new MIDIDeviceParameter("MIDI Device", true, false);
-	ControllableContainer::addParameter(midiParam);
+	
 	presetEnum = addEnumParameter("Preset", "Load a preset");
 	numMacros = addIntParameter("Num Macros", "Choose the number of macros you want for this VST", 0, 0);
 	autoActivateMacroIndex = addIntParameter("Auto Bypass Macro", "Index of the macro that automatically bypasses the VST if value is in the range", 1, 1, 1, false);
@@ -36,6 +34,7 @@ VSTNode::VSTNode(var params) :
 	autoActivateRange->setPoint(0, 0);
 
 	addChildControllableContainer(&macrosCC);
+
 
 	setIOFromVST(); //force nothing
 
@@ -50,25 +49,9 @@ VSTNode::~VSTNode()
 void VSTNode::clearItem()
 {
 	Node::clearItem();
-	setMIDIDevice(nullptr);
 	setupVST(nullptr);
 }
 
-void VSTNode::setMIDIDevice(MIDIInputDevice* d)
-{
-	if (currentDevice == d) return;
-	if (currentDevice != nullptr)
-	{
-		currentDevice->removeMIDIInputListener(this);
-	}
-
-	currentDevice = d;
-
-	if (currentDevice != nullptr)
-	{
-		currentDevice->addMIDIInputListener(this);
-	}
-}
 
 void VSTNode::setupVST(PluginDescription* description)
 {
@@ -248,7 +231,6 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 {
 	Node::onContainerParameterChangedInternal(p);
 	if (p == pluginParam) setupVST(pluginParam->getPluginDescription());
-	else if (p == midiParam) setMIDIDevice(midiParam->inputDevice);
 	else if (p == numAudioInputs || p == numAudioOutputs) setIOFromVST();
 	else if (p == presetEnum)
 	{
@@ -346,11 +328,6 @@ void VSTNode::onControllableStateChanged(Controllable* c)
 	if (c == autoActivateMacroIndex || c == autoActivateRange) checkAutoBypassFromMacro();
 }
 
-void VSTNode::midiMessageReceived(const MidiMessage& m)
-{
-	midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
-}
-
 void VSTNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
 	if (vst != nullptr && sampleRate > 0 && maximumExpectedSamplesPerBlock > 0) vst->prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock);
@@ -359,27 +336,22 @@ void VSTNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBloc
 
 void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	processVSTBlock(buffer, false);
+	processVSTBlock(buffer, midiMessages, false);
 }
 
 void VSTNode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	if (getNumAudioInputs() == 0) buffer.clear();
-	processVSTBlock(buffer, true);
+	processVSTBlock(buffer, midiMessages, true);
 }
 
-void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, bool bypassed)
+void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages, bool bypassed)
 {
 	if (vst != nullptr)
-	{
-		if (currentDevice != nullptr)
-		{
-			midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
-		}
-
+	{	
 		if (!bypassed)
 		{
-			vst->processBlock(buffer, inMidiBuffer);
+			vst->processBlock(buffer, midiMessages);
 		}
 
 		if (vst->producesMidi())
@@ -391,8 +363,6 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, bool bypassed)
 		}
 
 	}
-
-	inMidiBuffer.clear();
 }
 
 var VSTNode::getJSONData()

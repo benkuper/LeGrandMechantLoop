@@ -9,33 +9,13 @@
 */
 
 MIDILooperNode::MIDILooperNode(var params) :
-    LooperNode(getTypeString(), params, MIDI),
-    currentDevice(nullptr)
+    LooperNode(getTypeString(), params, MIDI)
 {
-    midiParam = new MIDIDeviceParameter("MIDI Device", true, false);
-    ControllableContainer::addParameter(midiParam);
-    setMIDIIO(true, true);
 }
 
 MIDILooperNode::~MIDILooperNode()
 {
 
-}
-
-void MIDILooperNode::setMIDIDevice(MIDIInputDevice* d)
-{
-    if (currentDevice == d) return;
-    if (currentDevice != nullptr)
-    {
-        currentDevice->removeMIDIInputListener(this);
-    }
-
-    currentDevice = d;
-
-    if (currentDevice != nullptr)
-    {
-        currentDevice->addMIDIInputListener(this);
-    }
 }
 
 LooperTrack* MIDILooperNode::createLooperTrack(int index)
@@ -45,19 +25,14 @@ LooperTrack* MIDILooperNode::createLooperTrack(int index)
 
 void MIDILooperNode::midiMessageReceived(const MidiMessage& m)
 {
-    collector.addMessageToQueue(m);
+    LooperNode::midiMessageReceived(m);
+
     if (m.isNoteOnOrOff())
     {
         for (auto& t : tracksCC.controllableContainers) ((MIDILooperTrack*)t.get())->handleNoteReceived(m);
         if (m.isNoteOn()) currentNoteOns.add({ m.getChannel(), m.getNoteNumber() });
         else if (m.isNoteOff()) currentNoteOns.removeAllInstancesOf({ m.getChannel(), m.getNoteNumber() });
     }
-}
-
-void MIDILooperNode::onContainerParameterChangedInternal(Parameter* p)
-{
-    LooperNode::onContainerParameterChangedInternal(p);
-    if (p == midiParam) setMIDIDevice(midiParam->inputDevice);
 }
 
 void MIDILooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
@@ -88,8 +63,7 @@ void MIDILooperNode::onControllableFeedbackUpdateInternal(ControllableContainer*
 void MIDILooperNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
     LooperNode::prepareToPlay(sampleRate, maximumExpectedSamplesPerBlock);
-    collector.reset(sampleRate);
-    cleanupCollector.reset(sampleRate);
+    if(sampleRate != 0) cleanupCollector.reset(sampleRate);
 }
 
 void MIDILooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -98,8 +72,6 @@ void MIDILooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer
 
     int blockSize = buffer.getNumSamples();
 
-    collector.removeNextBlockOfMessages(inMidiBuffer, blockSize);
-   
     MidiBuffer outBuffer;
     cleanupCollector.removeNextBlockOfMessages(outBuffer, blockSize);
 
@@ -124,6 +96,4 @@ void MIDILooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer
             c->destNode->receiveMIDIFromInput(this, outBuffer);
         }
     }
-
-    inMidiBuffer.clear();
 }

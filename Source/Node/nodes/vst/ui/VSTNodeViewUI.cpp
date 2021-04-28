@@ -43,7 +43,7 @@ void VSTNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
     pluginUI->setBounds(r.removeFromTop(20).reduced(1));
     r.removeFromTop(4);
 
-    midiParamUI->setBounds(r.removeFromTop(20).reduced(1));
+    midiParamUI->setBounds(r.removeFromTop(40).reduced(1));
 }
 
 void VSTNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)

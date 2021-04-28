@@ -13,8 +13,7 @@
 class VSTParameterContainer;
 
 class VSTNode :
-	public Node,
-	public MIDIInputDevice::MIDIInputListener
+	public Node
 {
 public:
 	VSTNode(var params = var());
@@ -27,11 +26,6 @@ public:
 	IntParameter* autoActivateMacroIndex;
 	Point2DParameter* autoActivateRange;
 
-	MIDIDeviceParameter* midiParam;
-
-	MIDIInputDevice* currentDevice;
-	std::unique_ptr<AudioPluginInstance> vst;
-	MidiMessageCollector midiCollector;
 
 	struct VSTPreset
 	{
@@ -44,14 +38,13 @@ public:
 	VSTPreset* currentPreset;
 
 	EnumParameter* presetEnum;
+	std::unique_ptr<AudioPluginInstance> vst;
 
 	bool antiMacroFeedback;
 	bool isSettingVST; //avoid updating vst's playconfig while setting it
 
 	void clearItem() override;
-
 	
-	void setMIDIDevice(MIDIInputDevice* d);
 	void setupVST(PluginDescription* description);
 	void setIOFromVST();
 
@@ -69,12 +62,11 @@ public:
 	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 	void onControllableStateChanged(Controllable* c) override;
 
-	void midiMessageReceived(const MidiMessage& m) override;
 
 	void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
-	void processVSTBlock(AudioBuffer<float>& buffer, bool bypassed);
+	void processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer &midiMessages, bool bypassed);
 
 	var getJSONData() override;
 	void loadJSONDataItemInternal(var data) override;
