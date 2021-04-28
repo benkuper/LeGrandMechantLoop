@@ -409,12 +409,10 @@ void LooperTrack::processTrack(int blockSize)
 	{
 		if (playQuantization == Transport::FREE)
 		{
-			if (freePlaySample + blockSize >= bufferNumSamples)
-			{
-				freePlaySample = 0;
-			}
+			if (freePlaySample >= bufferNumSamples) freePlaySample = 0;
 			startReadSample = freePlaySample;
 			freePlaySample += blockSize;
+
 		}
 		else //bar, beat
 		{

@@ -235,8 +235,6 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 	prevGain = vol;
 
-	
-
 	if (antiClickFadeBeforeClear)
 	{
 		clearTrack();
