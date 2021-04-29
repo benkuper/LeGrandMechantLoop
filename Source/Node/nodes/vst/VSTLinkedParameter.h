@@ -36,7 +36,7 @@ public:
     VSTParameterLink * addVSTParam(AudioProcessorParameter * p);
     void fillContainerForVSTParamGroup(ControllableContainer* cc, const AudioProcessorParameterGroup* group/*, bool createParameters = false*/);
     VSTParameterLink* createParameterForVSTParam(AudioProcessorParameter* vstParam);
-
+    
     void inspectableDestroyed(Inspectable* i) override;
 
     bool hasParam(int index) { return idParamMap.contains(index); }

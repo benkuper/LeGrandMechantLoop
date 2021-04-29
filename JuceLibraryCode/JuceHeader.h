@@ -52,7 +52,7 @@ namespace ProjectInfo
 {
     const char* const  projectName    = "LGML";
     const char* const  companyName    = "";
-    const char* const  versionString  = "1.0.0b59";
+    const char* const  versionString  = "1.0.0b60";
     const int          versionNumber  = 0x10000;
 }
 #endif

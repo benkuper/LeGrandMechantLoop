@@ -186,7 +186,6 @@ VSTParameterLink * VSTParameterContainer::addVSTParam(AudioProcessorParameter* v
 	if (idContainerMap.contains(index))
 	{
 		ControllableContainer* cc = idContainerMap[index];
-
 		VSTParameterLink * pLink = createParameterForVSTParam(vstP);
 		pLink->setMaxMacros(maxMacros);
 		pLink->param->isRemovableByUser = true;
@@ -194,6 +193,7 @@ VSTParameterLink * VSTParameterContainer::addVSTParam(AudioProcessorParameter* v
 		idParamMap.set(index, pLink);
 		pLink->param->addInspectableListener(this);
 		cc->addParameter(pLink->param);
+		inspectableIdMap.set(pLink->param, index);
 
 		return pLink;
 	}
@@ -233,7 +233,7 @@ VSTParameterLink * VSTParameterContainer::createParameterForVSTParam(AudioProces
 {
 	VSTParameterLink * p = nullptr;
 	if (vstParam->isBoolean()) p = new VSTLinkedBoolParameter(vstParam);
-	else if (vstParam->isDiscrete())
+	else if (vstParam->isDiscrete() && vstParam->getNumSteps() != INT32_MAX)
 	{
 		if (vstParam->getNumSteps() == 2) p = new VSTLinkedBoolParameter(vstParam);
 		else p = new VSTLinkedIntParameter(vstParam);
@@ -244,13 +244,13 @@ VSTParameterLink * VSTParameterContainer::createParameterForVSTParam(AudioProces
 
 }
 
-void VSTParameterContainer::inspectableDestroyed(Inspectable* i)
+void VSTParameterContainer::inspectableDestroyed(Inspectable * i)
 {
-    if(inspectableIdMap.size() == 0) return;
-    if (inspectableIdMap.contains(i))
+	if (inspectableIdMap.size() == 0) return;
+	if (inspectableIdMap.contains(i))
 	{
-		int index = inspectableIdMap[i];
-		idParamMap.remove(index);
+		int id = inspectableIdMap[i];
+		idParamMap.remove(id);
 		inspectableIdMap.remove(i);
 	}
 }

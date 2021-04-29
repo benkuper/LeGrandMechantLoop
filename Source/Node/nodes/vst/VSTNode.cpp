@@ -43,7 +43,6 @@ VSTNode::VSTNode(var params) :
 
 VSTNode::~VSTNode()
 {
-
 }
 
 void VSTNode::clearItem()
