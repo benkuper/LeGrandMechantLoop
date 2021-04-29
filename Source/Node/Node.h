@@ -55,10 +55,13 @@ public:
     Array<float> connectionsActivityLevels;
 
     
-    ControllableContainer midiCC;
+    std::unique_ptr<ControllableContainer> midiCC;
     MIDIDeviceParameter* midiParam;
     BoolParameter* pedalSustain;
     BoolParameter* forceSustain;
+    std::unique_ptr<ControllableContainer> channelFilterCC;
+    Array<BoolParameter*> midiChannels;
+    BoolParameter* logIncomingMidi;
 
     MidiBuffer inMidiBuffer;
     MIDIInputDevice* currentInDevice;

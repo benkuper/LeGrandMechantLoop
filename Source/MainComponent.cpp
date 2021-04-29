@@ -149,6 +149,9 @@ LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent* mainComp, LGMLEngine* 
 #endif
 
 	cpuUsageUI.reset(engine->cpuUsage->createSlider());
+	cpuUsageUI->suffix = " %";
+	cpuUsageUI->fixedDecimals = 2;
+
 	addAndMakeVisible(cpuUsageUI.get());
 
 	logInUI.reset(OSCRemoteControl::getInstance()->logIncoming->createToggle());

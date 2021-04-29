@@ -18,7 +18,6 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	hasMIDIOutput(false),
 	numAudioInputs(nullptr),
 	numAudioOutputs(nullptr),
-	midiCC("MIDI"),
 	midiParam(nullptr),
 	currentInDevice(nullptr),
 	currentOutDevice(nullptr),
@@ -67,15 +66,26 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 
 	if (canHaveMidiDeviceIn || canHaveMidiDeviceOut)
 	{
+		midiCC.reset(new ControllableContainer("MIDI"));
+		midiCC->saveAndLoadRecursiveData = true;
+		
 		midiParam = new MIDIDeviceParameter("MIDI Device", canHaveMidiDeviceIn, canHaveMidiDeviceOut);
-		midiCC.addParameter(midiParam);
-		pedalSustain = midiCC.addBoolParameter("Pedal Sustain", "If enabled, incoming CC64 midi messages from device will be treated as incoming pedal and this will be the feedback for its state", false);
+		midiCC->addParameter(midiParam);
+		pedalSustain = midiCC->addBoolParameter("Pedal Sustain", "If enabled, incoming CC64 midi messages from device will be treated as incoming pedal and this will be the feedback for its state", false);
 		pedalSustain->canBeDisabledByUser = true;
 		pedalSustain->setControllableFeedbackOnly(true);
-		forceSustain = midiCC.addBoolParameter("Force Sustain", "If checked, this will force sustain manually independent of the pedal", false);
+		forceSustain = midiCC->addBoolParameter("Force Sustain", "If checked, this will force sustain manually independent of the pedal", false);
 		
+		logIncomingMidi = midiCC->addBoolParameter("Log Incoming messages", "This will log incoming messages (only working on the device directly connected, not incoming connection from other nodes", false);
+		channelFilterCC.reset(new ControllableContainer("Channel Filter"));
+		midiChannels.ensureStorageAllocated(16);
+		for (int i = 1; i <= 16; i++) midiChannels.set(i, channelFilterCC->addBoolParameter(String(i), "If checked, this node will accept messages from this channel", true));
+		channelFilterCC->editorIsCollapsed = true;
+		midiCC->addChildControllableContainer(channelFilterCC.get());
+		
+		addChildControllableContainer(midiCC.get());
+
 		setMIDIIO(canHaveMidiDeviceIn, canHaveMidiDeviceOut);
-		addChildControllableContainer(&midiCC);
 	}
 
 }
@@ -317,6 +327,12 @@ void Node::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)
 void Node::midiMessageReceived(const MidiMessage& m)
 {
 	if (!enabled->boolValue()) return;
+	if (!midiChannels[m.getChannel()]->boolValue()) return;
+
+	if (logIncomingMidi->boolValue())
+	{
+		NLOG(niceName, "Received MIDI : " << m.getDescription());
+	}
 
 	bool addToQueue = true;
 
@@ -467,6 +483,7 @@ var Node::getJSONData()
 	{
 		if (outControl != nullptr) data.getDynamicObject()->setProperty("out", outControl->getJSONData());
 		data.getDynamicObject()->setProperty("view", viewCC.getJSONData());
+		if(midiCC != nullptr) data.getDynamicObject()->setProperty("midi", midiCC->getJSONData());
 	}
 	return data;
 }
@@ -477,6 +494,7 @@ void Node::loadJSONDataItemInternal(var data)
 	{
 		if(outControl != nullptr) outControl->loadJSONData(data.getProperty("out", var()));
 		viewCC.loadJSONData(data.getProperty("view", var()));
+		if(midiCC != nullptr) midiCC->loadJSONData(data.getProperty("midi", var()));
 	}
 }
 

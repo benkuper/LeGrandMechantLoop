@@ -36,10 +36,10 @@ LGMLEngine::LGMLEngine() :
     GlobalSettings::getInstance()->addChildControllableContainer(LGMLSettings::getInstance());
     GlobalSettings::getInstance()->addChildControllableContainer(VSTManager::getInstance());
 
-    cpuUsage = addFloatParameter("Audio CPU Usage", "Audio CPU Usage indicator. /!\\ This is only showing the audio processing, not the UI and other processes !", 0, 0, 1);
+    cpuUsage = addFloatParameter("Audio CPU Usage", "Audio CPU Usage indicator. /!\\ This is only showing the audio processing, not the UI and other processes !", 0, 0, 100);
     cpuUsage->setControllableFeedbackOnly(true);
 
-    startTimer(2, 500);
+    startTimer(2, 200);
 }
 
 LGMLEngine::~LGMLEngine()
@@ -84,7 +84,7 @@ void LGMLEngine::timerCallback(int timerID)
 {
     Engine::timerCallback(timerID);
     if (isClearing || isLoadingFile) return;
-    if (timerID == 2) cpuUsage->setValue(AudioManager::getInstance()->am.getCpuUsage());
+    if (timerID == 2) cpuUsage->setValue(AudioManager::getInstance()->am.getCpuUsage() * 100);
 }
 
 String LGMLEngine::getMinimumRequiredFileVersion()
