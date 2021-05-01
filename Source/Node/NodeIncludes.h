@@ -56,7 +56,7 @@
 
 #include "nodes/vst/VSTLinkedParameter.h"
 #include "nodes/vst/VSTNode.h"
-
+#include "nodes/vst/VSTRackNode.h"
 
 //UI
 #include "ui/NodeUI.h"
@@ -84,3 +84,4 @@
 
 #include "nodes/vst/ui/VSTLinkedParameterUI.h"
 #include "nodes/vst/ui/VSTNodeViewUI.h"
+#include "nodes/vst/ui/VSTRackNodeUI.h"

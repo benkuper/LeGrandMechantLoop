@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b60" cppLanguageStandard="17">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b61" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="ZG9FoU" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
@@ -256,6 +256,9 @@
               <FILE id="Pqn9oN" name="VSTNodeViewUI.cpp" compile="0" resource="0"
                     file="Source/Node/nodes/vst/ui/VSTNodeViewUI.cpp"/>
               <FILE id="FTt0Ut" name="VSTNodeViewUI.h" compile="0" resource="0" file="Source/Node/nodes/vst/ui/VSTNodeViewUI.h"/>
+              <FILE id="W8lEVA" name="VSTRackNodeUI.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/vst/ui/VSTRackNodeUI.cpp"/>
+              <FILE id="dc0ENC" name="VSTRackNodeUI.h" compile="0" resource="0" file="Source/Node/nodes/vst/ui/VSTRackNodeUI.h"/>
             </GROUP>
             <FILE id="eRODhs" name="VSTLinkedParameter.cpp" compile="0" resource="0"
                   file="Source/Node/nodes/vst/VSTLinkedParameter.cpp"/>
@@ -263,6 +266,8 @@
                   file="Source/Node/nodes/vst/VSTLinkedParameter.h"/>
             <FILE id="EQgTho" name="VSTNode.cpp" compile="0" resource="0" file="Source/Node/nodes/vst/VSTNode.cpp"/>
             <FILE id="EvuefA" name="VSTNode.h" compile="0" resource="0" file="Source/Node/nodes/vst/VSTNode.h"/>
+            <FILE id="Zl7YJP" name="VSTRackNode.cpp" compile="0" resource="0" file="Source/Node/nodes/vst/VSTRackNode.cpp"/>
+            <FILE id="PNLXF6" name="VSTRackNode.h" compile="0" resource="0" file="Source/Node/nodes/vst/VSTRackNode.h"/>
           </GROUP>
           <GROUP id="{0581DE71-D9D5-B444-9014-51F1CF249FDF}" name="spat">
             <GROUP id="{EB28E7A0-62EE-C45B-2B17-B1139A8A2EB9}" name="ui">

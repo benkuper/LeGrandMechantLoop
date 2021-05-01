@@ -26,7 +26,6 @@ public:
 	IntParameter* autoActivateMacroIndex;
 	Point2DParameter* autoActivateRange;
 
-
 	struct VSTPreset
 	{
 		String name;
@@ -34,7 +33,6 @@ public:
 	};
 
 	OwnedArray<VSTPreset> presets;
-
 	VSTPreset* currentPreset;
 
 	EnumParameter* presetEnum;

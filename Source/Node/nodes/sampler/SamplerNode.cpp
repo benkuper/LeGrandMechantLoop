@@ -53,7 +53,7 @@ SamplerNode::SamplerNode(var params) :
 	release = addFloatParameter("Release", "Time of the release in seconds", .2f, 0);
 	release->defaultUI = FloatParameter::TIME;
 
-	releaseCurve = addFloatParameter("ReleaseCurve", "Bend the release", 0, 0, 0.1);
+	releaseCurve = addFloatParameter("Release Curve", "Bend the release", 0.001f, 0, 0.1f);
 
 	keyboardState.addListener(this);
 

@@ -327,7 +327,7 @@ void Node::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)
 void Node::midiMessageReceived(const MidiMessage& m)
 {
 	if (!enabled->boolValue()) return;
-	if (!midiChannels[m.getChannel()]->boolValue()) return;
+	if (!midiChannels[m.getChannel()-1]->boolValue()) return;
 
 	if (logIncomingMidi->boolValue())
 	{
