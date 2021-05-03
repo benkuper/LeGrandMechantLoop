@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b62" cppLanguageStandard="17">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b63" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <FILE id="ZG9FoU" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
@@ -15,6 +15,55 @@
       <FILE id="HmeOao" name="stop.png" compile="0" resource="1" file="Resources/stop.png"/>
     </GROUP>
     <GROUP id="{644794F3-EEA3-18B3-8950-FB0E90CE6C1E}" name="Source">
+      <GROUP id="{C2A8493F-A236-55BA-F45D-A26C9E3DD629}" name="Interface">
+        <GROUP id="{8662C65F-ECF8-8C3E-BD94-310F051453B6}" name="ui">
+          <FILE id="EbkTfM" name="InterfaceManagerUI.cpp" compile="0" resource="0"
+                file="Source/Interface/ui/InterfaceManagerUI.cpp"/>
+          <FILE id="SYKqLF" name="InterfaceManagerUI.h" compile="0" resource="0"
+                file="Source/Interface/ui/InterfaceManagerUI.h"/>
+          <FILE id="XuFhe3" name="InterfaceUI.cpp" compile="0" resource="0" file="Source/Interface/ui/InterfaceUI.cpp"/>
+          <FILE id="hNoffB" name="InterfaceUI.h" compile="0" resource="0" file="Source/Interface/ui/InterfaceUI.h"/>
+        </GROUP>
+        <FILE id="i4Fb0O" name="Interface.cpp" compile="0" resource="0" file="Source/Interface/Interface.cpp"/>
+        <FILE id="v0bhWN" name="Interface.h" compile="0" resource="0" file="Source/Interface/Interface.h"/>
+        <FILE id="WS5s8n" name="InterfaceManager.cpp" compile="0" resource="0"
+              file="Source/Interface/InterfaceManager.cpp"/>
+        <FILE id="VF8UwJ" name="InterfaceManager.h" compile="0" resource="0"
+              file="Source/Interface/InterfaceManager.h"/>
+      </GROUP>
+      <GROUP id="{6833E5AA-B0A5-E71F-3AD3-FA8BEBCB6F9D}" name="Macro">
+        <GROUP id="{A63BCC91-9083-0A53-74F9-7EFFBEDEAA62}" name="ui">
+          <FILE id="DRSNZz" name="MacroManagerUI.cpp" compile="1" resource="0"
+                file="Source/Macro/ui/MacroManagerUI.cpp"/>
+          <FILE id="N6EuDO" name="MacroManagerUI.h" compile="0" resource="0"
+                file="Source/Macro/ui/MacroManagerUI.h"/>
+          <FILE id="TAxpDg" name="MacroUI.cpp" compile="1" resource="0" file="Source/Macro/ui/MacroUI.cpp"/>
+          <FILE id="VxWRj5" name="MacroUI.h" compile="0" resource="0" file="Source/Macro/ui/MacroUI.h"/>
+        </GROUP>
+        <FILE id="qUYolK" name="MacroManager.cpp" compile="1" resource="0"
+              file="Source/Macro/MacroManager.cpp"/>
+        <FILE id="a7X3uZ" name="MacroManager.h" compile="0" resource="0" file="Source/Macro/MacroManager.h"/>
+        <FILE id="jHM9m2" name="MacroParameter.cpp" compile="1" resource="0"
+              file="Source/Macro/MacroParameter.cpp"/>
+        <FILE id="vdVwDV" name="MacroParameter.h" compile="0" resource="0"
+              file="Source/Macro/MacroParameter.h"/>
+      </GROUP>
+      <GROUP id="{423E2615-9176-143E-28A8-3ADAD8B9FE1C}" name="Mapping">
+        <GROUP id="{5492EC73-D9F1-1926-A495-4AA0C1AE274D}" name="ui">
+          <FILE id="OTZ01x" name="MappingManagerUI.cpp" compile="1" resource="0"
+                file="Source/Mapping/ui/MappingManagerUI.cpp"/>
+          <FILE id="rzLKGj" name="MappingManagerUI.h" compile="0" resource="0"
+                file="Source/Mapping/ui/MappingManagerUI.h"/>
+          <FILE id="Hb8kqN" name="MappingUI.cpp" compile="1" resource="0" file="Source/Mapping/ui/MappingUI.cpp"/>
+          <FILE id="VWoM1B" name="MappingUI.h" compile="0" resource="0" file="Source/Mapping/ui/MappingUI.h"/>
+        </GROUP>
+        <FILE id="EqZRJl" name="Mapping.cpp" compile="1" resource="0" file="Source/Mapping/Mapping.cpp"/>
+        <FILE id="Z8c4Oi" name="Mapping.h" compile="0" resource="0" file="Source/Mapping/Mapping.h"/>
+        <FILE id="Cu0CFS" name="MappingManager.cpp" compile="1" resource="0"
+              file="Source/Mapping/MappingManager.cpp"/>
+        <FILE id="tSTS88" name="MappingManager.h" compile="0" resource="0"
+              file="Source/Mapping/MappingManager.h"/>
+      </GROUP>
       <GROUP id="{59C161F0-4CB2-35D0-FE5F-332F9A45D1C0}" name="Outliner">
         <FILE id="W7ygKg" name="LGMLOutliner.cpp" compile="1" resource="0"
               file="Source/Outliner/LGMLOutliner.cpp"/>

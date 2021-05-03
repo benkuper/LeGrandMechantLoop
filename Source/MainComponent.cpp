@@ -5,6 +5,8 @@
 #include "Preset/PresetIncludes.h"
 #include "Outliner/LGMLOutliner.h"
 #include "Transport/ui/TransportUI.h"
+#include "Macro/ui/MacroManagerUI.h"
+#include "Mapping/ui/MappingManagerUI.h"
 
 //==============================================================================
 String getAppVersion();
@@ -30,6 +32,8 @@ void MainComponent::init()
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Nodes (2D View)", &NodeManagerViewPanel::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Transport", &TransportUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Presets", &RootPresetManagerUI::create));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Macros", &MacroManagerUI::create));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Mappings", &MappingManagerUI::create));
 
 	ControllableUI::drawContourOnInspectableHighlighted = true;
 

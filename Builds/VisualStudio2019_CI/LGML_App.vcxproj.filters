@@ -5,6 +5,24 @@
     <Filter Include="LGML\Resources">
       <UniqueIdentifier>{CAFC601F-9204-A3D8-32F6-D63743890420}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Interface\ui">
+      <UniqueIdentifier>{7471AE03-4351-2E8A-EF01-32A0B55716BF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Interface">
+      <UniqueIdentifier>{F75005E5-39A0-F07D-73A2-B7008F4A8E12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Macro\ui">
+      <UniqueIdentifier>{01CA65AA-84A7-F799-2E68-D7FC613529FA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Macro">
+      <UniqueIdentifier>{D48BB79D-9278-0F26-D53F-E8D69E33755D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Mapping\ui">
+      <UniqueIdentifier>{40CCF98E-8125-07A7-644B-BAF4A5399A87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Mapping">
+      <UniqueIdentifier>{A317E520-3CF2-B210-BF6C-94EA8CFCFDDE}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Outliner">
       <UniqueIdentifier>{780D62ED-7738-2C57-3A43-E8317A7BDC96}</UniqueIdentifier>
     </Filter>
@@ -904,6 +922,42 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Interface\ui\InterfaceManagerUI.cpp">
+      <Filter>LGML\Source\Interface\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Interface\ui\InterfaceUI.cpp">
+      <Filter>LGML\Source\Interface\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Interface\Interface.cpp">
+      <Filter>LGML\Source\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Interface\InterfaceManager.cpp">
+      <Filter>LGML\Source\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Macro\ui\MacroManagerUI.cpp">
+      <Filter>LGML\Source\Macro\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Macro\ui\MacroUI.cpp">
+      <Filter>LGML\Source\Macro\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Macro\MacroManager.cpp">
+      <Filter>LGML\Source\Macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Macro\MacroParameter.cpp">
+      <Filter>LGML\Source\Macro</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Mapping\ui\MappingManagerUI.cpp">
+      <Filter>LGML\Source\Mapping\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Mapping\ui\MappingUI.cpp">
+      <Filter>LGML\Source\Mapping\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Mapping\Mapping.cpp">
+      <Filter>LGML\Source\Mapping</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Mapping\MappingManager.cpp">
+      <Filter>LGML\Source\Mapping</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Outliner\LGMLOutliner.cpp">
       <Filter>LGML\Source\Outliner</Filter>
     </ClCompile>
@@ -4017,6 +4071,42 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Interface\ui\InterfaceManagerUI.h">
+      <Filter>LGML\Source\Interface\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Interface\ui\InterfaceUI.h">
+      <Filter>LGML\Source\Interface\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Interface\Interface.h">
+      <Filter>LGML\Source\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Interface\InterfaceManager.h">
+      <Filter>LGML\Source\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Macro\ui\MacroManagerUI.h">
+      <Filter>LGML\Source\Macro\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Macro\ui\MacroUI.h">
+      <Filter>LGML\Source\Macro\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Macro\MacroManager.h">
+      <Filter>LGML\Source\Macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Macro\MacroParameter.h">
+      <Filter>LGML\Source\Macro</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Mapping\ui\MappingManagerUI.h">
+      <Filter>LGML\Source\Mapping\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Mapping\ui\MappingUI.h">
+      <Filter>LGML\Source\Mapping\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Mapping\Mapping.h">
+      <Filter>LGML\Source\Mapping</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Mapping\MappingManager.h">
+      <Filter>LGML\Source\Mapping</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Outliner\LGMLOutliner.h">
       <Filter>LGML\Source\Outliner</Filter>
     </ClInclude>
