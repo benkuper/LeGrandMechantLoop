@@ -46,6 +46,7 @@ public:
 	Transport::Quantization playQuantization;
 
 	int curSample; //for tracking rec and play
+	int jumpGhostSample; //when jumping in the sample, keep curSample to fade (force transport playRestart for instance)
 	int bufferNumSamples;
 	int freeRecStartOffset;
 	double timeAtStateChange;

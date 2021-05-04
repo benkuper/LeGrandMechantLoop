@@ -17,6 +17,7 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
 	firstPlayAfterRecord(false),
 	firstPlayAfterStop(false),
     curSample(0),
+	jumpGhostSample(-1),
     bufferNumSamples(0),
     freeRecStartOffset(0),
     timeAtStateChange(0),
@@ -276,6 +277,7 @@ void LooperTrack::clearBuffer(bool setIdle)
 {
 	curSample = 0;
 	bufferNumSamples = 0;
+	jumpGhostSample = -1;
 	if(setIdle) trackState->setValueWithData(IDLE);
 }
 
@@ -284,6 +286,8 @@ void LooperTrack::startPlaying()
 	loopBar->setValue(0);
 	loopBeat->setValue(0);
 	loopProgression->setValue(0);
+	if (curSample > 0) jumpGhostSample = curSample;
+	else jumpGhostSample = -1;
 	curSample = 0;
 
 	Transport::Quantization q = looper->getQuantization();
@@ -307,6 +311,7 @@ void LooperTrack::stopPlaying()
 	if (isRecording(true)) cancelRecording();
 	else if (isPlaying(true)) trackState->setValueWithData(STOPPED);
 	curSample = 0;
+	jumpGhostSample = -1;
 }
 
 void LooperTrack::clearTrack()
@@ -395,14 +400,14 @@ void LooperTrack::handleBeatChanged(bool isNewBar)
 
 void LooperTrack::processTrack(int blockSize)
 {
-	int startReadSample = 0;
+	//int startReadSample = 0;
 
 	if (isRecording(false))
 	{
 		if (!finishRecordLock)
 		{
 			curSample += blockSize;
-			startReadSample = curSample;
+			//startReadSample = curSample;
 		}
 	}
 	else if (isPlaying(false))
@@ -410,7 +415,7 @@ void LooperTrack::processTrack(int blockSize)
 		if (playQuantization == Transport::FREE)
 		{
 			if (freePlaySample >= bufferNumSamples) freePlaySample = 0;
-			startReadSample = freePlaySample;
+			curSample = freePlaySample;
 			freePlaySample += blockSize;
 
 		}
@@ -439,14 +444,14 @@ void LooperTrack::processTrack(int blockSize)
 				firstPlayAfterStop = false;
 			}
 
-			startReadSample = curSample;
+			//startReadSample = curSample;
 		}
 
-		loopProgression->setValue(startReadSample * 1.0f / bufferNumSamples);
-		curSample = startReadSample;
+		loopProgression->setValue(curSample * 1.0f / bufferNumSamples);
+		//curSample = startReadSample;
 	}
 
-	curReadSample = startReadSample;
+	curReadSample = curSample;
 }
 
 bool LooperTrack::hasContent(bool includeRecordPhase) const

@@ -45,7 +45,6 @@ void AudioLooperTrack::clearTrack()
 	if (antiClickFadeBeforeClear)
 	{
 		LooperTrack::clearTrack();
-		
 	}
 	else
 	{
@@ -204,6 +203,30 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 	if ((outputToMainTrack || outputToSeparateTrack) && (curReadSample <= bufferNumSamples))
 	{
+		if (jumpGhostSample > 0 && jumpGhostSample + blockSize < bufferNumSamples)
+		{
+			for (int i = 0; i < numChannels; i++)
+			{
+				if (outputToMainTrack)
+				{
+					outputBuffer.addFromWithRamp(i, 0, buffer.getReadPointer(i, jumpGhostSample+blockSize), blockSize, vol, 0);
+				}
+
+				if (outputToSeparateTrack)
+				{
+					outputBuffer.addFromWithRamp(trackChannel, 0, buffer.getReadPointer(i, jumpGhostSample+blockSize), blockSize, vol, 0);
+
+				}
+
+				//rmsVal = jmax(rmsVal, buffer.getMagnitude(i, curReadSample, blockSize));
+			}
+
+			prevGain = 0;
+			jumpGhostSample = -1;
+		}
+
+		
+
 		for (int i = 0; i < numChannels; i++)
 		{
 			if (outputToMainTrack)
