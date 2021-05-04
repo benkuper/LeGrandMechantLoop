@@ -55,6 +55,7 @@ public:
     public:
         EnumParameter* state;
         int playingSample = 0;
+        int jumpGhostSample = -1;
         float velocity = 0;
         CurvedADSR adsr;
         AudioSampleBuffer buffer;

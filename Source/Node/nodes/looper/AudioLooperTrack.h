@@ -26,12 +26,15 @@ public:
     AudioBuffer<float> preRecBuffer; //a snapshot of the looper's ringbuffer just before recording. This allows for delay adjustement and nice fades for the end of the loop
     
     bool antiClickFadeBeforeClear;
+    int antiClickFadeBeforeStop;
+    int antiClickFadeBeforePause;
     bool recordOnNextSample;
 
     void setNumChannels(int num);
     void updateBufferSize(int newSize);
 
-    virtual void clearTrack() override;
+    void stopPlaying() override;
+    void clearTrack() override;
     void clearBuffer(bool setIdle = true) override;
 
     void startRecordingInternal() override;

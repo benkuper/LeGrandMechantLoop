@@ -398,7 +398,7 @@ void LooperTrack::handleBeatChanged(bool isNewBar)
 	
 }
 
-void LooperTrack::processTrack(int blockSize)
+void LooperTrack::processTrack(int blockSize, bool forcePlaying)
 {
 	//int startReadSample = 0;
 
@@ -421,8 +421,7 @@ void LooperTrack::processTrack(int blockSize)
 		}
 		else //bar, beat
 		{
-			if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) return;
-
+			if (!forcePlaying && !Transport::getInstance()->isCurrentlyPlaying->boolValue()) return;
 			
 			int curBeat = Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart;
 			int trackBeat = curBeat % numBeats;

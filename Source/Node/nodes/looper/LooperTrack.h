@@ -80,7 +80,7 @@ public:
 
 	virtual void handleBeatChanged(bool isNewBar);
 
-	void processTrack(int blockSize);
+	void processTrack(int blockSize, bool forcePlaying = false);
 
 	//Helpers
 	bool hasContent(bool includeRecordPhase) const;

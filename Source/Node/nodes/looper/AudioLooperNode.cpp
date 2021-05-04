@@ -1,3 +1,4 @@
+#include "AudioLooperNode.h"
 /*
   ==============================================================================
 
@@ -108,6 +109,20 @@ void AudioLooperNode::onControllableFeedbackUpdateInternal(ControllableContainer
 {
 	LooperNode::onControllableFeedbackUpdateInternal(cc, c);
 	if(c == fadeTimeMS) updateRingBuffer();
+}
+
+void AudioLooperNode::playStateChanged(bool isPlaying, bool forceRestart)
+{
+	LooperNode::playStateChanged(isPlaying, forceRestart);
+
+	//if (!isPlaying)
+	//{
+	//	for (auto& cc : tracksCC.controllableContainers)
+	//	{
+	//		AudioLooperTrack* tc = (AudioLooperTrack*)cc.get();
+	//		tc->antiClickFadeBeforePause = true;
+	//	}
+	//}
 }
 
 void AudioLooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)

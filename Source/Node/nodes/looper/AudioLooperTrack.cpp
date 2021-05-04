@@ -1,3 +1,4 @@
+#include "AudioLooperTrack.h"
 /*
   ==============================================================================
 
@@ -12,7 +13,9 @@ AudioLooperTrack::AudioLooperTrack(AudioLooperNode* looper, int index, int numCh
 	LooperTrack(looper, index),
 	audioLooper(looper),
 	numChannels(numChannels),
-	antiClickFadeBeforeClear(false)
+	antiClickFadeBeforeClear(false),
+	antiClickFadeBeforeStop(false),
+	antiClickFadeBeforePause(true)
 {
 }
 
@@ -34,11 +37,25 @@ void AudioLooperTrack::updateBufferSize(int newSize)
 	buffer.setSize(numChannels, newSize, true, true);
 }
 
+void AudioLooperTrack::stopPlaying()
+{
+	if (antiClickFadeBeforeStop)
+	{
+		LooperTrack::stopPlaying();
+	}
+	else
+	{
+		antiClickFadeBeforeStop = true;
+	}
+}
+
+
 void AudioLooperTrack::clearBuffer(bool setIdle)
 {
 	buffer.clear();
 	LooperTrack::clearBuffer(setIdle);
 }
+
 
 void AudioLooperTrack::clearTrack()
 {
@@ -123,8 +140,10 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 	TrackState s = trackState->getValueDataAsEnum<TrackState>();
 
+	bool transportIsPlaying = Transport::getInstance()->isCurrentlyPlaying->boolValue();
+
 	if (s == WILL_RECORD
-		&& (!Transport::getInstance()->isCurrentlyPlaying->boolValue() || looper->getQuantization() == Transport::FREE)
+		&& (!transportIsPlaying || looper->getQuantization() == Transport::FREE)
 		&& looper->firstRecVolumeThreshold->enabled)
 	{
 		float mag = inputBuffer.getMagnitude(0, blockSize);
@@ -152,12 +171,13 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		}
 	}
 
-	processTrack(blockSize);
-
+	bool isReallyPlaying = isPlaying(false);
+	bool forceForPauseAntiClick = isReallyPlaying && !transportIsPlaying && antiClickFadeBeforePause;
+	processTrack(blockSize, forceForPauseAntiClick);
 	
-	if (isPlaying(false))
+	if (isReallyPlaying)
 	{
-		if (playQuantization != Transport::FREE && !Transport::getInstance()->isCurrentlyPlaying->boolValue())
+		if (playQuantization != Transport::FREE && !transportIsPlaying && !antiClickFadeBeforePause)
 		{
 			outputToSeparateTrack = false;
 			outputToMainTrack = false;
@@ -165,46 +185,53 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		else
 		{
 			outputToMainTrack = true;
+			if(transportIsPlaying) antiClickFadeBeforePause = true;
 		}
 	}
-
-
-	if (outputToSeparateTrack)
-	{
-		outputBuffer.clear(trackChannel, 0, blockSize);
-	}
-
-	float vol = getGain();
-
-	if (firstPlayAfterRecord)
-	{
-		prevGain = 0;
-		firstPlayAfterRecord = false;
-	}
-	else if (antiClickFadeBeforeClear)
-	{
-		vol = 0;
-	}
-
-	if (firstPlayAfterStop || s == WILL_STOP)
-	{
-		int fadeSamples = looper->playStopFadeMS->intValue() * blockSize;
-		if (firstPlayAfterStop || WILL_STOP)
-		{
-			if (curReadSample < fadeSamples) vol *= curReadSample * 1.0 / fadeSamples;
-		}
-
-		if (s == WILL_STOP)
-		{
-			if (curReadSample > bufferNumSamples - fadeSamples) vol *= (bufferNumSamples - curReadSample) * 1.0 / fadeSamples;
-		}
-	}
-
 
 	if ((outputToMainTrack || outputToSeparateTrack) && (curReadSample <= bufferNumSamples))
 	{
+		if (outputToSeparateTrack)
+		{
+			outputBuffer.clear(trackChannel, 0, blockSize);
+		}
+
+		float vol = getGain();
+
+		if (firstPlayAfterRecord)
+		{
+			prevGain = 0;
+			firstPlayAfterRecord = false;
+		}
+		else if (antiClickFadeBeforeClear || antiClickFadeBeforeStop)
+		{
+			vol = 0;
+		}
+		else if (isReallyPlaying && !transportIsPlaying && antiClickFadeBeforePause)
+		{
+			vol = 0;
+		}
+
+		if (firstPlayAfterStop || s == WILL_STOP)
+		{
+			int fadeReadSample = jumpGhostSample > 0 ? jumpGhostSample : curReadSample;
+			
+			int fadeSamples = looper->playStopFadeMS->intValue() * blockSize;
+			if (firstPlayAfterStop || WILL_STOP)
+			{
+				if (fadeReadSample < fadeSamples) vol *= fadeReadSample * 1.0 / fadeSamples;
+			}
+
+			if (s == WILL_STOP)
+			{
+				if (fadeReadSample > bufferNumSamples - fadeSamples) vol *= (bufferNumSamples - fadeReadSample) * 1.0 / fadeSamples;
+			}
+		}
+
 		if (jumpGhostSample > 0 && jumpGhostSample + blockSize < bufferNumSamples)
 		{
+			firstPlayAfterStop = false;
+
 			for (int i = 0; i < numChannels; i++)
 			{
 				if (outputToMainTrack)
@@ -250,19 +277,31 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		//rms->setValue(targetVal);
 
 		//updateRMS(buffer, -1, curReadSample, blockSize);
+
+		prevGain = vol;
 	}
 	else
 	{
 		//rms->setValue(0);
 	}
 
-	prevGain = vol;
 
 	if (antiClickFadeBeforeClear)
 	{
 		clearTrack();
 		antiClickFadeBeforeClear = false;
+	}else if (antiClickFadeBeforeStop)
+	{
+		stopPlaying();
+		antiClickFadeBeforeStop = false;
+	}else if (isReallyPlaying && !transportIsPlaying && antiClickFadeBeforePause)
+	{
+		firstPlayAfterStop = true;
+		antiClickFadeBeforePause = false;
+		curSample = 0;
+		loopProgression->setValue(0);
+		loopBar->setValue(0);
+		loopBeat->setValue(0);
 	}
-
 
 }

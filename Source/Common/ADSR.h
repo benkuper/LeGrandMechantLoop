@@ -79,7 +79,7 @@ inline double CurvedADSR::process() {
             break;
         case env_decay:
             output = decayBase + output * decayCoef;
-            if (output <= sustainLevel) {
+            if ((sustainLevel <= 1 && output <= sustainLevel) || (sustainLevel > 1 && output >= sustainLevel)) {
                 output = sustainLevel;
                 state = env_sustain;
             }

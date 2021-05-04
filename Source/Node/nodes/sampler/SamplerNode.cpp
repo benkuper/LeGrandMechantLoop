@@ -42,7 +42,7 @@ SamplerNode::SamplerNode(var params) :
 	attack = addFloatParameter("Attack", "Time of the attack in seconds", .01f, 0);
 	attack->defaultUI = FloatParameter::TIME;
 
-	attackCurve = addFloatParameter("Attack Curve", "Bend the attack", 0, 0, 0.1);
+	attackCurve = addFloatParameter("Attack Curve", "Bend the attack", 0.06f, 0, 0.1f);
 
 	decay = addFloatParameter("Decay", "Time of decay in seconds", .2f, 0);
 	decay->defaultUI = FloatParameter::TIME;
@@ -285,6 +285,8 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 {
 	PlayMode pm = playMode->getValueDataAsEnum<PlayMode>();
 
+	SamplerNote* sn = samplerNotes[midiNoteNumber];
+
 	if (clearMode->boolValue())
 	{
 		clearNote(midiNoteNumber);
@@ -296,14 +298,15 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 	{
 		if (pm == HIT_LOOP || pm == HIT_ONESHOT)
 		{
-			samplerNotes[midiNoteNumber]->playingSample = 0;
-			samplerNotes[midiNoteNumber]->oneShotted = false;
+			if(sn->adsr.getState() != CurvedADSR::env_idle) sn->jumpGhostSample = sn->playingSample;
+			sn->playingSample = 0;
+			sn->oneShotted = false;
 		}
 
-		samplerNotes[midiNoteNumber]->velocity = velocity;
-		samplerNotes[midiNoteNumber]->adsr.gate(1);
+		sn->velocity = velocity;
+		sn->adsr.gate(1);
 		lastPlayedNote = midiNoteNumber;
-		samplerNotes[midiNoteNumber]->state->setValueWithData(PLAYING);
+		sn->state->setValueWithData(PLAYING);
 	}
 
 }
@@ -403,10 +406,25 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 
 		if (pm != HIT_ONESHOT || !s->oneShotted)
 		{
-			for (int j = 0; j < buffer.getNumChannels(); j++)
+			if (s->jumpGhostSample != -1 && s->jumpGhostSample < s->buffer.getNumSamples())
 			{
-				tmpNoteBuffer.copyFrom(j, 0, s->buffer, j, s->playingSample, blockSize);
+				for (int j = 0; j < buffer.getNumChannels(); j++)
+				{
+					tmpNoteBuffer.copyFromWithRamp(j, 0, s->buffer.getReadPointer(j, s->jumpGhostSample), blockSize, 1, 0);
+					tmpNoteBuffer.addFromWithRamp(j, 0, s->buffer.getReadPointer(j, s->playingSample), blockSize, 0, 1);
+				}
+
+				s->jumpGhostSample = -1;
 			}
+			else
+			{
+				for (int j = 0; j < buffer.getNumChannels(); j++)
+				{
+					tmpNoteBuffer.copyFrom(j, 0, s->buffer, j, s->playingSample, blockSize);
+				}
+			}
+
+			
 
 			s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
 			for (int j = 0; j < buffer.getNumChannels(); j++)
