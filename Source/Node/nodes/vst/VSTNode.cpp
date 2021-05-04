@@ -351,16 +351,15 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessag
 		if (!bypassed)
 		{
 			vst->processBlock(buffer, midiMessages);
-		}
 
-		if (vst->producesMidi())
-		{
-			if (!inMidiBuffer.isEmpty())
-			{
-				for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
-			}
+			//if (hasMIDIOutput)
+			//{
+			//	if (!inMidiBuffer.isEmpty())
+			//	{
+			//		for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
+			//	}
+			//}
 		}
-
 	}
 }
 

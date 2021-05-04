@@ -154,7 +154,7 @@ LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent* mainComp, LGMLEngine* 
 
 	cpuUsageUI.reset(engine->cpuUsage->createSlider());
 	cpuUsageUI->suffix = " %";
-	cpuUsageUI->fixedDecimals = 2;
+	cpuUsageUI->fixedDecimals = -1; //only int
 
 	addAndMakeVisible(cpuUsageUI.get());
 
