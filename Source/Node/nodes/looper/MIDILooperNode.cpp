@@ -53,7 +53,7 @@ void MIDILooperNode::onControllableFeedbackUpdateInternal(ControllableContainer*
 
         if (shouldClearNotes)
         {
-            Array<MIDILooperTrack::SampledNoteInfo> notes = mt->getNoteOnsAtSample(mt->curReadSample);
+            Array<MIDILooperTrack::SampledNoteInfo> notes = mt->getNoteOnsAtSample(mt->curSample);
             for (auto& info : notes) cleanupCollector.addMessageToQueue(MidiMessage(MidiMessage::noteOff(info.channel, info.noteNumber), processor->getBlockSize() - 1));
         }
     }

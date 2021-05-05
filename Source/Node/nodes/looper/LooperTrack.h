@@ -54,7 +54,6 @@ public:
 
 	int globalBeatAtStart;
 	int freePlaySample;
-	int curReadSample;
 	int numBeats;
 
 	int autoStopRecAfterBeats;

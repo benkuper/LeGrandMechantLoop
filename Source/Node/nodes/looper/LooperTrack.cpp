@@ -24,7 +24,6 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
     finishRecordLock(false),
 	globalBeatAtStart(0),
 	freePlaySample(0),
-	curReadSample(0),
 	numBeats(0),
 	autoStopRecAfterBeats(-1)
 {
@@ -258,6 +257,7 @@ void LooperTrack::finishRecordingAndPlay()
 	playQuantization = q != Transport::FREE ? q : fillMode;
 
 	firstPlayAfterRecord = true;
+	curSample = 0; //force here to avoid jumpGhost on rec
 	startPlaying();
 
 	finishRecordLock = false;
@@ -449,8 +449,6 @@ void LooperTrack::processTrack(int blockSize, bool forcePlaying)
 		loopProgression->setValue(curSample * 1.0f / bufferNumSamples);
 		//curSample = startReadSample;
 	}
-
-	curReadSample = curSample;
 }
 
 bool LooperTrack::hasContent(bool includeRecordPhase) const

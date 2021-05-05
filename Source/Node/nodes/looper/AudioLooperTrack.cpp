@@ -1,4 +1,3 @@
-#include "AudioLooperTrack.h"
 /*
   ==============================================================================
 
@@ -172,8 +171,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 	}
 
 	bool isReallyPlaying = isPlaying(false);
-	bool forceForPauseAntiClick = isReallyPlaying && !transportIsPlaying && antiClickFadeBeforePause;
-	processTrack(blockSize, forceForPauseAntiClick);
+	//bool forceForPauseAntiClick = isReallyPlaying && !transportIsPlaying && antiClickFadeBeforePause;
 	
 	if (isReallyPlaying)
 	{
@@ -189,7 +187,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		}
 	}
 
-	if ((outputToMainTrack || outputToSeparateTrack) && (curReadSample <= bufferNumSamples))
+	if ((outputToMainTrack || outputToSeparateTrack) && (curSample < bufferNumSamples))
 	{
 		if (outputToSeparateTrack)
 		{
@@ -214,7 +212,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 		if (firstPlayAfterStop || s == WILL_STOP)
 		{
-			int fadeReadSample = jumpGhostSample > 0 ? jumpGhostSample : curReadSample;
+			int fadeReadSample = jumpGhostSample >= 0 ? jumpGhostSample : curSample;
 			
 			int fadeSamples = looper->playStopFadeMS->intValue() * blockSize;
 			if (firstPlayAfterStop || WILL_STOP)
@@ -236,12 +234,12 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 			{
 				if (outputToMainTrack)
 				{
-					outputBuffer.addFromWithRamp(i, 0, buffer.getReadPointer(i, jumpGhostSample+blockSize), blockSize, vol, 0);
+					outputBuffer.addFromWithRamp(i, 0, buffer.getReadPointer(i, jumpGhostSample), blockSize, vol, 0);
 				}
 
 				if (outputToSeparateTrack)
 				{
-					outputBuffer.addFromWithRamp(trackChannel, 0, buffer.getReadPointer(i, jumpGhostSample+blockSize), blockSize, vol, 0);
+					outputBuffer.addFromWithRamp(trackChannel, 0, buffer.getReadPointer(i, jumpGhostSample), blockSize, vol, 0);
 
 				}
 
@@ -258,12 +256,12 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		{
 			if (outputToMainTrack)
 			{
-				outputBuffer.addFromWithRamp(i, 0, buffer.getReadPointer(i, curReadSample), blockSize, prevGain, vol);
+				outputBuffer.addFromWithRamp(i, 0, buffer.getReadPointer(i, curSample), blockSize, prevGain, vol);
 			}
 
 			if (outputToSeparateTrack)
 			{
-				outputBuffer.addFromWithRamp(trackChannel, 0, buffer.getReadPointer(i, curReadSample), blockSize, prevGain, vol);
+				outputBuffer.addFromWithRamp(trackChannel, 0, buffer.getReadPointer(i, curSample), blockSize, prevGain, vol);
 				
 			}
 
@@ -302,6 +300,10 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		loopProgression->setValue(0);
 		loopBar->setValue(0);
 		loopBeat->setValue(0);
+	}
+	else
+	{
+		processTrack(blockSize, false);// forceForPauseAntiClick);
 	}
 
 }

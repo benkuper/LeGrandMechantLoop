@@ -91,6 +91,6 @@ void MIDILooperTrack::processBlock(MidiBuffer& inputBuffer, MidiBuffer& outputBu
 
 	if (active->boolValue() && isPlaying(false))
 	{
-		outputBuffer.addEvents(buffer, curReadSample, blockSize, -curReadSample);
+		outputBuffer.addEvents(buffer, curSample, blockSize, -curSample);
 	}
 }
