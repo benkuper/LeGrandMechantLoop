@@ -26,6 +26,7 @@ public:
 	void setMIDIOutDevice(MIDIOutputDevice* d) override;
 
 	void onContainerParameterChangedInternal(Parameter* p) override;
+	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
 	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "MIDI IO"; }

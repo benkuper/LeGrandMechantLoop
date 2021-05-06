@@ -44,7 +44,19 @@ void MIDIIONode::setMIDIOutDevice(MIDIOutputDevice* d)
 
 void MIDIIONode::onContainerParameterChangedInternal(Parameter* p)
 {
-	if (p == enabled || p == enableClock)
+	Node::onContainerParameterChangedInternal(p);
+
+	if (p == enabled)
+	{
+		if (currentOutDevice != nullptr) clock.setOutput(enabled->boolValue() && enableClock->boolValue() ? currentOutDevice : nullptr);
+	}
+}
+
+void MIDIIONode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
+{
+	Node::onControllableFeedbackUpdateInternal(cc, c);
+
+	if (c == enableClock)
 	{
 		if (currentOutDevice != nullptr) clock.setOutput(enabled->boolValue() && enableClock->boolValue() ? currentOutDevice : nullptr);
 	}

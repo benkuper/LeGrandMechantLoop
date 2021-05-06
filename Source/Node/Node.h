@@ -83,7 +83,7 @@ public:
     virtual void init(AudioProcessorGraph* graph);
     virtual void initInternal() {}
 
-    void onContainerParameterChangedInternal(Parameter* p) override;
+    virtual void onContainerParameterChangedInternal(Parameter* p) override;
     virtual void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
     virtual void setAudioInputs(const int& numInputs, bool updateConfig = true); //auto naming
