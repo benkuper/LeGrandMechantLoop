@@ -12,7 +12,7 @@ SamplerNodeViewUI::SamplerNodeViewUI(SamplerNode* n) :
     NodeViewUI(n),
     midiComp(n, n->keyboardState, MidiKeyboardComponent::horizontalKeyboard)
 {
-    midiParamUI.reset(node->midiParam->createMIDIParameterUI());
+    midiParamUI.reset(new MIDIDeviceParameterUI(node->midiParam, true, false));
     addAndMakeVisible(midiParamUI.get());
 
     addAndMakeVisible(&midiComp);

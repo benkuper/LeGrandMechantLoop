@@ -15,7 +15,7 @@ class MIDIDeviceParameterUI :
 	public MIDIDeviceChooser::ChooserListener
 {
 public:
-	MIDIDeviceParameterUI(MIDIDeviceParameter * midiParam);
+	MIDIDeviceParameterUI(MIDIDeviceParameter* midiParam, bool showInput = true, bool showOutput = true);
 	~MIDIDeviceParameterUI();
 	
 	MIDIDeviceParameter * midiParam;

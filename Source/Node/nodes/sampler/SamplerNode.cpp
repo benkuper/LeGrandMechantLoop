@@ -23,8 +23,6 @@ SamplerNode::SamplerNode(var params) :
 
 	playMode = addEnumParameter("Play Mode", "How samples are treated");
 	playMode->addOption("Hit (Loop)", HIT_LOOP)->addOption("Hit (One shot)", HIT_ONESHOT)->addOption("Peek (Continuous)", PEEK)->addOption("Keep (Hold)",KEEP);
-	midiParam = new MIDIDeviceParameter("MIDI Device", true, false);
-	ControllableContainer::addParameter(midiParam);
 
 	fadeTimeMS = addIntParameter("Fade Time MS", "Time to fade between start and end of recording", 50);
 

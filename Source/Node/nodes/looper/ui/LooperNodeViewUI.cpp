@@ -56,7 +56,7 @@ void LooperNodeViewUI::viewFilterUpdated()
 		{
 			if (midiParamUI == nullptr)
 			{
-				midiParamUI.reset(mlp->midiParam->createMIDIParameterUI());
+				midiParamUI.reset(new MIDIDeviceParameterUI(node->midiParam, true, false));
 				addAndMakeVisible(midiParamUI.get());
 				contentComponents.add(midiParamUI.get());
 			}

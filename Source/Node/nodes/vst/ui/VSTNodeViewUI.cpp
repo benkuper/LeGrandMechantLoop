@@ -21,7 +21,7 @@ VSTNodeViewUI::VSTNodeViewUI(VSTNode * n) :
     pluginUI.reset(new VSTPluginParameterUI(n->pluginParam));
     addAndMakeVisible(pluginUI.get());
 
-    midiParamUI.reset(node->midiParam->createMIDIParameterUI());
+    midiParamUI.reset(new MIDIDeviceParameterUI(node->midiParam, true, false));
     addAndMakeVisible(midiParamUI.get());
 
     contentComponents.add(pluginUI.get());
@@ -43,7 +43,7 @@ void VSTNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
     pluginUI->setBounds(r.removeFromTop(20).reduced(1));
     r.removeFromTop(4);
 
-    midiParamUI->setBounds(r.removeFromTop(40).reduced(1));
+    midiParamUI->setBounds(r.removeFromTop(20).reduced(1));
 }
 
 void VSTNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)

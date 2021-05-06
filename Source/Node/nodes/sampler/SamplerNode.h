@@ -69,7 +69,6 @@ public:
     AudioSampleBuffer preRecBuffer;
     int recordedSamples;
 
-    MIDIDeviceParameter* midiParam;
     IntParameter* fadeTimeMS;
 
     MidiKeyboardState keyboardState;

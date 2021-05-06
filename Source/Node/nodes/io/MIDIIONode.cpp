@@ -12,6 +12,7 @@ MIDIIONode::MIDIIONode(var params) :
 	Node(getTypeString(), params, false, false, false, false, true, true),
 	clock(true)
 {
+	enableClock = midiCC->addBoolParameter("Send Clock", "If checked, this will send the clock to the connected output device", true);
 	viewUISize->setPoint(200, 100);
 }
 
@@ -29,13 +30,22 @@ void MIDIIONode::setMIDIOutDevice(MIDIOutputDevice* d)
 {
 	if (currentOutDevice != nullptr)
 	{
-		clock.setOutput(nullptr);
 	}
+
+	clock.setOutput(nullptr);
 
 	Node::setMIDIOutDevice(d);
 
 	if (currentOutDevice != nullptr)
 	{
-		clock.setOutput(currentOutDevice);
+		if(enabled->boolValue() && enableClock->boolValue()) clock.setOutput(currentOutDevice);
+	}
+}
+
+void MIDIIONode::onContainerParameterChangedInternal(Parameter* p)
+{
+	if (p == enabled || p == enableClock)
+	{
+		if (currentOutDevice != nullptr) clock.setOutput(enabled->boolValue() && enableClock->boolValue() ? currentOutDevice : nullptr);
 	}
 }

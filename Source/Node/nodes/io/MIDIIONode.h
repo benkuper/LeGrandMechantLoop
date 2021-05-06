@@ -20,9 +20,12 @@ public:
 	~MIDIIONode();
 
 	MIDIClock clock;
+	BoolParameter* enableClock;
 
 	void setMIDIInDevice(MIDIInputDevice* d) override;
 	void setMIDIOutDevice(MIDIOutputDevice* d) override;
+
+	void onContainerParameterChangedInternal(Parameter* p) override;
 
 	String getTypeString() const override { return getTypeStringStatic(); }
 	static const String getTypeStringStatic() { return "MIDI IO"; }
