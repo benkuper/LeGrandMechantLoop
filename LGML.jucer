@@ -2,9 +2,21 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b67" cppLanguageStandard="17">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b68" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
+      <GROUP id="{C441433A-B399-F72B-FC41-277E3131829E}" name="Templates">
+        <GROUP id="{5EAFB9F7-567D-10F0-0B40-844ADBD0B653}" name="Scripts">
+          <FILE id="lCDy6F" name="genericScriptTemplate.js" compile="0" resource="1"
+                file="Resources/Templates/Scripts/genericScriptTemplate.js"/>
+          <FILE id="bfyyjz" name="interfaceScriptTemplate.js" compile="0" resource="1"
+                file="Resources/Templates/Scripts/interfaceScriptTemplate.js"/>
+          <FILE id="uacHXf" name="midiScriptTemplate.js" compile="0" resource="1"
+                file="Resources/Templates/Scripts/midiScriptTemplate.js"/>
+          <FILE id="prvsbk" name="oscScriptTemplate.js" compile="0" resource="1"
+                file="Resources/Templates/Scripts/oscScriptTemplate.js"/>
+        </GROUP>
+      </GROUP>
       <FILE id="ZG9FoU" name="crash.png" compile="0" resource="1" file="Resources/crash.png"/>
       <FILE id="fut9ay" name="default.lgmllayout" compile="0" resource="1"
             file="Resources/default.lgmllayout"/>
@@ -16,6 +28,24 @@
     </GROUP>
     <GROUP id="{644794F3-EEA3-18B3-8950-FB0E90CE6C1E}" name="Source">
       <GROUP id="{C2A8493F-A236-55BA-F45D-A26C9E3DD629}" name="Interface">
+        <GROUP id="{2A21ECA7-655E-AD99-CD56-617F26320F6B}" name="interfaces">
+          <GROUP id="{9D4A3FC8-525A-6AE6-E483-FE9BF9821637}" name="osc">
+            <GROUP id="{324B52DD-8A30-81C3-E92D-E03BEE8EAB6B}" name="ui">
+              <FILE id="vCO1V8" name="EnablingNetworkControllableContainerEditor.cpp"
+                    compile="0" resource="0" file="Source/Interface/interfaces/osc/ui/EnablingNetworkControllableContainerEditor.cpp"/>
+              <FILE id="hBgxOo" name="EnablingNetworkControllableContainerEditor.h"
+                    compile="0" resource="0" file="Source/Interface/interfaces/osc/ui/EnablingNetworkControllableContainerEditor.h"/>
+            </GROUP>
+            <FILE id="qzGoXN" name="OSCInterface.cpp" compile="0" resource="0"
+                  file="Source/Interface/interfaces/osc/OSCInterface.cpp"/>
+            <FILE id="kSvBrJ" name="OSCInterface.h" compile="0" resource="0" file="Source/Interface/interfaces/osc/OSCInterface.h"/>
+          </GROUP>
+          <GROUP id="{0AA29BA7-CC08-3474-8381-7FE40FB63777}" name="midi">
+            <FILE id="UhX5Jf" name="MIDIInterface.cpp" compile="0" resource="0"
+                  file="Source/Interface/interfaces/midi/MIDIInterface.cpp"/>
+            <FILE id="VZBVHT" name="MIDIInterface.h" compile="0" resource="0" file="Source/Interface/interfaces/midi/MIDIInterface.h"/>
+          </GROUP>
+        </GROUP>
         <GROUP id="{8662C65F-ECF8-8C3E-BD94-310F051453B6}" name="ui">
           <FILE id="EbkTfM" name="InterfaceManagerUI.cpp" compile="0" resource="0"
                 file="Source/Interface/ui/InterfaceManagerUI.cpp"/>
@@ -26,6 +56,10 @@
         </GROUP>
         <FILE id="i4Fb0O" name="Interface.cpp" compile="0" resource="0" file="Source/Interface/Interface.cpp"/>
         <FILE id="v0bhWN" name="Interface.h" compile="0" resource="0" file="Source/Interface/Interface.h"/>
+        <FILE id="zMihuT" name="InterfaceIncludes.cpp" compile="1" resource="0"
+              file="Source/Interface/InterfaceIncludes.cpp"/>
+        <FILE id="NGngEx" name="InterfaceIncludes.h" compile="0" resource="0"
+              file="Source/Interface/InterfaceIncludes.h"/>
         <FILE id="WS5s8n" name="InterfaceManager.cpp" compile="0" resource="0"
               file="Source/Interface/InterfaceManager.cpp"/>
         <FILE id="VF8UwJ" name="InterfaceManager.h" compile="0" resource="0"
@@ -371,6 +405,8 @@
         <FILE id="VxY9pN" name="Transport.cpp" compile="1" resource="0" file="Source/Transport/Transport.cpp"/>
         <FILE id="DncovQ" name="Transport.h" compile="0" resource="0" file="Source/Transport/Transport.h"/>
       </GROUP>
+      <FILE id="ZdS8Uo" name="LGMLAssetManager.h" compile="0" resource="0"
+            file="Source/LGMLAssetManager.h"/>
       <FILE id="Gpnu5Y" name="Main.h" compile="0" resource="0" file="Source/Main.h"/>
       <FILE id="oco5nY" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
       <FILE id="rizybe" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>

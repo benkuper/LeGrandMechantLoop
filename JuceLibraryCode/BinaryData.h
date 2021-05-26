@@ -8,6 +8,18 @@
 
 namespace BinaryData
 {
+    extern const char*   genericScriptTemplate_js;
+    const int            genericScriptTemplate_jsSize = 4774;
+
+    extern const char*   interfaceScriptTemplate_js;
+    const int            interfaceScriptTemplate_jsSize = 980;
+
+    extern const char*   midiScriptTemplate_js;
+    const int            midiScriptTemplate_jsSize = 1853;
+
+    extern const char*   oscScriptTemplate_js;
+    const int            oscScriptTemplate_jsSize = 798;
+
     extern const char*   crash_png;
     const int            crash_pngSize = 78643;
 
@@ -30,7 +42,7 @@ namespace BinaryData
     const int            stop_pngSize = 1978;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 7;
+    const int namedResourceListSize = 11;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

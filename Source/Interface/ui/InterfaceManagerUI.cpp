@@ -8,13 +8,10 @@
   ==============================================================================
 */
 
-#include "InterfaceManagerUI.h"
-
 InterfaceManagerUI::InterfaceManagerUI(StringRef name) :
     BaseManagerShapeShifterUI(name, InterfaceManager::getInstance())
 {
     addExistingItems();
-
 }
 
 InterfaceManagerUI::~InterfaceManagerUI()

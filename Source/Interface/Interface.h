@@ -10,12 +10,13 @@
 
 #pragma once
 
-#include "JuceHeader.h"
-
 class Interface :
     public BaseItem
 {
 public:
     Interface(StringRef name = "Interface", var params = var());
     virtual ~Interface();
+
+    BoolParameter* logIncomingData;
+    BoolParameter* logOutgoingData;
 };

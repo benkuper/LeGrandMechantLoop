@@ -155,13 +155,12 @@ void LooperTrack::stateChanged()
 	case WILL_PLAY:
 		firstPlayAfterStop = true;
 
-		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
+		if (playQuantization == Transport::FREE) startPlaying();
+		else if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
 		{
 			Transport::getInstance()->play();
 			startPlaying();
 		}
-
-		if (playQuantization == Transport::FREE) startPlaying();
 		break;
             
         default:
@@ -183,6 +182,8 @@ void LooperTrack::startRecording()
 		freeRecStartOffset = 0;
 		if (fillMode == Transport::BAR) freeRecStartOffset = Transport::getInstance()->getRelativeBarSamples();
 		else if (fillMode == Transport::BEAT) freeRecStartOffset = Transport::getInstance()->getRelativeBeatSamples();
+		else if (fillMode == Transport::FIRSTLOOP) freeRecStartOffset = Transport::getInstance()->getRelativeBeatSamples() * Transport::getInstance()->firstLoopBeats->intValue();
+
 	}
 	else
 	{
@@ -215,6 +216,13 @@ void LooperTrack::finishRecordingAndPlay()
 	{
 		if (fillMode == Transport::BAR) numBeats = jmax(Transport::getInstance()->getBarForSamples(curSample, false), 1) * beatsPerBar;
 		else if (fillMode == Transport::BEAT) numBeats = jmax(Transport::getInstance()->getBeatForSamples(curSample, false, false), 1);
+		else if (fillMode == Transport::FIRSTLOOP)
+		{
+			int b = jmax(Transport::getInstance()->getBeatForSamples(curSample, false, false), 1);
+			int fb = Transport::getInstance()->firstLoopBeats->intValue();
+			int nextFirstLoopCount = ceilf(b/fb) * fb;
+			numBeats = nextFirstLoopCount;
+		}
 		else //fillMode FREE
 		{
 			numBeats = -1;
@@ -346,7 +354,7 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 	else if (t == playTrigger)
 	{
 		if (s == STOPPED) trackState->setValueWithData(WILL_PLAY);
-		else if (s == WILL_STOP) trackState->setValue(WILL_STOP); //meaning it was already playing, cancel the will stop and keep playing
+		else if (s == WILL_STOP) trackState->setValueWithData(PLAYING); //meaning it was already playing, cancel the will stop and keep playing
 	}
 	else if (t == stopTrigger)
 	{
@@ -371,7 +379,7 @@ void LooperTrack::onContainerParameterChanged(Parameter* p)
 		stateChanged();
 	}
 }
-void LooperTrack::handleBeatChanged(bool isNewBar)
+void LooperTrack::handleBeatChanged(bool isNewBar, bool isFirstLoop)
 {
 	TrackState s = trackState->getValueDataAsEnum<TrackState>();
 	if (s == RECORDING && autoStopRecAfterBeats > 0)
@@ -389,11 +397,21 @@ void LooperTrack::handleBeatChanged(bool isNewBar)
 	if (isRecording(true))
 	{
 		Transport::Quantization q = looper->getQuantization();
-		if ((q == Transport::BAR && isNewBar) || (q == Transport::BEAT)) handleWaiting();
+		if ((q == Transport::BAR && isNewBar)
+			|| (q == Transport::BEAT)
+			|| (q == Transport::FIRSTLOOP && isFirstLoop))
+		{
+			handleWaiting();
+		}
 	}
 	else if (isPlaying(true))
 	{
-		if ((playQuantization == Transport::BAR && isNewBar) || (playQuantization == Transport::BEAT)) handleWaiting();
+		if ((playQuantization == Transport::BAR && isNewBar)
+			|| (playQuantization == Transport::BEAT)
+			|| (playQuantization == Transport::FIRSTLOOP && isFirstLoop))
+		{
+			handleWaiting();
+		}
 	}
 	
 }

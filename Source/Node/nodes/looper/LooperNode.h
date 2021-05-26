@@ -42,10 +42,10 @@ public:
     IntParameter* fadeTimeMS;
     IntParameter* playStopFadeMS;
 
-    enum DoubleRecMode { NOTHING, AUTO_STOP_BAR, AUTO_STOP_BEAT };
+    enum DoubleRecMode { NOTHING, AUTO_STOP_BAR, AUTO_STOP_BEAT, AUTO_STOP_FIRSTLOOP };
     EnumParameter* doubleRecMode;
     IntParameter* doubleRecVal;
-    enum TempMuteMode { NEXT_BAR, NEXT_BEAT };
+    enum TempMuteMode { NEXT_BAR, NEXT_BEAT, NEXT_FIRSTLOOP };
     EnumParameter* tmpMuteMode;
     FloatParameter* firstRecVolumeThreshold;
 
@@ -83,7 +83,7 @@ public:
 
     virtual void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
-    virtual void beatChanged(bool isNewBar) override;
+    virtual void beatChanged(bool isNewBar, bool isFirstLoopBeat) override;
     virtual void playStateChanged(bool isPlaying, bool forceRestart) override;
 
     //helpers

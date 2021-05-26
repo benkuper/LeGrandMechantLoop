@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "Interface.h"
-
 class InterfaceManager :
     public BaseManager<Interface>
 {
@@ -19,4 +17,6 @@ public:
     juce_DeclareSingleton(InterfaceManager, true);
     InterfaceManager();
     ~InterfaceManager();
+
+    Factory<Interface> factory;
 };

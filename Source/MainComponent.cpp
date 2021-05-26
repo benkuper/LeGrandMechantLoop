@@ -7,6 +7,7 @@
 #include "Transport/ui/TransportUI.h"
 #include "Macro/ui/MacroManagerUI.h"
 #include "Mapping/ui/MappingManagerUI.h"
+#include "Interface/InterfaceIncludes.h"
 
 //==============================================================================
 String getAppVersion();
@@ -34,6 +35,7 @@ void MainComponent::init()
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Presets", &RootPresetManagerUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Macros", &MacroManagerUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Mappings", &MappingManagerUI::create));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Interfaces", &InterfaceManagerUI::create));
 
 	ControllableUI::drawContourOnInspectableHighlighted = true;
 

@@ -158,15 +158,27 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		return;
 	}
 
+
+
 	if (isRecording(false))
 	{
 		if (!finishRecordLock)
 		{
-			for (int i = 0; i < numChannels; i++)
+			if (buffer.getNumSamples() >= curSample + blockSize)
 			{
-				buffer.copyFrom(i, curSample, inputBuffer, i, 0, blockSize);
+				for (int i = 0; i < numChannels; i++)
+				{
+					buffer.copyFrom(i, curSample, inputBuffer, i, 0, blockSize);
+				}
+				if (outputIfRecording) outputToMainTrack = true;
 			}
-			if (outputIfRecording) outputToMainTrack = true;
+			else
+			{
+				jassertfalse; //loop is too long
+				LOGWARNING("Record is too long, clear track");
+				clearTrack();
+			}
+			
 		}
 	}
 

@@ -20,6 +20,7 @@
 #include "Preset/PresetIncludes.h"
 #include "Macro/MacroManager.h"
 #include "Mapping/MappingManager.h"
+#include "Interface/InterfaceIncludes.h"
 
 LGMLEngine::LGMLEngine() :
     Engine("LGML File",".lgml")
@@ -35,6 +36,7 @@ LGMLEngine::LGMLEngine() :
     addChildControllableContainer(RootPresetManager::getInstance());
     addChildControllableContainer(MacroManager::getInstance());
     addChildControllableContainer(MappingManager::getInstance());
+    addChildControllableContainer(InterfaceManager::getInstance());
 
     ProjectSettings::getInstance()->addChildControllableContainer(AudioManager::getInstance());
     GlobalSettings::getInstance()->addChildControllableContainer(LGMLSettings::getInstance());
@@ -51,6 +53,7 @@ LGMLEngine::~LGMLEngine()
     isClearing = true; 
     RootPresetManager::deleteInstance();
     MappingManager::deleteInstance();
+    InterfaceManager::deleteInstance();
     MacroManager::deleteInstance();
     RootNodeManager::deleteInstance();
     Transport::deleteInstance();
@@ -67,6 +70,7 @@ void LGMLEngine::clearInternal()
 {
     RootPresetManager::getInstance()->clear();
     MappingManager::getInstance()->clear();
+    InterfaceManager::getInstance()->clear();
     MacroManager::getInstance()->clear();
     RootNodeManager::getInstance()->clear();
     Transport::getInstance()->clear();
@@ -80,6 +84,7 @@ var LGMLEngine::getJSONData()
     data.getDynamicObject()->setProperty(MacroManager::getInstance()->shortName, MacroManager::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(MappingManager::getInstance()->shortName, MappingManager::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(RootPresetManager::getInstance()->shortName, RootPresetManager::getInstance()->getJSONData());
+    data.getDynamicObject()->setProperty(InterfaceManager::getInstance()->shortName, InterfaceManager::getInstance()->getJSONData());
     return data;
 }
 
@@ -90,6 +95,7 @@ void LGMLEngine::loadJSONDataInternalEngine(var data, ProgressTask* loadingTask)
     MacroManager::getInstance()->loadJSONData(data.getProperty(MacroManager::getInstance()->shortName, var()));
     RootPresetManager::getInstance()->loadJSONData(data.getProperty(RootPresetManager::getInstance()->shortName, var()));
     MappingManager::getInstance()->loadJSONData(data.getProperty(MappingManager::getInstance()->shortName, var()));
+    InterfaceManager::getInstance()->loadJSONData(data.getProperty(InterfaceManager::getInstance()->shortName, var()));
 }
 
 void LGMLEngine::timerCallback(int timerID)

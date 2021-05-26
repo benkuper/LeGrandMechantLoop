@@ -2,8 +2,26 @@
 
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="LGML\Resources\Templates\Scripts">
+      <UniqueIdentifier>{E8391476-434C-1DF6-EF43-B37A106EE53D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Resources\Templates">
+      <UniqueIdentifier>{6FB10B46-1BB7-68CC-B0F0-EE2B38720DA8}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Resources">
       <UniqueIdentifier>{CAFC601F-9204-A3D8-32F6-D63743890420}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Interface\interfaces\osc\ui">
+      <UniqueIdentifier>{5AFBB185-395B-2198-B506-4B3B5357C5EA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Interface\interfaces\osc">
+      <UniqueIdentifier>{41EE6C58-3612-1CB0-7CA2-CB739633AD90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Interface\interfaces\midi">
+      <UniqueIdentifier>{5639CB2E-0D8F-77F4-039D-55AFCCA54DD2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Interface\interfaces">
+      <UniqueIdentifier>{C6C161A6-BDC2-BD1B-214B-3D7A9BE306F1}</UniqueIdentifier>
     </Filter>
     <Filter Include="LGML\Source\Interface\ui">
       <UniqueIdentifier>{7471AE03-4351-2E8A-EF01-32A0B55716BF}</UniqueIdentifier>
@@ -922,6 +940,15 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Interface\interfaces\osc\ui\EnablingNetworkControllableContainerEditor.cpp">
+      <Filter>LGML\Source\Interface\interfaces\osc\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Interface\interfaces\osc\OSCInterface.cpp">
+      <Filter>LGML\Source\Interface\interfaces\osc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Interface\interfaces\midi\MIDIInterface.cpp">
+      <Filter>LGML\Source\Interface\interfaces\midi</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Interface\ui\InterfaceManagerUI.cpp">
       <Filter>LGML\Source\Interface\ui</Filter>
     </ClCompile>
@@ -929,6 +956,9 @@
       <Filter>LGML\Source\Interface\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Interface\Interface.cpp">
+      <Filter>LGML\Source\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Interface\InterfaceIncludes.cpp">
       <Filter>LGML\Source\Interface</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Interface\InterfaceManager.cpp">
@@ -4071,6 +4101,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Interface\interfaces\osc\ui\EnablingNetworkControllableContainerEditor.h">
+      <Filter>LGML\Source\Interface\interfaces\osc\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Interface\interfaces\osc\OSCInterface.h">
+      <Filter>LGML\Source\Interface\interfaces\osc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Interface\interfaces\midi\MIDIInterface.h">
+      <Filter>LGML\Source\Interface\interfaces\midi</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Interface\ui\InterfaceManagerUI.h">
       <Filter>LGML\Source\Interface\ui</Filter>
     </ClInclude>
@@ -4078,6 +4117,9 @@
       <Filter>LGML\Source\Interface\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Interface\Interface.h">
+      <Filter>LGML\Source\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Interface\InterfaceIncludes.h">
       <Filter>LGML\Source\Interface</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Interface\InterfaceManager.h">
@@ -4334,6 +4376,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Transport\Transport.h">
       <Filter>LGML\Source\Transport</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\LGMLAssetManager.h">
+      <Filter>LGML\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Main.h">
       <Filter>LGML\Source</Filter>
@@ -10241,6 +10286,18 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Resources\Templates\Scripts\genericScriptTemplate.js">
+      <Filter>LGML\Resources\Templates\Scripts</Filter>
+    </None>
+    <None Include="..\..\Resources\Templates\Scripts\interfaceScriptTemplate.js">
+      <Filter>LGML\Resources\Templates\Scripts</Filter>
+    </None>
+    <None Include="..\..\Resources\Templates\Scripts\midiScriptTemplate.js">
+      <Filter>LGML\Resources\Templates\Scripts</Filter>
+    </None>
+    <None Include="..\..\Resources\Templates\Scripts\oscScriptTemplate.js">
+      <Filter>LGML\Resources\Templates\Scripts</Filter>
+    </None>
     <None Include="..\..\Resources\crash.png">
       <Filter>LGML\Resources</Filter>
     </None>

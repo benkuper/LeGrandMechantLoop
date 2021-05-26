@@ -8,8 +8,6 @@
   ==============================================================================
 */
 
-#include "InterfaceUI.h"
-
 InterfaceUI::InterfaceUI(Interface* i) :
     BaseItemUI(i)
 {

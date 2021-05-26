@@ -49,13 +49,16 @@ Transport::Transport() :
 	beatProgression = addFloatParameter("Beat Progression", "Relative progression of the current beat", 0, 0, 1);
 	beatProgression->setControllableFeedbackOnly(true);
 
+	firstLoopBeats = addIntParameter("First Loop Beat", "Number of beats that the loop that set the tempo is taking", 1, 1);
+	firstLoopBeats->setControllableFeedbackOnly(true);
+
 	playTrigger = addTrigger("Play", "Start playing");
 	togglePlayTrigger = addTrigger("Toggle Play", "Toggle between play / stop");
 	pauseTrigger = addTrigger("Pause", "Stops playing but keeps the current time");
 	stopTrigger = addTrigger("Stop", "Stops playing and resets current time");
 
 	quantization = addEnumParameter("Quantization", "Default quantization for nodes.");
-	quantization->addOption("Bar", BAR)->addOption("Beat", BEAT)->addOption("Free", FREE);
+	quantization->addOption("First Loop", FIRSTLOOP)->addOption("Bar", BAR)->addOption("Beat", BEAT)->addOption("Free", FREE);
 
 	recQuantization = addEnumParameter("Rec Quantization Mode", "Quantization mode when setting tempo on rec");
 	recQuantization->addOption("Auto", REC_AUTO)->addOption("Bar", REC_BAR)->addOption("Beat", REC_BEAT);
@@ -164,8 +167,10 @@ void Transport::finishSetTempo(bool startPlaying)
 	
 	jassert(numSamplesPerBeat % blockSize == 0);
 
+	firstLoopBeats->setValue(targetNumBeats);
 	curBar->setValue(0);
 	curBeat->setValue(0);
+
 
 	transportListeners.call(&TransportListener::beatNumSamplesChanged);
 	
@@ -187,7 +192,11 @@ void Transport::setCurrentTime(int samples)
 
 	bool barChanged = prevBar != curBar->intValue();
 	bool beatChanged = prevBeat != curBeat->intValue();
-	if(barChanged || beatChanged) transportListeners.call(&TransportListener::beatChanged, barChanged);
+	if (barChanged || beatChanged)
+	{
+		bool firstLoop = getTotalBeatCount() % firstLoopBeats->intValue() == 0;
+		transportListeners.call(&TransportListener::beatChanged, barChanged, firstLoop);
+	}
 }
 
 void Transport::gotoBar(int bar)

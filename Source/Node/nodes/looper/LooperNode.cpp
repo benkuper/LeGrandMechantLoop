@@ -31,17 +31,17 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	recordingState->setControllableFeedbackOnly(true);
 
 	quantization = recordCC.addEnumParameter("Quantization", "The way to know when to stop recording. Default means getting the quantization from the Transport.\nBar/beat means it will stop the recording to fill an round number of bar/beat, even if you stop before. Free means it will stop instantly.");
-	quantization->addOption("Default", Transport::DEFAULT)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Free", Transport::FREE);
+	quantization->addOption("Default", Transport::DEFAULT)->addOption("First Loop", Transport::FIRSTLOOP)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Free", Transport::FREE);
 
 	freeFillMode = recordCC.addEnumParameter("Fill Mode", "In free mode, allows to fill the buffer with empty data to complete a bar or a beat.", getQuantization() == Transport::FREE);
-	freeFillMode->addOption("From Quantization", Transport::DEFAULT)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Direct", Transport::FREE);
+	freeFillMode->addOption("From Quantization", Transport::DEFAULT)->addOption("First Loop", Transport::FIRSTLOOP)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Direct", Transport::FREE);
 
 	doubleRecMode = recordCC.addEnumParameter("Double Rec Mode", "This decides what to do when hitting rec when the track is already preparing for recoring. This allow for nice behaviour such as automatically finish the record after one bar");
-	doubleRecMode->addOption("Record X bars", AUTO_STOP_BAR)->addOption("Record X beats", AUTO_STOP_BEAT)->addOption("Do nothing", NOTHING);
+	doubleRecMode->addOption("First Loop Length", AUTO_STOP_FIRSTLOOP)->addOption("Record X bars", AUTO_STOP_BAR)->addOption("Record X beats", AUTO_STOP_BEAT)->addOption("Do nothing", NOTHING);
 	doubleRecVal = recordCC.addIntParameter("Double Rec Value", "This is the number of bar or beats to record if Double Rec Mode is set to bar or beat.", 1, 1);
 
 	tmpMuteMode = recordCC.addEnumParameter("Temp Mute Mode", "This is a convenient way of muting until next bar or next beat. This is trigger by the 'Controls > Temp Mute' trigger.");
-	tmpMuteMode->addOption("Next Bar", NEXT_BAR)->addOption("Next Beat", NEXT_BEAT);
+	tmpMuteMode->addOption("Next FirstLoop", NEXT_FIRSTLOOP)->addOption("Next Bar", NEXT_BAR)->addOption("Next Beat", NEXT_BEAT);
 
 	firstRecVolumeThreshold = recordCC.addFloatParameter("First Rec Threshold", "If enabled, when recording the first track when Transport not playing yet, this will wait for this threshold to be reached to actually start the recording", .3f, 0, 1, false);
 	firstRecVolumeThreshold->canBeDisabledByUser = true;
@@ -160,9 +160,12 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			if (s == LooperTrack::WILL_RECORD)
 			{
 				DoubleRecMode m = doubleRecMode->getValueDataAsEnum<DoubleRecMode>();
-				if (m == AUTO_STOP_BAR || m == AUTO_STOP_BEAT)
+				if (m == AUTO_STOP_BAR || m == AUTO_STOP_BEAT || m == AUTO_STOP_FIRSTLOOP)
 				{
-					int numBeats = doubleRecVal->intValue() * (m == AUTO_STOP_BAR ? Transport::getInstance()->beatsPerBar->intValue() : 1);
+					int numBeats = -1;
+					if (m == AUTO_STOP_FIRSTLOOP) numBeats = Transport::getInstance()->firstLoopBeats->intValue();
+					else numBeats = doubleRecVal->intValue() * (m == AUTO_STOP_BAR ? Transport::getInstance()->beatsPerBar->intValue() : 1);
+
 					t->autoStopRecAfterBeats = numBeats;
 				}
 			}
@@ -253,6 +256,10 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			}
 		}
 	}
+	else if (c == doubleRecMode)
+	{
+		doubleRecVal->setEnabled(doubleRecMode->getValueDataAsEnum<DoubleRecMode>() != AUTO_STOP_FIRSTLOOP);
+	}
 
 
 	else if (LooperTrack* t = c->getParentAs<LooperTrack>())
@@ -277,12 +284,12 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	}
 }
 
-void LooperNode::beatChanged(bool isNewBar)
+void LooperNode::beatChanged(bool isNewBar, bool isFirstLoop)
 {
-	for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->handleBeatChanged(isNewBar);
+	for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->handleBeatChanged(isNewBar, isFirstLoop);
 
 	TempMuteMode m = tmpMuteMode->getValueDataAsEnum<TempMuteMode>();
-	if (m == NEXT_BEAT || (m == NEXT_BAR && isNewBar))
+	if (m == NEXT_BEAT || (m == NEXT_BAR && isNewBar) || (m == NEXT_FIRSTLOOP && isFirstLoop))
 	{
 		for (auto& t : tmpMuteTracks) t->active->setValue(true);
 		tmpMuteTracks.clear();

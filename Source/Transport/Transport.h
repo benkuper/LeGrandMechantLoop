@@ -23,10 +23,10 @@ public:
 	Transport();
 	~Transport();
 
-	enum Quantization { BAR, BEAT, FREE, DEFAULT };
+	enum Quantization { BAR, BEAT, FREE, DEFAULT, FIRSTLOOP };
 	EnumParameter* quantization;
 
-	enum RecQuantization { REC_AUTO, REC_BAR, REC_BEAT };
+	enum RecQuantization { REC_AUTO, REC_BAR, REC_BEAT, REC_FIRSTLOOP };
 	EnumParameter* recQuantization;
 	IntParameter* recQuantizCount;
 	Point2DParameter* recQuantizBPMRange;
@@ -41,6 +41,7 @@ public:
 	IntParameter* curBeat;
 	FloatParameter* barProgression;
 	FloatParameter* beatProgression;
+	IntParameter* firstLoopBeats;
 
 	Trigger* playTrigger;
 	Trigger* togglePlayTrigger;
@@ -121,7 +122,8 @@ public:
 		virtual ~TransportListener() {}
 		virtual void beatNumSamplesChanged() {}
 		virtual void bpmChanged() {}
-		virtual void beatChanged(bool isNewBar) {} //this allow for event after both bar and beat have been updated
+		virtual void beatChanged(bool isNewBar, bool isFirstLoopBeat) {} //this allow for event after both bar and beat have been updated. 
+																		//isFirstLoopBeat will be true if the current beat is the start of the first loop that set the tempo
 		virtual void playStateChanged(bool isPlaying, bool forceRestart) {}
 	};
 

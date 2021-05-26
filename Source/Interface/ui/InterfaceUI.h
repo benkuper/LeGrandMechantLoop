@@ -9,8 +9,6 @@
 */
 
 #pragma once
-#include "../Interface.h"
-
 class InterfaceUI :
     public BaseItemUI<Interface>
 {

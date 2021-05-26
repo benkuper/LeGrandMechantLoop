@@ -77,7 +77,7 @@ public:
 	virtual void onContainerTriggerTriggered(Trigger* t) override;
 	virtual void onContainerParameterChanged(Parameter* p) override;
 
-	virtual void handleBeatChanged(bool isNewBar);
+	virtual void handleBeatChanged(bool isNewBar, bool isFirstLoop);
 
 	void processTrack(int blockSize, bool forcePlaying = false);
 

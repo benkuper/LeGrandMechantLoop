@@ -8,13 +8,14 @@
   ==============================================================================
 */
 
-#include "InterfaceManager.h"
-
 juce_ImplementSingleton(InterfaceManager)
 
 InterfaceManager::InterfaceManager() :
     BaseManager("Interfaces")
 {
+    factory.defs.add(Factory<Interface>::Definition::createDef<MIDIInterface>("", "MIDI"));
+    factory.defs.add(Factory<Interface>::Definition::createDef<OSCInterface>("", "OSC"));
+    managerFactory = &factory;
 }
 
 InterfaceManager::~InterfaceManager()

@@ -10,9 +10,6 @@
 
 #pragma once
 
-#include "../InterfaceManager.h"
-#include "InterfaceUI.h"
-
 class InterfaceManagerUI :
     public BaseManagerShapeShifterUI<InterfaceManager, Interface, InterfaceUI>
 {

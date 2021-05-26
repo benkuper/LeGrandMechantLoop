@@ -7,8 +7,206 @@
 namespace BinaryData
 {
 
-//================== crash.png ==================
+//================== genericScriptTemplate.js ==================
 static const unsigned char temp_binary_data_0[] =
+"/* ********** GENERAL SCRIPTING **********************\r\n"
+"\r\n"
+"\t\tThis templates shows what you can do in this is module script\r\n"
+"\t\tAll the code outside functions will be executed each time this script is loaded, meaning at file load, when hitting the \"reload\" button or when saving this file\r\n"
+"*/\r\n"
+"\r\n"
+"\r\n"
+"// You can add custom parameters to use in your script here, they will be replaced each time this script is saved\r\n"
+"var myFloatParam = script.addFloatParameter(\"My Float Param\",\"Description of my float param\",.1,0,1); \t\t//This will add a float number parameter (slider), default value of 0.1, with a range between 0 and 1\r\n"
+"\r\n"
+"//Here are all the type of parameters you can create\r\n"
+"/*\r\n"
+"var myTrigger = script.addTrigger(\"My Trigger\", \"Trigger description\"); \t\t\t\t\t\t\t\t\t//This will add a trigger (button)\r\n"
+"var myBoolParam = script.addBoolParameter(\"My Bool Param\",\"Description of my bool param\",false); \t\t\t//This will add a boolean parameter (toggle), defaut unchecked\r\n"
+"var myFloatParam = script.addFloatParameter(\"My Float Param\",\"Description of my float param\",.1,0,1); \t\t//This will add a float number parameter (slider), default value of 0.1, with a range between 0 and 1\r\n"
+"var myIntParam = script.addIntParameter(\"My Int Param\",\"Description of my int param\",2,0,10); \t\t\t\t//This will add an integer number parameter (stepper), default value of 2, with a range between 0 and 10\r\n"
+"var myStringParam = script.addStringParameter(\"My String Param\",\"Description of my string param\", \"cool\");\t//This will add a string parameter (text field), default value is \"cool\"\r\n"
+"var myColorParam = script.addColorParameter(\"My Color Param\",\"Description of my color param\",0xff0000ff); \t//This will add a color parameter (color picker), default value of opaque blue (ARGB)\r\n"
+"var myP2DParam = script.addPoint2DParameter(\"My P2D Param\",\"Description of my p2d param\"); \t\t\t\t\t//This will add a point 2d parameter\r\n"
+"var myP3DParam = script.addPoint3DParameter(\"My P3D Param\",\"Description of my p3d param\"); \t\t\t\t\t//This will add a point 3d parameter\r\n"
+"var myTargetParam = script.addTargetParameter(\"My Target Param\",\"Description of my target param\"); \t\t\t//This will add a target parameter (to reference another parameter)\r\n"
+"var myEnumParam = script.addEnumParameter(\"My Enum Param\",\"Description of my enum param\",\t\t\t\t\t//This will add a enum parameter (dropdown with options)\r\n"
+"\t\t\t\t\t\t\t\t\t\t\t\"Option 1\", 1,\t\t\t\t\t\t\t\t\t\t\t\t\t//Each pair of values after the first 2 arguments define an option and its linked data\r\n"
+"\t\t\t\t\t\t\t\t\t\t\t\"Option 2\", 5,\t\t\t\t\t\t\t\t\t\t\t\t    //First argument of an option is the label (string)\r\n"
+"\t\t\t\t\t\t\t\t\t\t\t\"Option 3\", \"banana\"\t\t\t\t\t\t\t\t\t\t\t//Second argument is the value, it can be whatever you want\r\n"
+"\t\t\t\t\t\t\t\t\t\t\t); \t\r\n"
+"*/\r\n"
+"\r\n"
+"\r\n"
+"//you can also declare custom internal variable\r\n"
+"//var myValue = 5;\r\n"
+"\r\n"
+"/*\r\n"
+" The init() function will allow you to init everything you want after the script has been checked and loaded\r\n"
+" WARNING it also means that if you change values of your parameters by hand and set their values inside the init() function, they will be reset to this value each time the script is reloaded !\r\n"
+"*/\r\n"
+"function init()\r\n"
+"{\r\n"
+"\t//myFloatParam.set(5); //The .set() function set the parameter to this value.\r\n"
+"\t//myColorParam.set([1,.5,1,1]);\t//for a color parameter, you need to pass an array with 3 (RGB) or 4 (RGBA) values.\r\n"
+"\t//myP2DParam.set([1.5,-5]); // for a Point2D parameter, you need to pass 2 values (XY)\r\n"
+"\t//myP3DParam.set([1.5,2,-3]); // for a Point3D parameter, you need to pass 3 values (XYZ)\r\n"
+"}\r\n"
+"\r\n"
+"/*\r\n"
+" This function will be called each time a parameter of your script has changed\r\n"
+"*/\r\n"
+"function scriptParameterChanged(param)\r\n"
+"{\r\n"
+"\t//You can use the script.log() function to show an information inside the logger panel. To be able to actuallt see it in the logger panel, you will have to turn on \"Log\" on this script.\r\n"
+"\tscript.log(\"Parameter changed : \"+param.name); //All parameters have \"name\" property\r\n"
+"\tif(param.is(myTrigger)) script.log(\"Trigger !\"); //You can check if two variables are the reference to the same parameter or object with the method .is()\r\n"
+"\telse if(param.is(myEnumParam)) script.log(\"Key = \"+param.getKey()+\", data = \"+param.get()); //The enum parameter has a special function getKey() to get the key associated to the option. .get() will give you the data associated\r\n"
+"\telse script.log(\"Value is \"+param.get()); //All parameters have a get() method that will return their value\r\n"
+"}\r\n"
+"\r\n"
+"/*\r\n"
+" This function, if you declare it, will launch a timer at 50hz, calling this method on each tick\r\n"
+"*/\r\n"
+"/*\r\n"
+"function update(deltaTime)\r\n"
+"{\r\n"
+"\tscript.log(\"Update : \"+util.getTime()+\", delta = \"+deltaTime); //deltaTime is the time between now and last update() call, util.getTime() will give you a timestamp relative to either the launch time of the software, or the start of the computer"
+".\r\n"
+"}\r\n"
+"*/\r\n"
+"\r\n";
+
+const char* genericScriptTemplate_js = (const char*) temp_binary_data_0;
+
+//================== interfaceScriptTemplate.js ==================
+static const unsigned char temp_binary_data_1[] =
+"/* ********** MODULE SPECIFIC SCRIPTING **********************\r\n"
+"\r\n"
+"\tThe \"local\" variable refers to the object containing the scripts. In this case, the local variable refers to the module.\r\n"
+"\tIt means that you can access any control inside  this module by accessing it through its address.\r\n"
+"\tFor instance, if the module has a float value named \"Density\", you can access it via local.values.density\r\n"
+"\tThen you can retrieve its value using local.values.density.get() and change its value using local.values.density.set()\r\n"
+"*/\r\n"
+"\r\n"
+"/*\r\n"
+" This function will be called each time a parameter of this module has changed, meaning a parameter or trigger inside the \"Parameters\" panel of this module\r\n"
+" This function only exists because the script is in a module\r\n"
+"*/\r\n"
+"function interfaceParameterChanged(param)\r\n"
+"{\r\n"
+"\tif(param.isParameter())\r\n"
+"\t{\r\n"
+"\t\tscript.log(\"Module parameter changed : \"+param.name+\" > \"+param.get());\r\n"
+"\t}else \r\n"
+"\t{\r\n"
+"\t\tscript.log(\"Module parameter triggered : \"+param.name);\t\r\n"
+"\t}\r\n"
+"}";
+
+const char* interfaceScriptTemplate_js = (const char*) temp_binary_data_1;
+
+//================== midiScriptTemplate.js ==================
+static const unsigned char temp_binary_data_2[] =
+"/* ********** MIDI MODULE SPECIFIC SCRIPTING ********************* */\r\n"
+"/*\r\n"
+"\r\n"
+"MIDI Modules have specific methods that can be used to send MIDI events such as noteOn, noteOff, controlChange and sysEx messages from Script.\r\n"
+"If you want to send a MIDI event from this script, you can do the following :\r\n"
+"\r\n"
+"local.sendNoteOn(1, 12, 127); //This will send a NoteOn Event on channel 1, pitch 12, velocity 127\r\n"
+"local.sendNoteOff(1, 12); //This will send a NoteOff Event on chanenl 1, pitch 12\r\n"
+"local.sendCC(3, 20, 65); //This will send a ControlChange on channel 3, number 20, value 65\r\n"
+"local.sendSysEx(15,20,115,10); //This will send 4 bytes as a SysEx message\r\n"
+"local.sendPitchWheel (3, 2000);\r\n"
+"local.sendChannelPressure (1, 67);\r\n"
+"local.sendAfterTouch (3, 20, 65);\r\n"
+"*/\r\n"
+"\r\n"
+"/*\r\n"
+"You can intercept MIDI Events with the functions below\r\n"
+"*/\r\n"
+"\r\n"
+"function noteOnEvent(channel, pitch, velocity)\r\n"
+"{\r\n"
+"\tscript.log(\"Note on received \"+channel+\", \"+pitch+\", \"+velocity);\r\n"
+"}\r\n"
+"\r\n"
+"\r\n"
+"function noteOffEvent(channel, pitch, velocity)\r\n"
+"{\r\n"
+"\tscript.log(\"Note off received \"+channel+\", \"+pitch+\", \"+velocity);\r\n"
+"}\r\n"
+"\r\n"
+"function ccEvent(channel, number, value)\r\n"
+"{\r\n"
+"\tscript.log(\"ControlChange received \"+channel+\", \"+number+\", \"+value);\r\n"
+"}\r\n"
+"\r\n"
+"\r\n"
+"function ccEvent(channel, number, value)\r\n"
+"{\r\n"
+"\tscript.log(\"ControlChange received \"+channel+\", \"+number+\", \"+value);\r\n"
+"}\r\n"
+"\r\n"
+"\r\n"
+"function sysExEvent(data)\r\n"
+"{\r\n"
+"\tscript.log(\"Sysex Message received, \"+data.length+\" bytes :\");\r\n"
+"\tfor(var i=0; i < data.length; i++)\r\n"
+"\t{\r\n"
+"\t\tscript.log(\" > \"+data[i]);\r\n"
+"\t}\r\n"
+"}\r\n"
+"\r\n"
+"function pitchWheelEvent(channel, value) \r\n"
+"{\r\n"
+"\tscript.log(\"PitchWheel received \"+channel+\", \"+value);\r\n"
+"}\r\n"
+"\r\n"
+"function channelPressureEvent(channel, value) \r\n"
+"{\r\n"
+"\tscript.log(\"Channel Pressure received \"+channel+\", \"+value);\r\n"
+"}\r\n"
+"\r\n"
+"function afterTouchEvent(channel, note, value) \r\n"
+"{\r\n"
+"\tscript.log(\"After Touch received \"+channel+\", \"+note+\", \"+value);\r\n"
+"}";
+
+const char* midiScriptTemplate_js = (const char*) temp_binary_data_2;
+
+//================== oscScriptTemplate.js ==================
+static const unsigned char temp_binary_data_3[] =
+"/* ********** OSC MODULE SPECIFIC SCRIPTING ********************* */\r\n"
+"/*\r\n"
+"\r\n"
+"OSC Modules have specific methods that can be used to send OSC message from Script.\r\n"
+"If you want to send an OSC Message from this script, you can do the following :\r\n"
+"\r\n"
+"local.send(\"/myAddress\",1,.5f,\"cool\"); //This will send an OSC Message with address \"/myAddress\" and 3 arguments <int>, <float> and <string>\r\n"
+"\r\n"
+"*/\r\n"
+"/*\r\n"
+"You can intercept OSC message with the function oscEvent(address, args)\r\n"
+"*/\r\n"
+"\r\n"
+"function oscEvent(address, args)\r\n"
+"{\r\n"
+"\t//param \"address\" is the address of the OSC Message\r\n"
+"\t//param \"args\" is an array containing all the arguments of the OSC Message\r\n"
+"\r\n"
+"\tscript.log(\"OSC Message received \"+address+\", \"+args.length+\" arguments\");\r\n"
+"\tfor(var i=0; i < args.length; i++)\r\n"
+"\t{\r\n"
+"\t\tscript.log(\" > \"+args[i]);\r\n"
+"\t}\r\n"
+"}";
+
+const char* oscScriptTemplate_js = (const char*) temp_binary_data_3;
+
+//================== crash.png ==================
+static const unsigned char temp_binary_data_4[] =
 { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,3,32,0,0,2,88,8,2,0,0,0,21,20,21,39,0,0,0,9,112,72,89,115,0,0,11,19,0,0,11,19,1,0,154,156,24,0,0,14,80,105,84,88,116,88,77,76,58,99,111,109,46,97,100,111,98,101,46,120,109,112,0,0,0,0,0,60,63,120,112,
 97,99,107,101,116,32,98,101,103,105,110,61,34,239,187,191,34,32,105,100,61,34,87,53,77,48,77,112,67,101,104,105,72,122,114,101,83,122,78,84,99,122,107,99,57,100,34,63,62,32,60,120,58,120,109,112,109,101,116,97,32,120,109,108,110,115,58,120,61,34,97,100,
 111,98,101,58,110,115,58,109,101,116,97,47,34,32,120,58,120,109,112,116,107,61,34,65,100,111,98,101,32,88,77,80,32,67,111,114,101,32,53,46,54,45,99,49,52,56,32,55,57,46,49,54,52,48,51,54,44,32,50,48,49,57,47,48,56,47,49,51,45,48,49,58,48,54,58,53,55,
@@ -1119,10 +1317,10 @@ static const unsigned char temp_binary_data_0[] =
 9,44,0,128,48,129,5,0,16,38,176,0,0,194,4,22,0,64,152,192,2,0,8,19,88,0,0,97,2,11,0,32,76,96,1,0,132,9,44,0,128,48,129,5,0,16,38,176,0,0,194,4,22,0,64,152,192,2,0,8,19,88,0,0,97,2,11,0,32,76,96,1,0,132,9,44,0,128,48,129,5,0,16,38,176,0,0,194,4,22,0,64,
 152,192,2,0,8,19,88,0,0,97,2,11,0,32,76,96,1,0,132,9,44,0,128,48,129,5,0,16,246,95,27,62,75,184,53,181,144,15,0,0,0,0,73,69,78,68,174,66,96,130,0,0 };
 
-const char* crash_png = (const char*) temp_binary_data_0;
+const char* crash_png = (const char*) temp_binary_data_4;
 
 //================== default.lgmllayout ==================
-static const unsigned char temp_binary_data_1[] =
+static const unsigned char temp_binary_data_5[] =
 "{\r\n"
 "  \"mainLayout\": {\r\n"
 "    \"type\": 1,\r\n"
@@ -1231,10 +1429,10 @@ static const unsigned char temp_binary_data_1[] =
 "  \"windows\": null\r\n"
 "}";
 
-const char* default_lgmllayout = (const char*) temp_binary_data_1;
+const char* default_lgmllayout = (const char*) temp_binary_data_5;
 
 //================== icon.png ==================
-static const unsigned char temp_binary_data_2[] =
+static const unsigned char temp_binary_data_6[] =
 { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,2,0,0,0,2,0,8,6,0,0,0,244,120,212,250,0,0,0,9,112,72,89,115,0,0,28,32,0,0,28,32,1,205,15,155,158,0,0,5,200,105,84,88,116,88,77,76,58,99,111,109,46,97,100,111,98,101,46,120,109,112,0,0,0,0,0,60,63,120,
 112,97,99,107,101,116,32,98,101,103,105,110,61,34,239,187,191,34,32,105,100,61,34,87,53,77,48,77,112,67,101,104,105,72,122,114,101,83,122,78,84,99,122,107,99,57,100,34,63,62,32,60,120,58,120,109,112,109,101,116,97,32,120,109,108,110,115,58,120,61,34,
 97,100,111,98,101,58,110,115,58,109,101,116,97,47,34,32,120,58,120,109,112,116,107,61,34,65,100,111,98,101,32,88,77,80,32,67,111,114,101,32,53,46,54,45,99,49,52,56,32,55,57,46,49,54,52,48,51,54,44,32,50,48,49,57,47,48,56,47,49,51,45,48,49,58,48,54,58,
@@ -2752,10 +2950,10 @@ static const unsigned char temp_binary_data_2[] =
 6,0,34,34,162,9,196,0,64,68,68,52,129,24,0,136,136,136,38,16,3,0,17,17,209,4,98,0,32,34,34,154,64,12,0,68,68,68,19,136,1,128,136,136,104,2,49,0,16,17,17,77,32,6,0,34,34,162,9,196,0,64,68,68,52,129,24,0,136,136,136,38,16,3,0,17,17,209,4,98,0,32,34,34,
 154,64,12,0,68,68,68,19,136,1,128,136,136,104,2,49,0,16,17,17,77,32,6,0,34,34,162,9,196,0,64,68,68,52,129,254,31,10,84,254,97,142,84,247,109,0,0,0,0,73,69,78,68,174,66,96,130,0,0 };
 
-const char* icon_png = (const char*) temp_binary_data_2;
+const char* icon_png = (const char*) temp_binary_data_6;
 
 //================== link.png ==================
-static const unsigned char temp_binary_data_3[] =
+static const unsigned char temp_binary_data_7[] =
 "\x89PNG\r\n"
 "\x1a\n"
 "\0\0\0\rIHDR\0\0\0\x14\0\0\0\x14\x08\x06\0\0\0\x8d\x89\x1d\r\0\0\0\tpHYs\0\0\x0b\x13\0\0\x0b\x13\x01\0\x9a\x9c\x18\0\0\x05\x16iTXtXML:com.adobe.xmp\0\0\0\0\0<?xpacket begin=\"\xef\xbb\xbf\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?> <x:xmpmeta xmlns:x=\"adobe"
@@ -2770,10 +2968,10 @@ static const unsigned char temp_binary_data_3[] =
 "l\xe1\0\xd3h\xb4""d\xa7izg%q\xf4#\x89\xa3""4\x89\xa3\xafI\x1cI\xe2h3;\x9fg\xfbN\x12G\xaf\xb2XK~Y\xc9\xbf\xd1\x8bZ\xce=\xa5""9\xdd\x7f\x9a\x83\xb9\xba\r\x14\xef""aY\xc9\x87\xe8\xc7{T\xf0\t?q\x81\xed<Y\x99\x95)\xac""a?\xa7h(\xeb\xd9\x1c\xce\x8a\x04\xed"
 "\xbe\x94\xd7\x98\xcf\xf6_XBT\xa6\xe8""A\xc2\xc7\xda\xd3\xff\xbe:Nx\x03\xb2\x18\x9b\xec\xd1\xbd:(\0\0\0\0IEND\xae""B`\x82";
 
-const char* link_png = (const char*) temp_binary_data_3;
+const char* link_png = (const char*) temp_binary_data_7;
 
 //================== p.png ==================
-static const unsigned char temp_binary_data_4[] =
+static const unsigned char temp_binary_data_8[] =
 { 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,16,0,0,0,16,8,6,0,0,0,31,243,255,97,0,0,0,4,115,66,73,84,8,8,8,8,124,8,100,136,0,0,0,9,112,72,89,115,0,0,0,118,0,0,0,118,1,78,123,38,8,0,0,0,25,116,69,88,116,83,111,102,116,119,97,114,101,0,119,119,
 119,46,105,110,107,115,99,97,112,101,46,111,114,103,155,238,60,26,0,0,1,218,73,68,65,84,56,141,197,145,207,107,211,96,24,199,191,73,222,172,49,75,219,213,169,117,19,153,55,157,122,241,34,20,69,28,202,174,59,232,77,145,41,12,68,193,157,166,255,129,94,
 188,11,155,147,21,39,61,136,130,30,68,80,80,59,75,21,161,80,101,135,177,49,103,127,184,165,49,211,55,75,233,187,52,111,235,161,70,130,11,65,79,126,78,207,251,252,248,240,240,188,2,126,17,79,198,79,107,201,248,221,120,50,198,189,28,111,114,177,229,242,
@@ -2784,10 +2982,10 @@ static const unsigned char temp_binary_data_4[] =
 37,243,150,191,55,80,144,157,124,101,189,207,188,155,151,136,64,209,198,154,101,88,47,153,197,158,0,176,255,236,13,20,56,13,199,49,87,140,49,0,243,65,117,63,129,191,240,47,252,127,193,239,27,184,156,207,221,191,124,239,168,36,203,162,93,163,54,128,213,
 191,17,252,4,252,107,183,194,236,194,251,70,0,0,0,0,73,69,78,68,174,66,96,130,0,0 };
 
-const char* p_png = (const char*) temp_binary_data_4;
+const char* p_png = (const char*) temp_binary_data_8;
 
 //================== play.png ==================
-static const unsigned char temp_binary_data_5[] =
+static const unsigned char temp_binary_data_9[] =
 "\x89PNG\r\n"
 "\x1a\n"
 "\0\0\0\rIHDR\0\0\0 \0\0\0 \x08\x06\0\0\0szz\xf4\0\0\0\tpHYs\0\0\0\xec\0\0\0\xec\x01y(q\xbd\0\0\x05\xe9iTXtXML:com.adobe.xmp\0\0\0\0\0<?xpacket begin=\"\xef\xbb\xbf\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?> <x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"Ad"
@@ -2803,10 +3001,10 @@ static const unsigned char temp_binary_data_5[] =
 "G\0:\xc4~\xe9\xe4\x1f\x03\x07""0|\x0c\x8e\x8f\xb1""6\xcf\x9d\xb3\xabr\xad\xb8\xbb\xea:\x07\x8a^\x02\xb6(:\xce\xbb\xaa\xf7\x0eH\xa7jUk\x9c\x14\x8f\x1c\xb5\x05\xf5\xf6I\xca\x02\xc8\xed\xc0U\x8f\xfa&XT\xc1g\x17\xa9""3*\xa3x/\0?\x95\xfc\x06xKT\x0b\xb5""E"
 "\x18\xac\x8a\\/\xce\x1a\x81\xcd\xde%\x8a\xb6\xa5""8\x03\xac\0\xad+2\xb2\x8a""C~\x07\xd6""e\x8d%\xa5""c\xd0\x86\xd0Qv\x85k\xa4\xe6\xc7\xa4\x01h\0\x86\rp\x06""1\x8a\x82M\xd5\xd9Kd\0\0\0\0IEND\xae""B`\x82";
 
-const char* play_png = (const char*) temp_binary_data_5;
+const char* play_png = (const char*) temp_binary_data_9;
 
 //================== stop.png ==================
-static const unsigned char temp_binary_data_6[] =
+static const unsigned char temp_binary_data_10[] =
 "\x89PNG\r\n"
 "\x1a\n"
 "\0\0\0\rIHDR\0\0\0 \0\0\0 \x08\x06\0\0\0szz\xf4\0\0\0\tpHYs\0\0\r\xd7\0\0\r\xd7\x01""B(\x9bx\0\0\x05\x1ciTXtXML:com.adobe.xmp\0\0\0\0\0<?xpacket begin=\"\xef\xbb\xbf\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?> <x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\""
@@ -2825,7 +3023,7 @@ static const unsigned char temp_binary_data_6[] =
 "T\x85\xc0Zk]\xc9*\xc4V\xe1PK\x06\x02\x89\xc0&\xc2\xed\xb2(\xbb\xd5\r\x17\x98\xf2?i. \x11\xed\x02v\xf3>\xdb\x06H\x08Z\xf0l9\xe6'Ku:\x11\x1a\0\x10\x01Pb\x17\xd7\xc3\x89i\x8f]\xd9\t\r\xfa=&\xf1""2\xcb\x9d\x95v\xd0\xb8wim\xef\\\xd4\x13\xe4\xf4\x83\0@\xa3"
 "_\xb3\x11`\xd8\x80\xaf""F0\xdb\x08\xf1\x03\xcb \0\0\0\0IEND\xae""B`\x82";
 
-const char* stop_png = (const char*) temp_binary_data_6;
+const char* stop_png = (const char*) temp_binary_data_10;
 
 
 const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
@@ -2838,6 +3036,10 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 
     switch (hash)
     {
+        case 0xa23dd44c:  numBytes = 4774; return genericScriptTemplate_js;
+        case 0x794c612a:  numBytes = 980; return interfaceScriptTemplate_js;
+        case 0x01c43842:  numBytes = 1853; return midiScriptTemplate_js;
+        case 0x83ff2424:  numBytes = 798; return oscScriptTemplate_js;
         case 0x6e1d1991:  numBytes = 78643; return crash_png;
         case 0x1fa434c2:  numBytes = 2593; return default_lgmllayout;
         case 0xd4093963:  numBytes = 106933; return icon_png;
@@ -2854,6 +3056,10 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 
 const char* namedResourceList[] =
 {
+    "genericScriptTemplate_js",
+    "interfaceScriptTemplate_js",
+    "midiScriptTemplate_js",
+    "oscScriptTemplate_js",
     "crash_png",
     "default_lgmllayout",
     "icon_png",
@@ -2865,6 +3071,10 @@ const char* namedResourceList[] =
 
 const char* originalFilenames[] =
 {
+    "genericScriptTemplate.js",
+    "interfaceScriptTemplate.js",
+    "midiScriptTemplate.js",
+    "oscScriptTemplate.js",
     "crash.png",
     "default.lgmllayout",
     "icon.png",
