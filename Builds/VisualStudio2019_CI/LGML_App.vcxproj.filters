@@ -92,6 +92,9 @@
     <Filter Include="LGML\Source\Node\ui">
       <UniqueIdentifier>{3B1D1023-6B9A-7940-0DE2-650FF8A525A4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Node\nodes\recorder">
+      <UniqueIdentifier>{1E5C6678-452D-C222-263A-AC6AF720AB2C}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Node\nodes\sampler\ui">
       <UniqueIdentifier>{58EECB84-E337-DADE-0E81-389FF8DA9171}</UniqueIdentifier>
     </Filter>
@@ -1125,6 +1128,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\recorder\RecorderNode.cpp">
+      <Filter>LGML\Source\Node\nodes\recorder</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\sampler\ui\SamplerNodeUI.cpp">
       <Filter>LGML\Source\Node\nodes\sampler\ui</Filter>
@@ -4271,6 +4277,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\recorder\RecorderNode.h">
+      <Filter>LGML\Source\Node\nodes\recorder</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\sampler\ui\SamplerNodeUI.h">
       <Filter>LGML\Source\Node\nodes\sampler\ui</Filter>

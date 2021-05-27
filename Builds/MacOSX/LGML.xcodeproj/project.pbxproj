@@ -83,6 +83,7 @@
 		00572176DF83C52AE2388993 /* ../../Source/Common/MIDI/ui/MIDIDeviceParameterUI.h */ /* MIDIDeviceParameterUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MIDIDeviceParameterUI.h; path = ../../Source/Common/MIDI/ui/MIDIDeviceParameterUI.h; sourceTree = SOURCE_ROOT; };
 		00691923FD0FEF27E71438CD /* System/Library/Frameworks/WebKit.framework */ /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		00A2F0B94E896892BD218107 /* ../../Source/Common/AudioUIHelpers.h */ /* AudioUIHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioUIHelpers.h; path = ../../Source/Common/AudioUIHelpers.h; sourceTree = SOURCE_ROOT; };
+		02B90458F9B842DB3B4F71E4 /* ../../Source/Node/nodes/recorder/RecorderNode.cpp */ /* RecorderNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RecorderNode.cpp; path = ../../Source/Node/nodes/recorder/RecorderNode.cpp; sourceTree = SOURCE_ROOT; };
 		030848E425B59E04EC0D9FF5 /* System/Library/Frameworks/CoreAudio.framework */ /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		0308B7F96EC28E4DC49F0E9C /* ../../Source/Interface/interfaces/osc/OSCInterface.h */ /* OSCInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OSCInterface.h; path = ../../Source/Interface/interfaces/osc/OSCInterface.h; sourceTree = SOURCE_ROOT; };
 		04AD8E7D91666FBCBAF19258 /* ../../Source/Node/nodes/io/IONode.cpp */ /* IONode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = IONode.cpp; path = ../../Source/Node/nodes/io/IONode.cpp; sourceTree = SOURCE_ROOT; };
@@ -143,6 +144,7 @@
 		3507D76DD6E7B7A6CEA14CD2 /* ../../Source/Interface/InterfaceManager.h */ /* InterfaceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = InterfaceManager.h; path = ../../Source/Interface/InterfaceManager.h; sourceTree = SOURCE_ROOT; };
 		359E621A6871EF9BDCD30FF6 /* ../../Source/Common/MIDI/ui/MIDIDeviceParameterUI.cpp */ /* MIDIDeviceParameterUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MIDIDeviceParameterUI.cpp; path = ../../Source/Common/MIDI/ui/MIDIDeviceParameterUI.cpp; sourceTree = SOURCE_ROOT; };
 		35F2E512694843E8F47287AE /* ../../Source/Node/nodes/sampler/SamplerNode.cpp */ /* SamplerNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SamplerNode.cpp; path = ../../Source/Node/nodes/sampler/SamplerNode.cpp; sourceTree = SOURCE_ROOT; };
+		360936F5D85ED0A5D1D9FA46 /* ../../Source/Node/nodes/recorder/RecorderNode.h */ /* RecorderNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecorderNode.h; path = ../../Source/Node/nodes/recorder/RecorderNode.h; sourceTree = SOURCE_ROOT; };
 		36A9825F0D2DD9FF84EA17E1 /* ../../Source/Node/nodes/vst/VSTNode.cpp */ /* VSTNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = VSTNode.cpp; path = ../../Source/Node/nodes/vst/VSTNode.cpp; sourceTree = SOURCE_ROOT; };
 		373F435ABA8CA74095B493EF /* ../../Source/Node/nodes/router/ui/AudioRouterNodeUI.cpp */ /* AudioRouterNodeUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AudioRouterNodeUI.cpp; path = ../../Source/Node/nodes/router/ui/AudioRouterNodeUI.cpp; sourceTree = SOURCE_ROOT; };
 		3790B05AF645A5058820DD21 /* ../../Source/Preset/ui/PresetUI.h */ /* PresetUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PresetUI.h; path = ../../Source/Preset/ui/PresetUI.h; sourceTree = SOURCE_ROOT; };
@@ -426,6 +428,15 @@
 				3507D76DD6E7B7A6CEA14CD2,
 			);
 			name = Interface;
+			sourceTree = "<group>";
+		};
+		17D75982AB8F689285647FF4 /* recorder */ = {
+			isa = PBXGroup;
+			children = (
+				02B90458F9B842DB3B4F71E4,
+				360936F5D85ED0A5D1D9FA46,
+			);
+			name = recorder;
 			sourceTree = "<group>";
 		};
 		18A89A8CF1B22E7E482D7A8E /* ui */ = {
@@ -785,6 +796,7 @@
 		9BBA54FAAB2B58725091A8EB /* nodes */ = {
 			isa = PBXGroup;
 			children = (
+				17D75982AB8F689285647FF4,
 				739125875A412E22BA1F340A,
 				AE68239E13857674F81CB013,
 				C5170D47C1DE46CA9995D101,
@@ -1297,7 +1309,7 @@
 					"JUCE_STANDALONE_APPLICATION=1",
 					"VST_LOGGING=0",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=1.0.0b68",
+					"JUCE_APP_VERSION=1.0.0b69",
 					"JUCE_APP_VERSION_HEX=0x10000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
@@ -1447,7 +1459,7 @@
 					"JUCE_STANDALONE_APPLICATION=1",
 					"VST_LOGGING=0",
 					"JUCER_XCODE_MAC_F6D2F4CF=1",
-					"JUCE_APP_VERSION=1.0.0b68",
+					"JUCE_APP_VERSION=1.0.0b69",
 					"JUCE_APP_VERSION_HEX=0x10000",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",

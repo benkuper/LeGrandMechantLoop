@@ -32,6 +32,8 @@ public:
     Trigger* loadCurrentTrigger;
     Preset* currentPreset;
 
+    StringParameter* curPresetName;
+
     //Transition
     FloatParameter* transitionTime;
     Automation transition;

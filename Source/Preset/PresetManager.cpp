@@ -29,6 +29,10 @@ RootPresetManager::RootPresetManager() :
 {
 	saveCurrentTrigger = addTrigger("Save Current", "Save state to current preset");
 	loadCurrentTrigger = addTrigger("Load Current", "Load state to current preset");
+
+	curPresetName = addStringParameter("Current Preset", "The name of the current preset, for reference", "");
+	curPresetName->setControllableFeedbackOnly(true);
+
 	transitionTime = addFloatParameter("Transition Time", "Time to transition.", 0, 0);
 	transitionTime->defaultUI = FloatParameter::TIME;
 
@@ -71,6 +75,8 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 		if (transitionTime->floatValue() == 0) currentPreset->load();
 		else startThread();
 	}
+
+	curPresetName->setValue(currentPreset != nullptr ? currentPreset->niceName : "");
 }
 
 void RootPresetManager::onContainerTriggerTriggered(Trigger* t)

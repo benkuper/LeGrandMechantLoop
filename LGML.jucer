@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b68" cppLanguageStandard="17">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b69" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <GROUP id="{C441433A-B399-F72B-FC41-277E3131829E}" name="Templates">
@@ -267,6 +267,11 @@
           <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
         </GROUP>
         <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
+          <GROUP id="{841EA275-1559-5B28-D19D-0B8ED7652FB0}" name="recorder">
+            <FILE id="Z4oXjD" name="RecorderNode.cpp" compile="0" resource="0"
+                  file="Source/Node/nodes/recorder/RecorderNode.cpp" xcodeResource="0"/>
+            <FILE id="q2fYBr" name="RecorderNode.h" compile="0" resource="0" file="Source/Node/nodes/recorder/RecorderNode.h"/>
+          </GROUP>
           <GROUP id="{D1430F38-6887-956D-6593-21EC64B08E54}" name="sampler">
             <GROUP id="{E455340A-4139-C227-C28B-6B955B944018}" name="ui">
               <FILE id="Vj4PTO" name="SamplerNodeUI.cpp" compile="0" resource="0"

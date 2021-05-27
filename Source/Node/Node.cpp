@@ -133,6 +133,12 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 			for (auto& c : outAudioConnections) c->activityLevel = 0;
 			if (outControl != nullptr) outControl->rms->setValue(0);
 		}
+
+		if (hasMIDIInput)
+		{
+			inMidiBuffer.clear();
+			for(int i=1;i<=16;i++) inMidiBuffer.addEvent(MidiMessage::allNotesOff(i), 0);
+		}
 	}
 	else if (p == numAudioInputs)
 	{

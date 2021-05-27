@@ -79,6 +79,7 @@
 #include "nodes/spat/ui/SpatView.h"
 #include "nodes/spat/ui/SpatNodeViewUI.h"
 
+#include "nodes/recorder/RecorderNode.h"
 
 #include "nodes/container/ui/ContainerNodeUI.h"
 

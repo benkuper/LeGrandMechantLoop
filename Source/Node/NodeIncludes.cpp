@@ -57,9 +57,13 @@
 #include "nodes/vst/VSTNode.cpp"
 #include "nodes/vst/VSTRackNode.cpp"
 
+#include "nodes/recorder/RecorderNode.cpp"
+
+
 #include "nodes/vst/ui/VSTLinkedParameterUI.cpp"
 #include "nodes/vst/ui/VSTNodeViewUI.cpp"
 #include "nodes/vst/ui/VSTRackNodeUI.cpp"
+
 
 #include "ui/NodeUI.cpp"
 #include "ui/NodeManagerUI.cpp"
