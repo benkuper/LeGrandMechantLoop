@@ -20,6 +20,9 @@ public:
 
     enum PlayMode { HIT_LOOP, HIT_ONESHOT, PEEK, KEEP };
 
+
+   
+
     IntParameter* numChannels;
     BoolParameter* showKeyboard;
     EnumParameter* playMode;
@@ -48,6 +51,9 @@ public:
     int viewStartKey;
 
     SpinLock recLock;
+
+    FileParameter* samplesFolder;
+    Trigger* saveSamplesTrigger;
 
     enum NoteState { EMPTY, RECORDING, FILLED, PLAYING };
     struct SamplerNote
@@ -83,9 +89,6 @@ public:
     void startRecording(int note);
     void stopRecording();
 
-    void exportSampleSet(File folder);
-    void importSampleSet(File folder);
-
     void onContainerTriggerTriggered(Trigger* t) override;
     void onContainerParameterChangedInternal(Parameter* p) override;
     void controllableStateChanged(Controllable* c) override;
@@ -96,6 +99,9 @@ public:
     virtual void handleNoteOff(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
 
     virtual int getFadeNumSamples(); //for ring buffer fade
+
+    void exportSamples();
+    void loadSamples();
 
     var getJSONData() override;
     void loadJSONDataItemInternal(var data) override;

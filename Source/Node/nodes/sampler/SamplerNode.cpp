@@ -53,6 +53,11 @@ SamplerNode::SamplerNode(var params) :
 
 	releaseCurve = addFloatParameter("Release Curve", "Bend the release", 0.001f, 0, 0.1f);
 
+
+	samplesFolder = addFileParameter("Samples Folder", "To export and import");
+	samplesFolder->directoryMode = true;
+	saveSamplesTrigger = addTrigger("Export Samples", "Export all samples at once to the Samples Folder above");
+
 	keyboardState.addListener(this);
 
 	int sr = processor->getSampleRate();
@@ -210,13 +215,6 @@ void SamplerNode::stopRecording()
 	isRecording->setValue(false);
 }
 
-void SamplerNode::exportSampleSet(File folder)
-{
-}
-
-void SamplerNode::importSampleSet(File folder)
-{
-}
 
 void SamplerNode::onContainerTriggerTriggered(Trigger* t)
 {
@@ -236,6 +234,10 @@ void SamplerNode::onContainerTriggerTriggered(Trigger* t)
 	else if (t == clearAllNotesTrigger)
 	{
 		clearAllNotes();
+	}
+	else if (t == saveSamplesTrigger)
+	{
+		exportSamples();
 	}
 }
 
@@ -265,6 +267,10 @@ void SamplerNode::onContainerParameterChangedInternal(Parameter* p)
 	else if (p == fadeTimeMS)
 	{
 		updateRingBuffer();
+	}
+	else if (p == samplesFolder)
+	{
+		loadSamples();
 	}
 }
 
@@ -323,6 +329,105 @@ void SamplerNode::handleNoteOff(MidiKeyboardState* source, int midiChannel, int 
 int SamplerNode::getFadeNumSamples()
 {
 	return fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000;
+}
+
+void SamplerNode::exportSamples()
+{
+	File folder = samplesFolder->getFile();
+
+	if (!folder.exists() && !folder.isDirectory())
+	{
+		if (Engine::mainEngine->getFile().existsAsFile())
+		{
+			NLOGWARNING(niceName, "Samples folder is not valid, creating one in the session's directory");
+			samplesFolder->setValue(Engine::mainEngine->getFile().getParentDirectory().getChildFile(niceName).getFullPathName());
+		}
+		else
+		{
+			NLOGERROR(niceName, "Samples folder is not valid and current session is not saved in a file.");
+		}
+	}
+
+	folder.deleteRecursively();
+	folder.createDirectory();
+
+	LOG("Exporting samples...");
+
+	if (!folder.exists()) return;
+
+	int numSamplesExported = 0;
+	for (int i = 0; i < samplerNotes.size(); i++)
+	{
+		SamplerNote* n = samplerNotes[i];
+		if (!n->hasContent()) continue;
+
+		File f = folder.getChildFile(String(i) + ".wav");
+		if (f.exists()) f.deleteFile();
+
+		if (auto fileStream = std::unique_ptr<FileOutputStream>(f.createOutputStream()))
+		{
+			// Now create a WAV writer object that writes to our output stream...
+			WavAudioFormat wavFormat;
+			if (std::unique_ptr<AudioFormatWriter> writer = std::unique_ptr<AudioFormatWriter>(wavFormat.createWriterFor(fileStream.get(), processor->getSampleRate(), n->buffer.getNumChannels(), 16, {}, 0)))
+			{
+				fileStream.release(); // (passes responsibility for deleting the stream to the writer object that is now using it)
+				bool result = writer->writeFromAudioSampleBuffer(n->buffer, 0, n->buffer.getNumSamples());
+				if (!result) LOGWARNING("Error writing note " << i);
+				else numSamplesExported++;
+				writer->flush();
+			}
+			else
+			{
+				LOGWARNING("Could not create a writer for " << f.getFileName());
+			}
+
+		}
+		else
+		{
+			LOGWARNING("Could not open " << f.getFileName() << " for writing");
+		}
+	}
+
+	NLOG(niceName, numSamplesExported << " sampler notes exported to " << folder.getFullPathName());
+}
+
+void SamplerNode::loadSamples()
+{
+	File folder = samplesFolder->getFile();
+
+	if (!folder.exists() || !folder.isDirectory())
+	{
+		NLOGWARNING(niceName, "Samples folder is not valid");
+		return;
+	}
+
+	LOG("Importing samples...");
+
+	int numSamplesImported = 0;
+	for (int i = 0; i < samplerNotes.size(); i++)
+	{
+		SamplerNote* n = samplerNotes[i];
+		if (n->hasContent()) clearNote(i);
+
+		File f = folder.getChildFile(String(i) + ".wav");
+
+		if (!f.existsAsFile()) continue;
+
+		if (auto fileStream = std::unique_ptr<FileInputStream>(f.createInputStream()))
+		{
+			WavAudioFormat wavFormat;
+			if (std::unique_ptr<AudioFormatReader> reader = std::unique_ptr<AudioFormatReader>(wavFormat.createReaderFor(fileStream.get(), false)))
+			{
+				fileStream.release(); // (passes responsibility for deleting the stream to the writer object that is now using it)
+				n->buffer.setSize(reader->numChannels, reader->lengthInSamples);
+				reader->read(n->buffer.getArrayOfWritePointers(), reader->numChannels, 0, n->buffer.getNumSamples());
+				n->state->setValueWithData(FILLED);
+				numSamplesImported++;
+			}
+		}
+	}
+
+	NLOG(niceName, numSamplesImported << " sampler notes imported from " << folder.getFullPathName());
 }
 
 var SamplerNode::getJSONData()
