@@ -81,6 +81,16 @@
 
 #include "nodes/recorder/RecorderNode.h"
 
+#include "nodes/analysis/libs/pitch/PitchDetector.h"
+#include "nodes/analysis/libs/pitch/PitchMPM.h"
+#include "nodes/analysis/libs/pitch/PitchYIN.h"
+
+#include "nodes/analysis/FFTAnalyzer.h"
+#include "nodes/analysis/FFTAnalyzerManager.h"
+#include "nodes/analysis/ui/FFTAnalyzerEditor.h"
+#include "nodes/analysis/ui/FFTAnalyzerManagerEditor.h"
+#include "nodes/analysis/AnalysisNode.h"
+
 #include "nodes/container/ui/ContainerNodeUI.h"
 
 #include "nodes/vst/ui/VSTLinkedParameterUI.h"

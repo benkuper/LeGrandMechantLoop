@@ -92,6 +92,18 @@
     <Filter Include="LGML\Source\Node\ui">
       <UniqueIdentifier>{3B1D1023-6B9A-7940-0DE2-650FF8A525A4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Node\nodes\analysis\libs\pitch">
+      <UniqueIdentifier>{5933CC9B-1053-DA2E-BE04-5BB5D8D47F52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Node\nodes\analysis\libs">
+      <UniqueIdentifier>{015EFF59-66CB-4786-2778-50004A0F022C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Node\nodes\analysis\ui">
+      <UniqueIdentifier>{BA64053B-9076-DC27-F289-95FBA700CC49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Node\nodes\analysis">
+      <UniqueIdentifier>{BB4B28A1-855F-DCF6-D877-729FFB4C0FF1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Node\nodes\recorder">
       <UniqueIdentifier>{1E5C6678-452D-C222-263A-AC6AF720AB2C}</UniqueIdentifier>
     </Filter>
@@ -1128,6 +1140,21 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\analysis\ui\FFTAnalyzerEditor.cpp">
+      <Filter>LGML\Source\Node\nodes\analysis\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\analysis\ui\FFTAnalyzerManagerEditor.cpp">
+      <Filter>LGML\Source\Node\nodes\analysis\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\analysis\AnalysisNode.cpp">
+      <Filter>LGML\Source\Node\nodes\analysis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\analysis\FFTAnalyzer.cpp">
+      <Filter>LGML\Source\Node\nodes\analysis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\analysis\FFTAnalyzerManager.cpp">
+      <Filter>LGML\Source\Node\nodes\analysis</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\recorder\RecorderNode.cpp">
       <Filter>LGML\Source\Node\nodes\recorder</Filter>
@@ -4280,6 +4307,30 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\analysis\libs\pitch\PitchDetector.h">
+      <Filter>LGML\Source\Node\nodes\analysis\libs\pitch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\analysis\libs\pitch\PitchMPM.h">
+      <Filter>LGML\Source\Node\nodes\analysis\libs\pitch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\analysis\libs\pitch\PitchYIN.h">
+      <Filter>LGML\Source\Node\nodes\analysis\libs\pitch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\analysis\ui\FFTAnalyzerEditor.h">
+      <Filter>LGML\Source\Node\nodes\analysis\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\analysis\ui\FFTAnalyzerManagerEditor.h">
+      <Filter>LGML\Source\Node\nodes\analysis\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\analysis\AnalysisNode.h">
+      <Filter>LGML\Source\Node\nodes\analysis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\analysis\FFTAnalyzer.h">
+      <Filter>LGML\Source\Node\nodes\analysis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\analysis\FFTAnalyzerManager.h">
+      <Filter>LGML\Source\Node\nodes\analysis</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\recorder\RecorderNode.h">
       <Filter>LGML\Source\Node\nodes\recorder</Filter>

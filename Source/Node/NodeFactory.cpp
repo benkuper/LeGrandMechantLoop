@@ -22,6 +22,7 @@ NodeFactory::NodeFactory()
     defs.add(Definition::createDef<SpatNode>("Audio", SpatNode::getTypeStringStatic()));
     defs.add(Definition::createDef<AudioRouterNode>("Audio", AudioRouterNode::getTypeStringStatic()));
     defs.add(Definition::createDef<RecorderNode>("Audio", RecorderNode::getTypeStringStatic()));
+    defs.add(Definition::createDef<AnalysisNode>("Audio", AnalysisNode::getTypeStringStatic()));
 
     defs.add(Definition::createDef<MIDILooperNode>("MIDI", MIDILooperNode::getTypeStringStatic()));
     defs.add(Definition::createDef<MIDIIONode>("MIDI", MIDIIONode::getTypeStringStatic()));

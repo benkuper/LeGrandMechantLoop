@@ -49,6 +49,7 @@
 #include "nodes/spat/SpatItem.cpp"
 #include "nodes/spat/SpatNode.cpp"
 
+
 #include "nodes/spat/ui/SpatItemUI.cpp"
 #include "nodes/spat/ui/SpatNodeViewUI.cpp"
 #include "nodes/spat/ui/SpatView.cpp"
@@ -59,6 +60,11 @@
 
 #include "nodes/recorder/RecorderNode.cpp"
 
+#include "nodes/analysis/FFTAnalyzer.cpp"
+#include "nodes/analysis/FFTAnalyzerManager.cpp"
+#include "nodes/analysis/ui/FFTAnalyzerEditor.cpp"
+#include "nodes/analysis/ui/FFTAnalyzerManagerEditor.cpp"
+#include "nodes/analysis/AnalysisNode.cpp"
 
 #include "nodes/vst/ui/VSTLinkedParameterUI.cpp"
 #include "nodes/vst/ui/VSTNodeViewUI.cpp"

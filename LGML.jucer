@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include"
-              defines="VST_LOGGING=0&#10;" version="1.0.0b70" cppLanguageStandard="17">
+              defines="VST_LOGGING=0&#10;" version="1.0.0b71" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <GROUP id="{C441433A-B399-F72B-FC41-277E3131829E}" name="Templates">
@@ -267,6 +267,34 @@
           <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
         </GROUP>
         <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
+          <GROUP id="{E4E7F36E-69F0-3BA3-C132-53C8419010E4}" name="analysis">
+            <GROUP id="{7776E560-0A28-B240-4A7B-C1C1FB0A518F}" name="libs">
+              <GROUP id="{C69C4574-079B-1757-EC76-39D432589968}" name="pitch">
+                <FILE id="xHLYcI" name="PitchDetector.h" compile="0" resource="0" file="Source/Node/nodes/analysis/libs/pitch/PitchDetector.h"/>
+                <FILE id="G8614x" name="PitchMPM.h" compile="0" resource="0" file="Source/Node/nodes/analysis/libs/pitch/PitchMPM.h"/>
+                <FILE id="CwEuKQ" name="PitchYIN.h" compile="0" resource="0" file="Source/Node/nodes/analysis/libs/pitch/PitchYIN.h"/>
+              </GROUP>
+            </GROUP>
+            <GROUP id="{88ECDA81-FF7C-C57D-22F2-B0DB7625FCF1}" name="ui">
+              <FILE id="F7JvzR" name="FFTAnalyzerEditor.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/analysis/ui/FFTAnalyzerEditor.cpp"/>
+              <FILE id="iMB2zA" name="FFTAnalyzerEditor.h" compile="0" resource="0"
+                    file="Source/Node/nodes/analysis/ui/FFTAnalyzerEditor.h"/>
+              <FILE id="Wyd6sB" name="FFTAnalyzerManagerEditor.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/analysis/ui/FFTAnalyzerManagerEditor.cpp"/>
+              <FILE id="zSjOFR" name="FFTAnalyzerManagerEditor.h" compile="0" resource="0"
+                    file="Source/Node/nodes/analysis/ui/FFTAnalyzerManagerEditor.h"/>
+            </GROUP>
+            <FILE id="i9b5OW" name="AnalysisNode.cpp" compile="0" resource="0"
+                  file="Source/Node/nodes/analysis/AnalysisNode.cpp"/>
+            <FILE id="S2DOOe" name="AnalysisNode.h" compile="0" resource="0" file="Source/Node/nodes/analysis/AnalysisNode.h"/>
+            <FILE id="yo8mDe" name="FFTAnalyzer.cpp" compile="0" resource="0" file="Source/Node/nodes/analysis/FFTAnalyzer.cpp"/>
+            <FILE id="xYdrBM" name="FFTAnalyzer.h" compile="0" resource="0" file="Source/Node/nodes/analysis/FFTAnalyzer.h"/>
+            <FILE id="DkBfiR" name="FFTAnalyzerManager.cpp" compile="0" resource="0"
+                  file="Source/Node/nodes/analysis/FFTAnalyzerManager.cpp"/>
+            <FILE id="MwPGKq" name="FFTAnalyzerManager.h" compile="0" resource="0"
+                  file="Source/Node/nodes/analysis/FFTAnalyzerManager.h"/>
+          </GROUP>
           <GROUP id="{841EA275-1559-5B28-D19D-0B8ED7652FB0}" name="recorder">
             <FILE id="Z4oXjD" name="RecorderNode.cpp" compile="0" resource="0"
                   file="Source/Node/nodes/recorder/RecorderNode.cpp" xcodeResource="0"/>
