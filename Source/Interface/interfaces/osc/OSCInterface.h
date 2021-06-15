@@ -72,7 +72,6 @@ public:
 
 	std::unique_ptr<EnablingControllableContainer> receiveCC;
 	std::unique_ptr<BaseManager<OSCOutput>> outputManager;
-	std::unique_ptr<ControllableContainer> thruManager;
 
 	//Script
 	const Identifier oscEventId = "oscEvent";

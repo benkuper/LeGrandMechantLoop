@@ -28,11 +28,6 @@ OSCInterface::OSCInterface(var params) :
 
 	if (!Engine::mainEngine->isLoadingFile) setupReceiver();
 
-	thruManager.reset(new ControllableContainer("Pass-through"));
-	thruManager->userCanAddControllables = true;
-	thruManager->customUserCreateControllableFunc = &OSCInterface::createThruControllable;
-	addChildControllableContainer(thruManager.get());
-
 	outputManager.reset(new BaseManager<OSCOutput>("OSC Outputs"));
 	outputManager->addBaseManagerListener(this);
 
@@ -153,24 +148,6 @@ void OSCInterface::processMessage(const OSCMessage& msg)
 		for (auto& a : msg) s += String(" ") + getStringArg(a);
 		NLOG(niceName, msg.getAddressPattern().toString() << " :" << s);
 	}
-
-	//inActivityTrigger->trigger();
-
-	if (thruManager != nullptr)
-	{
-		for (auto& c : thruManager->controllables)
-		{
-			if (TargetParameter* mt = (TargetParameter*)c)
-			{
-				if (!mt->enabled) continue;
-				if (OSCInterface* m = (OSCInterface*)(mt->targetContainer.get()))
-				{
-					m->sendOSC(msg);
-				}
-			}
-		}
-	}
-
 
 	processMessageInternal(msg);
 
@@ -452,11 +429,9 @@ var OSCInterface::argumentToVar(const OSCArgument& a)
 var OSCInterface::getJSONData()
 {
 	var data = Interface::getJSONData();
-	/*if (receiveCC != nullptr)
-	{
-		var inputData = receiveCC->getJSONData();
-		if (!inputData.isVoid()) data.getDynamicObject()->setProperty("input", inputData);
-	}
+	
+	var inputData = receiveCC->getJSONData();
+	if (!inputData.isVoid()) data.getDynamicObject()->setProperty("input", inputData);
 
 	if (outputManager != nullptr)
 	{
@@ -464,40 +439,17 @@ var OSCInterface::getJSONData()
 		if (!outputsData.isVoid()) data.getDynamicObject()->setProperty("outputs", outputsData);
 	}
 
-	if (thruManager != nullptr)
-	{
-		var thruData = thruManager->getJSONData();
-		if (!thruData.isVoid()) data.getDynamicObject()->setProperty("thru", thruData);
-	}
-	*/
 	return data;
 }
 
 void OSCInterface::loadJSONDataInternal(var data)
 {
 	Interface::loadJSONDataInternal(data);
-	//if (receiveCC != nullptr) receiveCC->loadJSONData(data.getProperty("input", var()));
+	receiveCC->loadJSONData(data.getProperty("input", var()));
 	if (outputManager != nullptr)
 	{
-		//outputManager->loadJSONData(data.getProperty("outputs", var()));
+		outputManager->loadJSONData(data.getProperty("outputs", var()));
 		setupSenders();
-	}
-
-	if (thruManager != nullptr)
-	{
-		//thruManager->loadJSONData(data.getProperty("thru", var()));
-		for (auto& c : thruManager->controllables)
-		{
-			if (TargetParameter* mt = dynamic_cast<TargetParameter*>(c))
-			{
-				mt->targetType = TargetParameter::CONTAINER;
-				mt->setRootContainer(InterfaceManager::getInstance());
-				mt->maxDefaultSearchLevel = 0;
-				//mt->customGetTargetContainerFunc = &Interfa::showAndGetModuleOfType<OSCInterface>;
-				mt->isRemovableByUser = true;
-				mt->canBeDisabledByUser = true;
-			}
-		}
 	}
 
 	if (!isThreadRunning()) startThread();
