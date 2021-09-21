@@ -65,9 +65,9 @@ LGMLOutlinerItem::~LGMLOutlinerItem()
 {
 }
 
-Component* LGMLOutlinerItem::createItemComponent()
+std::unique_ptr<Component> LGMLOutlinerItem::createItemComponent()
 {
-    return new LGMLOutlinerItemComponent(this);
+    return std::unique_ptr<Component>(new LGMLOutlinerItemComponent(this));
 }
 
 LGMLOutliner::LGMLOutliner(const String& name) :

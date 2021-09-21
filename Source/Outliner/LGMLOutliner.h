@@ -41,7 +41,7 @@ public:
     LGMLOutlinerItem(WeakReference<Controllable> controllable, bool parentsHaveHideInRemote, bool isFiltered);
     virtual ~LGMLOutlinerItem();
 
-    Component* createItemComponent() override;
+    std::unique_ptr<Component> createItemComponent() override;
 
 };
 

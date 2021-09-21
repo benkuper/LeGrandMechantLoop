@@ -67,7 +67,8 @@ void Mapping::process(var value)
 {
 	if (dest == nullptr || dest.wasObjectDeleted()) return;
 
-	float destVal = jmap((float)value, inputRange->x, inputRange->y, outputRange->x, outputRange->y);
+	float val = value.isInt() ? (float)(int)value : (float)value;
+	float destVal = jmap(val, inputRange->x, inputRange->y, outputRange->x, outputRange->y);
 	float minVal = jmin(outputRange->x, outputRange->y);
 	float maxVal = jmax(outputRange->x, outputRange->y);
 	destVal = jlimit(minVal, maxVal, destVal);
@@ -227,7 +228,7 @@ void MIDIMapping::noteOnReceived(const int& _channel, const int& pitch, const in
 	}
 	
 	if (type->getValueDataAsEnum<MIDIType>() != NOTE) return;
-	if (channel->intValue() > 0 || _channel != channel->intValue()) return;
+	if (channel->intValue() > 0 && _channel != channel->intValue()) return;
 	if (pitch != pitchOrNumber->intValue()) return;
 	
 	process(velocity);
