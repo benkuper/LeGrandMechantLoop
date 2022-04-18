@@ -208,18 +208,12 @@ jobs:
       - name: Create AppImage
         id: create_package
         run: |
-          mkdir ${{ env.ProjectName }}.AppDir/usr/bin/
+          mkdir -p ${{ env.ProjectName }}.AppDir/usr/bin/
           cp build/${{ env.ProjectName }} ${{ env.ProjectName }}.AppDir/usr/bin/
-          chmod -R 0777 ${{ env.ProjectName }}.AppDir
-          chmod a+x ${{ env.ProjectName }}.AppDir/AppRun
-          
+
           PKGNAME=${{ env.ProjectName }}-${{ steps.set_variables.outputs.suffix }}.AppImage
           echo "::set-output name=pkg-name::$PKGNAME"
           ${{ github.workspace }}/appimagetool-x86_64.AppImage ${{ steps.install_deps.outputs.appImageRuntime }} ${{ env.ProjectName }}.AppDir $PKGNAME
-          echo "Testing AppImage permissions..."
-          chmod a+x ./$PKGNAME.AppImage
-          ./$PKGNAME.AppImage --appimage-extract
-          ls -l squashfs-root
         working-directory: ./Builds/${{ matrix.buildFolder }}
 
       - name: Upload
