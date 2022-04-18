@@ -66,7 +66,7 @@
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>D:\Softwares\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;D:\Softwares\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_USE_DARK_SPLASH_SCREEN=1;JUCE_PROJUCER_VERSION=0x60106;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_MODULE_AVAILABLE_juce_organicui=1;JUCE_MODULE_AVAILABLE_juce_osc=1;JUCE_MODULE_AVAILABLE_juce_simpleweb=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_USE_WINRT_MIDI=1;JUCE_ASIO=1;JUCE_WASAPI=1;JUCE_DIRECTSOUND=1;JUCE_ALSA=1;JUCE_JACK=1;JUCE_PLUGINHOST_VST=1;JUCE_PLUGINHOST_VST3=1;JUCE_PLUGINHOST_AU=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;ORGANICUI_USE_SERVUS=1;ORGANICUI_USE_WEBSERVER=1;JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1;JUCE_ENABLE_BROADCAST_BY_DEFAULT=1;JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1;JUCE_IP_AND_PORT_DETECTION=1;JUCE_STANDALONE_APPLICATION=1;VST_LOGGING=0;JUCE_MODAL_LOOPS_PERMITTED=1;JUCER_VS2019_78A5026=1;JUCE_APP_VERSION=1.0.0b74;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_USE_DARK_SPLASH_SCREEN=1;JUCE_PROJUCER_VERSION=0x60106;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_MODULE_AVAILABLE_juce_organicui=1;JUCE_MODULE_AVAILABLE_juce_osc=1;JUCE_MODULE_AVAILABLE_juce_simpleweb=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_USE_WINRT_MIDI=1;JUCE_ASIO=1;JUCE_WASAPI=1;JUCE_DIRECTSOUND=1;JUCE_ALSA=1;JUCE_JACK=1;JUCE_PLUGINHOST_VST=1;JUCE_PLUGINHOST_VST3=1;JUCE_PLUGINHOST_AU=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;ORGANICUI_USE_SERVUS=1;ORGANICUI_USE_WEBSERVER=1;JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1;JUCE_ENABLE_BROADCAST_BY_DEFAULT=1;JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1;JUCE_IP_AND_PORT_DETECTION=1;JUCE_STANDALONE_APPLICATION=1;VST_LOGGING=0;JUCE_MODAL_LOOPS_PERMITTED=1;JUCER_VS2019_78A5026=1;JUCE_APP_VERSION=1.0.0b75;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -113,7 +113,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>D:\Softwares\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;D:\Softwares\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_USE_DARK_SPLASH_SCREEN=1;JUCE_PROJUCER_VERSION=0x60106;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_MODULE_AVAILABLE_juce_organicui=1;JUCE_MODULE_AVAILABLE_juce_osc=1;JUCE_MODULE_AVAILABLE_juce_simpleweb=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_USE_WINRT_MIDI=1;JUCE_ASIO=1;JUCE_WASAPI=1;JUCE_DIRECTSOUND=1;JUCE_ALSA=1;JUCE_JACK=1;JUCE_PLUGINHOST_VST=1;JUCE_PLUGINHOST_VST3=1;JUCE_PLUGINHOST_AU=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;ORGANICUI_USE_SERVUS=1;ORGANICUI_USE_WEBSERVER=1;JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1;JUCE_ENABLE_BROADCAST_BY_DEFAULT=1;JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1;JUCE_IP_AND_PORT_DETECTION=1;JUCE_STANDALONE_APPLICATION=1;VST_LOGGING=0;JUCE_MODAL_LOOPS_PERMITTED=1;JUCER_VS2019_78A5026=1;JUCE_APP_VERSION=1.0.0b74;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_USE_DARK_SPLASH_SCREEN=1;JUCE_PROJUCER_VERSION=0x60106;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_opengl=1;JUCE_MODULE_AVAILABLE_juce_organicui=1;JUCE_MODULE_AVAILABLE_juce_osc=1;JUCE_MODULE_AVAILABLE_juce_simpleweb=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;JUCE_USE_WINRT_MIDI=1;JUCE_ASIO=1;JUCE_WASAPI=1;JUCE_DIRECTSOUND=1;JUCE_ALSA=1;JUCE_JACK=1;JUCE_PLUGINHOST_VST=1;JUCE_PLUGINHOST_VST3=1;JUCE_PLUGINHOST_AU=1;JUCE_STRICT_REFCOUNTEDPOINTER=1;ORGANICUI_USE_SERVUS=1;ORGANICUI_USE_WEBSERVER=1;JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1;JUCE_ENABLE_BROADCAST_BY_DEFAULT=1;JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1;JUCE_IP_AND_PORT_DETECTION=1;JUCE_STANDALONE_APPLICATION=1;VST_LOGGING=0;JUCE_MODAL_LOOPS_PERMITTED=1;JUCER_VS2019_78A5026=1;JUCE_APP_VERSION=1.0.0b75;JUCE_APP_VERSION_HEX=0x10000;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_RTAS=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -2656,6 +2656,9 @@
     <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\ui\ColorParameterUI.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\ui\ColorStatusUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\ui\DoubleSliderUI.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -2678,6 +2681,9 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\ui\IntStepperUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\ui\P2DUI.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\ui\ParameterEditor.cpp">
@@ -2710,13 +2716,7 @@
     <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\FloatParameter.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\FloatRangeParameter.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\IntParameter.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\IntRangeParameter.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\controllable\parameter\Parameter.cpp">
@@ -2782,6 +2782,9 @@
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardItemUI.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardLinkItemUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardManagerUI.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -2789,6 +2792,9 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\dashboard\ui\SharedTextureDashboardItemUI.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\Dashboard.cpp">
@@ -2809,7 +2815,13 @@
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardItemManager.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardLinkItem.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardManager.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\dashboard\SharedTextureDashboardItem.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\engine\Engine.cpp">
@@ -2888,6 +2900,24 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\outliner\Outliner.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\parrot\ui\ParrotPanel.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\parrot\ui\ParrotUI.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\parrot\Parrot.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\parrot\ParrotManager.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\parrot\ParrotRecord.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\parrot\ParrotRecordManager.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\progress\ui\ProgressWindow.cpp">
@@ -4152,6 +4182,7 @@
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\BetterStepper.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\BoolToggleUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\ColorParameterUI.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\ColorStatusUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\DoubleSliderUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\EnumParameterUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\FloatParameterLabelUI.h"/>
@@ -4160,6 +4191,7 @@
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\IntParameterLabelUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\IntSliderUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\IntStepperUI.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\P2DUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\ParameterEditor.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\ParameterUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\ui\StringParameterUI.h"/>
@@ -4170,9 +4202,7 @@
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\EnumParameter.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\FileParameter.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\FloatParameter.h"/>
-    <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\FloatRangeParameter.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\IntParameter.h"/>
-    <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\IntRangeParameter.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\Parameter.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\Point2DParameter.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\controllable\parameter\Point3DParameter.h"/>
@@ -4196,9 +4226,11 @@
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardGroupItemUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardItemManagerUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardItemUI.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardLinkItemUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardManagerUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardManagerView.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardUI.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\SharedTextureDashboardItemUI.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\Dashboard.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardCommentItem.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardGroupItem.h"/>
@@ -4206,7 +4238,9 @@
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardItemFactory.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardItemManager.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardItemProvider.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardLinkItem.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardManager.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\dashboard\SharedTextureDashboardItem.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\engine\Engine.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\engine\EngineListener.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\help\HelpBox.h"/>
@@ -4217,6 +4251,7 @@
     <ClInclude Include="..\..\Modules\juce_organicui\helpers\DebugHelpers.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\helpers\NetworkHelpers.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\helpers\OSCHelpers.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\helpers\PerlinNoise.hpp"/>
     <ClInclude Include="..\..\Modules\juce_organicui\helpers\QueuedNotifier.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\helpers\RegexFunctions.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\helpers\StringUtil.h"/>
@@ -4249,6 +4284,12 @@
     <ClInclude Include="..\..\Modules\juce_organicui\manager\GenericControllableItem.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\manager\GenericControllableManager.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\outliner\Outliner.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\parrot\ui\ParrotPanel.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\parrot\ui\ParrotUI.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\parrot\Parrot.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\parrot\ParrotManager.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\parrot\ParrotRecord.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\parrot\ParrotRecordManager.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\progress\ui\ProgressWindow.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\progress\ProgressNotifier.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\remotecontrol\OSCPacketHelper.h"/>
