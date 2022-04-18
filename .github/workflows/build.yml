@@ -2,12 +2,12 @@ on: [push]
 
 env:
   ProjectName: LGML
-  PackagesVersion: 1.2.9
+  PackagesVersion: 1.2.10
 
 jobs:
   windows:
     name: Windows
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     steps:
       - name: Checkout repo
