@@ -299,7 +299,7 @@ void VSTParameterContainer::loadJSONData(var data, bool createIfNotThere)
 	}
 }
 
-InspectableEditor* VSTParameterContainer::getEditor(bool isRoot)
+InspectableEditor* VSTParameterContainer::getEditorInternal(bool isRoot, Array<Inspectable*> inspectables)
 {
 	return new VSTParameterContainerEditor(this, isRoot);
 }

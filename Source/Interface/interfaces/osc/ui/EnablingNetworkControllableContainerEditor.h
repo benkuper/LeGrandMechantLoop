@@ -21,5 +21,5 @@ public:
 
 	Label ipLabel;
 
-	static InspectableEditor * create(ControllableContainer * cc, bool isRoot) { return new EnablingNetworkControllableContainerEditor(dynamic_cast<EnablingControllableContainer *>(cc), isRoot); }
+	static InspectableEditor * create( bool isRoot, Array<ControllableContainer*> cc) { return new EnablingNetworkControllableContainerEditor((EnablingControllableContainer*)cc[0], isRoot); }
 };

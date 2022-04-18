@@ -204,7 +204,7 @@ void VSTManager::run()
 	updateVSTList();
 }
 
-InspectableEditor* VSTManager::getEditor(bool isRoot)
+InspectableEditor* VSTManager::getEditorInternal(bool isRoot, Array<Inspectable*> inspectables)
 {
 	return new VSTManagerEditor(this, isRoot);
 }
@@ -229,7 +229,7 @@ VSTPluginParameterUI* VSTPluginParameter::createVSTParamUI()
 	return new VSTPluginParameterUI(this);
 }
 
-ControllableUI* VSTPluginParameter::createDefaultUI()
+ControllableUI* VSTPluginParameter::createDefaultUI(Array<Controllable*> controllables)
 {
 	return createVSTParamUI();
 }

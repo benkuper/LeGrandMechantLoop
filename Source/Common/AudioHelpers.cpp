@@ -38,7 +38,7 @@ void DecibelFloatParameter::setValueInternal(var& val)
 }
 
 
-ControllableUI* DecibelFloatParameter::createDefaultUI()
+ControllableUI* DecibelFloatParameter::createDefaultUI(Array<Controllable*> controllables)
 {
 	return new DecibelSliderUI(this);
 }

@@ -16,18 +16,18 @@ class FFTAnalyzer :
 public:
 	FFTAnalyzer();
 	~FFTAnalyzer();
-	
-	
+
+
 	FloatParameter* position;
 	FloatParameter* size;
-	FloatParameter * value;
-	ColorParameter * color;
+	FloatParameter* value;
+	ColorParameter* color;
 
-	void process(float * fftSamples, int numSamples);
+	void process(float* fftSamples, int numSamples);
 
 	void onContainerNiceNameChanged() override;
 
-	InspectableEditor* getEditor(bool isRoot) override	;
+	InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> inspectables = {}) override;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FFTAnalyzer)
 

@@ -39,7 +39,7 @@ public:
 	virtual void midiDeviceOutRemoved(MIDIOutputDevice *) override;
 
 	MIDIDeviceParameterUI * createMIDIParameterUI();
-	ControllableUI * createDefaultUI() override;
+	ControllableUI* createDefaultUI(Array<Controllable*> controllables = {}) override;
 
 	void loadJSONDataInternal(var data) override;
 

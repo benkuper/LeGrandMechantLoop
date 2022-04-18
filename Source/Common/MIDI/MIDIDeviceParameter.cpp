@@ -105,7 +105,7 @@ MIDIDeviceParameterUI * MIDIDeviceParameter::createMIDIParameterUI()
 	return new MIDIDeviceParameterUI(this);
 }
 
-ControllableUI * MIDIDeviceParameter::createDefaultUI()
+ControllableUI * MIDIDeviceParameter::createDefaultUI(Array<Controllable*> controllables)
 {
 	return createMIDIParameterUI();
 }

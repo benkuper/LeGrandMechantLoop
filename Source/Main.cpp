@@ -43,10 +43,8 @@ void LGMLApplication::afterInit()
 	}
 }
 
-bool LGMLApplication::clearGlobalSettings()
+void LGMLApplication::clearGlobalSettings()
 {
-	bool result = OrganicApplication::clearGlobalSettings();
-	if(result) VSTManager::getInstance()->reset();
-
-	return result;
+	OrganicApplication::clearGlobalSettings();
+	VSTManager::getInstance()->reset();
 }

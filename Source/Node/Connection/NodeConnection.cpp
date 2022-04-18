@@ -260,7 +260,7 @@ void NodeAudioConnection::loadChannelMapData(var data)
 	}
 }
 
-InspectableEditor* NodeAudioConnection::getEditor(bool isRoot)
+InspectableEditor* NodeAudioConnection::getEditorInternal(bool isRoot, Array<Inspectable*> inspectables)
 {
 	return new NodeAudioConnectionEditor(this, isRoot);
 }

@@ -21,7 +21,7 @@ public:
     void initialiseInternal(const String& commandLine) override;
     void afterInit() override;
 
-    bool clearGlobalSettings() override;
+    void clearGlobalSettings() override;
 }; 
 
 START_JUCE_APPLICATION(LGMLApplication)

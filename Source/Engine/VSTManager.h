@@ -49,7 +49,7 @@ public:
     DECLARE_ASYNC_EVENT(VSTManager, VSTManager, vstManager, ENUM_LIST(PLUGINS_UPDATED))
     
     
-    InspectableEditor* getEditor(bool isRoot) override;
+    InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> inspectables = {}) override;
 };
 
 class VSTPluginParameterUI;
@@ -64,7 +64,7 @@ public:
     PluginDescription* getPluginDescription();
 
     VSTPluginParameterUI* createVSTParamUI();
-    ControllableUI * createDefaultUI() override;
+    ControllableUI * createDefaultUI(Array<Controllable*> controllables = {}) override;
 };
 
 class DescriptionSorter

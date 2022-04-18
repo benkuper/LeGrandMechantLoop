@@ -44,7 +44,7 @@ public:
     var getJSONData() override;
     void loadJSONData(var data, bool createIfNotThere = false) override;
 
-    InspectableEditor* getEditor(bool isRoot) override;
+    InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> inspectables = {}) override;
 };
 
 class VSTParameterLink :

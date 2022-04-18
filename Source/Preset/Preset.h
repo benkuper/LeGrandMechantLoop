@@ -65,7 +65,7 @@ public:
 
     Array<Preset*> getPresetChain();
 
-    InspectableEditor* getEditor(bool isRoot) override;
+    InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> controllables = {}) override;
 
     String getTypeString() const override { return "Preset"; }
 };

@@ -150,7 +150,7 @@ void AudioManager::loadJSONDataInternal(var data)
     }
 }
 
-InspectableEditor* AudioManager::getEditor(bool isRoot)
+InspectableEditor* AudioManager::getEditorInternal(bool isRoot, Array<Inspectable*> inspectables)
 {
     return new AudioManagerEditor(this, isRoot);
 }

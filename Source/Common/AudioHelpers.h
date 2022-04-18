@@ -40,7 +40,7 @@ public:
     void setGain(float gain);
     void setValueInternal(var& val) override;
 
-    ControllableUI* createDefaultUI() override;
+    ControllableUI* createDefaultUI(Array<Controllable*> controllables = {}) override;
 };
 
 class VolumeControl :

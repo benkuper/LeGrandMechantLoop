@@ -101,7 +101,7 @@ void Preset::save(Parameter * parameter)
 		dataMap.clear();
 		addressMap.clear();
 
-		bool main = isMain();
+		//bool main = isMain();
 
 		int numSaved = 0;
 		for (auto& p : params)
@@ -110,7 +110,7 @@ void Preset::save(Parameter * parameter)
 			var d = p->value;
 			String add = p->getControlAddress();
 			if (!p->shouldBeSaved()) continue;
-			if (main || overridenControllables.contains(add))
+			if (/*main || */overridenControllables.contains(add))
 			{
 				addParameterToDataMap(p);
 				numSaved++;
@@ -166,7 +166,7 @@ void Preset::addParameterToDataMap(Parameter* p, var forceValue)
 	addressMap.set(add, val);
 	paramGhostAddressMap.set(p, add);
 	lostParamAddresses.removeAllInstancesOf(add);
-	if (!isMain()) overridenControllables.addIfNotAlreadyThere(add);
+	/*if (!isMain()) */overridenControllables.addIfNotAlreadyThere(add);
 
 	p->addControllableListener(this);
 	registerLinkedInspectable(p);
@@ -196,7 +196,7 @@ void Preset::removeParameterFromDataMap(Parameter* p)
 	unregisterLinkedInspectable(p);
 	addressMap.remove(add);
 	lostParamAddresses.removeAllInstancesOf(add);
-	if (!isMain()) overridenControllables.removeAllInstancesOf(add);
+	/*if (!isMain())*/ overridenControllables.removeAllInstancesOf(add);
 }
 
 void Preset::removeAddressFromDataMap(String address)
@@ -209,7 +209,7 @@ void Preset::removeAddressFromDataMap(String address)
 
 	paramGhostAddressMap.removeValue(address);
 	addressMap.remove(address);
-	if (!isMain()) overridenControllables.removeAllInstancesOf(address);
+	/* if (!isMain()) */ overridenControllables.removeAllInstancesOf(address);
 }
 
 bool Preset::isMain()
@@ -306,7 +306,7 @@ Array<Preset*> Preset::getPresetChain()
 	return result;
 }
 
-InspectableEditor* Preset::getEditor(bool isRoot)
+InspectableEditor* Preset::getEditorInternal(bool isRoot, Array<Inspectable*> controllables)
 {
 	return new PresetEditor(this, isRoot);
 }

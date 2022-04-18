@@ -83,7 +83,7 @@ public:
     void loadChannelMapData(var data);
 
 
-    InspectableEditor* getEditor(bool isRoot) override;
+    InspectableEditor* getEditorInternal(bool isRoot,Array<Inspectable*> inspectables = Array<Inspectable*>()) override;
 };
 
 class NodeMIDIConnection :

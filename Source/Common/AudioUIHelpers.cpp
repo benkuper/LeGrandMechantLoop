@@ -55,7 +55,6 @@ String DecibelSliderUI::getValueText() const
 RMSSliderUI::RMSSliderUI(DecibelFloatParameter* p) :
     DecibelSliderUI(p)
 {
-    updateRate = 10;
     showLabel = false;
     showValue = false;
 }
