@@ -65,6 +65,7 @@ void MixerNodeViewUI::updateExclusives()
         while (exclusivesUI.size() > node->inputLines.size())
         {
             IntParameterLabelUI * eui = exclusivesUI[exclusivesUI.size() - 1];
+            eui->showLabel = false;
             contentComponents.removeAllInstancesOf(eui);
             removeChildComponent(eui);
             exclusivesUI.removeObject(eui);
@@ -73,6 +74,7 @@ void MixerNodeViewUI::updateExclusives()
         while (exclusivesUI.size() < node->inputLines.size())
         {
             IntParameterLabelUI* eui = node->inputLines[exclusivesUI.size()]->exclusiveIndex->createLabelUI();
+            eui->showLabel = false;
             exclusivesUI.add(eui);
             contentComponents.add(eui);
             addAndMakeVisible(eui);

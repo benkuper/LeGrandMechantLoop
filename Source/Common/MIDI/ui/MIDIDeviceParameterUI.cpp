@@ -1,17 +1,18 @@
 /*
   ==============================================================================
 
-    MIDIDeviceParameterUI.cpp
-    Created: 20 Dec 2016 3:06:05pm
-    Author:  Ben
+	MIDIDeviceParameterUI.cpp
+	Created: 20 Dec 2016 3:06:05pm
+	Author:  Ben
 
   ==============================================================================
 */
 
-MIDIDeviceParameterUI::MIDIDeviceParameterUI(Array<MIDIDeviceParameter *> _midiParams) :
+MIDIDeviceParameterUI::MIDIDeviceParameterUI(Array<MIDIDeviceParameter*> _midiParams, bool showInput, bool showOutput) :
 	ParameterUI(Inspectable::getArrayAs<MIDIDeviceParameter, Parameter>(_midiParams)),
 	midiParams(_midiParams),
-	midiParam(_midiParams[0])
+	midiParam(_midiParams[0]),
+	chooser(midiParam->canHaveInput&& showInput, midiParam->canHaveOutput&& showOutput)
 {
 	addAndMakeVisible(&chooser);
 	chooser.addMIDIChooserListener(this);
@@ -31,7 +32,7 @@ void MIDIDeviceParameterUI::resized()
 	chooser.setBounds(getLocalBounds());
 }
 
-void MIDIDeviceParameterUI::valueChanged(const var & /*value*/)
+void MIDIDeviceParameterUI::valueChanged(const var& /*value*/)
 {
 
 	chooser.setSelectedInputDevice(midiParam->inputDevice);
@@ -39,12 +40,12 @@ void MIDIDeviceParameterUI::valueChanged(const var & /*value*/)
 	chooser.setGhostValues(midiParam->ghostDeviceNameIn, midiParam->ghostDeviceNameOut);
 }
 
-void MIDIDeviceParameterUI::midiDeviceInSelected(MIDIInputDevice * d)
+void MIDIDeviceParameterUI::midiDeviceInSelected(MIDIInputDevice* d)
 {
 	midiParam->setInputDevice(d);
 }
 
-void MIDIDeviceParameterUI::midiDeviceOutSelected(MIDIOutputDevice * d)
+void MIDIDeviceParameterUI::midiDeviceOutSelected(MIDIOutputDevice* d)
 {
 	midiParam->setOutputDevice(d);
 }

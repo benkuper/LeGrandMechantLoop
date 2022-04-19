@@ -165,7 +165,7 @@ MIDIMapping::MIDIMapping(var params) :
 	Mapping(params),
 	device(nullptr)
 {
-	deviceParam = new MIDIDeviceParameter("Device", true, false);
+	deviceParam = new MIDIDeviceParameter("Device");
 	addParameter(deviceParam);
 	type = addEnumParameter("Type", "Type of Midi message");
 	type->addOption("Control Change", CC)->addOption("Note", NOTE)->addOption("PitchWheel", PitchWheel);
