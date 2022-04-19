@@ -17,17 +17,16 @@ class MIDIDeviceParameter :
 	public MIDIManager::Listener
 {
 public:
-	MIDIDeviceParameter(const String &name, bool canHaveInput = true, bool canHaveOutput = true);
+	MIDIDeviceParameter(const String &name);
 	~MIDIDeviceParameter();
-
-	bool canHaveInput;
-	bool canHaveOutput;
 
 	MIDIInputDevice * inputDevice;
 	MIDIOutputDevice * outputDevice;
 	
 	String ghostDeviceIn;
 	String ghostDeviceOut;
+	String ghostDeviceNameIn;
+	String ghostDeviceNameOut;
 
 	void setInputDevice(MIDIInputDevice * i);
 	void setOutputDevice(MIDIOutputDevice * o);
@@ -38,8 +37,8 @@ public:
 	virtual void midiDeviceInRemoved(MIDIInputDevice *) override;
 	virtual void midiDeviceOutRemoved(MIDIOutputDevice *) override;
 
-	MIDIDeviceParameterUI * createMIDIParameterUI();
-	ControllableUI* createDefaultUI(Array<Controllable*> controllables = {}) override;
+	MIDIDeviceParameterUI* createMIDIParameterUI(Array<MIDIDeviceParameter*> parameters = {});
+	ControllableUI * createDefaultUI(Array<Controllable*> controllables = {}) override;
 
 	void loadJSONDataInternal(var data) override;
 

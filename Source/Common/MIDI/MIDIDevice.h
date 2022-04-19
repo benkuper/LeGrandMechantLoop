@@ -14,8 +14,10 @@ class MIDIDevice
 {
 public:
 	enum Type { MIDI_IN, MIDI_OUT };
-	MIDIDevice(const String &deviceName, Type t);
+	MIDIDevice(const MidiDeviceInfo &deviceName, Type t);
 	virtual ~MIDIDevice() {}
+
+	String id;
 	String name;
 	Type type;
 
@@ -27,7 +29,7 @@ class MIDIInputDevice :
 	public MidiInputCallback
 {
 public:
-	MIDIInputDevice(const String &deviceName);
+	MIDIInputDevice(const MidiDeviceInfo &info);
 	~MIDIInputDevice();
 	std::unique_ptr<MidiInput> device;
 
@@ -42,6 +44,7 @@ public:
 		virtual void noteOnReceived(const int &/*channel*/, const int &/*pitch*/, const int &/*velocity*/) {}
 		virtual void noteOffReceived(const int &/*channel*/, const int &/*pitch*/, const int &/*velocity*/) {}
 		virtual void controlChangeReceived(const int &/*channel*/, const int &/*number*/, const int &/*value*/) {}
+    virtual void programChangeReceived(const int &/*channel*/, const int &/*value*/) {}
 		virtual void sysExReceived(const MidiMessage &/*msg*/) {}
 		virtual void fullFrameTimecodeReceived(const MidiMessage&/*msg*/) {}
 		virtual void quarterFrameTimecodeReceived(const MidiMessage&/*msg*/) {}
@@ -49,6 +52,12 @@ public:
 		virtual void channelPressureReceived(const int&/*channel*/, const int&/*value*/) {}
 		virtual void afterTouchReceived(const int &/*channel*/, const int & /*note*/, const int &/*value*/){}
 		virtual void midiMessageReceived(const MidiMessage& message) {}
+		virtual void midiClockReceived() {}
+		virtual void midiStartReceived() {}
+		virtual void midiStopReceived() {}
+		virtual void midiContinueReceived() {}
+		virtual void midiMachineControlCommandReceived(const MidiMessage::MidiMachineControlCommand &/*type*/) {}
+		virtual void midiMachineControlGotoReceived(const int&/*hours*/, const int&/*minutes*/, const int&/*seconds*/, const int&/*frames*/) {}
 	};
 
 	ListenerList<MIDIInputListener> inputListeners;
@@ -64,7 +73,7 @@ class MIDIOutputDevice :
 	public MIDIDevice
 {
 public:
-	MIDIOutputDevice(const String &deviceName);
+	MIDIOutputDevice(const MidiDeviceInfo &info);
 	~MIDIOutputDevice();
 
 	std::unique_ptr<MidiOutput> device;
@@ -82,6 +91,7 @@ public:
 	void sendFullframeTimecode(int hours, int minutes, int seconds, int frames, MidiMessage::SmpteTimecodeType timecodeType);
 	void sendQuarterframe(int piece, int value);
 	void sendMidiMachineControlCommand(MidiMessage::MidiMachineControlCommand command);
+	void sendMidiMachineControlGoto(int hours, int minutes, int seconds, int frames);
 	void sendPitchWheel(int channel, int value);
 	void sendChannelPressure(int channel, int value);
 	void sendAfterTouch(int channel, int note, int value);

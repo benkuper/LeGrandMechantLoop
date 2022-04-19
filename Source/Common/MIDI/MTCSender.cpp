@@ -1,3 +1,4 @@
+#include <math.h>
 
 MTCSender::MTCSender(MIDIOutputDevice* device) :
 	Thread("MTC"),
@@ -13,8 +14,7 @@ MTCSender::MTCSender(MIDIOutputDevice* device) :
 
 MTCSender::~MTCSender()
 {
-	signalThreadShouldExit();
-	waitForThreadToExit(10);
+	stopThread(10);
 }
 
 void MTCSender::setDevice(MIDIOutputDevice * newDevice)
@@ -34,21 +34,19 @@ void MTCSender::start(double position)
 	startThread();
 }
 
-void MTCSender::pause()
+void MTCSender::pause(bool resumeIfAlreadyPaused)
 {
 	if (isThreadRunning())
 	{
-		signalThreadShouldExit();
-		waitForThreadToExit(10);
+		stopThread(10);
 	}
-    else
+    else if(resumeIfAlreadyPaused)
         startThread();
 }
 
 void MTCSender::stop()
 {
-	signalThreadShouldExit();
-	waitForThreadToExit(10);
+	stopThread(10);
 }
 
 void MTCSender::setPosition(double position, bool fullFrame)
@@ -115,8 +113,6 @@ void MTCSender::run()
 				}
 			}
 		}
-
-		DBG("Send " << m_quarter << ", " << m_frame << ", " << m_second);
 
 		lock.exit();
    }

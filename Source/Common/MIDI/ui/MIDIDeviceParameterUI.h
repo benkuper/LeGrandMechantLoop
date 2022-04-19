@@ -15,10 +15,11 @@ class MIDIDeviceParameterUI :
 	public MIDIDeviceChooser::ChooserListener
 {
 public:
-	MIDIDeviceParameterUI(MIDIDeviceParameter* midiParam, bool showInput = true, bool showOutput = true);
+	MIDIDeviceParameterUI(Array<MIDIDeviceParameter *> midiParam);
 	~MIDIDeviceParameterUI();
 	
-	MIDIDeviceParameter * midiParam;
+	Array<MIDIDeviceParameter *> midiParams;
+	MIDIDeviceParameter* midiParam;
 	MIDIDeviceChooser chooser;
 	
 	void resized() override;
