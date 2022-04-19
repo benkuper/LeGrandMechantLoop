@@ -221,3 +221,20 @@ void BaseNodeViewUI::newMessage(const Node::NodeEvent& e)
 	else if (e.type == e.OUTPUTS_CHANGED || e.type == e.MIDI_OUTPUT_CHANGED) nodeOutputsChanged();
 	else if (e.type == e.VIEW_FILTER_UPDATED) viewFilterUpdated();
 }
+
+void BaseNodeViewUI::addContextMenuItems(PopupMenu& p)
+{
+	p.addItem(101, "Save child presettables to current");
+}
+
+void BaseNodeViewUI::handleContextMenuResult(int result)
+{
+	if (result == 101)
+	{
+		if (Preset* p = RootPresetManager::getInstance()->currentPreset) p->saveContainer(item, true);
+	}
+	else
+	{
+		BaseItemUI::handleContextMenuResult(result);
+	}
+}

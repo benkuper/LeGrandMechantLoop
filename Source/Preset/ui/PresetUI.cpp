@@ -9,6 +9,7 @@
 */
 
 #include "Node/NodeIncludes.h"
+#include "PresetUI.h"
 
 PresetUI::PresetUI(Preset* p) :
 	BaseItemUI(p, NONE, true)
@@ -76,12 +77,14 @@ void PresetUI::addContextMenuItems(PopupMenu& p)
 {
 	p.addItem(100, "Load");
 	p.addItem(101, "Save");
+	p.addItem(102, "Add all presettables");
 }
 
 void PresetUI::handleContextMenuResult(int result)
 {
 	if (result == 100) item->loadTrigger->trigger();
 	else if (result == 101) item->saveTrigger->trigger();
+	else if (result == 102) item->save(nullptr, true);
 }
 
 void PresetUI::resizedInternalHeader(Rectangle<int>& r)
@@ -159,36 +162,7 @@ PresetEditor::PresetEditor(Preset* preset, bool isRoot) :
 	preset(preset),
 	valuesCC("Values")
 {
-	HashMap<WeakReference<Parameter>, var>::Iterator it(preset->dataMap);
-	while (it.next())
-	{
-		Parameter* op = it.getKey();
-		if(op == nullptr) continue;
-		Parameter* p = ControllableFactory::createParameterFrom(it.getKey().get(), false, false);
-		p->setValue(it.getValue());
-		String s = op->niceName;
-		ControllableContainer* pc = op->parentContainer;
-		while(pc != nullptr && pc != RootNodeManager::getInstance())
-		{
-			if (dynamic_cast<NodeManager*>(pc))
-			{
-				pc = pc->parentContainer;
-				continue;
-			}
-
-			s = pc->niceName + ">" + s;
-			pc = pc->parentContainer;
-		}
-
-		p->setNiceName(s);
-		p->addAsyncParameterListener(this);
-		paramMap.set(p, op);
-		valuesCC.addParameter(p);
-	}
-
-	valuesCC.sortControllables();
-
-	resetAndBuild();
+	buildValuesCC();
 }
 
 PresetEditor::~PresetEditor()
@@ -207,7 +181,60 @@ void PresetEditor::resetAndBuild()
 
 void PresetEditor::buildValuesCC()
 {
+	valuesCC.clear();
 
+	HashMap<WeakReference<Parameter>, var>::Iterator it(preset->dataMap);
+	while (it.next())
+	{
+		Parameter* op = it.getKey();
+		if (op == nullptr) continue;
+		Parameter* p = ControllableFactory::createParameterFrom(it.getKey().get(), false, false);
+		p->isRemovableByUser = true;
+		p->setValue(it.getValue());
+		String s = op->niceName;
+		ControllableContainer* pc = op->parentContainer;
+		while (pc != nullptr && pc != RootNodeManager::getInstance())
+		{
+			if (dynamic_cast<NodeManager*>(pc))
+			{
+				pc = pc->parentContainer;
+				continue;
+			}
+
+			s = pc->niceName + ">" + s;
+			pc = pc->parentContainer;
+		}
+
+		p->setNiceName(s);
+		p->addAsyncParameterListener(this);
+		paramMap.set(p, op);
+		valuesCC.addParameter(p);
+	}
+
+	valuesCC.sortControllables();
+	valuesCC.addAsyncContainerListener(this);
+
+	resetAndBuild();
+}
+
+void PresetEditor::newMessage(const ContainerAsyncEvent& e)
+{
+	if (e.source == &valuesCC)
+	{
+		if (e.type == ContainerAsyncEvent::ControllableRemoved)
+		{
+			if (e.targetControllable != nullptr && !e.targetControllable.wasObjectDeleted())
+			{
+				Parameter* p = (Parameter*)e.targetControllable.get();
+				preset->removeParameterFromDataMap(paramMap[p]);
+				buildValuesCC();
+			}
+		}
+	}
+	else
+	{
+		BaseItemEditor::newMessage(e);
+	}
 }
 
 void PresetEditor::newMessage(const Parameter::ParameterEvent& e)

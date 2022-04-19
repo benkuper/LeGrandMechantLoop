@@ -9,6 +9,7 @@
 */
 
 #include "NodeIncludes.h"
+#include "Preset/PresetIncludes.h"
 
 #include "Node.cpp"
 

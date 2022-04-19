@@ -121,7 +121,7 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 			{
 				preset->removeParameterFromDataMap(p);
 				preset->load(p);
-				LOG("Removed " << p->niceName << " override from preset " << preset->niceName);
+				LOG("Removed " << p->niceName << " from preset " << preset->niceName << (preset->isMain() ? "" : " (Override)"));
 			}
 
 		}
@@ -132,7 +132,7 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 		int option = result - 0x5010;
 		RootPresetManager::getInstance()->setParameterPresetOption(p, "transition", option);
 	}
-	else if (result >= 0x20000)
+	else if (result >= 0x20000 && result < 0x30000)
 	{
 		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x20000)) preset->save(p);
 	}

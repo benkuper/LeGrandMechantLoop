@@ -65,6 +65,8 @@ public:
     void resetAndBuild() override;
     void buildValuesCC();
 
+    void newMessage(const ContainerAsyncEvent& e) override;
+
     void newMessage(const Parameter::ParameterEvent& e) override;
     
     void resizedInternalContent(Rectangle<int> &r) override;

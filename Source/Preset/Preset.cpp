@@ -76,13 +76,13 @@ var Preset::getPresetValueForParameter(Parameter* p)
 	return var();
 }
 
-void Preset::save(ControllableContainer* container, bool recursive)
+void Preset::saveContainer(ControllableContainer* container, bool recursive)
 {
 	Array<WeakReference<Parameter>> cList = container->getAllParameters(recursive);
 	for (auto& c : cList) save(c);
 }
 
-void Preset::save(Parameter * parameter)
+void Preset::save(Parameter * parameter, bool saveAllPresettables)
 {
 	if (parameter != nullptr)
 	{
@@ -96,12 +96,12 @@ void Preset::save(Parameter * parameter)
 			bool result = AlertWindow::showOkCancelBox(AlertWindow::WarningIcon, "Not the current preset", "This is not the currently loaded preset. Do you want still want to save to preset", "Yes", "No");
 			if (!result) return;
 		}
+
+
 		Array<WeakReference<Parameter>> params = Engine::mainEngine->getAllParameters(true);
 
 		dataMap.clear();
 		addressMap.clear();
-
-		//bool main = isMain();
 
 		int numSaved = 0;
 		for (auto& p : params)
@@ -110,7 +110,7 @@ void Preset::save(Parameter * parameter)
 			var d = p->value;
 			String add = p->getControlAddress();
 			if (!p->shouldBeSaved()) continue;
-			if (/*main || */overridenControllables.contains(add))
+			if (saveAllPresettables || overridenControllables.contains(add))
 			{
 				addParameterToDataMap(p);
 				numSaved++;

@@ -44,6 +44,9 @@ public:
     virtual void viewFilterUpdated();
 
     void newMessage(const Node::NodeEvent& e) override;
+
+    void addContextMenuItems(PopupMenu& p) override;
+    void handleContextMenuResult(int result) override;
 };
 
 template<class T>

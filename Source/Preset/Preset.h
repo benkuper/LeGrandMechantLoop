@@ -39,8 +39,8 @@ public:
     var getPresetValues(bool includeParents = true);
     var getPresetValueForParameter(Parameter* c);
 
-    void save(ControllableContainer* container, bool recursive);
-    void save(Parameter* controllable = nullptr);
+    void saveContainer(ControllableContainer* container, bool recursive);
+    void save(Parameter* controllable = nullptr, bool saveAllPresettables = false);
     void load(ControllableContainer* container, bool recursive);
     void load(Parameter* controllable = nullptr);
 
