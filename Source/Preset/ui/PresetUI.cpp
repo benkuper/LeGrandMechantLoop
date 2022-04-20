@@ -69,8 +69,11 @@ void PresetUI::mouseExit(const MouseEvent& e)
 
 void PresetUI::mouseDown(const MouseEvent& e)
 {
-	BaseItemUI::mouseDown(e);
-	if (e.eventComponent == this && e.mods.isLeftButtonDown() && e.mods.isAltDown()) item->loadTrigger->trigger();
+	if (e.eventComponent == this)
+	{
+		BaseItemUI::mouseDown(e);
+		if (e.mods.isLeftButtonDown() && e.mods.isAltDown()) item->loadTrigger->trigger();
+	}
 }
 
 void PresetUI::addContextMenuItems(PopupMenu& p)

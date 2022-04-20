@@ -22,19 +22,26 @@ TransportUI::TransportUI(StringRef name) :
 	addAndMakeVisible(stopBT.get());
 
 	beatsPerBarUI.reset(transport->beatsPerBar->createLabelUI());
+	beatsPerBarUI->showLabel = false;
 	addAndMakeVisible(beatsPerBarUI.get());
+
 	beatUnitUI.reset(transport->beatUnit->createLabelUI());
+	beatUnitUI->showLabel = false;
 	addAndMakeVisible(beatUnitUI.get());
 	
 	bpmUI.reset(transport->bpm->createLabelParameter());
 	addAndMakeVisible(bpmUI.get());
 
 	quantizUI.reset(transport->quantization->createUI());
+	quantizUI->showLabel = false;
 	addAndMakeVisible(quantizUI.get());
 
 	curBarUI.reset(transport->curBar->createLabelUI());
+	curBarUI->showLabel = false;
 	addAndMakeVisible(curBarUI.get());
+
 	curBeatUI.reset(transport->curBeat->createLabelUI());
+	curBeatUI->showLabel = false;
 	addAndMakeVisible(curBeatUI.get());
 
 	addAndMakeVisible(barViz);
@@ -62,7 +69,7 @@ void TransportUI::resized()
 	beatUnitUI->setBounds(tr.removeFromRight(30).reduced(2));
 	beatsPerBarUI->setBounds(tr.removeFromRight(30).reduced(2));
 	tr.removeFromRight(10);
-	bpmUI->setBounds(tr.removeFromRight(80).reduced(2));
+	bpmUI->setBounds(tr.removeFromRight(100).reduced(2));
 
 	Rectangle<int> qr = r.removeFromTop(20);
 	quantizUI->setBounds(qr.removeFromRight(140).reduced(2));
