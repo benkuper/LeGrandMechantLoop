@@ -19,8 +19,6 @@
 using namespace serial;
 #endif
 
-#include "lib/cobs/cobs.h"
-
 class SerialDevice;
 
 class SerialReadThread :
@@ -93,8 +91,11 @@ public:
 	PortMode mode;
 	void setMode(PortMode mode);
 	void setBaudRate(int baudRate);
+	void setParity(int parity);
+	void setStopBits(int stopBits);
+	void setDataBits(int dataBits);
 
-	void open(int baud = 9600);
+	void open(int baud = -1);
 	void close();
 
 

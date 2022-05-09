@@ -163,10 +163,13 @@ void GenericMapping::onExternalTriggerTriggered(Trigger* t)
 
 MIDIMapping::MIDIMapping(var params) :
 	Mapping(params),
-	device(nullptr)
+	midiInterface(nullptr)
 {
-	deviceParam = new MIDIDeviceParameter("Device");
-	addParameter(deviceParam);
+	interfaceParam = addTargetParameter("Interface", "Interface to receive from", InterfaceManager::getInstance());
+	interfaceParam->targetType = TargetParameter::CONTAINER;
+	interfaceParam->maxDefaultSearchLevel = 0;
+	interfaceParam->typesFilter.add(MIDIInterface::getTypeStringStatic());
+
 	type = addEnumParameter("Type", "Type of Midi message");
 	type->addOption("Control Change", CC)->addOption("Note", NOTE)->addOption("PitchWheel", PitchWheel);
 	channel = addIntParameter("Channel", "Channel to use for this mapping. 0 means all channels", 0, 0, 16);
@@ -186,28 +189,28 @@ MIDIMapping::MIDIMapping(var params) :
 
 MIDIMapping::~MIDIMapping()
 {
-	setMIDIDevice(nullptr);
+	//setMIDIInterface(nullptr);
 }
 
-void MIDIMapping::setMIDIDevice(MIDIInputDevice* d)
+void MIDIMapping::setMIDIInterface(MIDIInterface* d)
 {
-	if (device != nullptr)
+	if (midiInterface != nullptr)
 	{
-		device->removeMIDIInputListener(this);
+		midiInterface->removeMIDIInterfaceListener(this);
 	}
 
-	device = d;
+	midiInterface = d;
 
-	if (device != nullptr)
+	if (midiInterface != nullptr)
 	{
-		device->addMIDIInputListener(this);
+		midiInterface->addMIDIInterfaceListener(this);
 	}
 }
 
 void MIDIMapping::onContainerParameterChangedInternal(Parameter* p)
 {
 	Mapping::onContainerParameterChangedInternal(p);
-	if (p == deviceParam) setMIDIDevice(deviceParam->inputDevice);
+	if (p == interfaceParam) setMIDIInterface((MIDIInterface *)interfaceParam->target.get());
 	else if (p == type)
 	{
 		if (!isCurrentlyLoadingData)
@@ -217,7 +220,7 @@ void MIDIMapping::onContainerParameterChangedInternal(Parameter* p)
 	}
 }
 
-void MIDIMapping::noteOnReceived(const int& _channel, const int& pitch, const int& velocity)
+void MIDIMapping::noteOnReceived(MIDIInterface*, const int& _channel, const int& pitch, const int& velocity)
 {
 	if (learn->boolValue())
 	{
@@ -234,7 +237,7 @@ void MIDIMapping::noteOnReceived(const int& _channel, const int& pitch, const in
 	process(velocity);
 }
 
-void MIDIMapping::noteOffReceived(const int& _channel, const int& pitch, const int& velocity)
+void MIDIMapping::noteOffReceived(MIDIInterface*, const int& _channel, const int& pitch, const int& velocity)
 {
 	if (type->getValueDataAsEnum<MIDIType>() != NOTE) return;
 	if (channel->intValue() > 0 && _channel != channel->intValue()) return;
@@ -242,7 +245,7 @@ void MIDIMapping::noteOffReceived(const int& _channel, const int& pitch, const i
 	process(velocity);
 }
 
-void MIDIMapping::controlChangeReceived(const int& _channel, const int& number, const int& velocity)
+void MIDIMapping::controlChangeReceived(MIDIInterface*, const int& _channel, const int& number, const int& velocity)
 {
 	if (learn->boolValue())
 	{
@@ -258,7 +261,7 @@ void MIDIMapping::controlChangeReceived(const int& _channel, const int& number, 
 	process(velocity);
 }
 
-void MIDIMapping::pitchWheelReceived(const int& _channel, const int& value)
+void MIDIMapping::pitchWheelReceived(MIDIInterface*, const int& _channel, const int& value)
 {
 	if (learn->boolValue())
 	{

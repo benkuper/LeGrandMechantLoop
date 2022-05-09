@@ -12,6 +12,7 @@
 
 #include "JuceHeader.h"
 #include "Common/CommonIncludes.h"
+#include "Interface/InterfaceIncludes.h"
 
 class Mapping :
     public BaseItem
@@ -77,13 +78,14 @@ public:
 
 class MIDIMapping :
     public Mapping,
-    public MIDIInputDevice::MIDIInputListener
+    public MIDIInterface::MIDIInterfaceListener
 {
 public:
     MIDIMapping(var params = var());
     ~MIDIMapping();
 
-    MIDIDeviceParameter* deviceParam;
+    TargetParameter* interfaceParam;
+    MIDIInterface* midiInterface;
     IntParameter* channel;
 
     enum MIDIType { NOTE, CC, PitchWheel };
@@ -91,15 +93,13 @@ public:
     IntParameter* pitchOrNumber;
     BoolParameter* learn;
     
-    MIDIInputDevice* device;
-
-    void setMIDIDevice(MIDIInputDevice* d);
+    void setMIDIInterface(MIDIInterface* d);
     void onContainerParameterChangedInternal(Parameter* p) override;
 
-    void noteOnReceived(const int& channel, const int& pitch, const int& velocity) override;
-    void noteOffReceived(const int& channel, const int& pitch, const int& velocity) override;
-    void controlChangeReceived(const int& channel, const int& number, const int& value) override;
-    void pitchWheelReceived(const int& channel, const int &value) override;
+    void noteOnReceived(MIDIInterface*, const int& channel, const int& pitch, const int& velocity) override;
+    void noteOffReceived(MIDIInterface*, const int& channel, const int& pitch, const int& velocity) override;
+    void controlChangeReceived(MIDIInterface*, const int& channel, const int& number, const int& value) override;
+    void pitchWheelReceived(MIDIInterface*, const int& channel, const int &value) override;
 
     String getTypeString() const override { return "MIDI"; }
 

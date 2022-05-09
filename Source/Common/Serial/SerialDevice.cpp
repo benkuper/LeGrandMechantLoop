@@ -40,9 +40,11 @@ void SerialDevice::setMode(PortMode _mode)
 
 	if (_mode == LINES) //must restart to make sure thread is not hanging in readLine
 	{
-		thread.signalThreadShouldExit();
-		thread.stopThread(1000);
-		thread.startThread();
+		if (thread.isThreadRunning())
+		{
+			thread.stopThread(1000);
+			thread.startThread();
+		}
 	}
 
 	mode = _mode;
@@ -59,6 +61,40 @@ void SerialDevice::setBaudRate(int baudRate)
 	}
 }
 
+void SerialDevice::setParity(int parity)
+{
+	if (port != nullptr)
+	{
+		DBG("Port is null here, not setting baudrate");
+		if ((parity_t)parity == port->getParity()) return;
+
+		port->setParity((parity_t)parity);
+	}
+	
+}
+
+void SerialDevice::setStopBits(int stopBits)
+{
+	if (port != nullptr)
+	{
+		DBG("Port is null here, not setting baudrate");
+		if ((stopbits_t)stopBits == port->getStopbits()) return;
+
+		port->setStopbits((stopbits_t)stopBits);
+	}
+}
+
+void SerialDevice::setDataBits(int dataBits)
+{
+	if (port != nullptr)
+	{
+		DBG("Port is null here, not setting baudrate");
+		if ((bytesize_t)dataBits == port->getBytesize()) return;
+
+		port->setBytesize((bytesize_t)dataBits);
+	}
+}
+
 void SerialDevice::open(int baud)
 {
 #if SERIALSUPPORT
@@ -68,17 +104,17 @@ void SerialDevice::open(int baud)
 	if (port == nullptr) return;
 	try
 	{
-		port->setBaudrate(baud);
+		if(baud != -1) port->setBaudrate(baud);
 		if (!port->isOpen())  port->open();
 		port->setDTR();
 		port->setRTS();
-
+		
 
 		if (!thread.isThreadRunning())
 		{
+			thread.addSerialListener(this);
 			thread.startThread();
 #ifdef SYNCHRONOUS_SERIAL_LISTENERS
-			thread.addSerialListener(this);
 #else
 			thread.addAsyncSerialListener(this);
 #endif
@@ -109,13 +145,12 @@ void SerialDevice::close()
 		thread.removeAsyncSerialListener(this);
 #endif
 
-		thread.signalThreadShouldExit();
-		while (thread.isThreadRunning());
+		thread.stopThread(1000);
 
 		try
 		{
 			port->close();
-			
+
 		}
 		catch (std::exception e)
 		{
@@ -150,7 +185,7 @@ int SerialDevice::writeString(String message)
 		LOGWARNING("Error writing to serial : " << e.what());
 		return 0;
 	}
-	
+
 #else
 	return 0;
 #endif
@@ -182,7 +217,10 @@ void SerialDevice::addSerialDeviceListener(SerialDeviceListener * newListener) {
 
 void SerialDevice::removeSerialDeviceListener(SerialDeviceListener * listener) {
 	listeners.remove(listener);
-	if (listeners.size() == 0) SerialManager::getInstance()->removePort(this);
+	if (listeners.size() == 0) {
+		SerialManager* manager = SerialManager::getInstance();
+		manager->removePort(this);
+	}
 }
 
 SerialReadThread::SerialReadThread(String name, SerialDevice * _port) :
@@ -193,17 +231,14 @@ SerialReadThread::SerialReadThread(String name, SerialDevice * _port) :
 
 SerialReadThread::~SerialReadThread()
 {
-	signalThreadShouldExit();
-	while (isThreadRunning());
+	stopThread(1000);
 }
 
 void SerialReadThread::run()
 {
 #if SERIALSUPPORT
-	
-	std::vector<uint8_t> byteBuffer; //for cobs and data255
 
-	DBG("START SERIAL THREAD");
+	std::vector<uint8_t> byteBuffer; //for cobs and data255
 
 	while (!threadShouldExit())
 	{
@@ -258,21 +293,21 @@ void SerialReadThread::run()
 			}
 			break;
 
-			case SerialDevice::PortMode::COBS:
-			{
-				while (port->port->available() && port->mode == SerialDevice::PortMode::COBS)
-				{
-					uint8_t b = port->port->read(1)[0];
-					byteBuffer.push_back(b);
-					if (b == 0)
-					{
-						uint8_t decodedData[255];
-						size_t numDecoded = cobs_decode(byteBuffer.data(), byteBuffer.size(), decodedData);
-						serialThreadListeners.call(&SerialThreadListener::dataReceived, var(decodedData, numDecoded - 1));
-						byteBuffer.clear();
-					}
-				}				
-			}
+			//case SerialDevice::PortMode::COBS:
+			//{
+			//	while (port->port->available() && port->mode == SerialDevice::PortMode::COBS)
+			//	{
+			//		uint8_t b = port->port->read(1)[0];
+			//		byteBuffer.push_back(b);
+			//		if (b == 0)
+			//		{
+			//			uint8_t decodedData[255];
+			//			size_t numDecoded = cobs_decode(byteBuffer.data(), byteBuffer.size(), decodedData);
+			//			serialThreadListeners.call(&SerialThreadListener::dataReceived, var(decodedData, numDecoded - 1));
+			//			byteBuffer.clear();
+			//		}
+			//	}
+			//}
 			break;
 			}
 		}
@@ -280,8 +315,6 @@ void SerialReadThread::run()
 		{
 			DBG("### Serial Problem ");
 		}
-
-		
 	}
 
 	DBG("END SERIAL THREAD");
@@ -298,20 +331,28 @@ SerialDeviceInfo::SerialDeviceInfo(String _port, String _description, String _ha
 	deviceID = description;
 	uniqueDescription = description; //COM port integrated in description
 #else
-    StringArray eqSplit;
-    eqSplit.addTokens(hardwareID,"=","\"");
-    String sn = "not found";
-    if(eqSplit.size() >= 1)
-    {
-        vid = eqSplit[1].substring(0, 4).getHexValue32();
-        pid = eqSplit[1].substring(5, 9).getHexValue32();
-        sn = eqSplit[eqSplit.size()-1];
-    }else{
-        vid = 0;
-        pid = 0;
-    }
-    
+	String sn = "not found";
+	vid = 0;
+	pid = 0;
+
+	if (hardwareID.startsWith("USB VID:PID=")) // USB COM port
+	{
+		StringArray eqSplit;
+		eqSplit.addTokens(hardwareID, "=", "\"");
+		if (eqSplit.size() > 1)
+		{
+			vid = eqSplit[1].substring(0, 4).getHexValue32();
+			pid = eqSplit[1].substring(5, 9).getHexValue32();
+			sn = eqSplit[eqSplit.size() - 1];
+		}
+	}
+	else if (hardwareID.startsWith("PNP")) // Hardware COM port
+	{
+		pid = hardwareID.substring(3, 7).getHexValue32();
+		sn = hardwareID;
+	}
+
 	deviceID = hardwareID;
-    uniqueDescription = description + "(SN : " + sn + ")";
+    uniqueDescription = (vid == 0 && pid == 0)? _port : description + "(SN : " + sn + ")";
 #endif
 }

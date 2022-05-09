@@ -181,6 +181,9 @@ void MIDIInterface::noteOnReceived(const int& channel, const int& pitch, const i
 	if (!enabled->boolValue()) return;
 	//inActivityTrigger->trigger();
 	if (logIncomingData->boolValue())  NLOG(niceName, "Note On : " << channel << ", " << MIDIManager::getNoteName(pitch) << ", " << velocity);
+
+	midiInterfaceListeners.call(&MIDIInterfaceListener::noteOnReceived, this, channel, pitch, velocity);
+
 	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(noteOnEventId, Array<var>(channel, pitch, velocity));
 }
 
@@ -189,8 +192,10 @@ void MIDIInterface::noteOffReceived(const int& channel, const int& pitch, const 
 	if (!enabled->boolValue()) return;
 	//inActivityTrigger->trigger();
 	if (logIncomingData->boolValue()) NLOG(niceName, "Note Off : " << channel << ", " << MIDIManager::getNoteName(pitch) << ", " << velocity);
-	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(noteOffEventId, Array<var>(channel, pitch, velocity));
 
+	midiInterfaceListeners.call(&MIDIInterfaceListener::noteOffReceived, this, channel, pitch, velocity);
+
+	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(noteOffEventId, Array<var>(channel, pitch, velocity));
 }
 
 void MIDIInterface::controlChangeReceived(const int& channel, const int& number, const int& value)
@@ -198,8 +203,10 @@ void MIDIInterface::controlChangeReceived(const int& channel, const int& number,
 	if (!enabled->boolValue()) return;
 	//inActivityTrigger->trigger();
 	if (logIncomingData->boolValue()) NLOG(niceName, "Control Change : " << channel << ", " << number << ", " << value);
-	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(ccEventId, Array<var>(channel, number, value));
 
+	midiInterfaceListeners.call(&MIDIInterfaceListener::controlChangeReceived, this, channel, number, value);
+
+	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(ccEventId, Array<var>(channel, number, value));
 }
 
 void MIDIInterface::sysExReceived(const MidiMessage& msg)
@@ -219,6 +226,8 @@ void MIDIInterface::sysExReceived(const MidiMessage& msg)
 		NLOG(niceName, log);
 	}
 
+	midiInterfaceListeners.call(&MIDIInterfaceListener::sysExReceived, this, msg);
+	
 	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(sysexEventId, Array<var>(data.getRawDataPointer(), data.size()));
 }
 
@@ -227,7 +236,10 @@ void MIDIInterface::fullFrameTimecodeReceived(const MidiMessage& msg)
 	int hours = 0, minutes = 0, seconds = 0, frames = 0;
 	MidiMessage::SmpteTimecodeType timecodeType;
 	msg.getFullFrameParameters(hours, minutes, seconds, frames, timecodeType);
-	NLOG(niceName, "Full frame timecode received : " << hours << ":" << minutes << ":" << seconds << "." << frames << " / " << timecodeType);
+	if (logIncomingData->boolValue()) NLOG(niceName, "Full frame timecode received : " << hours << ":" << minutes << ":" << seconds << "." << frames << " / " << timecodeType);
+
+	midiInterfaceListeners.call(&MIDIInterfaceListener::fullFrameTimecodeReceived, this, msg);
+
 }
 
 void MIDIInterface::pitchWheelReceived(const int& channel, const int& value)
@@ -237,6 +249,8 @@ void MIDIInterface::pitchWheelReceived(const int& channel, const int& value)
 	if (logIncomingData->boolValue()) NLOG(niceName, "Pitch wheel, channel : " << channel << ", value : " << value);
 
 	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(pitchWheelEventId, Array<var>(channel, value));
+
+	midiInterfaceListeners.call(&MIDIInterfaceListener::pitchWheelReceived, this, channel, value);
 }
 
 void MIDIInterface::channelPressureReceived(const int& channel, const int& value)
@@ -246,6 +260,8 @@ void MIDIInterface::channelPressureReceived(const int& channel, const int& value
 	if (logIncomingData->boolValue()) NLOG(niceName, "Channel Pressure, channel : " << channel << ", value : " << value);
 
 	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(channelPressureId, Array<var>(channel, value));
+
+	midiInterfaceListeners.call(&MIDIInterfaceListener::channelPressureReceived, this, channel, value);
 }
 
 void MIDIInterface::afterTouchReceived(const int& channel, const int& note, const int& value)
@@ -255,27 +271,14 @@ void MIDIInterface::afterTouchReceived(const int& channel, const int& note, cons
 	if (logIncomingData->boolValue()) NLOG(niceName, "After Touch, channel : " << channel << ", note : " << note << ", value : " << value);
 
 	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(afterTouchId, Array<var>(channel, note, value));
+
+	midiInterfaceListeners.call(&MIDIInterfaceListener::afterTouchReceived, this, channel, note, value);
 }
 
 void MIDIInterface::midiMessageReceived(const MidiMessage& msg)
 {
-	//if (thruManager != nullptr)
-	//{
-	//	for (auto& c : thruManager->controllables)
-	//	{
-	//		if (TargetParameter* mt = (TargetParameter*)c)
-	//		{
-	//			if (!mt->enabled) continue;
-	//			if (MIDIInterface* m = (MIDIInterface*)(mt->targetContainer.get()))
-	//			{
-	//				if (m->midiParam->outputDevice != nullptr && m->midiParam->outputDevice->device != nullptr)
-	//				{
-	//					m->midiParam->outputDevice->device->sendMessageNow(msg);
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
+	if (!enabled->boolValue()) return;
+	midiInterfaceListeners.call(&MIDIInterfaceListener::midiMessageReceived, this, msg);
 }
 
 var MIDIInterface::sendNoteOnFromScript(const var::NativeFunctionArgs& args)

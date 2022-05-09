@@ -68,8 +68,27 @@ public:
 	virtual void pitchWheelReceived(const int& channel, const int& value) override;
 	virtual void channelPressureReceived(const int& channel, const int& value) override;
 	virtual void afterTouchReceived(const int& channel, const int& note, const int& value) override;
-
 	virtual void midiMessageReceived(const MidiMessage& msg) override;
+
+	class MIDIInterfaceListener
+	{
+	public:
+		virtual ~MIDIInterfaceListener() {}
+		virtual void noteOnReceived(MIDIInterface*, const int& channel, const int& pitch, const int& velocity) {}
+		virtual void noteOffReceived(MIDIInterface*, const int& channel, const int& pitch, const int& velocity) {}
+		virtual void controlChangeReceived(MIDIInterface*, const int& channel, const int& number, const int& value) {}
+		virtual void sysExReceived(MIDIInterface*, const MidiMessage& msg) {}
+		virtual void fullFrameTimecodeReceived(MIDIInterface*, const MidiMessage& msg) {}
+		virtual void pitchWheelReceived(MIDIInterface*, const int& channel, const int& value) {}
+		virtual void channelPressureReceived(MIDIInterface*, const int& channel, const int& value) {}
+		virtual void afterTouchReceived(MIDIInterface*, const int& channel, const int& note, const int& value) {}
+		virtual void midiMessageReceived(MIDIInterface*, const MidiMessage& msg) {}
+	};
+
+	ListenerList<MIDIInterfaceListener> midiInterfaceListeners;
+	void addMIDIInterfaceListener(MIDIInterfaceListener* newListener) { midiInterfaceListeners.add(newListener); }
+	void removeMIDIInterfaceListener(MIDIInterfaceListener* listener) { midiInterfaceListeners.remove(listener); }
+
 
 	//Script
 	static var sendNoteOnFromScript(const var::NativeFunctionArgs& args);
@@ -85,7 +104,8 @@ public:
 	void loadJSONDataInternal(var data) override;
 
 	static MIDIInterface* create() { return new MIDIInterface(); }
-	virtual String getTypeString() const override { return "MIDI"; }
+	virtual String getTypeString() const override { return getTypeStringStatic(); }
+	static String getTypeStringStatic() { return "MIDI"; }
 
 	//InspectableEditor * getEditor(bool isRoot) override;
 };
