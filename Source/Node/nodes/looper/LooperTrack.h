@@ -17,7 +17,7 @@ class LooperTrack :
 	public VolumeControl
 {
 public:
-	LooperTrack(LooperNode * looper, int index);
+	LooperTrack(LooperNode* looper, int index);
 	virtual ~LooperTrack();
 
 	LooperNode* looper; //to get the ringbuffer
@@ -38,6 +38,8 @@ public:
 	IntParameter* loopBar;
 	FloatParameter* loopProgression;
 	IntParameter* section;
+	IntParameter* numStretchedBeats;
+
 
 	int index;
 	bool firstPlayAfterRecord;
@@ -57,7 +59,6 @@ public:
 	int globalBeatAtStart;
 	int freePlaySample;
 	int numBeats;
-
 	int autoStopRecAfterBeats;
 
 	//stretching
@@ -88,6 +89,10 @@ public:
 
 	virtual void updateStretch();
 	void processTrack(int blockSize, bool forcePlaying = false);
+
+
+	virtual void loadSampleFile(File f) {}
+	virtual void saveSampleFile(File f) {}
 
 	//Helpers
 	bool hasContent(bool includeRecordPhase) const;

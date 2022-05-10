@@ -1,4 +1,3 @@
-#include "LooperNode.h"
 /*
   ==============================================================================
 
@@ -15,6 +14,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	currentTrack(nullptr),
 	trackParamsCC("Track Parameters"),
 	recordCC("Recording"),
+	saveLoadCC("Save and Load"),
 	controlsCC("Controls"),
 	tracksCC("Tracks")
 {
@@ -53,6 +53,17 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 	fadeTimeMS = recordCC.addIntParameter("Fade Time", "Number of ms to fade between start and end of the loop", 20, 0, 2000);
 
+	saveLoadMode = saveLoadCC.addEnumParameter("Save Load Mode", "Save and load behaviour");
+	saveLoadMode->addOption("None", NONE)->addOption("Auto", AUTO_SAVELOAD)->addOption("Auto no overwrite", AUTO_NO_OVERWRITE)->addOption("Load Only", LOAD_ONLY)->addOption("Save Only", SAVE_ONLY);
+
+	sampleDirectory = saveLoadCC.addFileParameter("Sample Directory", "Directory where samples are stored. It will then look for 1.wav / 2.wav / 3.wav, etc.");
+	sampleDirectory->directoryMode = true;
+
+	saveSamplesTrigger = saveLoadCC.addTrigger("Save samples", "Save samples in the directory");
+	loadSamplesTrigger = saveLoadCC.addTrigger("Load samples", "Load samples in the directory");
+	clearSamplesTrigger = saveLoadCC.addTrigger("Clear samples", "Clear samples in the directory, and the buffer in the tracks");
+
+
 	recTrigger = controlsCC.addTrigger("Rec", "Record to the current track");
 	clearCurrentTrigger = controlsCC.addTrigger("Clear", "Clear the current track if not empty, otherwise clear the past one");
 	playAllTrigger = controlsCC.addTrigger("Play All", "Stop all tracks");
@@ -66,7 +77,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	addChildControllableContainer(&trackParamsCC);
 	addChildControllableContainer(&recordCC);
 	addChildControllableContainer(&controlsCC);
-
+	addChildControllableContainer(&saveLoadCC);
 	addChildControllableContainer(&tracksCC);
 
 	showGlobalControl = viewCC.addBoolParameter("Show Global Controls", "Show Global Controls", true);
@@ -261,6 +272,25 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	{
 		doubleRecVal->setEnabled(doubleRecMode->getValueDataAsEnum<DoubleRecMode>() != AUTO_STOP_FIRSTLOOP);
 	}
+	else if (c == sampleDirectory)
+	{
+		SaveLoadMode m = saveLoadMode->getValueDataAsEnum<SaveLoadMode>();
+		if (m != SAVE_ONLY) loadSamples();
+	}
+	else if (c == saveSamplesTrigger)
+	{
+		SaveLoadMode m = saveLoadMode->getValueDataAsEnum<SaveLoadMode>();
+		if (m != LOAD_ONLY) saveSamples();
+	}
+	else if (c == loadSamplesTrigger)
+	{
+		SaveLoadMode m = saveLoadMode->getValueDataAsEnum<SaveLoadMode>();
+		if (m != SAVE_ONLY) loadSamples();
+	}
+	else if (c == clearSamplesTrigger)
+	{
+		clearSamples();
+	}
 
 
 	else if (LooperTrack* t = c->getParentAs<LooperTrack>())
@@ -288,7 +318,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 void LooperNode::bpmChanged()
 {
 	prepareToPlay(Transport::getInstance()->sampleRate, Transport::getInstance()->blockSize);
-	
+
 	ScopedSuspender sp(processor);
 	for (int i = 0; i < numTracks->intValue(); i++)
 	{
@@ -307,8 +337,8 @@ void LooperNode::beatChanged(bool isNewBar, bool isFirstLoop)
 		for (auto& t : tmpMuteTracks) t->active->setValue(true);
 		tmpMuteTracks.clear();
 	}
-	
-	
+
+
 }
 
 void LooperNode::playStateChanged(bool isPlaying, bool forceRestart)
@@ -329,6 +359,40 @@ void LooperNode::playStateChanged(bool isPlaying, bool forceRestart)
 	//	//	if(tc->playQuantization != Transport::FREE) tc->stopPlaying();
 	//	}
 	//}
+}
+
+
+void LooperNode::loadSamples()
+{
+	File dir = sampleDirectory->getFile();
+	if (!dir.exists()) return;
+
+	Array<File> files = dir.findChildFiles(File::findFiles, false, "*.wav", File::FollowSymlinks::no);
+	for (auto& f : files)
+	{
+		int id = f.getFileNameWithoutExtension().getIntValue();
+		if (id >= 1 && id <= numTracks->intValue()) getTrackForIndex(id)->loadSampleFile(f);
+	}
+}
+
+void LooperNode::saveSamples()
+{
+	clearSamples();
+
+	File dir = sampleDirectory->getFile();
+	for (int i = 0; i < numTracks->intValue(); i++)
+	{
+		AudioLooperTrack* t = ((AudioLooperTrack*)getTrackForIndex(i));
+		File f = dir.getChildFile(String(i + 1) + ".wav");
+		t->saveSampleFile(f);
+	}
+}
+
+void LooperNode::clearSamples()
+{
+	File dir = sampleDirectory->getFile();
+	if (dir.exists()) dir.deleteFile();
+	dir.createDirectory();
 }
 
 bool LooperNode::hasContent(bool includeFreeTracks)

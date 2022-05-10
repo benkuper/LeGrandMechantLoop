@@ -13,8 +13,8 @@
 class LooperTrack;
 
 class LooperNode :
-        public Node,
-        public Transport::TransportListener
+    public Node,
+    public Transport::TransportListener
 {
 public:
     enum LooperType { AUDIO, MIDI };
@@ -26,7 +26,7 @@ public:
 
     enum MonitorMode { OFF, ALWAYS, RECORDING_ONLY, ARMED_TRACK };
     EnumParameter* monitorMode;
-    
+
     LooperTrack* currentTrack;
     ControllableContainer tracksCC;
 
@@ -36,11 +36,19 @@ public:
     IntParameter* section;
 
     ControllableContainer recordCC;
-    EnumParameter * recordingState;
+    EnumParameter* recordingState;
     EnumParameter* quantization;
     EnumParameter* freeFillMode;
     IntParameter* fadeTimeMS;
     IntParameter* playStopFadeMS;
+
+    ControllableContainer saveLoadCC;
+    enum SaveLoadMode { NONE, LOAD_ONLY, SAVE_ONLY, AUTO_SAVELOAD, AUTO_NO_OVERWRITE };
+    EnumParameter* saveLoadMode;
+    FileParameter* sampleDirectory;
+    Trigger* saveSamplesTrigger;
+    Trigger* loadSamplesTrigger;
+    Trigger* clearSamplesTrigger;
 
     enum DoubleRecMode { NOTHING, AUTO_STOP_BAR, AUTO_STOP_BEAT, AUTO_STOP_FIRSTLOOP };
     EnumParameter* doubleRecMode;
@@ -72,7 +80,7 @@ public:
     BoolParameter* showTrackStopClear;
 
     //tmp mute
-    Array<LooperTrack *> tmpMuteTracks;
+    Array<LooperTrack*> tmpMuteTracks;
 
     virtual void initInternal() override;
 
@@ -86,6 +94,10 @@ public:
     virtual void bpmChanged() override;
     virtual void beatChanged(bool isNewBar, bool isFirstLoopBeat) override;
     virtual void playStateChanged(bool isPlaying, bool forceRestart) override;
+
+    virtual void loadSamples();
+    virtual void saveSamples();
+    virtual void clearSamples();
 
     //helpers
     virtual bool hasContent(bool includeFreeTracks = true);

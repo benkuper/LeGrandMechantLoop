@@ -34,14 +34,12 @@ public:
 
     virtual void audioSetupChanged() override;
 
-    
     virtual void prepareToPlay(double sampleRate, int maximumExpectedSamplePerBlock) override;
 
     void onContainerParameterChangedInternal(Parameter* p) override;
     void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
     virtual void playStateChanged(bool isPlaying, bool forceRestart) override;
-
 
     virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 

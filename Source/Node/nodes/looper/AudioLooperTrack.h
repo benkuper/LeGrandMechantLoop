@@ -47,4 +47,7 @@ public:
     void finishRecordingAndPlayInternal() override;
 
     void processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>& outputBuffer, int numMainChannels, bool outputIfRecording);
+
+    virtual void loadSampleFile(File f) override;
+    virtual void saveSampleFile(File f) override;
 };

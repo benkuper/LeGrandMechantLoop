@@ -1,3 +1,4 @@
+#include "AudioLooperTrack.h"
 /*
   ==============================================================================
 
@@ -61,7 +62,6 @@ void AudioLooperTrack::updateStretch()
 	}
 	else stretcher->reset();
 
-	stretch = bpmAtRecord * 1.0 / Transport::getInstance()->bpm->floatValue();
 	stretcher->setTimeRatio(stretch);
 	stretchedBuffer.setSize(numChannels, stretchedNumSamples);
 }
@@ -420,5 +420,26 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 	{
 		processTrack(blockSize, false);// forceForPauseAntiClick);
 	}
+}
 
+void AudioLooperTrack::loadSampleFile(File f)
+{
+	jassert(f.getFileExtension() == ".wav");
+	WavAudioFormat format;
+	auto is = f.createInputStream();
+	auto reader = format.createReaderFor(is.get(), false);
+
+	AudioBuffer<float> fileBuffer(numChannels, reader->lengthInSamples);
+	reader->read(fileBuffer.getArrayOfWritePointers(), numChannels, 0, reader->lengthInSamples);
+
+	//todo find closest numBeats for length and stretch the file. should we keep a buffer for it or just store it in buffer and keep info that it's loaded from file ?
+}
+
+void AudioLooperTrack::saveSampleFile(File f)
+{
+	jassert(f.getFileExtension() == ".wav");
+	WavAudioFormat format;
+	auto os = f.createOutputStream();
+	auto writer = format.createWriterFor(os.get(), looper->processor->getSampleRate(), numChannels, 16, StringPairArray(), 0);
+	writer->writeFromAudioSampleBuffer(buffer, 0, buffer.getNumSamples());
 }

@@ -1,15 +1,16 @@
+#include "AudioLooperNode.h"
 /*
   ==============================================================================
 
-    AudioLooperNode.cpp
-    Created: 1 Dec 2020 11:16:14pm
-    Author:  bkupe
+	AudioLooperNode.cpp
+	Created: 1 Dec 2020 11:16:14pm
+	Author:  bkupe
 
   ==============================================================================
 */
 
 AudioLooperNode::AudioLooperNode(var params) :
-    LooperNode(getTypeString(), params, AUDIO)
+	LooperNode(getTypeString(), params, AUDIO)
 {
 	numChannelsPerTrack = addIntParameter("Channel Per Track", "Number of channel to use for each track", 2, 1, 8);
 	trackOutputMode = addEnumParameter("Output Mode", "How to output the channels");
@@ -55,7 +56,7 @@ void AudioLooperNode::updateOutTracks()
 	setAudioOutputs(s);
 }
 
-LooperTrack * AudioLooperNode::createLooperTrack(int index)
+LooperTrack* AudioLooperNode::createLooperTrack(int index)
 {
 	return new AudioLooperTrack(this, index, numChannelsPerTrack->intValue());
 }
@@ -76,6 +77,7 @@ void AudioLooperNode::audioSetupChanged()
 {
 	updateRingBuffer();
 }
+
 
 void AudioLooperNode::prepareToPlay(double sampleRate, int maximumExpectedSamplePerBlock)
 {
@@ -106,13 +108,13 @@ void AudioLooperNode::onContainerParameterChangedInternal(Parameter* p)
 
 		updateRingBuffer();
 	}
-	
+
 }
 
 void AudioLooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
 {
 	LooperNode::onControllableFeedbackUpdateInternal(cc, c);
-	if(c == fadeTimeMS) updateRingBuffer();
+	if (c == fadeTimeMS) updateRingBuffer();
 }
 
 void AudioLooperNode::playStateChanged(bool isPlaying, bool forceRestart)
