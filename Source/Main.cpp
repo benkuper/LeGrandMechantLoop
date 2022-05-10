@@ -29,7 +29,7 @@ void LGMLApplication::initialiseInternal(const String&)
 	, BinaryData::crash_pngSize));
 	//CrashDumpUploader::getInstance()->crashImage = ImageCache::getFromMemory(BinaryData::crash_png, BinaryData::crash_pngSize);
 
-	DashboardManager::getInstance()->setupDownloadURL("http://benjamin.kuperberg.fr/download/dashboard/dashboard.php");
+	DashboardManager::getInstance()->setupDownloadURL("http://benjamin.kuperberg.fr/download/dashboard/dashboard.php?folder=dashboard");
 
     ShapeShifterManager::getInstance()->setDefaultFileData(BinaryData::default_lgmllayout);
 	ShapeShifterManager::getInstance()->setLayoutInformations("lgmllayout", "LGML/layouts");
