@@ -47,12 +47,12 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\App\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">LGML</TargetName>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LibraryPath);../../External/servus/lib/win/x64/debug;../../External/dnssd/lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MDd</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(LibraryPath);../../External/servus/lib/win/x64/debug;../../External/dnssd/lib;../../External/rubberband/lib/win/debug;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MDd</LibraryPath>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\..\..\Binaries\CI\App\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\App\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">LGML</TargetName>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LibraryPath);../../External/servus/lib/win/x64/release;../../External/dnssd/lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MD</LibraryPath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(LibraryPath);../../External/servus/lib/win/x64/release;../../External/dnssd/lib;../../External/rubberband/lib/win/release;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MD</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -88,17 +88,17 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)\LGML.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/debug;../../External/dnssd/lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MDd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/debug;../../External/dnssd/lib;../../External/rubberband/lib/win/debug;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MDd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
-      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;rubberband-static.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)\LGML.bsc</OutputFile>
     </Bscmake>
     <Lib>
-      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/debug;../../External/dnssd/lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MDd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;rubberband-static.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/debug;../../External/dnssd/lib;../../External/rubberband/lib/win/debug;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MDd;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -137,18 +137,18 @@
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/release;../../External/dnssd/lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MD;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/release;../../External/dnssd/lib;../../External/rubberband/lib/win/release;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MD;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LargeAddressAware>true</LargeAddressAware>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;rubberband-static.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)\LGML.bsc</OutputFile>
     </Bscmake>
     <Lib>
-      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/release;../../External/dnssd/lib;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MD;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Setupapi.lib;Servus.lib;dnssd.lib;rubberband-static.lib;libssl.lib;libcrypto.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../External/servus/lib/win/x64/release;../../External/dnssd/lib;../../External/rubberband/lib/win/release;..\..\Modules\juce_simpleweb\libs\VisualStudio2019\$(Platform)\MD;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -483,41 +483,15 @@
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
       </MODULEPATHS>
     </VS2022>
-    <VS2019 targetFolder="Builds/VisualStudio2019" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib"
-            smallIcon="k24oFh" bigIcon="k24oFh" extraLinkerFlags="/HEAP:0x200000,0x10000">
-      <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib"
-                       binaryPath="Binaries/Debug"/>
-        <CONFIGURATION isDebug="0" name="Release" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib"/>
-      </CONFIGURATIONS>
-      <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics"/>
-        <MODULEPATH id="juce_audio_devices" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_formats" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_processors" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_utils" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_core" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_data_structures" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_dsp" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_events" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_graphics" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_gui_basics" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_gui_extra" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_opengl" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_osc" path="D:\Softwares\JUCE\modules"/>
-        <MODULEPATH id="juce_organicui" path="Modules"/>
-        <MODULEPATH id="juce_simpleweb" path="Modules"/>
-      </MODULEPATHS>
-    </VS2019>
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="k24oFh" bigIcon="k24oFh"
-               externalLibraries="Servus" xcodeValidArchs="x86_64" microphonePermissionNeeded="1"
-               customPList="&lt;plist&gt;&#10;&lt;dict&gt;&#10;&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;&#9;&lt;dict&gt;&#10;&#9;&#9;&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;&#10;&#9;&#9;&lt;true/&gt;&#10;&#9;&lt;/dict&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
+               externalLibraries="Servus&#10;rubberband" xcodeValidArchs="x86_64"
+               microphonePermissionNeeded="1" customPList="&lt;plist&gt;&#10;&lt;dict&gt;&#10;&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;&#9;&lt;dict&gt;&#10;&#9;&#9;&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;&#10;&#9;&#9;&lt;true/&gt;&#10;&#9;&lt;/dict&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
                documentExtensions="lgml">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="LGML" headerPath="../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/serial/include"
-                       libraryPath="../../External/servus/lib/osx/debug"/>
+                       libraryPath="../../External/servus/lib/osx/debug&#10;../../External/rubberband/lib/osx"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="LGML" headerPath="../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/serial/include"
-                       libraryPath="../../External/servus/lib/osx/release"/>
+                       libraryPath="../../External/servus/lib/osx/release&#10;../../External/rubberband/lib/osx"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics"/>
@@ -540,11 +514,11 @@
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="k24oFh" bigIcon="k24oFh"
                 extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed"
-                externalLibraries="bluetooth&#10;Servus&#10;curl&#10;usb-1.0">
+                externalLibraries="bluetooth&#10;Servus&#10;rubberband&#10;curl&#10;usb-1.0">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="LGML" libraryPath="../../External/servus/lib/linux&#10;/usr/lib/x86_64-linux-gnu/"
+        <CONFIGURATION isDebug="1" name="Debug" targetName="LGML" libraryPath="../../External/servus/lib/linux&#10;../../External/rubberband/lib/linux&#10;/usr/lib/x86_64-linux-gnu/"
                        headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"/>
-        <CONFIGURATION isDebug="0" name="Release" targetName="LGML" libraryPath="../../External/servus/lib/linux&#10;/usr/lib/x86_64-linux-gnu/"
+        <CONFIGURATION isDebug="0" name="Release" targetName="LGML" libraryPath="../../External/servus/lib/linux&#10;../../External/rubberband/lib/linux&#10;/usr/lib/x86_64-linux-gnu/"
                        headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -566,11 +540,11 @@
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2019 targetFolder="Builds/VisualStudio2019_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib"
+    <VS2019 targetFolder="Builds/VisualStudio2019_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
             smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib"/>
-        <CONFIGURATION isDebug="0" name="Release" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib"
+        <CONFIGURATION isDebug="1" name="Debug" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/debug"/>
+        <CONFIGURATION isDebug="0" name="Release" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/release"
                        alwaysGenerateDebugSymbols="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
@@ -593,11 +567,11 @@
       </MODULEPATHS>
     </VS2019>
     <XCODE_MAC targetFolder="Builds/MacOSX_CI" smallIcon="k24oFh" bigIcon="k24oFh"
-               externalLibraries="Servus" xcodeValidArchs="x86_64" hardenedRuntimeOptions="com.apple.security.cs.allow-jit"
-               customPList="&lt;plist&gt;&#10;&lt;dict&gt;&#10;&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;&#9;&lt;dict&gt;&#10;&#9;&#9;&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;&#10;&#9;&#9;&lt;true/&gt;&#10;&#9;&lt;/dict&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
+               externalLibraries="Servus&#10;rubberband" xcodeValidArchs="x86_64"
+               hardenedRuntimeOptions="com.apple.security.cs.allow-jit" customPList="&lt;plist&gt;&#10;&lt;dict&gt;&#10;&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;&#9;&lt;dict&gt;&#10;&#9;&#9;&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;&#10;&#9;&#9;&lt;true/&gt;&#10;&#9;&lt;/dict&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
                microphonePermissionNeeded="1" documentExtensions="lgml">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="0" name="Release" osxCompatibility="10.13 SDK" libraryPath="../../External/servus/lib/osx/release"
+        <CONFIGURATION isDebug="0" name="Release" osxCompatibility="10.13 SDK" libraryPath="../../External/servus/lib/osx/release&#10;../../External/rubberband/lib/osx"
                        headerPath="../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/serial/include"
                        macOSDeploymentTarget="10.13"/>
       </CONFIGURATIONS>
@@ -621,15 +595,16 @@
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/Raspberry" extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed"
-                externalLibraries="bluetooth&#10;Servus&#10;curl&#10;usb-1.0&#10;pthread"
+                externalLibraries="bluetooth&#10;Servus&#10;rubberband&#10;curl&#10;usb-1.0&#10;pthread"
                 smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="0" name="Release" headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"
-                       libraryPath="../../External/servus/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf&#10;"
+                       libraryPath="../../External/servus/lib/raspberry&#10;../../External/rubberband/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf&#10;"
                        linuxArchitecture="-march=armv7"/>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"
-                       libraryPath="../../External/servus/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf"
+                       libraryPath="../../External/servus/lib/raspberry&#10;../../External/rubberband/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf"
                        linuxArchitecture="-march=armv7"/>
+        <CONFIGURATION isDebug="0" name="Release64" libraryPath="../../External/servus/lib/rpi64&#10;../../External/rubberband/lib/rpi64&#10;/usr/lib/aarch64-linux-gnu&#10;"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>

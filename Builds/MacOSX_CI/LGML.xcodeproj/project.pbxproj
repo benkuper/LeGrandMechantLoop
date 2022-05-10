@@ -1404,13 +1404,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"../../External/servus/lib/osx/release\"",
+					"\"../../External/rubberband/lib/osx\"",
 					"\"../../Modules/juce_simpleweb/libs/MacOSX\"",
 					"\"../../Modules/juce_simpleweb/libs/MacOSX/${CURRENT_ARCH}\"",
 				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include";
-				OTHER_LDFLAGS = "-lServus -lssl -lcrypto";
+				OTHER_LDFLAGS = "-lServus -lrubberband -lssl -lcrypto";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.LGML;
 				PRODUCT_NAME = "LGML";
 				USE_HEADERMAP = NO;
