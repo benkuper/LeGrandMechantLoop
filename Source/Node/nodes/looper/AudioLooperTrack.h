@@ -23,6 +23,8 @@ public:
 
     int numChannels;
     AudioBuffer<float> buffer;
+    AudioBuffer<float> rtStretchBuffer;
+    AudioBuffer<float> stretchedBuffer;
     AudioBuffer<float> preRecBuffer; //a snapshot of the looper's ringbuffer just before recording. This allows for delay adjustement and nice fades for the end of the loop
     
     bool antiClickFadeBeforeClear;
@@ -30,8 +32,12 @@ public:
     int antiClickFadeBeforePause;
     bool recordOnNextSample;
 
+     std::unique_ptr<RubberBand::RubberBandStretcher> stretcher;
+
     void setNumChannels(int num);
     void updateBufferSize(int newSize);
+
+    void updateStretch() override;
 
     void stopPlaying() override;
     void clearTrack() override;

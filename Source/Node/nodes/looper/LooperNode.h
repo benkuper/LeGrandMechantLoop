@@ -83,6 +83,7 @@ public:
 
     virtual void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
+    virtual void bpmChanged() override;
     virtual void beatChanged(bool isNewBar, bool isFirstLoopBeat) override;
     virtual void playStateChanged(bool isPlaying, bool forceRestart) override;
 

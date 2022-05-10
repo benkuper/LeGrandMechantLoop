@@ -210,7 +210,7 @@ void MIDIMapping::setMIDIInterface(MIDIInterface* d)
 void MIDIMapping::onContainerParameterChangedInternal(Parameter* p)
 {
 	Mapping::onContainerParameterChangedInternal(p);
-	if (p == interfaceParam) setMIDIInterface((MIDIInterface *)interfaceParam->target.get());
+	if (p == interfaceParam) setMIDIInterface((MIDIInterface *)interfaceParam->targetContainer.get());
 	else if (p == type)
 	{
 		if (!isCurrentlyLoadingData)

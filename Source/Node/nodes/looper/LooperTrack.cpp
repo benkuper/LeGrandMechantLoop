@@ -22,10 +22,14 @@ LooperTrack::LooperTrack(LooperNode * looper, int index) :
     freeRecStartOffset(0),
     timeAtStateChange(0),
     finishRecordLock(false),
+	bpmAtRecord(0),
 	globalBeatAtStart(0),
 	freePlaySample(0),
 	numBeats(0),
-	autoStopRecAfterBeats(-1)
+	autoStopRecAfterBeats(-1),
+	stretch(1),
+	stretchedNumSamples(0),
+	stretchSample(-1)
 {
 	saveAndLoadRecursiveData = true;
 	editorIsCollapsed = true;
@@ -259,6 +263,7 @@ void LooperTrack::finishRecordingAndPlay()
 
 	finishRecordLock = true;
 	bufferNumSamples = curSample;
+	bpmAtRecord = Transport::getInstance()->bpm->floatValue();
 
 	finishRecordingAndPlayInternal();
 
@@ -390,30 +395,60 @@ void LooperTrack::handleBeatChanged(bool isNewBar, bool isFirstLoop)
 	}
 
 
-	if (!isWaiting()) return;
-	
-	if (s == IDLE) return;
-	
-	if (isRecording(true))
+	if (isWaiting())
 	{
-		Transport::Quantization q = looper->getQuantization();
-		if ((q == Transport::BAR && isNewBar)
-			|| (q == Transport::BEAT)
-			|| (q == Transport::FIRSTLOOP && isFirstLoop))
+		if (s == IDLE) return;
+
+		if (isRecording(true))
 		{
-			handleWaiting();
+			Transport::Quantization q = looper->getQuantization();
+			if ((q == Transport::BAR && isNewBar)
+				|| (q == Transport::BEAT)
+				|| (q == Transport::FIRSTLOOP && isFirstLoop))
+			{
+				handleWaiting();
+			}
+		}
+		else if (isPlaying(true))
+		{
+			if ((playQuantization == Transport::BAR && isNewBar)
+				|| (playQuantization == Transport::BEAT)
+				|| (playQuantization == Transport::FIRSTLOOP && isFirstLoop))
+			{
+				handleWaiting();
+			}
 		}
 	}
-	else if (isPlaying(true))
+	
+	if (stretch != 1 && stretchSample == -1)
 	{
-		if ((playQuantization == Transport::BAR && isNewBar)
-			|| (playQuantization == Transport::BEAT)
-			|| (playQuantization == Transport::FIRSTLOOP && isFirstLoop))
+
+		int relLoopBeat = (Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart) % numBeats;
+		if (relLoopBeat == 0) //here set for start storing stretched buffer
 		{
-			handleWaiting();
+			stretchSample = 0;
+			curSample = 0;
 		}
 	}
-	
+}
+
+void LooperTrack::updateStretch()
+{
+	if (!isPlaying(true) || playQuantization == Transport::FREE)
+	{
+		stretch = 1;
+		return;
+	}
+
+	float bpm = Transport::getInstance()->bpm->floatValue();
+	stretch = bpm / bpmAtRecord;
+	stretchSample = -1;
+	stretchedNumSamples = numBeats * Transport::getInstance()->numSamplesPerBeat;
+
+	//reset curSample to expected place in non-stretched loop
+	double sampleRel = Transport::getInstance()->getRelativeBarSamples() + loopBar->intValue() * Transport::getInstance()->getBarNumSamples();
+	curSample = Transport::getInstance()->getBlockPerfectNumSamples(sampleRel * bufferNumSamples / stretchedNumSamples);
+	DBG("Cur sample : " + curSample);
 }
 
 void LooperTrack::processTrack(int blockSize, bool forcePlaying)
@@ -430,42 +465,41 @@ void LooperTrack::processTrack(int blockSize, bool forcePlaying)
 	}
 	else if (isPlaying(false))
 	{
+		int totalSamples = bufferNumSamples;
+
 		if (playQuantization == Transport::FREE)
 		{
 			if (freePlaySample >= bufferNumSamples) freePlaySample = 0;
 			curSample = freePlaySample;
 			freePlaySample += blockSize;
-
 		}
 		else //bar, beat
 		{
-			if (!forcePlaying && !Transport::getInstance()->isCurrentlyPlaying->boolValue()) return;
+			if (stretch == 1 || stretchSample == -2)
+			{
+				if (stretchSample == -2) totalSamples = stretchedNumSamples;
+				
+				if (!forcePlaying && !Transport::getInstance()->isCurrentlyPlaying->boolValue()) return;
+
+				
+				if (curSample >= totalSamples) curSample = 0;
+				else curSample += blockSize;// / stretch;
+				jassert(curSample <= totalSamples);
+
+				if (curSample >= totalSamples)
+				{
+					curSample = 0;
+					firstPlayAfterStop = false;
+				}
+			}
 			
 			int curBeat = Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart;
 			int trackBeat = curBeat % numBeats;
-			/**
-			int relBeatSamples = Transport::getInstance()->getRelativeBeatSamples();
-			startReadSample = Transport::getInstance()->getSamplesForBeat(trackBeat, 0, false) + relBeatSamples;
-			*/
-
 			loopBeat->setValue(trackBeat);
 			loopBar->setValue(floor(trackBeat * 1.0f / Transport::getInstance()->beatsPerBar->intValue()));
-
-			if (curSample >= bufferNumSamples) curSample = 0; 
-			else curSample += blockSize;
-			jassert(curSample <= bufferNumSamples);
-
-			if (curSample >= bufferNumSamples)
-			{
-				curSample = 0;
-				firstPlayAfterStop = false;
-			}
-
-			//startReadSample = curSample;
 		}
 
-		loopProgression->setValue(curSample * 1.0f / bufferNumSamples);
-		//curSample = startReadSample;
+		loopProgression->setValue(curSample * 1.0f / totalSamples);
 	}
 }
 

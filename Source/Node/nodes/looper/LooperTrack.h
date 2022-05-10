@@ -52,11 +52,18 @@ public:
 	double timeAtStateChange;
 	bool finishRecordLock;
 
+	float bpmAtRecord;
+
 	int globalBeatAtStart;
 	int freePlaySample;
 	int numBeats;
 
 	int autoStopRecAfterBeats;
+
+	//stretching
+	double stretch;
+	int stretchedNumSamples;
+	int stretchSample; //for storing one full stretched loop in real time
 
 	virtual void stateChanged();
 
@@ -79,6 +86,7 @@ public:
 
 	virtual void handleBeatChanged(bool isNewBar, bool isFirstLoop);
 
+	virtual void updateStretch();
 	void processTrack(int blockSize, bool forcePlaying = false);
 
 	//Helpers

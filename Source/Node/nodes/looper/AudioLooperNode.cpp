@@ -1,4 +1,3 @@
-#include "AudioLooperNode.h"
 /*
   ==============================================================================
 
@@ -76,6 +75,11 @@ int AudioLooperNode::getFadeNumSamples()
 void AudioLooperNode::audioSetupChanged()
 {
 	updateRingBuffer();
+}
+
+void AudioLooperNode::prepareToPlay(double sampleRate, int maximumExpectedSamplePerBlock)
+{
+	Node::prepareToPlay(sampleRate, maximumExpectedSamplePerBlock);
 }
 
 void AudioLooperNode::onContainerParameterChangedInternal(Parameter* p)

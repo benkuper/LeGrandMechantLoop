@@ -31,6 +31,7 @@ public:
 	IntParameter* recQuantizCount;
 	Point2DParameter* recQuantizBPMRange;
 
+	bool settingBPMFromTransport;
 	FloatParameter* bpm;
 	IntParameter* beatsPerBar; //first part of time signature
 	IntParameter* beatUnit; //2nd part of time signature

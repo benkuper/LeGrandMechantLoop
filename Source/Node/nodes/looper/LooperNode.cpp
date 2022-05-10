@@ -1,3 +1,4 @@
+#include "LooperNode.h"
 /*
   ==============================================================================
 
@@ -284,6 +285,18 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	}
 }
 
+void LooperNode::bpmChanged()
+{
+	prepareToPlay(Transport::getInstance()->sampleRate, Transport::getInstance()->blockSize);
+	
+	ScopedSuspender sp(processor);
+	for (int i = 0; i < numTracks->intValue(); i++)
+	{
+		((AudioLooperTrack*)tracksCC.controllableContainers[i].get())->updateStretch();
+	}
+
+}
+
 void LooperNode::beatChanged(bool isNewBar, bool isFirstLoop)
 {
 	for (auto& cc : tracksCC.controllableContainers) ((LooperTrack*)cc.get())->handleBeatChanged(isNewBar, isFirstLoop);
@@ -294,6 +307,8 @@ void LooperNode::beatChanged(bool isNewBar, bool isFirstLoop)
 		for (auto& t : tmpMuteTracks) t->active->setValue(true);
 		tmpMuteTracks.clear();
 	}
+	
+	
 }
 
 void LooperNode::playStateChanged(bool isPlaying, bool forceRestart)

@@ -12,6 +12,15 @@
 
 #include "JuceHeader.h"
 
+// Libraries
+#ifndef USE_RUBBERBAND
+#define USE_RUBBERBAND 1
+#endif
+
+#if USE_RUBBERBAND
+#include "RubberBandStretcher.h"
+#endif
+
 #include "Common/CommonIncludes.h"
 #include "Engine/AudioManager.h"
 #include "Engine/VSTManager.h"

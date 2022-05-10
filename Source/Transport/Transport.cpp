@@ -15,6 +15,7 @@ juce_ImplementSingleton(Transport)
 
 Transport::Transport() :
 	ControllableContainer("Transport"),
+	settingBPMFromTransport(false),
 	isCurrentlyPlaying(nullptr),
 	sampleRate(0),
 	blockSize(0),
@@ -162,7 +163,9 @@ void Transport::finishSetTempo(bool startPlaying)
 	int rawSamplesPerBeat = floor(setTempoSampleCount / targetNumBeats);
 	numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
 	float targetBPM = 60.0 / getTimeForSamples(numSamplesPerBeat);
+	settingBPMFromTransport = true;
 	bpm->setValue(targetBPM);
+	settingBPMFromTransport = false;
 	timeInSamples = 0;
 	
 	jassert(numSamplesPerBeat % blockSize == 0);
@@ -235,6 +238,16 @@ void Transport::onContainerParameterChanged(Parameter* p)
 	}
 	else if (p == bpm)
 	{
+		if (!settingBPMFromTransport)
+		{
+			double barRel = curBar->intValue() + (getRelativeBarSamples() * 1.0 / getBarNumSamples()); //before set new samplesPerBeat
+
+			int rawSamplesPerBeat = round(sampleRate * 60.0 / bpm->floatValue());
+			numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
+			
+			timeInSamples = getBlockPerfectNumSamples(getBarNumSamples() * barRel); //after set new samplesPerBeat
+		}
+
 		transportListeners.call(&TransportListener::bpmChanged);
 	}
 }
@@ -353,16 +366,16 @@ double Transport::getTimeForBeat(int beat, int bar, bool relative) const
 
 int Transport::getBarForTime(double time, bool floorResult) const
 {
-	int timeInSamples = getSamplesForTime(time);
-	double numBarsD = floor(timeInSamples *1.0 / getBarNumSamples());
+	int sampleTime = getSamplesForTime(time);
+	double numBarsD = floor(sampleTime *1.0 / getBarNumSamples());
 	return floorResult ? floor(numBarsD) : round(numBarsD);
 
 }
 
 int Transport::getBeatForTime(double time, bool relative, bool floorResult) const
 {
-	int timeInSamples = getSamplesForTime(time);
-	double numBeatsD = timeInSamples * 1.0 / getBeatNumSamples();
+	int sampleTime = getSamplesForTime(time);
+	double numBeatsD = sampleTime * 1.0 / getBeatNumSamples();
 	int numBeats = floorResult ? floor(numBeatsD) : round(numBeatsD);
 	if (relative) numBeats = numBeats % beatsPerBar->intValue();
 	return numBeats;

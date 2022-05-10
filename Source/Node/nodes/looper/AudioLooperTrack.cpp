@@ -12,6 +12,7 @@ AudioLooperTrack::AudioLooperTrack(AudioLooperNode* looper, int index, int numCh
 	LooperTrack(looper, index),
 	audioLooper(looper),
 	numChannels(numChannels),
+	rtStretchBuffer(numChannels, Transport::getInstance()->blockSize),
 	antiClickFadeBeforeClear(false),
 	antiClickFadeBeforeStop(false),
 	antiClickFadeBeforePause(true)
@@ -34,6 +35,35 @@ void AudioLooperTrack::setNumChannels(int num)
 void AudioLooperTrack::updateBufferSize(int newSize)
 {
 	buffer.setSize(numChannels, newSize, true, true);
+}
+
+void AudioLooperTrack::updateStretch()
+{
+	LooperTrack::updateStretch();
+	if (bpmAtRecord == 0 || !isPlaying(true) || stretch == 1)
+	{
+		stretchedBuffer.clear();
+		stretcher.reset();
+		return;
+	}
+
+	if (stretcher == nullptr)
+	{
+		stretcher.reset(new RubberBand::RubberBandStretcher(looper->processor->getSampleRate(), 2,
+			RubberBand::RubberBandStretcher::OptionProcessRealTime
+			| RubberBand::RubberBandStretcher::OptionStretchPrecise
+			| RubberBand::RubberBandStretcher::OptionFormantPreserved
+			| RubberBand::RubberBandStretcher::OptionWindowStandard
+			| RubberBand::RubberBandStretcher::OptionTransientsCrisp
+			| RubberBand::RubberBandStretcher::OptionChannelsTogether
+		));
+		stretcher->setMaxProcessSize(looper->processor->getBlockSize());
+	}
+	else stretcher->reset();
+
+	stretch = bpmAtRecord * 1.0 / Transport::getInstance()->bpm->floatValue();
+	stretcher->setTimeRatio(stretch);
+	stretchedBuffer.setSize(numChannels, stretchedNumSamples);
 }
 
 void AudioLooperTrack::stopPlaying()
@@ -121,12 +151,14 @@ void AudioLooperTrack::finishRecordingAndPlayInternal()
 
 			for (int i = 0; i < buffer.getNumChannels(); i++)
 			{
-				buffer.addFromWithRamp(i, bufferStartSample, preRecBuffer.getReadPointer(i,preRecStartSample), cropFadeNumSamples, 0, 1);
+				buffer.addFromWithRamp(i, bufferStartSample, preRecBuffer.getReadPointer(i, preRecStartSample), cropFadeNumSamples, 0, 1);
 			}
 
 			preRecBuffer.clear();
 		}
 	}
+
+	stretch = 1; // reset stretch
 
 }
 
@@ -178,13 +210,13 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 				LOGWARNING("Record is too long, clear track");
 				clearTrack();
 			}
-			
+
 		}
 	}
 
 	bool isReallyPlaying = isPlaying(false);
 	//bool forceForPauseAntiClick = isReallyPlaying && !transportIsPlaying && antiClickFadeBeforePause;
-	
+
 	if (isReallyPlaying)
 	{
 		if (playQuantization != Transport::FREE && !transportIsPlaying && !antiClickFadeBeforePause)
@@ -195,11 +227,20 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		else
 		{
 			outputToMainTrack = true;
-			if(transportIsPlaying) antiClickFadeBeforePause = true;
+			if (transportIsPlaying) antiClickFadeBeforePause = true;
 		}
 	}
 
-	if ((outputToMainTrack || outputToSeparateTrack) && (curSample < bufferNumSamples))
+	AudioBuffer<float>* targetBuffer = &buffer;
+	int totalSamples = bufferNumSamples;
+
+	if (stretch != 1 && stretchSample == -2)
+	{
+		targetBuffer = &stretchedBuffer;
+		totalSamples = stretchedNumSamples;
+	}
+
+	if ((outputToMainTrack || outputToSeparateTrack) && (curSample < totalSamples))
 	{
 		if (outputToSeparateTrack)
 		{
@@ -225,7 +266,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		if (firstPlayAfterStop || s == WILL_STOP)
 		{
 			int fadeReadSample = jumpGhostSample >= 0 ? jumpGhostSample : curSample;
-			
+
 			int fadeSamples = looper->playStopFadeMS->intValue() * blockSize;
 			if (firstPlayAfterStop || WILL_STOP)
 			{
@@ -234,11 +275,13 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 			if (s == WILL_STOP)
 			{
-				if (fadeReadSample > bufferNumSamples - fadeSamples) vol *= (bufferNumSamples - fadeReadSample) * 1.0 / fadeSamples;
+				if (fadeReadSample > totalSamples - fadeSamples) vol *= (totalSamples - fadeReadSample) * 1.0 / fadeSamples;
 			}
 		}
 
-		if (jumpGhostSample > 0 && jumpGhostSample + blockSize < bufferNumSamples)
+
+
+		if (jumpGhostSample > 0 && jumpGhostSample + blockSize < totalSamples)
 		{
 			firstPlayAfterStop = false;
 
@@ -246,13 +289,12 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 			{
 				if (outputToMainTrack)
 				{
-					outputBuffer.addFromWithRamp(i, 0, buffer.getReadPointer(i, jumpGhostSample), blockSize, vol, 0);
+					outputBuffer.addFromWithRamp(i, 0, targetBuffer->getReadPointer(i, jumpGhostSample), blockSize, vol, 0);
 				}
 
 				if (outputToSeparateTrack)
 				{
-					outputBuffer.addFromWithRamp(trackChannel, 0, buffer.getReadPointer(i, jumpGhostSample), blockSize, vol, 0);
-
+					outputBuffer.addFromWithRamp(trackChannel, 0, targetBuffer->getReadPointer(i, jumpGhostSample), blockSize, vol, 0);
 				}
 
 				//rmsVal = jmax(rmsVal, buffer.getMagnitude(i, curReadSample, blockSize));
@@ -262,19 +304,78 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 			jumpGhostSample = -1;
 		}
 
-		
+
+
+		int targetSample = curSample;
+		if (stretch != 0 && stretch != 1 && stretcher != nullptr)
+		{
+			if (stretchSample == -2) //use stretchedBuffer instead of calculating
+			{
+				//DBG("playing from stretched sbuffer, cur Sample : " << targetSample << " / " << stretchedNumSamples << " : " << (targetSample * 1.0f / stretchedNumSamples));
+				targetBuffer = &stretchedBuffer;
+			}
+			else
+			{
+				if (stretchSample == 0 && curSample == 0) //set from handleNewBeat in LooperTrack
+				{
+					DBG("Start storing stretched here " << curSample << "/" << Transport::getInstance()->getRelativeBarSamples());
+					stretcher->reset();
+				}
+
+				rtStretchBuffer.clear();
+				rtStretchBuffer.setSize(numChannels, blockSize);
+				AudioBuffer<float> tmpBuffer(buffer.getNumChannels(), blockSize);
+				auto readPointers = tmpBuffer.getArrayOfReadPointers();
+
+				//DBG("Start process at sample " << curSample << " / " << Transport::getInstance()->getRelativeBarSamples());
+				while (stretcher->available() < blockSize)
+				{
+					for (int i = 0; i < numChannels; i++) tmpBuffer.copyFrom(i, 0, buffer.getReadPointer(i, curSample), blockSize);
+
+					stretcher->process(readPointers, tmpBuffer.getNumSamples(), false);
+
+					curSample += blockSize;
+					if (curSample >= buffer.getNumSamples()) curSample = 0;
+				}
+
+				//DBG("Finish process at sample " << curSample << " / " << Transport::getInstance()->getRelativeBarSamples()); // << ", " << curSample << " / " << (Transport::getInstance()->getRelativeBarSamples() * 1.0 / Transport::getInstance()->getBarNumSamples()) - (curSample * 1.0 / buffer.getNumSamples()));
+
+
+				stretcher->retrieve(rtStretchBuffer.getArrayOfWritePointers(), rtStretchBuffer.getNumSamples());
+
+				if (stretchSample >= 0)
+				{
+					for (int i = 0; i < numChannels; i++) stretchedBuffer.copyFrom(i, stretchSample, rtStretchBuffer, i, 0, rtStretchBuffer.getNumSamples());
+
+					stretchSample += rtStretchBuffer.getNumSamples();
+					//DBG("Write in stretched buffer up to " << stretchSample);
+
+					if (stretchSample >= stretchedNumSamples)
+					{
+						double sLength = (stretchedNumSamples * 1.0f / blockSize);
+						double cLength = (buffer.getNumSamples() * 1.0 / blockSize);
+						//DBG("Storing finished ! " << stretchSample << " / " << stretchedNumSamples << " : " << sLength << " <> " << cLength << " // " << stretch << "<>" << sLength / sLength);
+						stretchSample = -2;
+					}
+
+				}
+
+				targetBuffer = &rtStretchBuffer;
+				targetSample = 0;
+			}
+		}
+
 
 		for (int i = 0; i < numChannels; i++)
 		{
 			if (outputToMainTrack)
 			{
-				outputBuffer.addFromWithRamp(i, 0, buffer.getReadPointer(i, curSample), blockSize, prevGain, vol);
+				outputBuffer.addFromWithRamp(i, 0, targetBuffer->getReadPointer(i, targetSample), blockSize, prevGain, vol);
 			}
 
 			if (outputToSeparateTrack)
 			{
-				outputBuffer.addFromWithRamp(trackChannel, 0, buffer.getReadPointer(i, curSample), blockSize, prevGain, vol);
-				
+				outputBuffer.addFromWithRamp(trackChannel, 0, targetBuffer->getReadPointer(i, targetSample), blockSize, prevGain, vol);
 			}
 
 			//rmsVal = jmax(rmsVal, buffer.getMagnitude(i, curReadSample, blockSize));
@@ -300,11 +401,13 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 	{
 		clearTrack();
 		antiClickFadeBeforeClear = false;
-	}else if (antiClickFadeBeforeStop)
+	}
+	else if (antiClickFadeBeforeStop)
 	{
 		stopPlaying();
 		antiClickFadeBeforeStop = false;
-	}else if (isReallyPlaying && !transportIsPlaying && antiClickFadeBeforePause)
+	}
+	else if (isReallyPlaying && !transportIsPlaying && antiClickFadeBeforePause)
 	{
 		firstPlayAfterStop = true;
 		antiClickFadeBeforePause = false;
