@@ -124,15 +124,13 @@ jobs:
           buildFolder: "LinuxMakefile"
           buildConfig: "Release"
 
-        - arch: armhf
-          if: false
-          buildFolder: "Raspberry"
-          buildConfig: "Release"
+        # - arch: armhf
+        #   buildFolder: "Raspberry"
+        #   buildConfig: "Release"
 
-        - arch: aarch64
-          if: false
-          buildFolder: "Raspberry"
-          buildConfig: "Release64"
+        # - arch: aarch64
+        #   buildFolder: "Raspberry"
+        #   buildConfig: "Release64"
 
       fail-fast: false
 
