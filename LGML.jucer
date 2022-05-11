@@ -604,7 +604,8 @@
         <CONFIGURATION isDebug="1" name="Debug" headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"
                        libraryPath="../../External/servus/lib/raspberry&#10;../../External/rubberband/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf"
                        linuxArchitecture="-march=armv7"/>
-        <CONFIGURATION isDebug="0" name="Release64" libraryPath="../../External/servus/lib/rpi64&#10;../../External/rubberband/lib/rpi64&#10;/usr/lib/aarch64-linux-gnu&#10;"/>
+        <CONFIGURATION isDebug="0" name="Release64" libraryPath="../../External/servus/lib/rpi64&#10;../../External/rubberband/lib/rpi64&#10;/usr/lib/aarch64-linux-gnu&#10;"
+                       linuxArchitecture="-march=armv8-a"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>

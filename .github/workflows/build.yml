@@ -120,11 +120,17 @@ jobs:
     strategy:
       matrix:
         include:
-        - arch: linux-x64
+        - arch: x64
           buildFolder: "LinuxMakefile"
 
-        - arch: linux-armhf
+        - arch: armhf
           buildFolder: "Raspberry"
+          buildConfig: "Release"
+
+        - arch: aarch64
+          buildFolder: "Raspberry"
+          buildConfig: "Release64"
+
       fail-fast: false
 
     steps:
@@ -151,7 +157,7 @@ jobs:
         #shell: bash {0} # Opt out of fail-fast behavior (necessary to ignore fetch errors)
         run: |
           echo "Target system architecture: ${{ matrix.arch }}"
-          if [ "${{ matrix.arch }}" == "linux-armhf" ]; 
+          if [ "${{ matrix.arch }}" != "x64" ]; 
           then
             sudo tee /etc/apt/sources.list << END
           deb [arch=amd64] http://us.archive.ubuntu.com/ubuntu/ bionic main restricted universe multiverse
@@ -159,28 +165,33 @@ jobs:
           deb [arch=amd64] http://us.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
           deb [arch=amd64] http://security.ubuntu.com/ubuntu bionic-security main restricted universe multiverse
 
-          deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic main restricted universe multiverse
-          deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main restricted universe multiverse
-          deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-backports main restricted universe multiverse
-          deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main restricted universe multiverse
+          deb [arch=${{ matrix.arch }}] http://ports.ubuntu.com/ubuntu-ports/ bionic main restricted universe multiverse
+          deb [arch=${{ matrix.arch }}] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main restricted universe multiverse
+          deb [arch=${{ matrix.arch }}] http://ports.ubuntu.com/ubuntu-ports/ bionic-backports main restricted universe multiverse
+          deb [arch=${{ matrix.arch }}] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main restricted universe multiverse
           END
 
-            sudo dpkg --add-architecture armhf
+            sudo dpkg --add-architecture ${{ matrix.arch }}
             
             sudo apt-get update
-            echo "Installing armhf cross compilation tools"
-            sudo apt-get install -qy g++-arm-linux-gnueabihf
+            echo "Installing ${{ matrix.arch }} cross compilation tools"
+            if [ "${{ matrix.arch }}" == "armhf" ]; 
+            then
+              sudo apt-get install -qy g++-arm-linux-gnueabihf
+            else
+              sudo apt-get install -qy g++-aarch64-linux-gnu
+            fi
 
             echo "Installing extra lib dependencies"
-            sudo apt-get install -qyf libgdk-pixbuf2.0-dev:armhf libpango1.0-dev:armhf libsoup2.4-dev:armhf libharfbuzz-dev:armhf libicu-dev:armhf libc6-dev:armhf libxft-dev:armhf
+            sudo apt-get install -qyf libgdk-pixbuf2.0-dev:${{ matrix.arch }} libpango1.0-dev:${{ matrix.arch }} libsoup2.4-dev:${{ matrix.arch }} libharfbuzz-dev:${{ matrix.arch }} libicu-dev:${{ matrix.arch }} libc6-dev:${{ matrix.arch }} libxft-dev:${{ matrix.arch }}
 
-            echo "Downloading AppImage runtime for armhf"
+            echo "Downloading AppImage runtime for ${{ matrix.arch }}"
             cd ${{ github.workspace }}
-            wget "https://github.com/AppImage/AppImageKit/releases/download/12/runtime-armhf"
-            echo "::set-output name=appImageRuntime::--runtime-file ${{ github.workspace }}/runtime-armhf"
+            wget "https://github.com/AppImage/AppImageKit/releases/download/12/runtime-${{ matrix.arch }}"
+            echo "::set-output name=appImageRuntime::--runtime-file ${{ github.workspace }}/runtime-${{ matrix.arch }}"
 
             # DEP_ARCH is used later when downloading the dependencies
-            DEP_ARCH="armhf"
+            DEP_ARCH="${{ matrix.arch }}"
           fi
 
           sudo apt-get update
@@ -194,7 +205,7 @@ jobs:
 
       - name: Build
         run: |
-          if [ "${{ matrix.arch }}" == "linux-armhf" ]; 
+          if [ "${{ matrix.arch }}" == "armhf" ]; 
           then
             export CXX=arm-linux-gnueabihf-g++
             export CC=arm-linux-gnueabihf-gcc
@@ -202,8 +213,16 @@ jobs:
             export TARGET_ARCH="-march=armv8-a" # TARGET_ARCH is used in the Makefile
           fi
 
-          cd ${{ github.workspace }}/Builds/${{ matrix.BuildFolder }}
-          make -j2 CONFIG=Release
+          if [ "${{ matrix.arch }}" == "aarch64" ]; 
+          then
+            export CXX=aarch64-linux-gnu-gcc
+            export CC=aarch64-linux-gnu-g++
+            export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig
+            export TARGET_ARCH="-march=aarch64" # TARGET_ARCH is used in the Makefile
+          fi
+
+          cd ${{ github.workspace }}/Builds/${{ matrix.buildFolder }}
+          make -j2 CONFIG=${{ matrix.buildConfig }}
 
       - name: Create AppImage
         id: create_package
