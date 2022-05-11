@@ -122,6 +122,7 @@ jobs:
         include:
         - arch: x64
           buildFolder: "LinuxMakefile"
+          buildConfig: "Release"
 
         - arch: armhf
           buildFolder: "Raspberry"
@@ -178,13 +179,13 @@ jobs:
             if [ "${{ matrix.arch }}" == "armhf" ]; 
             then
               sudo apt-get install -qy g++-arm-linux-gnueabihf
+              echo "Installing extra lib dependencies"
+              sudo apt-get install -qyf libgdk-pixbuf2.0-dev:${{ matrix.arch }} libpango1.0-dev:${{ matrix.arch }} libsoup2.4-dev:${{ matrix.arch }} libharfbuzz-dev:${{ matrix.arch }} libicu-dev:${{ matrix.arch }} libc6-dev:${{ matrix.arch }} libxft-dev:${{ matrix.arch }}
             else
               sudo apt-get install -qy g++-aarch64-linux-gnu
             fi
 
-            echo "Installing extra lib dependencies"
-            sudo apt-get install -qyf libgdk-pixbuf2.0-dev:${{ matrix.arch }} libpango1.0-dev:${{ matrix.arch }} libsoup2.4-dev:${{ matrix.arch }} libharfbuzz-dev:${{ matrix.arch }} libicu-dev:${{ matrix.arch }} libc6-dev:${{ matrix.arch }} libxft-dev:${{ matrix.arch }}
-
+            
             echo "Downloading AppImage runtime for ${{ matrix.arch }}"
             cd ${{ github.workspace }}
             wget "https://github.com/AppImage/AppImageKit/releases/download/12/runtime-${{ matrix.arch }}"
