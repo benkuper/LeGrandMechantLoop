@@ -685,6 +685,6 @@ void SamplerNode::SamplerNote::setAutoKey(SamplerNote* remoteNote, double shift)
 
 	pitcher->setMaxProcessSize(Transport::getInstance()->blockSize);
 	pitcher->setPitchScale(shift);
-	LOG("Set with pitchScale : " << shift);
+	//LOG("Set with pitchScale : " << shift);
 	rtPitchedBuffer.setSize(autoKeyFromNote->buffer.getNumChannels(), Transport::getInstance()->blockSize);
 }
