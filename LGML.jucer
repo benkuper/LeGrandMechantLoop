@@ -594,7 +594,7 @@
         <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
-    <LINUX_MAKE targetFolder="Builds/Raspberry" extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed&#10;-lm"
+    <LINUX_MAKE targetFolder="Builds/Raspberry" extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed&#10;-lm&#10;-latomic"
                 externalLibraries="bluetooth&#10;Servus&#10;rubberband&#10;curl&#10;usb-1.0&#10;pthread"
                 smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>

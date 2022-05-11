@@ -87,7 +87,7 @@ public:
 
 	virtual void handleBeatChanged(bool isNewBar, bool isFirstLoop);
 
-	virtual void updateStretch();
+	virtual void updateStretch(bool force = false);
 	void processTrack(int blockSize, bool forcePlaying = false);
 
 

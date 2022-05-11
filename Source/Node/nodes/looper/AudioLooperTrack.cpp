@@ -1,4 +1,3 @@
-#include "AudioLooperTrack.h"
 /*
   ==============================================================================
 
@@ -38,10 +37,11 @@ void AudioLooperTrack::updateBufferSize(int newSize)
 	buffer.setSize(numChannels, newSize, true, true);
 }
 
-void AudioLooperTrack::updateStretch()
+void AudioLooperTrack::updateStretch(bool force)
 {
-	LooperTrack::updateStretch();
-	if (bpmAtRecord == 0 || !isPlaying(true) || stretch == 1)
+	LooperTrack::updateStretch(force);
+
+	if (bpmAtRecord == 0 || (!isPlaying(true) && !force) || stretch == 1)
 	{
 		stretchedBuffer.clear();
 		stretcher.reset();
@@ -311,7 +311,6 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		{
 			if (stretchSample == -2) //use stretchedBuffer instead of calculating
 			{
-				//DBG("playing from stretched sbuffer, cur Sample : " << targetSample << " / " << stretchedNumSamples << " : " << (targetSample * 1.0f / stretchedNumSamples));
 				targetBuffer = &stretchedBuffer;
 			}
 			else
@@ -327,7 +326,6 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 				AudioBuffer<float> tmpBuffer(buffer.getNumChannels(), blockSize);
 				auto readPointers = tmpBuffer.getArrayOfReadPointers();
 
-				//DBG("Start process at sample " << curSample << " / " << Transport::getInstance()->getRelativeBarSamples());
 				while (stretcher->available() < blockSize)
 				{
 					for (int i = 0; i < numChannels; i++) tmpBuffer.copyFrom(i, 0, buffer.getReadPointer(i, curSample), blockSize);
@@ -338,9 +336,6 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 					if (curSample >= buffer.getNumSamples()) curSample = 0;
 				}
 
-				//DBG("Finish process at sample " << curSample << " / " << Transport::getInstance()->getRelativeBarSamples()); // << ", " << curSample << " / " << (Transport::getInstance()->getRelativeBarSamples() * 1.0 / Transport::getInstance()->getBarNumSamples()) - (curSample * 1.0 / buffer.getNumSamples()));
-
-
 				stretcher->retrieve(rtStretchBuffer.getArrayOfWritePointers(), rtStretchBuffer.getNumSamples());
 
 				if (stretchSample >= 0)
@@ -348,16 +343,8 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 					for (int i = 0; i < numChannels; i++) stretchedBuffer.copyFrom(i, stretchSample, rtStretchBuffer, i, 0, rtStretchBuffer.getNumSamples());
 
 					stretchSample += rtStretchBuffer.getNumSamples();
-					//DBG("Write in stretched buffer up to " << stretchSample);
 
-					if (stretchSample >= stretchedNumSamples)
-					{
-						double sLength = (stretchedNumSamples * 1.0f / blockSize);
-						double cLength = (buffer.getNumSamples() * 1.0 / blockSize);
-						//DBG("Storing finished ! " << stretchSample << " / " << stretchedNumSamples << " : " << sLength << " <> " << cLength << " // " << stretch << "<>" << sLength / sLength);
-						stretchSample = -2;
-					}
-
+					if (stretchSample >= stretchedNumSamples) stretchSample = -2; //if a full loop is written, set -2 to start using the stored buffer
 				}
 
 				targetBuffer = &rtStretchBuffer;
@@ -422,24 +409,61 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 	}
 }
 
-void AudioLooperTrack::loadSampleFile(File f)
+void AudioLooperTrack::loadSampleFile(File dir)
 {
-	jassert(f.getFileExtension() == ".wav");
-	WavAudioFormat format;
+	File f = dir.getChildFile(String(index + 1) + ".wav");
+	if (!f.existsAsFile()) return;
+
+	AudioFormatManager format;
+	format.registerFormat(new WavAudioFormat(), true);
+
 	auto is = f.createInputStream();
-	auto reader = format.createReaderFor(is.get(), false);
+	auto reader = format.createReaderFor(f);
+	if (reader == nullptr) return;
 
-	AudioBuffer<float> fileBuffer(numChannels, reader->lengthInSamples);
-	reader->read(fileBuffer.getArrayOfWritePointers(), numChannels, 0, reader->lengthInSamples);
+	buffer.setSize(numChannels, reader->lengthInSamples);
+	reader->read(buffer.getArrayOfWritePointers(), numChannels, 0, reader->lengthInSamples);
 
-	//todo find closest numBeats for length and stretch the file. should we keep a buffer for it or just store it in buffer and keep info that it's loaded from file ?
+	String infos = reader->metadataValues[WavAudioFormat::riffInfoTitle];
+
+	StringArray infoSplit;
+	infoSplit.addTokens(infos, ";", "");
+
+	if (infoSplit.size() < 3)
+	{
+		LOGWARNING("This loop file has not been saved by the looper.");
+		return;
+	}
+
+	bpmAtRecord = infoSplit[0].getFloatValue();
+	numBeats = infoSplit[1].getIntValue();
+	playQuantization = (Transport::Quantization)infoSplit[2].getIntValue();
+	
+	curSample = 0;
+	bufferNumSamples = buffer.getNumSamples();
+
+	trackState->setValueWithData(TrackState::STOPPED);
+
+	updateStretch(true);
+
+	NLOG(niceName, "Loaded track, " << numBeats << " beats, bpm : " << bpmAtRecord << ", quantization : " << (int)playQuantization);
 }
 
-void AudioLooperTrack::saveSampleFile(File f)
+void AudioLooperTrack::saveSampleFile(File dir)
 {
-	jassert(f.getFileExtension() == ".wav");
+	File f = dir.getChildFile(String(index + 1) + ".wav");
+	if (f.existsAsFile()) f.deleteFile();
+	if (buffer.getNumSamples() == 0) return;
+
 	WavAudioFormat format;
 	auto os = f.createOutputStream();
-	auto writer = format.createWriterFor(os.get(), looper->processor->getSampleRate(), numChannels, 16, StringPairArray(), 0);
+	StringPairArray metaData;
+	metaData.set(WavAudioFormat::riffInfoTitle, String(bpmAtRecord) + ";" + String(numBeats) + ";" + String((int)playQuantization));
+
+	auto writer = format.createWriterFor(os.get(), looper->processor->getSampleRate(), numChannels, 16, metaData, 0);
 	writer->writeFromAudioSampleBuffer(buffer, 0, buffer.getNumSamples());
+	writer->flush();
+
+	os.release();
+	delete writer;
 }

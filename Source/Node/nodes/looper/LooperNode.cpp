@@ -90,11 +90,15 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 	Transport::getInstance()->addTransportListener(this);
 	viewUISize->setPoint(360, 290);
+
+	Engine::mainEngine->addEngineListener(this);
 }
 
 LooperNode::~LooperNode()
 {
 	Transport::getInstance()->removeTransportListener(this);
+
+	if (Engine* e = Engine::mainEngine) e->removeEngineListener(this);
 }
 
 void LooperNode::initInternal()
@@ -297,7 +301,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	{
 		if (c == t->trackState)
 		{
-			isNodePlaying->setValue(hasContent(false));
+			isNodePlaying->setValue(areAllTrackedStopped(false));
 
 			bool recordOrWillRecord = isOneTrackRecording(true);
 			bool isActuallyRecording = isOneTrackRecording(false);
@@ -366,13 +370,7 @@ void LooperNode::loadSamples()
 {
 	File dir = sampleDirectory->getFile();
 	if (!dir.exists()) return;
-
-	Array<File> files = dir.findChildFiles(File::findFiles, false, "*.wav", File::FollowSymlinks::no);
-	for (auto& f : files)
-	{
-		int id = f.getFileNameWithoutExtension().getIntValue();
-		if (id >= 1 && id <= numTracks->intValue()) getTrackForIndex(id)->loadSampleFile(f);
-	}
+	for (int i = 0; i < numTracks->intValue(); i++) if (LooperTrack* t = getTrackForIndex(i)) t->loadSampleFile(dir);
 }
 
 void LooperNode::saveSamples()
@@ -380,12 +378,8 @@ void LooperNode::saveSamples()
 	clearSamples();
 
 	File dir = sampleDirectory->getFile();
-	for (int i = 0; i < numTracks->intValue(); i++)
-	{
-		AudioLooperTrack* t = ((AudioLooperTrack*)getTrackForIndex(i));
-		File f = dir.getChildFile(String(i + 1) + ".wav");
-		t->saveSampleFile(f);
-	}
+	if (!dir.exists()) return;
+	for (int i = 0; i < numTracks->intValue(); i++) if (LooperTrack* t = getTrackForIndex(i)) t->saveSampleFile(dir);
 }
 
 void LooperNode::clearSamples()
@@ -406,6 +400,18 @@ bool LooperNode::hasContent(bool includeFreeTracks)
 	return false;
 }
 
+bool LooperNode::areAllTrackedStopped(bool includeFreeTracks)
+{
+	for (auto& cc : tracksCC.controllableContainers)
+	{
+		LooperTrack* tc = (LooperTrack*)cc.get();
+		if (!includeFreeTracks && tc->playQuantization == Transport::FREE) continue;
+		if (tc->isPlaying(true) || tc->isRecording(true)) return false;
+	}
+
+	return true;
+}
+
 bool LooperNode::isOneTrackRecording(bool includeWillRecord)
 {
 	for (auto& cc : tracksCC.controllableContainers)
@@ -414,6 +420,8 @@ bool LooperNode::isOneTrackRecording(bool includeWillRecord)
 	}
 	return false;
 }
+
+
 
 LooperTrack* LooperNode::getTrackForIndex(int index)
 {
@@ -481,6 +489,7 @@ var LooperNode::getJSONData()
 	var data = Node::getJSONData();
 	data.getDynamicObject()->setProperty(trackParamsCC.shortName, trackParamsCC.getJSONData());
 	data.getDynamicObject()->setProperty(recordCC.shortName, recordCC.getJSONData());
+	data.getDynamicObject()->setProperty(saveLoadCC.shortName, saveLoadCC.getJSONData());
 	var tracksData;
 	for (auto& t : tracksCC.controllableContainers) tracksData.append(t->getJSONData());
 	data.getDynamicObject()->setProperty("tracks", tracksData);
@@ -492,6 +501,7 @@ void LooperNode::loadJSONDataItemInternal(var data)
 	Node::loadJSONDataItemInternal(data);
 	trackParamsCC.loadJSONData(data.getProperty(trackParamsCC.shortName, var()));
 	recordCC.loadJSONData(data.getProperty(recordCC.shortName, var()));
+	saveLoadCC.loadJSONData(data.getProperty(saveLoadCC.shortName, var()));
 
 	updateLooperTracks();
 
@@ -500,6 +510,18 @@ void LooperNode::loadJSONDataItemInternal(var data)
 	{
 		if (LooperTrack* tc = getTrackForIndex(i)) tc->loadJSONData(tracksData[i]);
 	}
+}
+
+void LooperNode::fileSaved(bool)
+{
+	SaveLoadMode m = saveLoadMode->getValueDataAsEnum<SaveLoadMode>();
+	if (m == AUTO_SAVELOAD || m == AUTO_NO_OVERWRITE) saveSamples();
+}
+
+void LooperNode::endLoadFile()
+{
+	SaveLoadMode m = saveLoadMode->getValueDataAsEnum<SaveLoadMode>();
+	if (m == AUTO_SAVELOAD || m == AUTO_NO_OVERWRITE) loadSamples();
 }
 
 BaseNodeViewUI* LooperNode::createViewUI()

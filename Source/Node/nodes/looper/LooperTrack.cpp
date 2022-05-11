@@ -144,7 +144,8 @@ void LooperTrack::stateChanged()
 
 	case PLAYING:
 	{
-		freePlaySample = 0; //for freeplaybck
+		freePlaySample = 0; //for freeplayback
+		updateStretch();
 	}
 	break;
 
@@ -196,7 +197,7 @@ void LooperTrack::startRecording()
 		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue())
 		{
 			//If already has content, just play
-			bool doSetTempo = !RootNodeManager::getInstance()->hasPlayingNodes();
+			bool doSetTempo = !Transport::getInstance()->isCurrentlyPlaying->boolValue() && !RootNodeManager::getInstance()->hasPlayingNodes();
 			Transport::getInstance()->play(doSetTempo);
 		}
 	}
@@ -275,7 +276,8 @@ void LooperTrack::finishRecordingAndPlay()
 	firstPlayAfterRecord = true;
 	curSample = 0; //force here to avoid jumpGhost on rec
 	startPlaying();
-
+	
+	updateStretch(); //reevaluate stretch
 	finishRecordLock = false;
 }
 
@@ -439,16 +441,17 @@ void LooperTrack::handleBeatChanged(bool isNewBar, bool isFirstLoop)
 	}
 }
 
-void LooperTrack::updateStretch()
+void LooperTrack::updateStretch(bool force)
 {
-	if (!isPlaying(true) || playQuantization == Transport::FREE)
+	if (playQuantization == Transport::FREE)
 	{
 		stretch = 1;
 		return;
 	}
+	if (!isPlaying(true) && !force) return;
 
 	double bpm = Transport::getInstance()->bpm->floatValue();
-	stretch = bpm / bpmAtRecord;
+	stretch = bpmAtRecord / bpm;
 
 	if (numStretchedBeats->intValue() > 0)
 	{
@@ -463,7 +466,7 @@ void LooperTrack::updateStretch()
 	//reset curSample to expected place in non-stretched loop
 	double sampleRel = Transport::getInstance()->getRelativeBarSamples() + loopBar->intValue() * Transport::getInstance()->getBarNumSamples();
 	curSample = Transport::getInstance()->getBlockPerfectNumSamples(sampleRel * bufferNumSamples / stretchedNumSamples);
-	DBG("Cur sample : " + curSample);
+	LOG("Update stretch , stretch = " << stretch << ", cur sample : " << curSample);
 }
 
 void LooperTrack::processTrack(int blockSize, bool forcePlaying)

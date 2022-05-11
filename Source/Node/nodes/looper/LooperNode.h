@@ -14,7 +14,8 @@ class LooperTrack;
 
 class LooperNode :
     public Node,
-    public Transport::TransportListener
+    public Transport::TransportListener,
+    public EngineListener
 {
 public:
     enum LooperType { AUDIO, MIDI };
@@ -101,6 +102,7 @@ public:
 
     //helpers
     virtual bool hasContent(bool includeFreeTracks = true);
+    virtual bool areAllTrackedStopped(bool includeFreeTracks = true);
     virtual bool isOneTrackRecording(bool includeWillRecord = false);
     LooperTrack* getTrackForIndex(int index);
     LooperTrack* getFirstEmptyTrack();
@@ -115,6 +117,9 @@ public:
 
     var getJSONData() override;
     void loadJSONDataItemInternal(var data) override;
+
+    void fileSaved(bool) override;
+    void endLoadFile() override;
 
     BaseNodeViewUI* createViewUI() override;
 };

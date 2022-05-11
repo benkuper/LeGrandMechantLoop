@@ -44,6 +44,8 @@ public:
 	FloatParameter* beatProgression;
 	IntParameter* firstLoopBeats;
 
+	BoolParameter* updateTempoOnRecordIfAllStopped;
+
 	Trigger* playTrigger;
 	Trigger* togglePlayTrigger;
 	Trigger* pauseTrigger;

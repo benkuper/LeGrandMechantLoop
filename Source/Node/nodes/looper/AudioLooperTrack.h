@@ -37,7 +37,7 @@ public:
     void setNumChannels(int num);
     void updateBufferSize(int newSize);
 
-    void updateStretch() override;
+    void updateStretch(bool force = false) override;
 
     void stopPlaying() override;
     void clearTrack() override;
