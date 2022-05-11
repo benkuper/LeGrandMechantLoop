@@ -53,8 +53,6 @@ Transport::Transport() :
 	firstLoopBeats = addIntParameter("First Loop Beat", "Number of beats that the loop that set the tempo is taking", 1, 1);
 	firstLoopBeats->setControllableFeedbackOnly(true);
 
-	updateTempoOnRecordIfAllStopped = addBoolParameter("Solo Record Update Tempo", "If the last recorded loop is the only one playing, update tempo", true);
-
 	playTrigger = addTrigger("Play", "Start playing");
 	togglePlayTrigger = addTrigger("Toggle Play", "Toggle between play / stop");
 	pauseTrigger = addTrigger("Pause", "Stops playing but keeps the current time");
