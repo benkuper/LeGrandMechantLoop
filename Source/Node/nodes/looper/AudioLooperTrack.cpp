@@ -443,10 +443,11 @@ void AudioLooperTrack::loadSampleFile(File dir)
 	bufferNumSamples = buffer.getNumSamples();
 
 	trackState->setValueWithData(TrackState::STOPPED);
-
 	updateStretch(true);
 
 	NLOG(niceName, "Loaded track, " << numBeats << " beats, bpm : " << bpmAtRecord << ", quantization : " << (int)playQuantization);
+
+	delete reader;
 }
 
 void AudioLooperTrack::saveSampleFile(File dir)
