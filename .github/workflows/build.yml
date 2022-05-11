@@ -125,10 +125,12 @@ jobs:
           buildConfig: "Release"
 
         - arch: armhf
+          if: false
           buildFolder: "Raspberry"
           buildConfig: "Release"
 
         - arch: aarch64
+          if: false
           buildFolder: "Raspberry"
           buildConfig: "Release64"
 
@@ -184,7 +186,7 @@ jobs:
             
             sudo apt-get update
             echo "Installing ${{ matrix.arch }} cross compilation tools"
-            
+
             if [ "${{ matrix.arch }}" == "armhf" ]; 
             then
               sudo apt-get install -qy g++-arm-linux-gnueabihf
