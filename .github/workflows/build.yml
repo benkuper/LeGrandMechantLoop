@@ -179,20 +179,23 @@ jobs:
             if [ "${{ matrix.arch }}" == "armhf" ]; 
             then
               sudo apt-get install -qy g++-arm-linux-gnueabihf
-              echo "Installing extra lib dependencies"
-              sudo apt-get install -qyf libgdk-pixbuf2.0-dev:${{ matrix.arch }} libpango1.0-dev:${{ matrix.arch }} libsoup2.4-dev:${{ matrix.arch }} libharfbuzz-dev:${{ matrix.arch }} libicu-dev:${{ matrix.arch }} libc6-dev:${{ matrix.arch }} libxft-dev:${{ matrix.arch }}
+              DEP_ARCH="armhf"
             else
               sudo apt-get install -qy g++-aarch64-linux-gnu
+               DEP_ARCH="arm64"
             fi
 
-            
+
+
+            echo "Installing extra lib dependencies"
+            sudo apt-get install -qyf libgdk-pixbuf2.0-dev:$DEP_ARCH libpango1.0-dev:$DEP_ARCH libsoup2.4-dev:$DEP_ARCH libharfbuzz-dev:$DEP_ARCH libicu-dev:$DEP_ARCH libc6-dev:$DEP_ARCH libxft-dev:$DEP_ARCH
+
             echo "Downloading AppImage runtime for ${{ matrix.arch }}"
             cd ${{ github.workspace }}
             wget "https://github.com/AppImage/AppImageKit/releases/download/12/runtime-${{ matrix.arch }}"
             echo "::set-output name=appImageRuntime::--runtime-file ${{ github.workspace }}/runtime-${{ matrix.arch }}"
 
-            # DEP_ARCH is used later when downloading the dependencies
-            DEP_ARCH="${{ matrix.arch }}"
+           
           fi
 
           sudo apt-get update
