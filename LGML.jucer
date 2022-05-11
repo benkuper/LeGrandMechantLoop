@@ -455,7 +455,7 @@
                JUCE_ALSA="1" JUCE_JACK="1" JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1"
                ORGANICUI_USE_SERVUS="1" JUCE_PLUGINHOST_VST="1" JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS="1"
                JUCE_ENABLE_BROADCAST_BY_DEFAULT="1" JUCE_EXCLUSIVE_BINDING_BY_DEFAULT="1"
-               JUCE_IP_AND_PORT_DETECTION="1"/>
+               JUCE_IP_AND_PORT_DETECTION="1" JUCE_PLUGINHOST_LADSPA="1"/>
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
             smallIcon="k24oFh" bigIcon="k24oFh">
