@@ -5,8 +5,8 @@ env:
   PackagesVersion: 1.2.10
 
 jobs:
-  if: false
   windows:
+    # if: false
     name: Windows
     runs-on: windows-2019
 
@@ -60,7 +60,7 @@ jobs:
           pass: ${{ secrets.UPLOADPASS }}
 
   osx:
-    if: false
+    # if: false
     name: OSX
     runs-on: macos-latest
 
@@ -119,7 +119,7 @@ jobs:
 
  
   linux:
-    if: false
+    # if: false
     name: Linux
     runs-on: ubuntu-latest
     strategy:
@@ -255,11 +255,3 @@ jobs:
           pkg-name: ./Builds/${{ matrix.buildFolder }}/${{ steps.create_package.outputs.pkg-name }}
           url: ${{ secrets.UPLOADURL }}
           pass: ${{ secrets.UPLOADPASS }}
-
-  rpiDebug:
-    name: Linux
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup upterm session
-      uses: lhotari/action-upterm@v1
