@@ -35,7 +35,7 @@ Transport::Transport() :
 
 	isCurrentlyPlaying = addBoolParameter("Is Playing", "Is it currently playing ?", false);
 	isCurrentlyPlaying->setControllableFeedbackOnly(true);
-	
+
 	currentTime = addFloatParameter("Current Time", "Current time", 0, 0);
 	currentTime->setControllableFeedbackOnly(true);
 
@@ -64,7 +64,7 @@ Transport::Transport() :
 	recQuantization = addEnumParameter("Rec Quantization Mode", "Quantization mode when setting tempo on rec");
 	recQuantization->addOption("Auto", REC_AUTO)->addOption("Bar", REC_BAR)->addOption("Beat", REC_BEAT);
 
-	recQuantizBPMRange = addPoint2DParameter("Auto Quantiz BPM Range","Range to auto setting tempo on rec");
+	recQuantizBPMRange = addPoint2DParameter("Auto Quantiz BPM Range", "Range to auto setting tempo on rec");
 	recQuantizBPMRange->setBounds(20, 20, 500, 500);
 	recQuantizBPMRange->setPoint(50, 190);
 	recQuantizCount = addIntParameter("Manual Quantiz Count", "", 1, 1, 100, false);
@@ -87,9 +87,9 @@ void Transport::clear()
 void Transport::play(bool startTempoSet, bool playFromStart)
 {
 	isSettingTempo = startTempoSet;
-	
+
 	if (isCurrentlyPlaying->boolValue() && !playFromStart) return;
-	
+
 	if (playFromStart)
 	{
 		setCurrentTime(0);
@@ -124,9 +124,9 @@ void Transport::stop()
 void Transport::finishSetTempo(bool startPlaying)
 {
 	if (blockSize == 0) return;
-	
+
 	isSettingTempo = false;
-	
+
 	RecQuantization rq = recQuantization->getValueDataAsEnum<RecQuantization>();
 	int targetNumBeats = 0;
 	if (rq == REC_AUTO)
@@ -160,7 +160,7 @@ void Transport::finishSetTempo(bool startPlaying)
 	{
 		targetNumBeats = recQuantizCount->intValue() * (rq == REC_BAR ? beatsPerBar->intValue() : 1);
 	}
-	
+
 	int rawSamplesPerBeat = floor(setTempoSampleCount / targetNumBeats);
 	numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
 	float targetBPM = 60.0 / getTimeForSamples(numSamplesPerBeat);
@@ -168,7 +168,7 @@ void Transport::finishSetTempo(bool startPlaying)
 	bpm->setValue(targetBPM);
 	settingBPMFromTransport = false;
 	timeInSamples = 0;
-	
+
 	jassert(numSamplesPerBeat % blockSize == 0);
 
 	firstLoopBeats->setValue(targetNumBeats);
@@ -177,7 +177,7 @@ void Transport::finishSetTempo(bool startPlaying)
 
 
 	transportListeners.call(&TransportListener::beatNumSamplesChanged);
-	
+
 	if (startPlaying) playTrigger->trigger();
 }
 
@@ -187,7 +187,7 @@ void Transport::setCurrentTime(int samples)
 	timeInSamples = samples;
 	barProgression->setValue(getRelativeBarSamples() * 1.0 / getBarNumSamples());
 	beatProgression->setValue(getRelativeBeatSamples() * 1.0 / getBeatNumSamples());
-	
+
 	int prevBar = curBar->intValue();
 	int prevBeat = curBeat->intValue();
 
@@ -245,7 +245,7 @@ void Transport::onContainerParameterChanged(Parameter* p)
 
 			int rawSamplesPerBeat = round(sampleRate * 60.0 / bpm->floatValue());
 			numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
-			
+
 			timeInSamples = getBlockPerfectNumSamples(getBarNumSamples() * barRel); //after set new samplesPerBeat
 		}
 
@@ -275,7 +275,7 @@ int Transport::getSamplesToNextBeat() const
 
 int Transport::getRelativeBarSamples() const
 {
-	return timeInSamples% getBarNumSamples();
+	return timeInSamples % getBarNumSamples();
 }
 
 int Transport::getRelativeBeatSamples() const
@@ -286,7 +286,7 @@ int Transport::getRelativeBeatSamples() const
 int Transport::getBlockPerfectNumSamples(int samples, bool floorResult) const
 {
 	double numBlocksD = samples * 1.0 / blockSize;
-	int numBlocks = floorResult?floor(numBlocksD):round(numBlocksD);
+	int numBlocks = floorResult ? floor(numBlocksD) : round(numBlocksD);
 	return numBlocks * blockSize;
 }
 
@@ -368,7 +368,7 @@ double Transport::getTimeForBeat(int beat, int bar, bool relative) const
 int Transport::getBarForTime(double time, bool floorResult) const
 {
 	int sampleTime = getSamplesForTime(time);
-	double numBarsD = floor(sampleTime *1.0 / getBarNumSamples());
+	double numBarsD = floor(sampleTime * 1.0 / getBarNumSamples());
 	return floorResult ? floor(numBarsD) : round(numBarsD);
 
 }
@@ -384,7 +384,7 @@ int Transport::getBeatForTime(double time, bool relative, bool floorResult) cons
 
 int Transport::getSamplesForTime(double time, bool blockPerfect) const
 {
-	int numSamples =  time * sampleRate;
+	int numSamples = time * sampleRate;
 	if (blockPerfect) numSamples = (numSamples / getBarNumSamples()) * getBarNumSamples();
 	return numSamples;
 }
@@ -428,12 +428,14 @@ bool Transport::getCurrentPosition(CurrentPositionInfo& result)
 	result.isPlaying = isCurrentlyPlaying->boolValue();
 	result.isRecording = isSettingTempo;
 
-	result.ppqPosition = (double)(curBeat->intValue()); //??
+
+	result.ppqPosition = floor(barProgression->floatValue() * beatsPerBar->intValue() * beatUnit->intValue()) / beatUnit->intValue();
 	result.ppqPositionOfLastBarStart = (double)(curBar->intValue() * beatsPerBar->intValue()); // ?? 
+
 	result.ppqLoopStart = 0;
 	result.ppqLoopEnd = 0;
 	result.timeSigNumerator = beatsPerBar->intValue();
-	result.timeSigDenominator = 4;
+	result.timeSigDenominator = beatUnit->intValue();
 	result.timeInSamples = timeInSamples;
 	result.timeInSeconds = getCurrentTime();
 	result.editOriginTime = 0;

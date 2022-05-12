@@ -59,7 +59,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 
 		showOutControl = viewCC.addBoolParameter("Show Out Control", "Shows the Gain, RMS and Active on the right side in the view", true);
 	}
-
+	
 	viewCC.hideInRemoteControl = true;
 	viewCC.defaultHideInRemoteControl = true;
 	addChildControllableContainer(&viewCC);
@@ -391,7 +391,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	ScopedLock sl(processor->getCallbackLock());
 
 	//MIDI
-	if (currentInDevice != nullptr) midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
+	if (currentInDevice != nullptr || hasMIDIInput) midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
 
 	int numInputs = getNumAudioInputs();
 	int numOutputs = getNumAudioOutputs();

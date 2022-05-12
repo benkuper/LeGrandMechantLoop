@@ -25,6 +25,11 @@ public:
 	void setMIDIInDevice(MIDIInputDevice* d) override;
 	void setMIDIOutDevice(MIDIOutputDevice* d) override;
 
+	void addInConnection(NodeConnection* c) override;
+	void removeInConnection(NodeConnection* c) override;
+
+	void midiMessageReceived(const MidiMessage& m) override;
+
 	void onContainerParameterChangedInternal(Parameter* p) override;
 	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 

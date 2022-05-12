@@ -1,3 +1,4 @@
+#include "MIDIIONode.h"
 /*
   ==============================================================================
 
@@ -40,6 +41,32 @@ void MIDIIONode::setMIDIOutDevice(MIDIOutputDevice* d)
 	{
 		if(enabled->boolValue() && enableClock->boolValue()) clock.setOutput(currentOutDevice);
 	}
+}
+
+void MIDIIONode::addInConnection(NodeConnection* c)
+{
+	Node::addInConnection(c);
+
+}
+
+void MIDIIONode::removeInConnection(NodeConnection* c)
+{
+	Node::removeInConnection(c);
+}
+
+void MIDIIONode::midiMessageReceived(const MidiMessage& m)
+{
+	//Node::midiMessageReceived(m);
+
+	if (!enabled->boolValue()) return;
+	if (m.getChannel() > 0 && !midiChannels[m.getChannel() - 1]->boolValue()) return;
+
+	if (logIncomingMidi->boolValue())
+	{
+		NLOG(niceName, "Received MIDI : " << m.getDescription());
+	}
+
+	for (auto& c : outMidiConnections) c->destNode->midiMessageReceived(m);
 }
 
 void MIDIIONode::onContainerParameterChangedInternal(Parameter* p)

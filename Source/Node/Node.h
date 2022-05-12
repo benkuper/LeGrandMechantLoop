@@ -103,10 +103,10 @@ public:
     virtual void updateAudioOutputs(bool updateConfig = true);
     virtual void updateAudioOutputsInternal() {}
 
-    void addInConnection(NodeConnection* c);
-    void removeInConnection(NodeConnection* c);
-    void addOutConnection(NodeConnection* c);
-    void removeOutConnection(NodeConnection* c);
+    virtual void addInConnection(NodeConnection* c);
+    virtual void removeInConnection(NodeConnection* c);
+    virtual void addOutConnection(NodeConnection* c);
+    virtual void removeOutConnection(NodeConnection* c);
 
     void setMIDIIO(bool hasInput, bool hasOutput);
     virtual void setMIDIInDevice(MIDIInputDevice* d);

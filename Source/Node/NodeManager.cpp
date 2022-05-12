@@ -17,7 +17,7 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 	outputNodeID(outputNodeID)
 {
 	managerFactory = NodeFactory::getInstance();
-	
+
 	isPlaying = addBoolParameter("Is Node Playing", "This is a feedback to know if a node has playing content. Used by the global time to automatically stop if no content is playing", false);
 	isPlaying->setControllableFeedbackOnly(true);
 	isPlaying->hideInEditor = true;
@@ -79,7 +79,7 @@ void NodeManager::updateAudioInputNode(AudioInputNode* n)
 	{
 		graph->removeConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight channel 
 	}
-	
+
 	n->setAudioOutputs(audioInputNames); //inverse to get good connector names
 
 	for (int i = 0; i < audioInputNames.size(); i++)
@@ -96,11 +96,16 @@ void NodeManager::updateAudioOutputNode(AudioOutputNode* n)
 	}
 
 	n->setAudioInputs(audioOutputNames); //inverse to get good connector names
-	
-	for (int i = 0; i < audioOutputNames.size(); i++) 
+
+	for (int i = 0; i < audioOutputNames.size(); i++)
 	{
 		graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight 
 	}
+}
+
+void NodeManager::updateMIDIIONode(MIDIIONode* n)
+{
+	graph->addConnection(AudioProcessorGraph::Connection({ inputNodeID, 0 }, { n->nodeGraphID, 0 })); //straight 
 }
 
 void NodeManager::addItemInternal(Node* n, var data)
@@ -109,7 +114,7 @@ void NodeManager::addItemInternal(Node* n, var data)
 
 	bool isRoot = this == RootNodeManager::getInstance();
 
-	if (AudioInputNode* in = dynamic_cast<AudioInputNode *>(n))
+	if (AudioInputNode* in = dynamic_cast<AudioInputNode*>(n))
 	{
 		in->setIsRoot(isRoot);
 		audioInputNodes.add(in);
@@ -121,12 +126,18 @@ void NodeManager::addItemInternal(Node* n, var data)
 		audioOutputNodes.add(on);
 		updateAudioOutputNode(on);
 	}
+	else if (MIDIIONode* mio = dynamic_cast<MIDIIONode*>(n))
+	{
+		midiIONodes.add(mio);
+		updateMIDIIONode(mio);
+	}
 }
 
 void NodeManager::removeItemInternal(Node* n)
 {
 	if (AudioInputNode* in = dynamic_cast<AudioInputNode*>(n))  audioInputNodes.removeAllInstancesOf(in);
 	else if (AudioOutputNode* on = dynamic_cast<AudioOutputNode*>(n)) audioOutputNodes.removeAllInstancesOf(on);
+	else if (MIDIIONode* mio = dynamic_cast<MIDIIONode*>(n)) midiIONodes.removeAllInstancesOf(mio);
 }
 
 Array<UndoableAction*> NodeManager::getRemoveItemUndoableAction(Node* item)
@@ -272,7 +283,7 @@ void RootNodeManager::removeItemInternal(Node* n)
 
 void RootNodeManager::nodePlayConfigUpdated(Node* n)
 {
-	if(!isCurrentlyLoadingData) AudioManager::getInstance()->updateGraph();
+	if (!isCurrentlyLoadingData) AudioManager::getInstance()->updateGraph();
 }
 
 void RootNodeManager::endLoadFile()

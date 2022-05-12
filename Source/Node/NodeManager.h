@@ -15,6 +15,7 @@ class NodeManagerAudioProcessor;
 
 class AudioInputNode;
 class AudioOutputNode;
+class MIDIIONode;
 
 class NodeManager :
     public BaseManager<Node>
@@ -40,6 +41,7 @@ public:
 
     Array<AudioInputNode*> audioInputNodes;
     Array<AudioOutputNode*> audioOutputNodes;
+    Array<MIDIIONode*> midiIONodes;
 
     std::unique_ptr<NodeConnectionManager> connectionManager;
 
@@ -51,7 +53,8 @@ public:
     void setAudioOutputs(const StringArray& outputNames);
 
     void updateAudioInputNode(AudioInputNode * n);
-    void updateAudioOutputNode(AudioOutputNode *n);
+    void updateAudioOutputNode(AudioOutputNode* n);
+    void updateMIDIIONode(MIDIIONode *n);
 
     virtual void addItemInternal(Node* n, var data) override;
     virtual void removeItemInternal(Node* n) override;

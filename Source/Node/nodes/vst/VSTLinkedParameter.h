@@ -90,8 +90,7 @@ public:
     ~VSTLinkedFloatParameter();
 
     void setValueInternal(var &value) override;
-    InspectableEditor* getEditor(bool isRoot) { return VSTParameterLink::getEditor(isRoot); }
-
+    InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> = {}) override { return VSTParameterLink::getEditor(isRoot); }
 };
 
 class VSTLinkedIntParameter :
@@ -103,7 +102,7 @@ public:
     ~VSTLinkedIntParameter() {}
 
     void setValueInternal(var& value) override;
-    InspectableEditor* getEditor(bool isRoot) { return VSTParameterLink::getEditor(isRoot); }
+    InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> = {}) override { return VSTParameterLink::getEditor(isRoot); }
 
 };
 
@@ -116,6 +115,5 @@ public:
     ~VSTLinkedBoolParameter() {}
     
     void setValueInternal(var& value) override;
-    InspectableEditor* getEditor(bool isRoot) { return VSTParameterLink::getEditor(isRoot); }
-
+    InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> = {}) override { return VSTParameterLink::getEditor(isRoot); }
 };
