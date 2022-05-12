@@ -301,7 +301,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	{
 		if (c == t->trackState)
 		{
-			isNodePlaying->setValue(areAllTrackedStopped(false));
+			isNodePlaying->setValue(hasContent(false));
 
 			bool recordOrWillRecord = isOneTrackRecording(true);
 			bool isActuallyRecording = isOneTrackRecording(false);

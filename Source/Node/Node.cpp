@@ -35,7 +35,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 
 	isNodePlaying = addBoolParameter("Is Node Playing", "This is a feedback to know if a node has playing content. Used by the global time to automatically stop if no content is playing", false);
 	isNodePlaying->setControllableFeedbackOnly(true);
-	isNodePlaying->hideInEditor = true;
+	//isNodePlaying->hideInEditor = true;
 	isNodePlaying->hideInRemoteControl = true;
 	isNodePlaying->defaultHideInRemoteControl = true;
 

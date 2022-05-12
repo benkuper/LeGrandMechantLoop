@@ -207,6 +207,8 @@ void LooperTrack::finishRecordingAndPlay()
 {
 	autoStopRecAfterBeats = -1;
 
+	int numRecordedSamples = curSample;
+
 	Transport::Quantization q = looper->getQuantization();
 	Transport::Quantization fillMode = looper->getFreeFillMode();
 
@@ -221,11 +223,11 @@ void LooperTrack::finishRecordingAndPlay()
 
 	if (q == Transport::FREE)
 	{
-		if (fillMode == Transport::BAR) numBeats = jmax(Transport::getInstance()->getBarForSamples(curSample, false), 1) * beatsPerBar;
-		else if (fillMode == Transport::BEAT) numBeats = jmax(Transport::getInstance()->getBeatForSamples(curSample, false, false), 1);
+		if (fillMode == Transport::BAR) numBeats = jmax(Transport::getInstance()->getBarForSamples(numRecordedSamples, false), 1) * beatsPerBar;
+		else if (fillMode == Transport::BEAT) numBeats = jmax(Transport::getInstance()->getBeatForSamples(numRecordedSamples, false, false), 1);
 		else if (fillMode == Transport::FIRSTLOOP)
 		{
-			int b = jmax(Transport::getInstance()->getBeatForSamples(curSample, false, false), 1);
+			int b = jmax(Transport::getInstance()->getBeatForSamples(numRecordedSamples, false, false), 1);
 			int fb = Transport::getInstance()->firstLoopBeats->intValue();
 			int nextFirstLoopCount = ceilf(b / fb) * fb;
 			numBeats = nextFirstLoopCount;
@@ -237,7 +239,7 @@ void LooperTrack::finishRecordingAndPlay()
 	}
 	else
 	{
-		numBeats = Transport::getInstance()->getBeatForSamples(curSample, false, false);
+		numBeats = Transport::getInstance()->getBeatForSamples(numRecordedSamples, false, false);
 	}
 
 	if (numBeats == 0)
@@ -252,12 +254,12 @@ void LooperTrack::finishRecordingAndPlay()
 		loopBeat->setRange(0, numBeats - 1);
 		loopBar->setRange(0, jmax<int>(floor(numBeats * 1.0f / beatsPerBar) - 1, 0));
 
-		int curSamplePerfect = numBeats * Transport::getInstance()->getBeatNumSamples();
-		curSample = curSamplePerfect;
+		int numRecordedSamplesPerfect = numBeats * Transport::getInstance()->getBeatNumSamples();
+		numRecordedSamples = numRecordedSamplesPerfect;
 	}
 	else
 	{
-		curSample = Transport::getInstance()->getBlockPerfectNumSamples(curSample, false); //make it blockPerfect
+		numRecordedSamples = Transport::getInstance()->getBlockPerfectNumSamples(numRecordedSamples, false); //make it blockPerfect
 	}
 
 	// if curSample > perfect, use end of curSample to fade with start ?
@@ -265,7 +267,7 @@ void LooperTrack::finishRecordingAndPlay()
 
 
 	finishRecordLock = true;
-	bufferNumSamples = curSample;
+	bufferNumSamples = numRecordedSamples;
 	bpmAtRecord = Transport::getInstance()->bpm->floatValue();
 	numStretchedBeats->setValue(0);
 
