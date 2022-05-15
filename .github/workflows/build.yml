@@ -131,13 +131,11 @@ jobs:
 
         - arch: armhf
           packageArch: armhf
-          compilerPackage: "g++-arm-linux-gnueabihf"
           buildFolder: "Raspberry"
           buildConfig: "Release"
 
         - arch: aarch64
           packageArch: arm64
-          compilerPackage: "g++-arm-linux-gnueabihf"
           buildFolder: "Raspberry"
           buildConfig: "Release64"
 
@@ -192,11 +190,8 @@ jobs:
             END
 
             sudo dpkg --add-architecture $DEP_ARCH
-            
             sudo apt-get update
-            echo "Installing ${{ matrix.arch }} / ${{ matrix.packageArch }}cross compilation tools"
 
-            echo "Installing cross compiler lib ${{ matrix.compilerPackage }}"
             if [ "${{ matrix.arch }}" == "armhf" ]; 
             then
               sudo apt-get install -qy g++-arm-linux-gnueabihf
