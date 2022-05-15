@@ -183,10 +183,10 @@ jobs:
           deb [arch=amd64] http://us.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
           deb [arch=amd64] http://security.ubuntu.com/ubuntu bionic-security main restricted universe multiverse
 
-          deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic main restricted universe multiverse
-          deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main restricted universe multiverse
-          deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-backports main restricted universe multiverse
-          deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main restricted universe multiverse
+          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic main restricted universe multiverse
+          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main restricted universe multiverse
+          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic-backports main restricted universe multiverse
+          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main restricted universe multiverse
           END
 
             sudo dpkg --add-architecture $DEP_ARCH
@@ -200,7 +200,7 @@ jobs:
             fi
 
             echo "Installing extra lib dependencies"
-            sudo apt-get install -qyf linux-libc-dev:$DEP_ARCH libgdk-pixbuf2.0-dev:$DEP_ARCH libpango1.0-dev:$DEP_ARCH libsoup2.4-dev:$DEP_ARCH libharfbuzz-dev:$DEP_ARCH libicu-dev:$DEP_ARCH libc6-dev:$DEP_ARCH libxft-dev:$DEP_ARCH
+            sudo apt-get install -qyf linux-libc-dev:$DEP_ARCH libgdk-pixbuf2.0-dev:$DEP_ARCH libpango1.0-dev:$DEP_ARCH libsoup2.4-dev:$DEP_ARCH libharfbuzz-dev:$DEP_ARCH libicu-dev:$DEP_ARCH libc6-dev:$DEP_ARCH libxft-dev:$DEP_ARCH libatomic1:$DEP_ARCH libatomic1-$DEP_ARCH-cross
 
             echo "Downloading AppImage runtime for ${{ matrix.arch }}"
             cd ${{ github.workspace }}
