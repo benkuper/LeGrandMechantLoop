@@ -224,7 +224,6 @@ jobs:
             export CXX=arm-linux-gnueabihf-g++
             export CC=arm-linux-gnueabihf-gcc
             export PKG_CONFIG_PATH=/usr/lib/arm-linux-gnueabihf/pkgconfig
-            export TARGET_ARCH="-march=armv8-a" # TARGET_ARCH is used in the Makefile
           fi
 
           if [ "${{ matrix.arch }}" == "aarch64" ]; 
@@ -232,7 +231,6 @@ jobs:
             export CXX=aarch64-linux-gnu-gcc
             export CC=aarch64-linux-gnu-g++
             export PKG_CONFIG_PATH=/usr/lib/aarch64-linux-gnu/pkgconfig
-            export TARGET_ARCH="-march=aarch64" # TARGET_ARCH is used in the Makefile
           fi
 
           cd ${{ github.workspace }}/Builds/${{ matrix.buildFolder }}
