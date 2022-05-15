@@ -125,17 +125,21 @@ jobs:
     strategy:
       matrix:
         include:
-        # - arch: x64
-        #   buildFolder: "LinuxMakefile"
-        #   buildConfig: "Release"
+        - arch: x64
+          buildFolder: LinuxMakefile
+          buildConfig: Release
 
         - arch: armhf
-          buildFolder: "Raspberry"
-          buildConfig: "Release"
+          packageArch: armhf
+          compilerPackage: g++-arm-linux-gnueabihf
+          buildFolder: Raspberry
+          buildConfig: Release
 
-        # - arch: aarch64
-        #   buildFolder: "Raspberry"
-        #   buildConfig: "Release64"
+        - arch: aarch64
+          packageArch: arm64
+          compilerPackage: g++-arm-linux-gnueabihf
+          buildFolder: Raspberry
+          buildConfig: Release64
 
       fail-fast: false
 
@@ -159,13 +163,13 @@ jobs:
           os: ${{ matrix.arch }}
 
       - name: Start SSH session
+        if: false # for debugging
         uses: luchihoratiu/debug-via-ssh@main
         with:
           NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
           SSH_PASS: ${{ secrets.SSH_PASS }}
 
       - name: Installing dependencies
-        if: false
         id: install_deps
         #shell: bash {0} # Opt out of fail-fast behavior (necessary to ignore fetch errors)
         run: |
@@ -173,45 +177,30 @@ jobs:
           if [ "${{ matrix.arch }}" != "x64" ]; 
           then
 
-            if [ "${{ matrix.arch }}" == "armhf" ]; 
-            then
-              DEP_ARCH="armhf"
-            else
-              DEP_ARCH="arm64"
-            fi
+            DEP_ARCH="${{ matrix.packageArch }}"
 
             sudo tee /etc/apt/sources.list << END
-          deb [arch=amd64] http://us.archive.ubuntu.com/ubuntu/ bionic main restricted universe multiverse
-          deb [arch=amd64] http://us.archive.ubuntu.com/ubuntu/ bionic-updates main restricted universe multiverse
-          deb [arch=amd64] http://us.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
-          deb [arch=amd64] http://security.ubuntu.com/ubuntu bionic-security main restricted universe multiverse
+            deb [arch=amd64] http://us.archive.ubuntu.com/ubuntu/ bionic main restricted universe multiverse
+            deb [arch=amd64] http://us.archive.ubuntu.com/ubuntu/ bionic-updates main restricted universe multiverse
+            deb [arch=amd64] http://us.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
+            deb [arch=amd64] http://security.ubuntu.com/ubuntu bionic-security main restricted universe multiverse
 
-          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ focal main restricted universe multiverse
-          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main restricted universe multiverse
-          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ focal-backports main restricted universe multiverse
-          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ focal-security main restricted universe multiverse
-          END
+            deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic main restricted universe multiverse
+            deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main restricted universe multiverse
+            deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic-backports main restricted universe multiverse
+            deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main restricted universe multiverse
+            END
 
-            sudo dpkg --add-architecture ${{ matrix.arch }}
+            sudo dpkg --add-architecture $DEP_ARCH
             
             sudo apt-get update
-            echo "Installing ${{ matrix.arch }} cross compilation tools"
+            echo "Installing ${{ matrix.arch }} / ${{ matrix.packageArch }}cross compilation tools"
 
-            if [ "${{ matrix.arch }}" == "armhf" ]; 
-            then
-              sudo apt-get install -qy g++-arm-linux-gnueabihf
-            else
-              sudo apt-get install -qy g++-aarch64-linux-gnu
-            fi
-
-
+            echo "Installing cross compiler lib ${{ matrix.compilerPackage }}"
+            sudo apt-get install -qy ${{ matrix.compilerPackage }} 
 
             echo "Installing extra lib dependencies"
-
-            sudo apt-get purge -qyf libgdk-pixbuf2.0-dev libpango1.0-dev libsoup2.4-dev libharfbuzz-dev libicu-dev libc6-dev libxft-dev
-            sudo apt-get remove -qyf libgdk-pixbuf2.0-dev libpango1.0-dev libsoup2.4-dev libharfbuzz-dev libicu-dev libc6-dev libxft-dev
-            sudo dpkg --remove libgdk-pixbuf2.0-dev libpango1.0-dev libsoup2.4-dev libharfbuzz-dev libicu-dev libc6-dev libxft-dev
-            sudo apt-get install -qyf libgdk-pixbuf2.0-dev:$DEP_ARCH libpango1.0-dev:$DEP_ARCH libsoup2.4-dev:$DEP_ARCH libharfbuzz-dev:$DEP_ARCH libicu-dev:$DEP_ARCH libc6-dev:$DEP_ARCH libxft-dev:$DEP_ARCH
+            sudo apt-get install -qyf linux-libc-dev:$DEP_ARCH libgdk-pixbuf2.0-dev:$DEP_ARCH libpango1.0-dev:$DEP_ARCH libsoup2.4-dev:$DEP_ARCH libharfbuzz-dev:$DEP_ARCH libicu-dev:$DEP_ARCH libc6-dev:$DEP_ARCH libxft-dev:$DEP_ARCH
 
             echo "Downloading AppImage runtime for ${{ matrix.arch }}"
             cd ${{ github.workspace }}
@@ -221,7 +210,7 @@ jobs:
 
           sudo apt-get update
           echo "Installing JUCE lib dependencies and extra tools"
-          sudo apt-get install -qyf libfreetype6-dev:$DEP_ARCH libx11-dev:$DEP_ARCH libxinerama-dev:$DEP_ARCH libxrandr-dev:$DEP_ARCH libxcursor-dev:$DEP_ARCH libxcomposite-dev:$DEP_ARCH mesa-common-dev:$DEP_ARCH libasound2-dev:$DEP_ARCH freeglut3-dev:$DEP_ARCH libcurl4-gnutls-dev:$DEP_ARCH libasound2-dev:$DEP_ARCH libjack-dev:$DEP_ARCH libbluetooth-dev:$DEP_ARCH libgtk-3-dev:$DEP_ARCH libwebkit2gtk-4.0-dev:$DEP_ARCH libsdl2-dev:$DEP_ARCH  libfuse2:$DEP_ARCH libusb-1.0-0-dev:$DEP_ARCH libhidapi-dev:$DEP_ARCH ladspa-sdk:$DEP_ARCH
+          sudo apt-get install -qyf libcurl3-gnutls:$DEP_ARCH libfreetype6-dev:$DEP_ARCH libx11-dev:$DEP_ARCH libxinerama-dev:$DEP_ARCH libxrandr-dev:$DEP_ARCH libxcursor-dev:$DEP_ARCH libxcomposite-dev:$DEP_ARCH mesa-common-dev:$DEP_ARCH libasound2-dev:$DEP_ARCH freeglut3-dev:$DEP_ARCH libcurl4-gnutls-dev:$DEP_ARCH libasound2-dev:$DEP_ARCH libjack-dev:$DEP_ARCH libbluetooth-dev:$DEP_ARCH libgtk-3-dev:$DEP_ARCH libwebkit2gtk-4.0-dev:$DEP_ARCH libsdl2-dev:$DEP_ARCH  libfuse2:$DEP_ARCH libusb-1.0-0-dev:$DEP_ARCH libhidapi-dev:$DEP_ARCH ladspa-sdk:$DEP_ARCH
           sudo apt-get install -qy curl
 
           cd ${{ github.workspace }}
