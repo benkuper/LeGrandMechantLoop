@@ -595,7 +595,7 @@
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/Raspberry" extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed&#10;-lm"
-                externalLibraries="bluetooth&#10;Servus&#10;rubberband&#10;curl&#10;usb-1.0&#10;pthread&#10;atomic"
+                externalLibraries="bluetooth&#10;Servus&#10;rubberband&#10;curl&#10;usb-1.0&#10;pthread&#10;atomic&#10;stdc++"
                 smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="0" name="Release" headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"
