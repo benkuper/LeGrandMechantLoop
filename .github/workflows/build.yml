@@ -197,7 +197,12 @@ jobs:
             echo "Installing ${{ matrix.arch }} / ${{ matrix.packageArch }}cross compilation tools"
 
             echo "Installing cross compiler lib ${{ matrix.compilerPackage }}"
-            sudo apt-get install -qy ${{ matrix.compilerPackage }} 
+            if [ "${{ matrix.arch }}" == "armhf" ]; 
+            then
+              sudo apt-get install -qy g++-arm-linux-gnueabihf
+            else
+              sudo apt-get install -qy g++-aarch64-linux-gnu
+            fi
 
             echo "Installing extra lib dependencies"
             sudo apt-get install -qyf linux-libc-dev:$DEP_ARCH libgdk-pixbuf2.0-dev:$DEP_ARCH libpango1.0-dev:$DEP_ARCH libsoup2.4-dev:$DEP_ARCH libharfbuzz-dev:$DEP_ARCH libicu-dev:$DEP_ARCH libc6-dev:$DEP_ARCH libxft-dev:$DEP_ARCH
