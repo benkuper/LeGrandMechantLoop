@@ -126,20 +126,20 @@ jobs:
       matrix:
         include:
         - arch: x64
-          buildFolder: LinuxMakefile
-          buildConfig: Release
+          buildFolder: "LinuxMakefile"
+          buildConfig: "Release"
 
         - arch: armhf
           packageArch: armhf
-          compilerPackage: g++-arm-linux-gnueabihf
-          buildFolder: Raspberry
-          buildConfig: Release
+          compilerPackage: "g++-arm-linux-gnueabihf"
+          buildFolder: "Raspberry"
+          buildConfig: "Release"
 
         - arch: aarch64
           packageArch: arm64
-          compilerPackage: g++-arm-linux-gnueabihf
-          buildFolder: Raspberry
-          buildConfig: Release64
+          compilerPackage: "g++-arm-linux-gnueabihf"
+          buildFolder: "Raspberry"
+          buildConfig: "Release64"
 
       fail-fast: false
 
