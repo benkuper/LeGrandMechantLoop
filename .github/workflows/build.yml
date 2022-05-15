@@ -121,13 +121,13 @@ jobs:
   linux:
     # if: false
     name: Linux
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         include:
-        - arch: x64
-          buildFolder: "LinuxMakefile"
-          buildConfig: "Release"
+        # - arch: x64
+        #   buildFolder: "LinuxMakefile"
+        #   buildConfig: "Release"
 
         - arch: armhf
           buildFolder: "Raspberry"
@@ -163,7 +163,7 @@ jobs:
         with:
           NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
           SSH_PASS: ${{ secrets.SSH_PASS }}
-          
+
       - name: Installing dependencies
         if: false
         id: install_deps
@@ -186,10 +186,10 @@ jobs:
           deb [arch=amd64] http://us.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
           deb [arch=amd64] http://security.ubuntu.com/ubuntu bionic-security main restricted universe multiverse
 
-          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic main restricted universe multiverse
-          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic-updates main restricted universe multiverse
-          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic-backports main restricted universe multiverse
-          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ bionic-security main restricted universe multiverse
+          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ focal main restricted universe multiverse
+          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ focal-updates main restricted universe multiverse
+          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ focal-backports main restricted universe multiverse
+          deb [arch=$DEP_ARCH] http://ports.ubuntu.com/ubuntu-ports/ focal-security main restricted universe multiverse
           END
 
             sudo dpkg --add-architecture ${{ matrix.arch }}
@@ -207,6 +207,10 @@ jobs:
 
 
             echo "Installing extra lib dependencies"
+
+            sudo apt-get purge -qyf libgdk-pixbuf2.0-dev libpango1.0-dev libsoup2.4-dev libharfbuzz-dev libicu-dev libc6-dev libxft-dev
+            sudo apt-get remove -qyf libgdk-pixbuf2.0-dev libpango1.0-dev libsoup2.4-dev libharfbuzz-dev libicu-dev libc6-dev libxft-dev
+            sudo dpkg --remove libgdk-pixbuf2.0-dev libpango1.0-dev libsoup2.4-dev libharfbuzz-dev libicu-dev libc6-dev libxft-dev
             sudo apt-get install -qyf libgdk-pixbuf2.0-dev:$DEP_ARCH libpango1.0-dev:$DEP_ARCH libsoup2.4-dev:$DEP_ARCH libharfbuzz-dev:$DEP_ARCH libicu-dev:$DEP_ARCH libc6-dev:$DEP_ARCH libxft-dev:$DEP_ARCH
 
             echo "Downloading AppImage runtime for ${{ matrix.arch }}"
