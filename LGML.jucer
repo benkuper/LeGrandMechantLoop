@@ -596,16 +596,16 @@
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/Raspberry" extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed&#10;-lm"
                 externalLibraries="bluetooth&#10;Servus&#10;rubberband&#10;curl&#10;usb-1.0&#10;pthread&#10;atomic&#10;stdc++"
-                smallIcon="k24oFh" bigIcon="k24oFh">
+                smallIcon="k24oFh" bigIcon="k24oFh" extraCompilerFlags="-D_GLIBCXX_USE_CXX11_ABI=${ABI_FLAG}">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="0" name="Release" headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"
                        libraryPath="../../External/servus/lib/raspberry&#10;../../External/rubberband/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf&#10;"
-                       linuxArchitecture="-march=armv8-a"/>
+                       linuxArchitecture="-march=armv8-a" defines="ABI_FLAG=1"/>
         <CONFIGURATION isDebug="1" name="Debug" headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"
                        libraryPath="../../External/servus/lib/raspberry&#10;../../External/rubberband/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf"
-                       linuxArchitecture="-march=armv8-a"/>
+                       linuxArchitecture="-march=armv8-a" defines="ABI_FLAG=1"/>
         <CONFIGURATION isDebug="0" name="Release64" libraryPath="../../External/servus/lib/rpi64&#10;../../External/rubberband/lib/rpi64&#10;/usr/lib/aarch64-linux-gnu&#10;"
-                       linuxArchitecture="-march=armv8-a"/>
+                       linuxArchitecture="-march=armv8-a" defines="ABI_FLAG=0"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
