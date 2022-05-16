@@ -3,7 +3,7 @@
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
               jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include&#10;../../External/rubberband/include"
               defines="VST_LOGGING=0&#10;JUCE_MODAL_LOOPS_PERMITTED=1&#10;"
-              version="1.0.0b80" cppLanguageStandard="17">
+              version="1.0.0b81" cppLanguageStandard="17">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <GROUP id="{C441433A-B399-F72B-FC41-277E3131829E}" name="Templates">
@@ -596,7 +596,7 @@
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/Raspberry" extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed&#10;-lm"
                 externalLibraries="bluetooth&#10;Servus&#10;rubberband&#10;curl&#10;usb-1.0&#10;pthread&#10;atomic&#10;stdc++"
-                smallIcon="k24oFh" bigIcon="k24oFh" extraCompilerFlags="-D_GLIBCXX_USE_CXX11_ABI=${ABI_FLAG}">
+                smallIcon="k24oFh" bigIcon="k24oFh" extraCompilerFlags="-D_GLIBCXX_USE_CXX11_ABI=0">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="0" name="Release" headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"
                        libraryPath="../../External/servus/lib/raspberry&#10;../../External/rubberband/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf&#10;"
