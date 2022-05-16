@@ -14,7 +14,6 @@ VSTNode::VSTNode(var params) :
 	currentPreset(nullptr),
 	macrosCC("Macros"),
 	antiMacroFeedback(false),
-	settingVSTState(false),
 	vstNotifier(5)
 {
 	numAudioInputs->canBeDisabledByUser = true;
