@@ -429,8 +429,8 @@ bool Transport::getCurrentPosition(CurrentPositionInfo& result)
 	result.isRecording = isSettingTempo;
 
 
-	result.ppqPosition = floor(barProgression->floatValue() * beatsPerBar->intValue() * beatUnit->intValue()) / beatUnit->intValue();
 	result.ppqPositionOfLastBarStart = (double)(curBar->intValue() * beatsPerBar->intValue()); // ?? 
+	result.ppqPosition = result.ppqPositionOfLastBarStart + floor(barProgression->floatValue() * beatsPerBar->intValue() * beatUnit->intValue()) / beatUnit->intValue();
 
 	result.ppqLoopStart = 0;
 	result.ppqLoopEnd = 0;
