@@ -134,10 +134,10 @@ jobs:
           buildFolder: "Raspberry"
           buildConfig: "Release"
 
-        - arch: aarch64
-          packageArch: arm64
-          buildFolder: "Raspberry"
-          buildConfig: "Release64"
+        # - arch: aarch64
+        #   packageArch: arm64
+        #   buildFolder: "Raspberry"
+        #   buildConfig: "Release64"
 
       fail-fast: false
 
