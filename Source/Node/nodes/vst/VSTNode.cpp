@@ -14,6 +14,7 @@ VSTNode::VSTNode(var params) :
 	currentPreset(nullptr),
 	macrosCC("Macros"),
 	antiMacroFeedback(false),
+	settingVSTState(false),
 	vstNotifier(5)
 {
 	numAudioInputs->canBeDisabledByUser = true;
@@ -161,7 +162,11 @@ void VSTNode::setVSTState(const String& data)
 	if (data.isEmpty()) return;
 
 	MemoryBlock b;
-	if (b.fromBase64Encoding(data)) vst->setStateInformation(b.getData(), b.getSize());
+	if (b.fromBase64Encoding(data))
+	{
+		GenericScopedLock lock(vstStateLock);
+		vst->setStateInformation(b.getData(), b.getSize());
+	}
 }
 
 void VSTNode::updatePresetEnum(const String& setPresetName)
@@ -350,7 +355,8 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessag
 	{	
 		if (!bypassed)
 		{
-			vst->processBlock(buffer, midiMessages);
+			GenericScopedTryLock lock(vstStateLock);
+			if(lock.isLocked()) vst->processBlock(buffer, midiMessages);
 
 			//if (hasMIDIOutput)
 			//{

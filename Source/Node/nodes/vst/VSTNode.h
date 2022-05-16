@@ -38,6 +38,8 @@ public:
 	EnumParameter* presetEnum;
 	std::unique_ptr<AudioPluginInstance> vst;
 
+	SpinLock vstStateLock;
+
 	bool antiMacroFeedback;
 	bool isSettingVST; //avoid updating vst's playconfig while setting it
 
