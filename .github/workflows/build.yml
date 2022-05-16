@@ -6,7 +6,7 @@ env:
 
 jobs:
   windows:
-    if: false
+    # if: false
     name: Windows
     runs-on: windows-2019
 
@@ -60,7 +60,7 @@ jobs:
           pass: ${{ secrets.UPLOADPASS }}
 
   osx:
-    if: false
+    # if: false
     name: OSX
     runs-on: macos-latest
 
