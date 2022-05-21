@@ -21,6 +21,7 @@ public:
 
 	MIDIClock clock;
 	BoolParameter* enableClock;
+	BoolParameter* autoFeedback;
 
 	void setMIDIInDevice(MIDIInputDevice* d) override;
 	void setMIDIOutDevice(MIDIOutputDevice* d) override;

@@ -15,6 +15,7 @@ MIDIIONode::MIDIIONode(var params) :
 	setAudioInputs(1, false);
 	setAudioOutputs(2);
 
+	autoFeedback = midiCC->addBoolParameter("Auto feedback", "If auto feedback, this will send received message to output", false);
 	enableClock = midiCC->addBoolParameter("Send Clock", "If checked, this will send the clock to the connected output device", true);
 	viewUISize->setPoint(200, 100);
 }
@@ -69,6 +70,8 @@ void MIDIIONode::midiMessageReceived(const MidiMessage& m)
 	}
 
 	for (auto& c : outMidiConnections) c->destNode->midiMessageReceived(m);
+
+	if (autoFeedback->boolValue() && currentOutDevice != nullptr) currentOutDevice->sendMessage(m);
 }
 
 void MIDIIONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
