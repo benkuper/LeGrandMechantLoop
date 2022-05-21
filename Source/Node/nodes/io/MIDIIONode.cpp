@@ -1,4 +1,3 @@
-#include "MIDIIONode.h"
 /*
   ==============================================================================
 
@@ -10,9 +9,12 @@
 */
 
 MIDIIONode::MIDIIONode(var params) :
-	Node(getTypeString(), params, false, false, false, false, true, true),
+	Node(getTypeString(), params, true, true, false, false, true, true),
 	clock(true)
 {
+	setAudioInputs(1, false);
+	setAudioOutputs(2);
+
 	enableClock = midiCC->addBoolParameter("Send Clock", "If checked, this will send the clock to the connected output device", true);
 	viewUISize->setPoint(200, 100);
 }
@@ -67,6 +69,14 @@ void MIDIIONode::midiMessageReceived(const MidiMessage& m)
 	}
 
 	for (auto& c : outMidiConnections) c->destNode->midiMessageReceived(m);
+}
+
+void MIDIIONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+{
+	if (currentOutDevice != nullptr)
+	{
+		for (auto& m : midiMessages) currentOutDevice->sendMessage(m.getMessage());
+	}
 }
 
 void MIDIIONode::onContainerParameterChangedInternal(Parameter* p)

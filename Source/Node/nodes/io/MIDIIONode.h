@@ -30,6 +30,8 @@ public:
 
 	void midiMessageReceived(const MidiMessage& m) override;
 
+	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+
 	void onContainerParameterChangedInternal(Parameter* p) override;
 	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
