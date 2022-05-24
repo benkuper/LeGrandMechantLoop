@@ -78,7 +78,11 @@ void MIDIIONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& mi
 {
 	if (currentOutDevice != nullptr)
 	{
-		for (auto& m : midiMessages) currentOutDevice->sendMessage(m.getMessage());
+		for(const auto m : midiMessages)
+		{
+			MidiMessage msg = m.getMessage();
+			currentOutDevice->sendMessage(msg);
+		}
 	}
 }
 

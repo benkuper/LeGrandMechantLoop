@@ -62,6 +62,7 @@ public:
     std::unique_ptr<ControllableContainer> channelFilterCC;
     Array<BoolParameter*> midiChannels;
     BoolParameter* logIncomingMidi;
+    BoolParameter* forceNoteOffOnEnabled;
 
     MidiBuffer inMidiBuffer;
     MIDIInputDevice* currentInDevice;

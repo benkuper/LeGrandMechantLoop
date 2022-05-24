@@ -75,7 +75,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 		pedalSustain->canBeDisabledByUser = true;
 		pedalSustain->setControllableFeedbackOnly(true);
 		forceSustain = midiCC->addBoolParameter("Force Sustain", "If checked, this will force sustain manually independent of the pedal", false);
-		
+		forceNoteOffOnEnabled = midiCC->addBoolParameter("Force Note offs on enabled", "If checked, this will send all notes off when enabled state is changed", false);
 		logIncomingMidi = midiCC->addBoolParameter("Log Incoming messages", "This will log incoming messages (only working on the device directly connected, not incoming connection from other nodes", false);
 		channelFilterCC.reset(new ControllableContainer("Channel Filter"));
 		midiChannels.ensureStorageAllocated(16);
@@ -132,9 +132,11 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 		{
 			for (auto& c : outAudioConnections) c->activityLevel = 0;
 			if (outControl != nullptr) outControl->rms->setValue(0);
+			midiCollector.reset(processor->getSampleRate()); 
+			updateSustainedNotes();
 		}
 
-		if (hasMIDIInput)
+		if (hasMIDIInput && forceNoteOffOnEnabled->boolValue())
 		{
 			inMidiBuffer.clear();
 			for(int i=1;i<=16;i++) inMidiBuffer.addEvent(MidiMessage::allNotesOff(i), 0);
@@ -366,7 +368,7 @@ void Node::midiMessageReceived(const MidiMessage& m)
 
 void Node::updateSustainedNotes()
 {
-	if(!pedalSustain->boolValue() && !forceSustain->boolValue())
+	if(!enabled->boolValue() || (!pedalSustain->boolValue() && !forceSustain->boolValue()))
 	{
 		HashMap<int, int>::Iterator it(sustainedNotes);
 		while (it.next()) midiCollector.addMessageToQueue(MidiMessage::noteOff(it.getValue(), it.getKey()).withTimeStamp(Time::currentTimeMillis()));
