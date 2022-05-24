@@ -12,6 +12,7 @@ NodeConnectionManager::NodeConnectionManager(NodeManager * nodeManager) :
     BaseManager("Connections"),
     nodeManager(nodeManager)
 {
+    userCanAddItemsManually = false;
 }
 
 NodeConnectionManager::~NodeConnectionManager()
