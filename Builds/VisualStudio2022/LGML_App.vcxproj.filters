@@ -4117,6 +4117,9 @@
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardGroupItemUI.cpp">
       <Filter>JUCE Modules\juce_organicui\dashboard\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardIFrameItemUI.cpp">
+      <Filter>JUCE Modules\juce_organicui\dashboard\ui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardItemManagerUI.cpp">
       <Filter>JUCE Modules\juce_organicui\dashboard\ui</Filter>
     </ClCompile>
@@ -4144,7 +4147,13 @@
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardCommentItem.cpp">
       <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardFeedbackBroadcaster.cpp">
+      <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardGroupItem.cpp">
+      <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardIFrameItem.cpp">
       <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\dashboard\DashboardItem.cpp">
@@ -8064,6 +8073,9 @@
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardGroupItemUI.h">
       <Filter>JUCE Modules\juce_organicui\dashboard\ui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardIFrameItemUI.h">
+      <Filter>JUCE Modules\juce_organicui\dashboard\ui</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\ui\DashboardItemManagerUI.h">
       <Filter>JUCE Modules\juce_organicui\dashboard\ui</Filter>
     </ClInclude>
@@ -8091,7 +8103,13 @@
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardCommentItem.h">
       <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardFeedbackBroadcaster.h">
+      <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardGroupItem.h">
+      <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardIFrameItem.h">
       <Filter>JUCE Modules\juce_organicui\dashboard</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Modules\juce_organicui\dashboard\DashboardItem.h">

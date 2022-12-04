@@ -495,19 +495,19 @@
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics"/>
-        <MODULEPATH id="juce_audio_devices"/>
-        <MODULEPATH id="juce_audio_formats"/>
-        <MODULEPATH id="juce_audio_processors"/>
-        <MODULEPATH id="juce_audio_utils"/>
-        <MODULEPATH id="juce_core"/>
-        <MODULEPATH id="juce_data_structures"/>
-        <MODULEPATH id="juce_dsp"/>
-        <MODULEPATH id="juce_events"/>
-        <MODULEPATH id="juce_graphics"/>
-        <MODULEPATH id="juce_gui_basics"/>
-        <MODULEPATH id="juce_gui_extra"/>
-        <MODULEPATH id="juce_opengl"/>
-        <MODULEPATH id="juce_osc"/>
+        <MODULEPATH id="juce_audio_devices" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="~/JUCE/modules"/>
+        <MODULEPATH id="juce_osc" path="~/JUCE/modules"/>
         <MODULEPATH id="juce_organicui" path="Modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
       </MODULEPATHS>
@@ -540,32 +540,33 @@
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <VS2019 targetFolder="Builds/VisualStudio2019_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
+    <VS2022 targetFolder="Builds/VisualStudio2022_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
             smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/debug"/>
-        <CONFIGURATION isDebug="0" name="Release" binaryPath="Binaries/CI" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/release"
-                       alwaysGenerateDebugSymbols="1"/>
+        <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/debug"
+                       binaryPath="Binaries/CI"/>
+        <CONFIGURATION isDebug="0" name="Release" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/release"
+                       alwaysGenerateDebugSymbols="1" binaryPath="Binaries/CI"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_simpleweb" path="Modules"/>
-        <MODULEPATH id="juce_osc" path="JUCE/modules"/>
-        <MODULEPATH id="juce_organicui" path="Modules"/>
-        <MODULEPATH id="juce_opengl" path="JUCE/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_graphics" path="JUCE/modules"/>
-        <MODULEPATH id="juce_events" path="JUCE/modules"/>
-        <MODULEPATH id="juce_dsp" path="JUCE/modules"/>
-        <MODULEPATH id="juce_data_structures" path="JUCE/modules"/>
-        <MODULEPATH id="juce_core" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_utils" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="JUCE/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="JUCE/modules"/>
         <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="JUCE/modules"/>
+        <MODULEPATH id="juce_organicui" path="Modules"/>
+        <MODULEPATH id="juce_osc" path="JUCE/modules"/>
+        <MODULEPATH id="juce_simpleweb" path="Modules"/>
       </MODULEPATHS>
-    </VS2019>
+    </VS2022>
     <XCODE_MAC targetFolder="Builds/MacOSX_CI" smallIcon="k24oFh" bigIcon="k24oFh"
                externalLibraries="Servus&#10;rubberband" xcodeValidArchs="x86_64"
                hardenedRuntimeOptions="com.apple.security.cs.allow-jit" customPList="&lt;plist&gt;&#10;&lt;dict&gt;&#10;&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;&#9;&lt;dict&gt;&#10;&#9;&#9;&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;&#10;&#9;&#9;&lt;true/&gt;&#10;&#9;&lt;/dict&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
