@@ -13,8 +13,6 @@
 
 juce_ImplementSingleton(VSTManager)
 
-static OrganicApplication& getApp() { return *dynamic_cast<OrganicApplication*>(JUCEApplication::getInstance()); }
-
 VSTManager::VSTManager() :
 	ControllableContainer("VST Plugin Paths"),
 	Thread("VST Scan"),
