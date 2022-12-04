@@ -16,6 +16,8 @@
  ==============================================================================
  */
 
+#include "Node/NodeIncludes.h"
+
 static Array<MIDIClock*, CriticalSection> allClocks = {};
 
 class MIDIClockRunner : 
@@ -27,7 +29,7 @@ public:
 	MIDIClockRunner() :
 		Thread("MIDIClockRunner") 
 	{
-		startThread(Thread::realtimeAudioPriority);
+		startThread(Thread::Priority::highest);
 	}
 
 	~MIDIClockRunner() { stopThread(100); }

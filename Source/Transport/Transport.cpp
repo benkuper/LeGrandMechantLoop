@@ -98,7 +98,7 @@ void Transport::play(bool startTempoSet, bool playFromStart)
 
 	if (!startTempoSet)
 	{
-		int rawSamplesPerBeat = round(sampleRate * 60.0 / bpm->floatValue());
+		int rawSamplesPerBeat = round(sampleRate * 60.0 / bpm->doubleValue());
 		numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
 		timeInSamples = 0;
 
@@ -243,10 +243,12 @@ void Transport::onContainerParameterChanged(Parameter* p)
 		{
 			double barRel = curBar->intValue() + (getRelativeBarSamples() * 1.0 / getBarNumSamples()); //before set new samplesPerBeat
 
-			int rawSamplesPerBeat = round(sampleRate * 60.0 / bpm->floatValue());
+			int rawSamplesPerBeat = round(sampleRate * 60.0 / bpm->doubleValue());
 			numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
 
 			timeInSamples = getBlockPerfectNumSamples(getBarNumSamples() * barRel); //after set new samplesPerBeat
+
+
 		}
 
 		transportListeners.call(&TransportListener::bpmChanged);
@@ -273,30 +275,30 @@ int Transport::getSamplesToNextBeat() const
 	return numSamplesPerBeat - getRelativeBeatSamples();
 }
 
-int Transport::getRelativeBarSamples() const
+int64 Transport::getRelativeBarSamples() const
 {
 	return timeInSamples % getBarNumSamples();
 }
 
-int Transport::getRelativeBeatSamples() const
+int64 Transport::getRelativeBeatSamples() const
 {
 	return timeInSamples % numSamplesPerBeat;
 }
 
-int Transport::getBlockPerfectNumSamples(int samples, bool floorResult) const
+int64 Transport::getBlockPerfectNumSamples(int64 samples, bool floorResult) const
 {
 	double numBlocksD = samples * 1.0 / blockSize;
 	int numBlocks = floorResult ? floor(numBlocksD) : round(numBlocksD);
 	return numBlocks * blockSize;
 }
 
-int Transport::getBarForSamples(int samples, bool floorResult) const
+int Transport::getBarForSamples(int64 samples, bool floorResult) const
 {
 	double numBarsD = samples * 1.0 / getBarNumSamples();
 	return floorResult ? floor(numBarsD) : round(numBarsD);
 }
 
-int Transport::getBeatForSamples(int samples, bool relative, bool floorResult) const
+int Transport::getBeatForSamples(int64 samples, bool relative, bool floorResult) const
 {
 	double numBeatsD = floor(samples * 1.0 / getBeatNumSamples());
 	int numBeats = floorResult ? floor(numBeatsD) : round(numBeatsD);
@@ -394,7 +396,12 @@ int Transport::getTotalBeatCount() const
 	return curBar->intValue() * beatsPerBar->intValue() + curBeat->intValue();
 }
 
-void Transport::audioDeviceIOCallback(const float** inputChannelData, int numInputChannels, float** outputChannelData, int numOutputChannels, int numSamples)
+void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
+	int numInputChannels,
+	float* const* outputChannelData,
+	int numOutputChannels,
+	int numSamples,
+	const AudioIODeviceCallbackContext& context)
 {
 	if (isCurrentlyPlaying->boolValue())
 	{
@@ -413,7 +420,7 @@ void Transport::audioDeviceAboutToStart(AudioIODevice* device)
 	sampleRate = (int)device->getCurrentSampleRate();
 	blockSize = (int)device->getCurrentBufferSizeSamples();
 
-	int rawSamplesPerBeat = round(sampleRate * 60.0 / bpm->floatValue());
+	int64 rawSamplesPerBeat = round(sampleRate * 60.0 / bpm->doubleValue());
 	numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
 	timeInSamples = 0;
 }
@@ -422,24 +429,29 @@ void Transport::audioDeviceStopped()
 {
 }
 
-bool Transport::getCurrentPosition(CurrentPositionInfo& result)
+Optional<AudioPlayHead::PositionInfo> Transport::getPosition() const
 {
-	result.bpm = bpm->floatValue();
-	result.isPlaying = isCurrentlyPlaying->boolValue();
-	result.isRecording = isSettingTempo;
+	PositionInfo result;
+
+	result.setBpm(bpm->doubleValue());
+	result.setIsPlaying(isCurrentlyPlaying->boolValue());
+	result.setIsPlaying(isSettingTempo);
 
 
-	result.ppqPositionOfLastBarStart = (double)(curBar->intValue() * beatsPerBar->intValue()); // ?? 
-	result.ppqPosition = result.ppqPositionOfLastBarStart + floor(barProgression->floatValue() * beatsPerBar->intValue() * beatUnit->intValue()) / beatUnit->intValue();
+	double positionOfLastBarStart = (double)(curBar->intValue() * beatsPerBar->intValue());
+	result.setPpqPositionOfLastBarStart(positionOfLastBarStart); // ?? 
+	result.setPpqPosition(positionOfLastBarStart + floor(barProgression->floatValue() * beatsPerBar->intValue() * beatUnit->intValue()) / beatUnit->intValue());
 
-	result.ppqLoopStart = 0;
-	result.ppqLoopEnd = 0;
-	result.timeSigNumerator = beatsPerBar->intValue();
-	result.timeSigDenominator = beatUnit->intValue();
-	result.timeInSamples = timeInSamples;
-	result.timeInSeconds = getCurrentTime();
-	result.editOriginTime = 0;
-	result.frameRate = FrameRateType::fpsUnknown;
-	result.isLooping = false;
-	return true;
+	TimeSignature signature;
+	signature.numerator = beatsPerBar->intValue();
+	signature.denominator = beatUnit->intValue();
+	result.setTimeSignature(signature);
+
+	result.setTimeInSamples(timeInSamples);
+	result.setTimeInSeconds(getCurrentTime());
+	result.setEditOriginTime(0);
+	result.setFrameRate(FrameRateType::fpsUnknown);
+	result.setIsLooping(false);
+
+	return result;
 }

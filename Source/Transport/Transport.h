@@ -52,7 +52,7 @@ public:
 	int sampleRate;
 	int blockSize;
 
-	int timeInSamples;
+	int64 timeInSamples;
 	int numSamplesPerBeat;
 
 	bool isSettingTempo;
@@ -82,12 +82,12 @@ public:
 	int getBeatNumSamples() const;
 	int getSamplesToNextBar() const;
 	int getSamplesToNextBeat() const;
-	int getRelativeBarSamples() const;
-	int getRelativeBeatSamples() const;
-	int getBlockPerfectNumSamples(int samples, bool floorResult = true) const;
+	int64 getRelativeBarSamples() const;
+	int64 getRelativeBeatSamples() const;
+	int64 getBlockPerfectNumSamples(int64 samples, bool floorResult = true) const;
 
-	int getBarForSamples(int samples, bool floorResult = true) const;
-	int getBeatForSamples(int samples, bool relative = true, bool floorResult = true) const;
+	int getBarForSamples(int64 samples, bool floorResult = true) const;
+	int getBeatForSamples(int64 samples, bool relative = true, bool floorResult = true) const;
 	int getSamplesForBar(int bar = -1) const;
 	int getSamplesForBeat(int beat = -1, int bar = -1, bool relative = true) const;
 
@@ -110,12 +110,17 @@ public:
 	int getTotalBeatCount() const;
 
 	// Inherited via AudioIODeviceCallback
-	virtual void audioDeviceIOCallback(const float** inputChannelData, int numInputChannels, float** outputChannelData, int numOutputChannels, int numSamples) override;
+	virtual void audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
+		int numInputChannels,
+		float* const* outputChannelData,
+		int numOutputChannels,
+		int numSamples,
+		const AudioIODeviceCallbackContext& context) override;
 	virtual void audioDeviceAboutToStart(AudioIODevice* device) override;
 	virtual void audioDeviceStopped() override;
 
 	// Inherited via AudioPlayHead
-	virtual bool getCurrentPosition(CurrentPositionInfo& result) override;
+	Optional<PositionInfo> getPosition() const override;
 
 	class TransportListener
 	{
