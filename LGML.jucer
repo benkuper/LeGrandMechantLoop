@@ -481,6 +481,7 @@
         <MODULEPATH id="juce_organicui" path="Modules"/>
         <MODULEPATH id="juce_osc" path="D:\Softwares\JUCE\modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
+        <MODULEPATH id="juce_cryptography" path="D:\Softwares\JUCE\modules"/>
       </MODULEPATHS>
     </VS2022>
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="k24oFh" bigIcon="k24oFh"
@@ -510,6 +511,7 @@
         <MODULEPATH id="juce_osc" path="~/JUCE/modules"/>
         <MODULEPATH id="juce_organicui" path="Modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
+        <MODULEPATH id="juce_cryptography" path="~/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="k24oFh" bigIcon="k24oFh"
@@ -538,6 +540,7 @@
         <MODULEPATH id="juce_osc" path="JUCE/modules"/>
         <MODULEPATH id="juce_organicui" path="Modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
+        <MODULEPATH id="juce_cryptography" path="JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2022 targetFolder="Builds/VisualStudio2022_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
@@ -565,6 +568,7 @@
         <MODULEPATH id="juce_organicui" path="Modules"/>
         <MODULEPATH id="juce_osc" path="JUCE/modules"/>
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
+        <MODULEPATH id="juce_cryptography" path="JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
     <XCODE_MAC targetFolder="Builds/MacOSX_CI" smallIcon="k24oFh" bigIcon="k24oFh"
@@ -593,6 +597,7 @@
         <MODULEPATH id="juce_audio_formats" path="JUCE/modules"/>
         <MODULEPATH id="juce_audio_devices" path="JUCE/modules"/>
         <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/Raspberry" extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed&#10;-lm"
@@ -625,6 +630,7 @@
         <MODULEPATH id="juce_audio_formats" path="JUCE/modules"/>
         <MODULEPATH id="juce_audio_devices" path="JUCE/modules"/>
         <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
   </EXPORTFORMATS>
@@ -635,6 +641,7 @@
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
