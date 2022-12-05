@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" useAppConfig="0"
-              jucerFormatVersion="1" projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include&#10;../../External/rubberband/include"
-              defines="VST_LOGGING=0&#10;JUCE_MODAL_LOOPS_PERMITTED=1&#10;"
-              version="1.0.0b86" cppLanguageStandard="17">
+<JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" jucerFormatVersion="1"
+              projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include&#10;../../External/rubberband/include"
+              defines="VST_LOGGING=0&#10;" version="1.0.0b86" cppLanguageStandard="17"
+              companyName="Ben Kuper" companyCopyright="Ben Kuper" bundleIdentifier="benkuper.LGML"
+              includeBinaryInJuceHeader="1">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <GROUP id="{C441433A-B399-F72B-FC41-277E3131829E}" name="Templates">
@@ -545,7 +546,8 @@
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2022 targetFolder="Builds/VisualStudio2022_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
-            smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_WINDOWS=1">
+            smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_WINDOWS=1"
+            extraCompilerFlags="/Zm1000 /bigobj">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/debug"
                        binaryPath="Binaries/CI"/>

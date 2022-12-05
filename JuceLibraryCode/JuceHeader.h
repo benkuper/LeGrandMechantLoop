@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "AppConfig.h"
 
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <juce_audio_devices/juce_audio_devices.h>
@@ -52,7 +53,7 @@
 namespace ProjectInfo
 {
     const char* const  projectName    = "LGML";
-    const char* const  companyName    = "";
+    const char* const  companyName    = "Ben Kuper";
     const char* const  versionString  = "1.0.0b86";
     const int          versionNumber  = 0x10000;
 }

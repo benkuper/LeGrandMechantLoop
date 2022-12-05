@@ -15,7 +15,7 @@
     <key>CFBundleIconFile</key>
     <string>Icon.icns</string>
     <key>CFBundleIdentifier</key>
-    <string>com.yourcompany.LGML</string>
+    <string>benkuper.LGML</string>
     <key>CFBundleName</key>
     <string>LGML</string>
     <key>CFBundleDisplayName</key>
@@ -29,7 +29,7 @@
     <key>CFBundleVersion</key>
     <string>1.0.0b86</string>
     <key>NSHumanReadableCopyright</key>
-    <string></string>
+    <string>Ben Kuper</string>
     <key>NSHighResolutionCapable</key>
     <true/>
     <key>CFBundleDocumentTypes</key>

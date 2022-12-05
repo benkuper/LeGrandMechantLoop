@@ -101,6 +101,7 @@
 		0DA31F87CFF887F48593D7E6 /* include_juce_organicui.cpp */ /* include_juce_organicui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_juce_organicui.cpp; path = ../../JuceLibraryCode/include_juce_organicui.cpp; sourceTree = SOURCE_ROOT; };
 		0E6020EE96215C2885DE5CD6 /* SerialDevice.h */ /* SerialDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SerialDevice.h; path = ../../Source/Common/Serial/SerialDevice.h; sourceTree = SOURCE_ROOT; };
 		0F1AEC80222EA651B4E3A1E4 /* IONodeViewUI.cpp */ /* IONodeViewUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = IONodeViewUI.cpp; path = ../../Source/Node/nodes/io/ui/IONodeViewUI.cpp; sourceTree = SOURCE_ROOT; };
+		0FC4A4D288ACF82226795E5E /* AppConfig.h */ /* AppConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppConfig.h; path = ../../JuceLibraryCode/AppConfig.h; sourceTree = SOURCE_ROOT; };
 		1178B25810D021BCD1237144 /* juce_organicui */ /* juce_organicui */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_organicui; path = ../../Modules/juce_organicui; sourceTree = SOURCE_ROOT; };
 		120660DDA13AF7FB2937C91C /* SerialDeviceParameter.h */ /* SerialDeviceParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SerialDeviceParameter.h; path = ../../Source/Common/Serial/SerialDeviceParameter.h; sourceTree = SOURCE_ROOT; };
 		1224794C0E042C6573A0ACC8 /* ContainerNodeUI.h */ /* ContainerNodeUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ContainerNodeUI.h; path = ../../Source/Node/nodes/container/ui/ContainerNodeUI.h; sourceTree = SOURCE_ROOT; };
@@ -911,6 +912,7 @@
 		B930FFF67622C886A75EF18D /* JUCE Library Code */ = {
 			isa = PBXGroup;
 			children = (
+				0FC4A4D288ACF82226795E5E,
 				C581EDAA4D805AC8BEDD0F90,
 				D9D1372E70FB917C1F7539EC,
 				FC57670C4734632FC50D2C47,
@@ -1202,7 +1204,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 1340;
-				ORGANIZATIONNAME = "";
+				ORGANIZATIONNAME = "Ben Kuper";
 				TargetAttributes = {
 					CEDBFE646754336406EE4841 = {
 						SystemCapabilities = {
@@ -1338,48 +1340,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"_NDEBUG=1",
 					"NDEBUG=1",
-					"JUCE_DISPLAY_SPLASH_SCREEN=0",
-					"JUCE_USE_DARK_SPLASH_SCREEN=1",
-					"JUCE_PROJUCER_VERSION=0x70003",
-					"JUCE_MODULE_AVAILABLE_juce_audio_basics=1",
-					"JUCE_MODULE_AVAILABLE_juce_audio_devices=1",
-					"JUCE_MODULE_AVAILABLE_juce_audio_formats=1",
-					"JUCE_MODULE_AVAILABLE_juce_audio_processors=1",
-					"JUCE_MODULE_AVAILABLE_juce_audio_utils=1",
-					"JUCE_MODULE_AVAILABLE_juce_core=1",
-					"JUCE_MODULE_AVAILABLE_juce_cryptography=1",
-					"JUCE_MODULE_AVAILABLE_juce_data_structures=1",
-					"JUCE_MODULE_AVAILABLE_juce_dsp=1",
-					"JUCE_MODULE_AVAILABLE_juce_events=1",
-					"JUCE_MODULE_AVAILABLE_juce_graphics=1",
-					"JUCE_MODULE_AVAILABLE_juce_gui_basics=1",
-					"JUCE_MODULE_AVAILABLE_juce_gui_extra=1",
-					"JUCE_MODULE_AVAILABLE_juce_opengl=1",
-					"JUCE_MODULE_AVAILABLE_juce_organicui=1",
-					"JUCE_MODULE_AVAILABLE_juce_osc=1",
-					"JUCE_MODULE_AVAILABLE_juce_simpleweb=1",
-					"JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1",
-					"JUCE_USE_WINRT_MIDI=1",
-					"JUCE_ASIO=1",
-					"JUCE_WASAPI=1",
-					"JUCE_DIRECTSOUND=1",
-					"JUCE_ALSA=1",
-					"JUCE_JACK=1",
-					"JUCE_PLUGINHOST_VST=1",
-					"JUCE_PLUGINHOST_VST3=1",
-					"JUCE_PLUGINHOST_AU=1",
-					"JUCE_PLUGINHOST_LADSPA=1",
-					"JUCE_STRICT_REFCOUNTEDPOINTER=1",
-					"JUCE_USE_WIN_WEBVIEW2=1",
-					"ORGANICUI_USE_SERVUS=1",
-					"ORGANICUI_USE_WEBSERVER=1",
-					"JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS=1",
-					"JUCE_ENABLE_BROADCAST_BY_DEFAULT=1",
-					"JUCE_EXCLUSIVE_BINDING_BY_DEFAULT=1",
-					"JUCE_IP_AND_PORT_DETECTION=1",
-					"JUCE_STANDALONE_APPLICATION=1",
 					"VST_LOGGING=0",
-					"JUCE_MODAL_LOOPS_PERMITTED=1",
 					"JUCE_SUPPORT_CARBON=0",
 					"JUCE_COREGRAPHICS_DRAW_ASYNC=1",
 					"LINK_PLATFORM_MACOSX=1",
@@ -1427,7 +1388,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include";
 				OTHER_LDFLAGS = "-lServus -lrubberband -lssl -lcrypto -weak_framework Metal -weak_framework MetalKit";
-				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.LGML;
+				PRODUCT_BUNDLE_IDENTIFIER = benkuper.LGML;
 				PRODUCT_NAME = "LGML";
 				USE_HEADERMAP = NO;
 				VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS = OpenGL;

@@ -11337,6 +11337,9 @@
     <ClInclude Include="..\..\Modules\juce_simpleweb\juce_simpleweb.h">
       <Filter>JUCE Modules\juce_simpleweb</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h">
+      <Filter>JUCE Library Code</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\BinaryData.h">
       <Filter>JUCE Library Code</Filter>
     </ClInclude>
