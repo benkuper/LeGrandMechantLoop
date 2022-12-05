@@ -455,7 +455,7 @@
                JUCE_ALSA="1" JUCE_JACK="1" JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1"
                ORGANICUI_USE_SERVUS="1" JUCE_PLUGINHOST_VST="1" JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS="1"
                JUCE_ENABLE_BROADCAST_BY_DEFAULT="1" JUCE_EXCLUSIVE_BINDING_BY_DEFAULT="1"
-               JUCE_IP_AND_PORT_DETECTION="1" JUCE_PLUGINHOST_LADSPA="1"/>
+               JUCE_IP_AND_PORT_DETECTION="1" JUCE_PLUGINHOST_LADSPA="1" JUCE_USE_WIN_WEBVIEW2="1"/>
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
             smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_WINDOWS=1">
@@ -550,7 +550,8 @@
         <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/debug"
                        binaryPath="Binaries/CI"/>
         <CONFIGURATION isDebug="0" name="Release" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/release"
-                       alwaysGenerateDebugSymbols="1" binaryPath="Binaries/CI"/>
+                       alwaysGenerateDebugSymbols="1" binaryPath="Binaries/CI" debugInformationFormat="ProgramDatabase"
+                       winArchitecture="x64"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
@@ -640,7 +641,8 @@
                 smallIcon="k24oFh" bigIcon="k24oFh">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/servus/lib/rpi64&#10;../../External/rubberband/lib/rpi64&#10;/usr/lib/aarch64-linux-gnu&#10;"/>
-        <CONFIGURATION isDebug="0" name="Release" libraryPath="../../External/servus/lib/rpi64&#10;../../External/rubberband/lib/rpi64&#10;/usr/lib/aarch64-linux-gnu&#10;"/>
+        <CONFIGURATION isDebug="0" name="Release" libraryPath="../../External/servus/lib/rpi64&#10;../../External/rubberband/lib/rpi64&#10;/usr/lib/aarch64-linux-gnu&#10;"
+                       headerPath="/usr/include/freetype2"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="JUCE/modules"/>
