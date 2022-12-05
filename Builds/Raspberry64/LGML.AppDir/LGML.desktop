@@ -1,14 +1,14 @@
 [Desktop Entry]
 Name=LGML
 Exec=LGML
-Icon=LGML
+Icon=lgml
 Type=Application
 Categories=AudioVideo;Art;
-Comment=Artist friendly Modular Machine for Art and Technology
-Comment[fr]=Machine modulaire pour l'art et la technologie, adaptée aux artistes
-MimeType=text/LGML;
+Comment=Node based DAW for live performance and looping
+Comment[fr]=Logiciel audio pour performances live et looping
+MimeType=text/lgml;
 Name[en]=LGML
 Terminal=false
 StartupNotify=true
 NoDisplay=false
-Name[en_US]=LGML.desktop
+Name[en_US]=lgml.desktop
