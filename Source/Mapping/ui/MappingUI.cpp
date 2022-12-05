@@ -109,11 +109,11 @@ void MappingUI::itemDropped(const DragAndDropTarget::SourceDetails& details)
 			p.addItem(3, "Set as source");
 			p.addItem(4, "Set as destination");
 
-			if (int result = p.show())
-			{
-				if (result != 3) i->destParam->setValueFromTarget(e->controllable.get());
-				else ((GenericMapping*)i)->sourceParam->setValueFromTarget(e->controllable.get());
-			}
+            p.showMenuAsync(PopupMenu::Options().withDeletionCheck(*this), [=](int result)
+                {
+                    if (result != 3) i->destParam->setValueFromTarget(e->controllable.get());
+                    else ((GenericMapping*)i)->sourceParam->setValueFromTarget(e->controllable.get());
+                });
         }
         else
         {

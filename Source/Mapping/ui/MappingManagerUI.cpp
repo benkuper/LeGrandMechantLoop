@@ -40,23 +40,23 @@ void MappingManagerUI::itemDropped(const DragAndDropTarget::SourceDetails& detai
 		p.addItem(3, "Create Generic Mapping (Set as source)");
 		p.addItem(4, "Create Generic Mapping (Set as destination)");
 
-		if (int result = p.show())
-		{
-			Mapping* m = nullptr;
-			switch (result)
+		p.showMenuAsync(PopupMenu::Options().withDeletionCheck(*this), [=](int result)
 			{
-			case 1: m = new MIDIMapping(); break;
-			case 2: m = new MacroMapping(); break;
-			case 3: 
-				m = new GenericMapping(); break;
-			case 4: m = new GenericMapping(); break;
-			}
+				Mapping* m = nullptr;
+				switch (result)
+				{
+				case 1: m = new MIDIMapping(); break;
+				case 2: m = new MacroMapping(); break;
+				case 3:
+					m = new GenericMapping(); break;
+				case 4: m = new GenericMapping(); break;
+				}
 
-			if (result != 3) m->destParam->setValueFromTarget(e->controllable.get());
-			else ((GenericMapping*)m)->sourceParam->setValueFromTarget(e->controllable.get());
+				if (result != 3) m->destParam->setValueFromTarget(e->controllable.get());
+				else ((GenericMapping*)m)->sourceParam->setValueFromTarget(e->controllable.get());
 
-			manager->addItem(m);
-		}
+				manager->addItem(m);
+			});
 	}
 
 	BaseManagerShapeShifterUI::itemDropped(details);

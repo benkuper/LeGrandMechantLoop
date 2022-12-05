@@ -96,14 +96,14 @@ void VSTPluginParameterUI::showMenuAndSetVST()
     HashMap<String, PopupMenu*>::Iterator it(subMenuMap);
     while (it.next()) p.addSubMenu(it.getKey(), *it.getValue());
 
-    if (int result = p.show())
-    {
-        if (PluginDescription* d = VSTManager::getInstance()->descriptions[result - 1])
+    p.showMenuAsync(PopupMenu::Options().withDeletionCheck(*this), [=](int result)
         {
-            String pid = d->manufacturerName + "/" + d->name;
-            parameter->setValue(pid);
-        }
-    }
+            if (PluginDescription* d = VSTManager::getInstance()->descriptions[result - 1])
+            {
+                String pid = d->manufacturerName + "/" + d->name;
+                parameter->setValue(pid);
+            }
+        });
 }
 
 void VSTPluginParameterUI::buttonClicked(Button* b)

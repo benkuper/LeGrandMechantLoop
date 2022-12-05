@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Preset/PresetIncludes.h"
+
 Preset::Preset(var params) :
 	BaseItem("Preset", false)
 {
@@ -82,7 +84,7 @@ void Preset::saveContainer(ControllableContainer* container, bool recursive)
 	for (auto& c : cList) save(c);
 }
 
-void Preset::save(Parameter * parameter, bool saveAllPresettables)
+void Preset::save(Parameter* parameter, bool saveAllPresettables, bool noCheck)
 {
 	if (parameter != nullptr)
 	{
@@ -91,10 +93,14 @@ void Preset::save(Parameter * parameter, bool saveAllPresettables)
 	}
 	else
 	{
-		if (!isCurrent->boolValue())
+		if (!isCurrent->boolValue() && !noCheck)
 		{
-			bool result = AlertWindow::showOkCancelBox(AlertWindow::WarningIcon, "Not the current preset", "This is not the currently loaded preset. Do you want still want to save to preset", "Yes", "No");
-			if (!result) return;
+			AlertWindow::showOkCancelBox(AlertWindow::WarningIcon, "Not the current preset", "This is not the currently loaded preset. Do you want still want to save to preset", "Yes", "No", nullptr, ModalCallbackFunction::create([=](int result)
+				{
+					if (result) save(parameter, saveAllPresettables, true);
+				}));
+
+			return;
 		}
 
 
@@ -201,7 +207,7 @@ void Preset::removeParameterFromDataMap(Parameter* p)
 
 void Preset::removeAddressFromDataMap(String address)
 {
-	if (Parameter* p = dynamic_cast<Parameter *>(Engine::mainEngine->getControllableForAddress(address)))
+	if (Parameter* p = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(address)))
 	{
 		removeParameterFromDataMap(p);
 		return;
@@ -230,7 +236,7 @@ void Preset::onContainerTriggerTriggered(Trigger* t)
 
 void Preset::itemAdded(Preset* p)
 {
-	if(!isCurrentlyLoadingData) p->color->setColor(color->getColor().brighter(.3f));
+	if (!isCurrentlyLoadingData) p->color->setColor(color->getColor().brighter(.3f));
 }
 
 var Preset::getJSONData()
@@ -244,7 +250,7 @@ var Preset::getJSONData()
 void Preset::loadJSONDataItemInternal(var data)
 {
 	subPresets->loadJSONData(data["subPresets"]);
-	
+
 	var values = data["values"];
 	if (values.isObject())
 	{
@@ -285,7 +291,7 @@ void Preset::childStructureChanged(ControllableContainer* cc)
 {
 	for (auto& add : lostParamAddresses)
 	{
-		if (Parameter *p = dynamic_cast<Parameter *>(Engine::mainEngine->getControllableForAddress(add)))
+		if (Parameter* p = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(add)))
 		{
 			addParameterToDataMap(p, addressMap.contains(add) ? addressMap[add] : var());
 		}

@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 VSTNode::VSTNode(var params) :
 	Node(getTypeString(), params, true, true, true, true, true, true),
 	isSettingVST(false),
@@ -24,7 +26,7 @@ VSTNode::VSTNode(var params) :
 	pluginParam = new VSTPluginParameter("VST", "The VST to use");
 	ControllableContainer::addParameter(pluginParam);
 
-	
+
 	presetEnum = addEnumParameter("Preset", "Load a preset");
 	numMacros = addIntParameter("Num Macros", "Choose the number of macros you want for this VST", 0, 0);
 	autoActivateMacroIndex = addIntParameter("Auto Bypass Macro", "Index of the macro that automatically bypasses the VST if value is in the range", 1, 1, 1, false);
@@ -86,7 +88,7 @@ void VSTNode::setupVST(PluginDescription* description)
 			String errorMessage;
 			int sampleRate = processor->getSampleRate() != 0 ? processor->getSampleRate() : Transport::getInstance()->sampleRate;
 			int blockSize = processor->getBlockSize() != 0 ? processor->getBlockSize() : Transport::getInstance()->blockSize;
-			
+
 			jassert(sampleRate > 0 && blockSize > 0);
 
 			vst = VSTManager::getInstance()->formatManager->createPluginInstance(*description, sampleRate, blockSize, errorMessage);
@@ -106,10 +108,10 @@ void VSTNode::setupVST(PluginDescription* description)
 			vst->setPlayHead(Transport::getInstance());
 
 		}
-		
+
 		setIOFromVST();
 
-		if(vst != nullptr)
+		if (vst != nullptr)
 		{
 			vstParamsCC.reset(new VSTParameterContainer(vst.get()));
 			vstParamsCC->setMaxMacros(numMacros->intValue());
@@ -130,9 +132,9 @@ void VSTNode::setIOFromVST()
 	{
 		vst->enableAllBuses();
 		auto layout = vst->getBusesLayout();
-        int targetInputs = numAudioInputs->enabled ? numAudioInputs->intValue() : jmax(layout.getMainInputChannels(),vst->getTotalNumInputChannels());
-        int targetOutputs = numAudioOutputs->enabled ? numAudioOutputs->intValue() : jmax(layout.getMainOutputChannels(), vst->getTotalNumOutputChannels());
-        
+		int targetInputs = numAudioInputs->enabled ? numAudioInputs->intValue() : jmax(layout.getMainInputChannels(), vst->getTotalNumInputChannels());
+		int targetOutputs = numAudioOutputs->enabled ? numAudioOutputs->intValue() : jmax(layout.getMainOutputChannels(), vst->getTotalNumOutputChannels());
+
 		setAudioInputs(targetInputs);// vst->getTotalNumInputChannels());
 		setAudioOutputs(targetOutputs);// vst->getTotalNumOutputChannels());
 		setMIDIIO(vst->acceptsMidi(), vst->producesMidi());
@@ -143,7 +145,7 @@ void VSTNode::setIOFromVST()
 		setAudioOutputs(2);//2 for basic setup without having to put a vst// vst->getTotalNumOutputChannels());
 		setMIDIIO(false, false);
 	}
-	
+
 }
 
 String VSTNode::getVSTState()
@@ -190,10 +192,10 @@ void VSTNode::updatePresetEnum(const String& setPresetName)
 void VSTNode::updateMacros()
 {
 	if (vstParamsCC != nullptr) vstParamsCC->setMaxMacros(numMacros->intValue());
-	
+
 	while (macrosCC.controllables.size() > numMacros->intValue())
 	{
-		macrosCC.removeControllable(macrosCC.controllables[macrosCC.controllables.size()-1]);
+		macrosCC.removeControllable(macrosCC.controllables[macrosCC.controllables.size() - 1]);
 	}
 
 	while (macrosCC.controllables.size() < numMacros->intValue())
@@ -208,7 +210,7 @@ void VSTNode::updateMacros()
 void VSTNode::checkAutoBypassFromMacro()
 {
 	if (!autoActivateMacroIndex->enabled || autoActivateMacroIndex->intValue() > macrosCC.controllables.size()) return;
-	float val = ((Parameter*)macrosCC.controllables[autoActivateMacroIndex->intValue()-1])->floatValue();
+	float val = ((Parameter*)macrosCC.controllables[autoActivateMacroIndex->intValue() - 1])->floatValue();
 	bool shouldBypass = val >= autoActivateRange->x && val <= autoActivateRange->y;
 	enabled->setValue(!shouldBypass);
 }
@@ -249,19 +251,24 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 		}
 		else if (d == 1001)
 		{
-			AlertWindow nameWindow("Add a preset", "Set the name for the new preset", AlertWindow::AlertIconType::NoIcon);
+			AlertWindow* nameWindow(new AlertWindow("Add a preset", "Set the name for the new preset", AlertWindow::AlertIconType::NoIcon));
 
-			nameWindow.addTextEditor("name", "New preset", "Name");
-			nameWindow.addButton("OK", 1, KeyPress(KeyPress::returnKey));
-			nameWindow.addButton("Cancel", 0, KeyPress(KeyPress::escapeKey));
+			nameWindow->addTextEditor("name", "New preset", "Name");
+			nameWindow->addButton("OK", 1, KeyPress(KeyPress::returnKey));
+			nameWindow->addButton("Cancel", 0, KeyPress(KeyPress::escapeKey));
 
-			int result = nameWindow.runModalLoop();
-			if (result)
-			{
-				String pName = nameWindow.getTextEditorContents("name");
-				presets.add(new VSTPreset({ pName, getVSTState() }));
-				updatePresetEnum(pName);
-			}
+			AlertWindow::showAsync(MessageBoxOptions(), [=](int result)
+				{
+					if (result)
+					{
+						String pName = nameWindow->getTextEditorContents("name");
+						presets.add(new VSTPreset({ pName, getVSTState() }));
+						updatePresetEnum(pName);
+
+					}
+
+					delete nameWindow;
+				});
 		}
 		else if (d == 1002)
 		{
@@ -292,11 +299,11 @@ void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Co
 
 	if (cc == vstParamsCC.get())
 	{
-		if (VSTParameterLink* pLink = dynamic_cast<VSTParameterLink *>(c))
+		if (VSTParameterLink* pLink = dynamic_cast<VSTParameterLink*>(c))
 		{
 			if (pLink->macroIndex >= 0 && pLink->macroIndex < numMacros->intValue())
 			{
-				
+
 				if (!antiMacroFeedback)
 				{
 					antiMacroFeedback = true;
@@ -310,7 +317,7 @@ void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Co
 	{
 		int index = macrosCC.controllables.indexOf(c);
 		if (autoActivateMacroIndex->enabled && index == autoActivateMacroIndex->intValue() - 1) checkAutoBypassFromMacro();
-		
+
 		if (vstParamsCC != nullptr)
 		{
 			HashMap<int, VSTParameterLink*>::Iterator it(vstParamsCC->idParamMap);
@@ -319,7 +326,7 @@ void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Co
 				if (it.getValue()->macroIndex == index) it.getValue()->param->setValue(((FloatParameter*)c)->floatValue());
 			}
 		}
-		
+
 	}
 }
 
@@ -351,11 +358,11 @@ void VSTNode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiM
 void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages, bool bypassed)
 {
 	if (vst != nullptr)
-	{	
+	{
 		if (!bypassed)
 		{
 			GenericScopedTryLock lock(vstStateLock);
-			if(lock.isLocked()) vst->processBlock(buffer, midiMessages);
+			if (lock.isLocked()) vst->processBlock(buffer, midiMessages);
 
 			//if (hasMIDIOutput)
 			//{
@@ -395,7 +402,7 @@ void VSTNode::loadJSONDataItemInternal(var data)
 	setVSTState(data.getProperty("vstState", ""));
 
 	if (vstParamsCC != nullptr) vstParamsCC->loadJSONData(data.getProperty("vstParams", var()));
-	
+
 	macrosCC.loadJSONData(data.getProperty("macros", var()));
 
 	presets.clear();

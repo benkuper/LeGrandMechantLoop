@@ -56,13 +56,13 @@ void NodeAudioConnectionEditor::mouseDown(const MouseEvent& e)
             PopupMenu p;
             p.addItem(1, "Disconnect");
 
-            if (int result = p.show())
-            {
-                switch (result)
+            p.showMenuAsync(PopupMenu::Options().withDeletionCheck(*this), [=](int result)
                 {
-                case 1: removeConnection(c);  break;
-                }
-            }
+                    switch (result)
+                    {
+                    case 1: removeConnection(c);  break;
+                    }
+                });
         }
         else if (e.mods.isLeftButtonDown() && e.mods.isCommandDown())
         {
