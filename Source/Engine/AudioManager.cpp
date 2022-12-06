@@ -81,12 +81,20 @@ void AudioManager::updateGraph()
     graph.suspendProcessing(false);
 }
 
-void AudioManager::audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
+void AudioManager::audioDeviceIOCallbackWithContext(const float** inputChannelData,
     int numInputChannels,
-    float* const* outputChannelData,
+    float** outputChannelData,
     int numOutputChannels,
     int numSamples,
     const AudioIODeviceCallbackContext& context)
+
+    //7.0.3
+    //(const float* const* inputChannelData,
+    //int numInputChannels,
+    //float* const* outputChannelData,
+    //int numOutputChannels,
+    //int numSamples,
+    //const AudioIODeviceCallbackContext& context)
 {
     for (int i = 0; i < numOutputChannels; ++i) FloatVectorOperations::clear(outputChannelData[i], numSamples);
     //for (int i = 0; i < jmin(numInputChannels, numOutputChannels); ++i) FloatVectorOperations::copy(outputChannelData[i], inputChannelData[i], numSamples);

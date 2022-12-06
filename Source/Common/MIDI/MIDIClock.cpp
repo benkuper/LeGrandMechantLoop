@@ -29,7 +29,8 @@ public:
 	MIDIClockRunner() :
 		Thread("MIDIClockRunner") 
 	{
-		startThread(Thread::Priority::highest);
+		startThread(Thread::realtimeAudioPriority); //7.0.2
+		//startThread(Thread::Priority::highest); //7.0.3
 	}
 
 	~MIDIClockRunner() { stopThread(100); }

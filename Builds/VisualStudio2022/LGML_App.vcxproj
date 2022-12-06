@@ -409,9 +409,6 @@
     <ClCompile Include="..\..\Source\Main.cpp"/>
     <ClCompile Include="..\..\Source\MainComponent.cpp"/>
     <ClCompile Include="..\..\Source\MainComponentCommands.cpp"/>
-    <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -425,9 +422,6 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_basics\midi\ump\juce_UMP_test.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_basics\midi\ump\juce_UMPIterator.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_basics\midi\ump\juce_UMPMidi1ToMidi2DefaultTranslator.cpp">
@@ -500,9 +494,6 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_basics\sources\juce_MixerAudioSource.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_basics\sources\juce_PositionableAudioSource.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_basics\sources\juce_ResamplingAudioSource.cpp">
@@ -1246,9 +1237,6 @@
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_processors\utilities\juce_RangedAudioParameter.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_processors\utilities\juce_VSTCallbackHandler.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_processors\juce_audio_processors.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -1661,9 +1649,6 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_data_structures\app_properties\juce_PropertiesFile.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_data_structures\undomanager\juce_UndoableAction.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_data_structures\undomanager\juce_UndoManager.cpp">
@@ -2578,9 +2563,6 @@
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\windows\juce_TopLevelWindow.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\windows\juce_VBlankAttachement.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\juce_gui_basics.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -2630,9 +2612,6 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_extra\misc\juce_SystemTrayIconComponent.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_extra\misc\juce_WebBrowserComponent.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_extra\native\juce_android_PushNotifications.cpp">
@@ -3659,6 +3638,7 @@
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_formats\codecs\flac\ordinals.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_formats\codecs\flac\stream_decoder.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_formats\codecs\flac\stream_encoder.h"/>
+    <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_formats\codecs\flac\win_utf8_io.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_formats\codecs\oggvorbis\libvorbis-1.3.7\lib\books\coupled\res_books_51.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_formats\codecs\oggvorbis\libvorbis-1.3.7\lib\books\coupled\res_books_stereo.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_audio_formats\codecs\oggvorbis\libvorbis-1.3.7\lib\books\floor\floor_books.h"/>
@@ -3997,7 +3977,6 @@
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_core\native\juce_intel_SharedCode.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_core\native\juce_mac_CFHelpers.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_core\native\juce_mac_ObjCHelpers.h"/>
-    <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_core\native\juce_native_ThreadPriorities.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_core\native\juce_posix_IPAddress.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_core\native\juce_posix_SharedCode.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_core\native\juce_win32_ComSmartPtr.h"/>
@@ -4359,7 +4338,6 @@
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\native\x11\juce_linux_X11_Symbols.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\native\x11\juce_linux_XWindowSystem.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\native\juce_mac_CGMetalLayerRenderer.h"/>
-    <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\native\juce_mac_PerScreenDisplayLinks.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\native\juce_MultiTouchMapper.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\native\juce_ScopedDPIAwarenessDisabler.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\native\juce_win32_ScopedThreadDPIAwarenessSetter.h"/>
@@ -4403,7 +4381,6 @@
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\windows\juce_ThreadWithProgressWindow.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\windows\juce_TooltipWindow.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\windows\juce_TopLevelWindow.h"/>
-    <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\windows\juce_VBlankAttachement.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_basics\juce_gui_basics.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_extra\code_editor\juce_CodeDocument.h"/>
     <ClInclude Include="..\..\..\..\..\..\Softwares\JUCE\modules\juce_gui_extra\code_editor\juce_CodeEditorComponent.h"/>
@@ -5661,14 +5638,10 @@
     <None Include="..\..\Modules\juce_simpleweb\asio\README.md"/>
     <None Include="..\..\Modules\juce_simpleweb\README.md"/>
     <None Include=".\icon.ico"/>
-    <None Include="packages.config"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\resources.rc"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="packages\Microsoft.Web.WebView2.1.0.902.49\build\native\Microsoft.Web.WebView2.targets"
-            Condition="Exists('packages\Microsoft.Web.WebView2.1.0.902.49\build\native\Microsoft.Web.WebView2.targets')"/>
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets"/>
 </Project>
