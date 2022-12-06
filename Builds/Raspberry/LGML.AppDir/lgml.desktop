@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=LeGrandMechantLoop
+Exec=LGML
+Icon=lgml
+Type=Application
+Categories=AudioVideo;Art;
+Comment=Artist friendly Modular Machine for Art and Technology
+Comment[fr]=Machine modulaire pour l'art et la technologie, adaptée aux artistes
+MimeType=text/lgml;
+Name[en]=LeGrandMechantLoop
+Terminal=false
+StartupNotify=true
+NoDisplay=false
+Name[en_US]=lgml.desktop
