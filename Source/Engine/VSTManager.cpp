@@ -30,7 +30,7 @@ VSTManager::VSTManager() :
 	scanAU->hideInEditor = true;
 #elif JUCE_LINUX
 	scanLV2 = addBoolParameter("Scan LV2", "Scan LV2 Plugins", true);
-	scanAU->hideInEditor = true;
+	scanLV2->hideInEditor = true;
 #endif
 
 	userCanAddControllables = true;
@@ -64,6 +64,9 @@ void VSTManager::updateVSTFormats()
 
 #if JUCE_PLUGINHOST_LADSPA && JUCE_LINUX
 	formatManager->addFormat(new LADSPAPluginFormat());
+#endif
+
+#if JUCE_PLUGINHOST_LV2 && JUCE_LINUX
 	if (scanLV2->boolValue()) formatManager->addFormat(new LV2PluginFormat());
 #endif
 
