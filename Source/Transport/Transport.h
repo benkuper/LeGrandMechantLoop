@@ -60,7 +60,7 @@ public:
 
 	double timeAtStart;
 
-    void clear() override; // override here to avoid deleting parameters
+	void clear() override; // override here to avoid deleting parameters
 
 	//Controls
 	void play(bool startTempoSet = false, bool playFromStart = false);
@@ -102,7 +102,7 @@ public:
 	double getCurrentTimeInBars() const;
 	double getTimeForBar(int bar = -1) const;
 	double getTimeForBeat(int beat = -1, int bar = -1, bool relative = true) const;
-	
+
 	int getBarForTime(double time, bool floorResult = true) const;
 	int getBeatForTime(double time, bool relative = true, bool floorResult = true) const;
 
@@ -111,20 +111,23 @@ public:
 
 	// Inherited via AudioIODeviceCallback
 
-	virtual void audioDeviceIOCallbackWithContext (const float** inputChannelData,
-		int numInputChannels,
-		float** outputChannelData,
-		int numOutputChannels,
-		int numSamples,
-		const AudioIODeviceCallbackContext& context) override;
+	virtual void
+#if RPISAFEMODE
+		audioDeviceIOCallbackWithContext(const float** inputChannelData,
+			int numInputChannels,
+			float** outputChannelData,
+			int numOutputChannels,
+			int numSamples,
+			const AudioIODeviceCallbackContext& context) override;
+#else
+		audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
+			int numInputChannels,
+			float* const* outputChannelData,
+			int numOutputChannels,
+			int numSamples,
+			const AudioIODeviceCallbackContext& context) override;
+#endif
 
-	//7.0.3
-	//(const float* const* inputChannelData,
-	//	int numInputChannels,
-	//	float* const* outputChannelData,
-	//	int numOutputChannels,
-	//	int numSamples,
-	//	const AudioIODeviceCallbackContext& context) override;
 	virtual void audioDeviceAboutToStart(AudioIODevice* device) override;
 	virtual void audioDeviceStopped() override;
 
@@ -138,7 +141,7 @@ public:
 		virtual void beatNumSamplesChanged() {}
 		virtual void bpmChanged() {}
 		virtual void beatChanged(bool isNewBar, bool isFirstLoopBeat) {} //this allow for event after both bar and beat have been updated. 
-																		//isFirstLoopBeat will be true if the current beat is the start of the first loop that set the tempo
+		//isFirstLoopBeat will be true if the current beat is the start of the first loop that set the tempo
 		virtual void playStateChanged(bool isPlaying, bool forceRestart) {}
 	};
 

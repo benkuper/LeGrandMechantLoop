@@ -43,13 +43,24 @@ public:
 
 	void updateGraph();
 
-	virtual void audioDeviceIOCallbackWithContext(const float** inputChannelData,
+	virtual void audioDeviceIOCallbackWithContext
+#if RPISAFEMODE
+	(const float** inputChannelData,
 		int numInputChannels,
 		float** outputChannelData,
 		int numOutputChannels,
 		int numSamples,
 		const AudioIODeviceCallbackContext& context) override;
-	
+#else
+		//7.0.3
+		(const float* const* inputChannelData,
+			int numInputChannels,
+			float* const* outputChannelData,
+			int numOutputChannels,
+			int numSamples,
+			const AudioIODeviceCallbackContext& context) override;
+#endif
+
 	//7.0.3
 	//(const float* const* inputChannelData,
 	//	int numInputChannels,

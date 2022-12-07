@@ -29,8 +29,11 @@ public:
 	MIDIClockRunner() :
 		Thread("MIDIClockRunner") 
 	{
+#if RPISAFEMODE
 		startThread(Thread::realtimeAudioPriority); //7.0.2
-		//startThread(Thread::Priority::highest); //7.0.3
+#else
+		startThread(Thread::Priority::highest); //7.0.3
+#endif
 	}
 
 	~MIDIClockRunner() { stopThread(100); }

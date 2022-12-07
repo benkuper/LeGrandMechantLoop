@@ -396,20 +396,23 @@ int Transport::getTotalBeatCount() const
 	return curBar->intValue() * beatsPerBar->intValue() + curBeat->intValue();
 }
 
-void Transport::audioDeviceIOCallbackWithContext(const float** inputChannelData,
+void Transport::audioDeviceIOCallbackWithContext
+#if RPISAFEMODE
+(const float** inputChannelData,
 	int numInputChannels,
 	float** outputChannelData,
 	int numOutputChannels,
 	int numSamples,
 	const AudioIODeviceCallbackContext& context)
-
-	//7.0.3
-	//(const float* const* inputChannelData,
-	//int numInputChannels,
-	//float* const* outputChannelData,
-	//int numOutputChannels,
-	//int numSamples,
-	//const AudioIODeviceCallbackContext& context)
+#else
+//7.0.3
+(const float* const* inputChannelData,
+	int numInputChannels,
+	float* const* outputChannelData,
+	int numOutputChannels,
+	int numSamples,
+	const AudioIODeviceCallbackContext& context)
+#endif
 {
 	if (isCurrentlyPlaying->boolValue())
 	{
