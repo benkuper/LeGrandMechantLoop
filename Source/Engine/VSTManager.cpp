@@ -29,7 +29,7 @@ VSTManager::VSTManager() :
 	scanAU = addBoolParameter("Scan AU", "Scan AU Plugins", true);
 	scanAU->hideInEditor = true;
 #elif JUCE_LINUX
-	scanLV2 = = addBoolParameter("Scan LV2", "Scan LV2 Plugins", true);
+	scanLV2 = addBoolParameter("Scan LV2", "Scan LV2 Plugins", true);
 	scanAU->hideInEditor = true;
 #endif
 
