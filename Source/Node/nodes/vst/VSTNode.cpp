@@ -257,7 +257,7 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 			nameWindow->addButton("OK", 1, KeyPress(KeyPress::returnKey));
 			nameWindow->addButton("Cancel", 0, KeyPress(KeyPress::escapeKey));
 
-			AlertWindow::showAsync(MessageBoxOptions(), [=](int result)
+			nameWindow->enterModalState(true, ModalCallbackFunction::create([=](int result)
 				{
 					if (result)
 					{
@@ -266,9 +266,11 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 						updatePresetEnum(pName);
 
 					}
-
-					delete nameWindow;
-				});
+					else
+					{
+						delete nameWindow;
+					}
+				}));
 		}
 		else if (d == 1002)
 		{
