@@ -17,7 +17,8 @@ VSTManager::VSTManager() :
 	ControllableContainer("VST Plugin Paths"),
 	Thread("VST Scan"),
 	vstManagerNotifier(5),
-	scanAU(nullptr)
+	scanAU(nullptr),
+	scanLV2(nullptr)
 {
 	rescan = addTrigger("Rescan", "Rescan all paths");
 	rescan->hideInEditor = true;
@@ -27,12 +28,15 @@ VSTManager::VSTManager() :
 #if JUCE_MAC
 	scanAU = addBoolParameter("Scan AU", "Scan AU Plugins", true);
 	scanAU->hideInEditor = true;
+#elif JUCE_LINUX
+	scanLV2 = = addBoolParameter("Scan LV2", "Scan LV2 Plugins", true);
+	scanAU->hideInEditor = true;
 #endif
 
 	userCanAddControllables = true;
 	userAddControllablesFilters.add(FileParameter::getTypeStringStatic());
-    
-    updateVSTFormats();
+
+	updateVSTFormats();
 }
 
 VSTManager::~VSTManager()
@@ -60,8 +64,9 @@ void VSTManager::updateVSTFormats()
 
 #if JUCE_PLUGINHOST_LADSPA && JUCE_LINUX
 	formatManager->addFormat(new LADSPAPluginFormat());
+	if (scanLV2->boolValue()) formatManager->addFormat(new LV2PluginFormat());
 #endif
-     
+
 }
 
 void VSTManager::updateVSTList()
@@ -116,10 +121,10 @@ void VSTManager::updateVSTList()
 	}
 
 	NLOG("VST", s);
-    
+
 	getApp().saveGlobalSettings();
-	
-    vstManagerNotifier.addMessage(new VSTManagerEvent(VSTManagerEvent::PLUGINS_UPDATED, this));
+
+	vstManagerNotifier.addMessage(new VSTManagerEvent(VSTManagerEvent::PLUGINS_UPDATED, this));
 }
 
 void VSTManager::onContainerParameterChanged(Parameter* p)
@@ -235,6 +240,6 @@ ControllableUI* VSTPluginParameter::createDefaultUI(Array<Controllable*> control
 inline int DescriptionSorter::compareElements(PluginDescription* first, PluginDescription* second)
 {
 	int result = first->manufacturerName.compare(second->manufacturerName);
-	if(result == 0) result = first->name.compare(second->name);
+	if (result == 0) result = first->name.compare(second->name);
 	return result;
 }

@@ -29,6 +29,7 @@ public:
     Trigger* rescan;
     BoolParameter* scanVST;
     BoolParameter* scanAU;
+    BoolParameter* scanLV2;
 
     void updateVSTFormats();
     void updateVSTList();

@@ -24,6 +24,7 @@ public:
     std::unique_ptr<TriggerButtonUI> rescanUI;
     std::unique_ptr<BoolToggleUI> vstUI;
     std::unique_ptr<BoolToggleUI> auUI;
+    std::unique_ptr<BoolToggleUI> lv2UI;
     Label countLabel;
 
     void resizedInternalHeader(Rectangle<int>& r) override;
