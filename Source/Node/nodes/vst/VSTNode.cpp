@@ -266,10 +266,8 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 						updatePresetEnum(pName);
 
 					}
-					else
-					{
-						delete nameWindow;
-					}
+
+					delete nameWindow;
 				}));
 		}
 		else if (d == 1002)
