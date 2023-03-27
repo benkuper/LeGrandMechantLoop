@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 MIDIIONode::MIDIIONode(var params) :
 	Node(getTypeString(), params, true, true, false, false, true, true),
 	clock(true)
@@ -25,24 +27,36 @@ MIDIIONode::~MIDIIONode()
 
 }
 
-void MIDIIONode::setMIDIInDevice(MIDIInputDevice* d)
-{
-	Node::setMIDIInDevice(d);
-}
+//void MIDIIONode::setMIDIInDevice(MIDIInputDevice* d)
+//{
+//	Node::setMIDIInDevice(d);
+//}
+//
+//void MIDIIONode::setMIDIOutDevice(MIDIOutputDevice* d)
+//{
+//	if (currentOutDevice != nullptr)
+//	{
+//	}
+//
+//	clock.setOutput(nullptr);
+//
+//	Node::setMIDIOutDevice(d);
+//
+//	if (currentOutDevice != nullptr)
+//	{
+//		if(enabled->boolValue() && enableClock->boolValue()) clock.setOutput(currentOutDevice);
+//	}
+//}
 
-void MIDIIONode::setMIDIOutDevice(MIDIOutputDevice* d)
+void MIDIIONode::setMIDIInterface(MIDIInterface* i)
 {
-	if (currentOutDevice != nullptr)
-	{
-	}
+	Node::setMIDIInterface(i);
 
 	clock.setOutput(nullptr);
 
-	Node::setMIDIOutDevice(d);
-
-	if (currentOutDevice != nullptr)
+	if (enabled->boolValue() && midiInterface != nullptr && midiInterface->outputDevice != nullptr)
 	{
-		if(enabled->boolValue() && enableClock->boolValue()) clock.setOutput(currentOutDevice);
+		clock.setOutput(enabled->boolValue() && enableClock->boolValue() ? midiInterface->outputDevice : nullptr);
 	}
 }
 
@@ -57,7 +71,7 @@ void MIDIIONode::removeInConnection(NodeConnection* c)
 	Node::removeInConnection(c);
 }
 
-void MIDIIONode::midiMessageReceived(const MidiMessage& m)
+void MIDIIONode::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 {
 	//Node::midiMessageReceived(m);
 
@@ -69,19 +83,19 @@ void MIDIIONode::midiMessageReceived(const MidiMessage& m)
 		NLOG(niceName, "Received MIDI : " << m.getDescription());
 	}
 
-	for (auto& c : outMidiConnections) c->destNode->midiMessageReceived(m);
+	for (auto& c : outMidiConnections) c->destNode->midiMessageReceived(i, m);
 
-	if (autoFeedback->boolValue() && currentOutDevice != nullptr) currentOutDevice->sendMessage(m);
+	if (autoFeedback->boolValue() && midiInterface != nullptr && midiInterface->outputDevice != nullptr) midiInterface->outputDevice->sendMessage(m);
 }
 
 void MIDIIONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	if (currentOutDevice != nullptr)
+	if (midiInterface != nullptr && midiInterface->outputDevice != nullptr)
 	{
-		for(const auto m : midiMessages)
+		for (const auto m : midiMessages)
 		{
 			MidiMessage msg = m.getMessage();
-			currentOutDevice->sendMessage(msg);
+			midiInterface->outputDevice->sendMessage(msg);
 		}
 	}
 }
@@ -92,7 +106,10 @@ void MIDIIONode::onContainerParameterChangedInternal(Parameter* p)
 
 	if (p == enabled)
 	{
-		if (currentOutDevice != nullptr) clock.setOutput(enabled->boolValue() && enableClock->boolValue() ? currentOutDevice : nullptr);
+		if (midiInterface != nullptr && midiInterface->outputDevice != nullptr)
+		{
+			clock.setOutput(enabled->boolValue() && enableClock->boolValue() ? midiInterface->outputDevice : nullptr);
+		}
 	}
 }
 
@@ -102,6 +119,9 @@ void MIDIIONode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 
 	if (c == enableClock)
 	{
-		if (currentOutDevice != nullptr) clock.setOutput(enabled->boolValue() && enableClock->boolValue() ? currentOutDevice : nullptr);
+		if (midiInterface != nullptr && midiInterface->outputDevice != nullptr)
+		{
+			clock.setOutput(enabled->boolValue() && enableClock->boolValue() ? midiInterface->outputDevice : nullptr);
+		}
 	}
 }

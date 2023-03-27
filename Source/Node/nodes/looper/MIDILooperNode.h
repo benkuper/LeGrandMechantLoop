@@ -29,7 +29,7 @@ public:
     virtual LooperTrack* createLooperTrack(int index) override;
 
    // virtual  void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer) override;
-    virtual void midiMessageReceived(const MidiMessage& m) override;
+    virtual void midiMessageReceived(MIDIInterface* i, const MidiMessage& m) override;
 
     void onControllableFeedbackUpdateInternal(ControllableContainer * cc, Controllable *c) override;
 

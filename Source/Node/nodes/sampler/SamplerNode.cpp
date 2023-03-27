@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 SamplerNode::SamplerNode(var params) :
 	Node(getTypeStringStatic(), params, true, true, false, true, true, true),
 	recordingNote(-1),
@@ -280,9 +282,10 @@ void SamplerNode::controllableStateChanged(Controllable* c)
 	Node::controllableStateChanged(c);
 }
 
-void SamplerNode::midiMessageReceived(const MidiMessage& m)
+void SamplerNode::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 {
-	midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
+	Node::midiMessageReceived(i, m);
+	//midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
 }
 
 

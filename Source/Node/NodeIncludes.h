@@ -25,6 +25,7 @@
 #include "Engine/AudioManager.h"
 #include "Engine/VSTManager.h"
 #include "Transport/Transport.h"
+#include "Interface/InterfaceIncludes.h"
 
 #include "Node.h"
 

@@ -12,7 +12,7 @@
 
 class MIDIInterface :
 	public Interface,
-	public MIDIInputDevice::MIDIInputListener
+	public MidiInputCallback
 {
 public:
 	MIDIInterface(var params = var());
@@ -60,15 +60,18 @@ public:
 	void onContainerParameterChangedInternal(Parameter* p) override;
 	void updateMIDIDevices();
 
-	virtual void noteOnReceived(const int& channel, const int& pitch, const int& velocity) override;
-	virtual void noteOffReceived(const int& channel, const int& pitch, const int& velocity) override;
-	virtual void controlChangeReceived(const int& channel, const int& number, const int& value) override;
-	virtual void sysExReceived(const MidiMessage& msg) override;
-	virtual void fullFrameTimecodeReceived(const MidiMessage& msg) override;
-	virtual void pitchWheelReceived(const int& channel, const int& value) override;
-	virtual void channelPressureReceived(const int& channel, const int& value) override;
-	virtual void afterTouchReceived(const int& channel, const int& note, const int& value) override;
-	virtual void midiMessageReceived(const MidiMessage& msg) override;
+	virtual void handleIncomingMidiMessage(MidiInput* source,
+		const MidiMessage& message) override;
+
+	virtual void noteOnReceived(const int& channel, const int& pitch, const int& velocity);
+	virtual void noteOffReceived(const int& channel, const int& pitch, const int& velocity);
+	virtual void controlChangeReceived(const int& channel, const int& number, const int& value);
+	virtual void sysExReceived(const MidiMessage& msg);
+	virtual void fullFrameTimecodeReceived(const MidiMessage& msg);
+	virtual void pitchWheelReceived(const int& channel, const int& value);
+	virtual void channelPressureReceived(const int& channel, const int& value);
+	virtual void afterTouchReceived(const int& channel, const int& note, const int& value);
+	virtual void midiMessageReceived(const MidiMessage& msg);
 
 	class MIDIInterfaceListener
 	{

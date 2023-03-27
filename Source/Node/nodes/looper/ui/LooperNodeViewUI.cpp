@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 LooperNodeViewUI::LooperNodeViewUI(LooperNode* n) :
 	NodeViewUI(n)
 {
@@ -56,13 +58,13 @@ void LooperNodeViewUI::viewFilterUpdated()
 		{
 			if (midiParamUI == nullptr)
 			{
-				midiParamUI.reset(new MIDIDeviceParameterUI(node->midiParam, true, false));
+				midiParamUI.reset(node->midiInterfaceParam->createTargetUI());
 				addAndMakeVisible(midiParamUI.get());
 				contentComponents.add(midiParamUI.get());
 			}
 		}
-		
-		
+
+
 		if (recUI == nullptr)
 		{
 			recUI.reset(node->recTrigger->createButtonUI());
@@ -93,7 +95,7 @@ void LooperNodeViewUI::viewFilterUpdated()
 			{
 				removeChildComponent(midiParamUI.get());
 				contentComponents.removeAllInstancesOf(midiParamUI.get());
-				midiParamUI.reset(mlp->midiParam->createMIDIParameterUI());
+				midiParamUI.reset(mlp->midiInterfaceParam->createTargetUI());
 			}
 		}
 
@@ -120,7 +122,7 @@ void LooperNodeViewUI::viewFilterUpdated()
 			clearAllUI.reset();
 		}
 	}
-	
+
 	updateTracksUI();
 
 	NodeViewUI::viewFilterUpdated();

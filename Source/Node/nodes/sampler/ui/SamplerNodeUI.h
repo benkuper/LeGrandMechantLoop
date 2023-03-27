@@ -39,7 +39,7 @@ public:
     ~SamplerNodeViewUI();
 
     std::unique_ptr<ImageButton> editHeaderBT;
-    std::unique_ptr<MIDIDeviceParameterUI> midiParamUI;
+    std::unique_ptr<TargetParameterUI> midiParamUI;
 
     SamplerMidiKeyboardComponent midiComp;
 

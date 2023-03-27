@@ -26,7 +26,7 @@ public:
 
     void updateTracksUI();
 
-    std::unique_ptr<MIDIDeviceParameterUI> midiParamUI;
+    std::unique_ptr<TargetParameterUI> midiParamUI;
     OwnedArray<LooperTrackUI> tracksUI;
 
     void controllableFeedbackUpdateInternal(Controllable* c) override;

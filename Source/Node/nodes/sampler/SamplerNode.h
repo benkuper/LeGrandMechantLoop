@@ -104,7 +104,7 @@ public:
 	void onContainerParameterChangedInternal(Parameter* p) override;
 	void controllableStateChanged(Controllable* c) override;
 
-	void midiMessageReceived(const MidiMessage& m) override;
+	void midiMessageReceived(MIDIInterface* i, const MidiMessage& m) override;
 
 	virtual void handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
 	virtual void handleNoteOff(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;

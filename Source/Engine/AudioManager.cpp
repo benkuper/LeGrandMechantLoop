@@ -164,7 +164,11 @@ void AudioManager::loadJSONDataInternal(var data)
     if (data.getDynamicObject()->hasProperty("audioSettings"))
     {
         std::unique_ptr<XmlElement> elem = XmlDocument::parse(data.getProperty("audioSettings", ""));
-        am.initialise(0, 2, elem.get(), true);
+        String result = am.initialise(0, 2, elem.get(), false);
+        if (result.isNotEmpty())
+        {
+            LOGERROR("Error loading audio settings, please check your audio settings in File > Project Settings");
+        }
     }
 }
 

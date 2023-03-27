@@ -8,6 +8,9 @@
   ==============================================================================
 */
 
+#include "Interface/InterfaceIncludes.h"
+#include "Engine/AudioManager.h"
+
 MIDIInterface::MIDIInterface(var params) :
 	Interface(getTypeString(), params),
 	inputDevice(nullptr),
@@ -38,7 +41,14 @@ MIDIInterface::MIDIInterface(var params) :
 
 MIDIInterface::~MIDIInterface()
 {
-	if (inputDevice != nullptr) inputDevice->removeMIDIInputListener(this);
+	if (inputDevice != nullptr)
+	{
+		if (AudioManager::getInstanceWithoutCreating() != nullptr)
+		{
+			AudioManager::getInstance()->am.removeMidiInputDeviceCallback(inputDevice->name, this);
+			AudioManager::getInstance()->am.setMidiInputDeviceEnabled(inputDevice->name, false);
+		}
+	};
 	if (outputDevice != nullptr) outputDevice->close();
 }
 
@@ -156,12 +166,16 @@ void MIDIInterface::updateMIDIDevices()
 	//{
 	if (inputDevice != nullptr)
 	{
-		inputDevice->removeMIDIInputListener(this);
+		AudioManager::getInstance()->am.setMidiInputDeviceEnabled(inputDevice->id, false);
+		AudioManager::getInstance()->am.removeMidiInputDeviceCallback(inputDevice->id, this);
+		//inputDevice->removeMIDIInputListener(this);
 	}
 	inputDevice = newInput;
 	if (inputDevice != nullptr)
 	{
-		inputDevice->addMIDIInputListener(this);
+		AudioManager::getInstance()->am.setMidiInputDeviceEnabled(inputDevice->id, true);
+		AudioManager::getInstance()->am.addMidiInputDeviceCallback(inputDevice->id, this);
+		//inputDevice->addMIDIInputListener(this);
 	}
 	//}
 
@@ -174,6 +188,20 @@ void MIDIInterface::updateMIDIDevices()
 	//} 
 
 	isConnected->setValue(inputDevice != nullptr || outputDevice != nullptr);
+}
+
+void MIDIInterface::handleIncomingMidiMessage(MidiInput* source, const MidiMessage& message)
+{
+	midiMessageReceived(message);
+	if (message.isNoteOn()) noteOnReceived(message.getChannel(), message.getNoteNumber(), message.getVelocity());
+	else if (message.isNoteOn()) noteOnReceived(message.getChannel(), message.getNoteNumber(), message.getVelocity());
+	else if (message.isNoteOff()) noteOffReceived(message.getChannel(), message.getNoteNumber(), message.getVelocity());
+	else if (message.isController()) controlChangeReceived(message.getChannel(), message.getControllerNumber(), message.getControllerValue());
+	else if (message.isSysEx()) sysExReceived(message);
+	else if (message.isPitchWheel()) pitchWheelReceived(message.getChannel(), message.getPitchWheelValue());
+	else if (message.isAftertouch()) afterTouchReceived(message.getChannel(), message.getNoteNumber(), message.getAfterTouchValue());
+	else if (message.isChannelPressure()) channelPressureReceived(message.getChannel(), message.getChannelPressureValue());
+	else if (message.isFullFrame()) fullFrameTimecodeReceived(message);
 }
 
 void MIDIInterface::noteOnReceived(const int& channel, const int& pitch, const int& velocity)
@@ -227,7 +255,7 @@ void MIDIInterface::sysExReceived(const MidiMessage& msg)
 	}
 
 	midiInterfaceListeners.call(&MIDIInterfaceListener::sysExReceived, this, msg);
-	
+
 	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(sysexEventId, Array<var>(data.getRawDataPointer(), data.size()));
 }
 

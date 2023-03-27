@@ -23,13 +23,15 @@ public:
 	BoolParameter* enableClock;
 	BoolParameter* autoFeedback;
 
-	void setMIDIInDevice(MIDIInputDevice* d) override;
-	void setMIDIOutDevice(MIDIOutputDevice* d) override;
+	//void setMIDIInDevice(MIDIInputDevice* d) override;
+	//void setMIDIOutDevice(MIDIOutputDevice* d) override;
+
+	void setMIDIInterface(MIDIInterface* i) override;
 
 	void addInConnection(NodeConnection* c) override;
 	void removeInConnection(NodeConnection* c) override;
 
-	void midiMessageReceived(const MidiMessage& m) override;
+	void midiMessageReceived(MIDIInterface* i, const MidiMessage& m) override;
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
