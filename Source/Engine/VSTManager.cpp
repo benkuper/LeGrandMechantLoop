@@ -120,7 +120,7 @@ void VSTManager::updateVSTList()
 	{
 		String pid = d->manufacturerName + "/" + d->name;
 		idDescriptionMap.set(pid, d);
-		s += "\n" + d->category + " > " + d->name + " (" + d->pluginFormatName + ")";
+		s += "\n" + pid + ", uid : " + String(d->uniqueId) + " (" + d->pluginFormatName + ")";
 	}
 
 	NLOG("VST", s);
@@ -202,7 +202,16 @@ void VSTManager::afterLoadJSONDataInternal()
 
 void VSTManager::onContainerTriggerTriggered(Trigger* t)
 {
-	if (t == rescan) startThread();
+	if (t == rescan)
+	{
+		updateVSTList();
+	}
+}
+
+String VSTManager::getParameterValueForDescription(PluginDescription* d)
+{
+	if (d == nullptr) return "";
+	return d->manufacturerName + "/" + d->name;
 }
 
 void VSTManager::run()
@@ -226,8 +235,27 @@ VSTPluginParameter::~VSTPluginParameter()
 
 PluginDescription* VSTPluginParameter::getPluginDescription()
 {
-	if (stringValue().isEmpty() || !VSTManager::getInstance()->idDescriptionMap.contains(stringValue())) return nullptr;
-	return VSTManager::getInstance()->idDescriptionMap[stringValue()];
+	if (value.toString().isNotEmpty() && VSTManager::getInstance()->idDescriptionMap.contains(value.toString())) return VSTManager::getInstance()->idDescriptionMap[value.toString()];
+
+	if (vstID != -1 && VSTManager::getInstance()->uidDescriptionMap.contains(vstID)) return VSTManager::getInstance()->uidDescriptionMap[vstID];
+
+	return nullptr;
+}
+
+void VSTPluginParameter::setValueInternal(var& value)
+{
+	StringParameter::setValueInternal(value);
+
+	if (PluginDescription* d = getPluginDescription())
+	{
+		if (d != nullptr) vstID = d->uniqueId;
+
+		String pid = VSTManager::getInstance()->getParameterValueForDescription(d);
+		if (value.toString() != pid)
+		{
+			setValue(pid);
+		}
+	}
 }
 
 VSTPluginParameterUI* VSTPluginParameter::createVSTParamUI()
@@ -238,6 +266,19 @@ VSTPluginParameterUI* VSTPluginParameter::createVSTParamUI()
 ControllableUI* VSTPluginParameter::createDefaultUI(Array<Controllable*> controllables)
 {
 	return createVSTParamUI();
+}
+
+var VSTPluginParameter::getJSONDataInternal()
+{
+	var data = StringParameter::getJSONDataInternal();
+	data.getDynamicObject()->setProperty("vstID", vstID);
+	return data;
+}
+
+void VSTPluginParameter::loadJSONDataInternal(var data)
+{
+	vstID = data.getProperty("vstID", -1);
+	StringParameter::loadJSONDataInternal(data);
 }
 
 inline int DescriptionSorter::compareElements(PluginDescription* first, PluginDescription* second)

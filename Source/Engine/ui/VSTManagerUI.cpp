@@ -108,7 +108,7 @@ void VSTPluginParameterUI::showMenuAndSetVST()
 		{
 			if (PluginDescription* d = VSTManager::getInstance()->descriptions[result - 1])
 			{
-				String pid = d->manufacturerName + "/" + d->name;
+				String pid = VSTManager::getInstance()->getParameterValueForDescription(d);
 				parameter->setValue(pid);
 			}
 		});

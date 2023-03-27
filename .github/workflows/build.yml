@@ -88,6 +88,19 @@ jobs:
     # if: false # tmp disable
     name: OSX
     runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        include:
+        - arch: x86_64
+          config: Release
+
+        - arch: arm64
+          config: ReleaseSilicon
+        
+      fail-fast: false
+
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repo
@@ -116,13 +129,14 @@ jobs:
           hdiutil detach "/Volumes/Packages ${{ env.PackagesVersion }}/"
 
       - name: Build
-        uses: sersoft-gmbh/xcodebuild-action@v1.3
+        uses: sersoft-gmbh/xcodebuild-action@v2.0.1
         with:
           project: Builds/MacOSX_CI/${{ env.ProjectName }}.xcodeproj
           destination: platform=macOS
           jobs: 2
           action: build
-          configuration: Release
+          arch: ${{ matrix.arch }}
+          configuration: ${{ matrix.config }}
           use-xcpretty: true
 
       - name: Create Package

@@ -63,6 +63,7 @@
 		CC69DFEF15186DE85D0AEEE6 /* Transport.cpp */ = {isa = PBXBuildFile; fileRef = 859F4958802D47DEEC06564B; };
 		CD40EF60B3FCD28CADE5CF02 /* list_ports_osx.cc */ = {isa = PBXBuildFile; fileRef = B9A3D953F44F285AC5202522; };
 		CE1DF03C7551B8394694FF69 /* include_juce_audio_processors_ara.cpp */ = {isa = PBXBuildFile; fileRef = C6B0140C8D8CC06CB960A5C4; };
+		CF56F1B410E5E1AC894CE73A /* Security.framework */ = {isa = PBXBuildFile; fileRef = FACEE3ECA58674C55640FB92; };
 		CFEFF05EFD1D55458347C970 /* QuartzCore.framework */ = {isa = PBXBuildFile; fileRef = 0541796DAE701E4B19F42390; };
 		D290400B52F9FBD455BB2ED3 /* MainComponent.cpp */ = {isa = PBXBuildFile; fileRef = 4B982CEDC55A9BE7B87BCC59; };
 		D56986E4F1ADC9FD0376FACD /* MacroParameter.cpp */ = {isa = PBXBuildFile; fileRef = BE601C2780679E6F4C0BE6F1; };
@@ -356,6 +357,7 @@
 		F942675BAAAF04A80D9B1F82 /* VSTManagerUI.h */ /* VSTManagerUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VSTManagerUI.h; path = ../../Source/Engine/ui/VSTManagerUI.h; sourceTree = SOURCE_ROOT; };
 		F974C2D82E5178DFE1C8CA09 /* LooperNode.cpp */ /* LooperNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = LooperNode.cpp; path = ../../Source/Node/nodes/looper/LooperNode.cpp; sourceTree = SOURCE_ROOT; };
 		F985C0BE8A95CF9821C3D4FE /* FFTAnalyzerManager.cpp */ /* FFTAnalyzerManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = FFTAnalyzerManager.cpp; path = ../../Source/Node/nodes/analysis/FFTAnalyzerManager.cpp; sourceTree = SOURCE_ROOT; };
+		FACEE3ECA58674C55640FB92 /* Security.framework */ /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		FBCDB20CE999BAE758327213 /* Interface.cpp */ /* Interface.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Interface.cpp; path = ../../Source/Interface/Interface.cpp; sourceTree = SOURCE_ROOT; };
 		FC57670C4734632FC50D2C47 /* include_juce_audio_basics.mm */ /* include_juce_audio_basics.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_basics.mm; path = ../../JuceLibraryCode/include_juce_audio_basics.mm; sourceTree = SOURCE_ROOT; };
 		FDBC6E00C0B0A432B29A8A21 /* CommonIncludes.cpp */ /* CommonIncludes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = CommonIncludes.cpp; path = ../../Source/Common/CommonIncludes.cpp; sourceTree = SOURCE_ROOT; };
@@ -384,6 +386,7 @@
 				5C8A6C5D3BEC266DEE432DFE,
 				4FC098D6A99C54CF3788A48C,
 				CFEFF05EFD1D55458347C970,
+				CF56F1B410E5E1AC894CE73A,
 				E8FE75A8B168ACCCFF304651,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -547,6 +550,7 @@
 				3DCAA901175936711B7515FF,
 				237984418F226657BC6FDEB6,
 				0541796DAE701E4B19F42390,
+				FACEE3ECA58674C55640FB92,
 				00691923FD0FEF27E71438CD,
 			);
 			name = Frameworks;
@@ -1332,9 +1336,9 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
 				COMBINE_HIDPI_IMAGES = YES;
-				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
+				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/../../Release";
 				DEAD_CODE_STRIPPING = YES;
-				EXCLUDED_ARCHS = "i386 arm64 arm64e";
+				EXCLUDED_ARCHS = "i386 arm64e";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1395,12 +1399,12 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include";
-				OTHER_LDFLAGS = "-lServus -lrubberband -lssl -lcrypto -weak_framework Metal -weak_framework MetalKit";
+				OTHER_LDFLAGS = "-lServus -lrubberband -lssl -lcrypto -lz -weak_framework Metal -weak_framework MetalKit";
 				PRODUCT_BUNDLE_IDENTIFIER = benkuper.LGML;
 				PRODUCT_NAME = "LGML";
 				USE_HEADERMAP = NO;
 				VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS = OpenGL;
-				VALID_ARCHS = "x86_64";
+				VALID_ARCHS = "arm64 x86_64";
 			};
 			name = Release;
 		};
@@ -1451,6 +1455,132 @@
 			};
 			name = Release;
 		};
+		7E7A5D4A0E25816A1BB9241C /* ReleaseSilicon */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = NO;
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PRODUCT_NAME = "LGML";
+				SDKROOT = macosx;
+				WARNING_CFLAGS = "-Wreorder";
+				ZERO_LINK = NO;
+			};
+			name = ReleaseSilicon;
+		};
+		CC8C1F9FFB5E3873242B3818 /* ReleaseSilicon */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_LINK_OBJC_RUNTIME = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/../../Release";
+				DEAD_CODE_STRIPPING = YES;
+				EXCLUDED_ARCHS = "i386 arm64e";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"_NDEBUG=1",
+					"NDEBUG=1",
+					"VST_LOGGING=0",
+					"JUCE_SUPPORT_CARBON=0",
+					"JUCE_COREGRAPHICS_DRAW_ASYNC=1",
+					"LINK_PLATFORM_MACOSX=1",
+					"JUCER_XCODE_MAC_2F3811D6=1",
+					"JUCE_APP_VERSION=1.0.0b86",
+					"JUCE_APP_VERSION_HEX=0x10000",
+					"JucePlugin_Build_VST=0",
+					"JucePlugin_Build_VST3=0",
+					"JucePlugin_Build_AU=0",
+					"JucePlugin_Build_AUv3=0",
+					"JucePlugin_Build_AAX=0",
+					"JucePlugin_Build_Standalone=0",
+					"JucePlugin_Build_Unity=0",
+					"JucePlugin_Build_LV2=0",
+				);
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src",
+					"$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv",
+					"$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom",
+					"$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src",
+					"$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord",
+					"$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd",
+					"$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2",
+					"$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK",
+					"$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
+					"$(SRCROOT)/../../JuceLibraryCode",
+					"$(SRCROOT)/../../JUCE/modules",
+					"$(SRCROOT)/../../Modules",
+					"$(SRCROOT)/../../External/servus/include",
+					"$(SRCROOT)/../../External/dnssd/include",
+					"$(SRCROOT)/../../External/serial/include",
+					"$(SRCROOT)/../../Source",
+					"$(SRCROOT)/../../External/asio",
+					"$(SRCROOT)/../../External/servus/include",
+					"$(SRCROOT)/../../External/dnssd/include",
+					"$(SRCROOT)/../../External/vst2",
+					"$(SRCROOT)/../../External/serial/include",
+					"$(SRCROOT)/../../External/rubberband/include",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = Info-App.plist;
+				INFOPLIST_PREPROCESS = NO;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"../../External/servus/lib/silicon/release\"",
+					"\"../../External/rubberband/lib/silicon\"",
+					"\"../../Modules/juce_simpleweb/libs/MacOSX\"",
+					"\"../../Modules/juce_simpleweb/libs/MacOSX/${CURRENT_ARCH}\"",
+				);
+				LLVM_LTO = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MTL_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK $(SRCROOT)/../../JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(SRCROOT)/../../JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include";
+				OTHER_LDFLAGS = "-lServus -lrubberband -lssl -lcrypto -lz -weak_framework Metal -weak_framework MetalKit";
+				PRODUCT_BUNDLE_IDENTIFIER = benkuper.LGML;
+				PRODUCT_NAME = "LGML";
+				USE_HEADERMAP = NO;
+				VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS = OpenGL;
+				VALID_ARCHS = "arm64 x86_64";
+			};
+			name = ReleaseSilicon;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1458,6 +1588,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				3D7B0F86B2C21C2D48FB4C72,
+				7E7A5D4A0E25816A1BB9241C,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1466,6 +1597,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1E475356294280DA82BEB36A,
+				CC8C1F9FFB5E3873242B3818,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
