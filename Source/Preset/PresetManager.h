@@ -30,21 +30,24 @@ public:
 
     Trigger* saveCurrentTrigger;
     Trigger* loadCurrentTrigger;
+    Trigger* nextPreset;
+    Trigger* previousPreset;
     Preset* currentPreset;
 
     StringParameter* curPresetName;
 
     //Transition
-    FloatParameter* transitionTime;
-    Automation transition;
+    
     HashMap<WeakReference<Parameter>, var> initTargetMap;
 
-    enum TransitionMode {INTERPOLATE, AT_START, AT_END, DEFAULT};
-    EnumParameter* directTransitionMode;
+
 
     void clear() override;
 
     void setCurrentPreset(Preset* p);
+    void loadNextPreset(Preset* p, bool recursive);
+    void loadPreviousPreset(Preset* p);
+    void loadLastNestedPresetFor(Preset* p);
     void onContainerTriggerTriggered(Trigger* t) override;
 
     void toggleParameterPresettable(Parameter* p);
@@ -58,9 +61,6 @@ public:
 
     void fillPresetMenu(PopupMenu & menu, int indexOffset, Parameter * targetParam = nullptr);
     Preset * getPresetForMenuResult(int result);
-
-    var getJSONData() override;
-    void loadJSONDataManagerInternal(var data) override;
 
     void run() override;
     void lerpParameters(float progression, float weight);

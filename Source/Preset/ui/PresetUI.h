@@ -22,7 +22,7 @@ public:
 
     std::unique_ptr<PresetManagerUI> pmui;
     std::unique_ptr<ImageButton> addBT;
-    std::unique_ptr<ColorParameterUI> colorUI;
+    //std::unique_ptr<ColorParameterUI> colorUI;
     std::unique_ptr<TriggerButtonUI> loadUI;
 
     void paintOverChildren(Graphics& g) override;

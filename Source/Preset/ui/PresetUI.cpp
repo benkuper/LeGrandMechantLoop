@@ -9,7 +9,7 @@
 */
 
 #include "Node/NodeIncludes.h"
-#include "PresetUI.h"
+#include "Preset/PresetIncludes.h"
 
 PresetUI::PresetUI(Preset* p) :
 	BaseItemUI(p, NONE, true)
@@ -18,8 +18,8 @@ PresetUI::PresetUI(Preset* p) :
 	addAndMakeVisible(addBT.get());
 	addBT->addListener(this);
 
-	colorUI.reset(item->color->createColorParamUI());
-	addAndMakeVisible(colorUI.get());
+	//colorUI.reset(item->itemColor->createColorParamUI());
+	//addAndMakeVisible(colorUI.get());
 
 	loadUI.reset(item->loadTrigger->createButtonUI());
 	addAndMakeVisible(loadUI.get());
@@ -38,7 +38,7 @@ PresetUI::PresetUI(Preset* p) :
 	highlightLinkedInspectablesOnOver = false;
 
 	setDisableDefaultMouseEvents(true);
-	bgColor = item->color->getColor();
+	bgColor = item->itemColor->getColor();
 }
 
 PresetUI::~PresetUI()
@@ -93,7 +93,7 @@ void PresetUI::handleContextMenuResult(int result)
 void PresetUI::resizedInternalHeader(Rectangle<int>& r)
 {
 	addBT->setBounds(r.removeFromRight(r.getHeight()));
-	colorUI->setBounds(r.removeFromRight(r.getHeight()).reduced(1));
+	//colorUI->setBounds(r.removeFromRight(r.getHeight()).reduced(1));
 	loadUI->setBounds(r.removeFromRight(80));
 }
 
@@ -139,9 +139,9 @@ void PresetUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
 	BaseItemUI::controllableFeedbackUpdateInternal(c);
 
-	if (c == item->color)
+	if (c == item->itemColor)
 	{
-		bgColor = item->color->getColor();
+		bgColor = item->itemColor->getColor();
 		repaint();
 	}
 	else if (c == item->isCurrent)

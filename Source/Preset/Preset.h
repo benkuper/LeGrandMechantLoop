@@ -20,10 +20,14 @@ public:
     Preset(var params = var());
     ~Preset();
 
-    ColorParameter* color;
     Trigger* saveTrigger;
     Trigger* loadTrigger;
     BoolParameter* isCurrent;
+
+    FloatParameter* transitionTime;
+    Automation transition;
+    enum TransitionMode { INTERPOLATE, AT_START, AT_END, DEFAULT };
+    EnumParameter* directTransitionMode;
 
     //overriding
     HashMap<WeakReference<Parameter>, var> dataMap;

@@ -73,16 +73,16 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 
 
 		bool canInterpolate = param->type != Parameter::BOOL && param->type != Parameter::ENUM && param->type != Parameter::STRING && param->type != Parameter::ENUM;
-		int option = RootPresetManager::getInstance()->getParameterPresetOption(param, "transition", (int)(canInterpolate ? RootPresetManager::INTERPOLATE : RootPresetManager::DEFAULT));
+		int option = RootPresetManager::getInstance()->getParameterPresetOption(param, "transition", (int)(canInterpolate ? Preset::INTERPOLATE : Preset::DEFAULT));
 		PopupMenu interpMenu;
-		interpMenu.addItem(0x5010, "Interpolate", canInterpolate, option == RootPresetManager::INTERPOLATE);
-		interpMenu.addItem(0x5013, "Default", !canInterpolate, option == RootPresetManager::DEFAULT);
+		interpMenu.addItem(0x5010, "Interpolate", canInterpolate, option == Preset::INTERPOLATE);
+		interpMenu.addItem(0x5013, "Default", !canInterpolate, option == Preset::DEFAULT);
 
-		interpMenu.addItem(0x5011, "Change at start", true, option == RootPresetManager::AT_START);
-		interpMenu.addItem(0x5012, "Chante at end", true, option == RootPresetManager::AT_END);
+		interpMenu.addItem(0x5011, "Change at start", true, option == Preset::AT_START);
+		interpMenu.addItem(0x5012, "Chante at end", true, option == Preset::AT_END);
 		p->addSubMenu("Transition Mode", interpMenu);
 
-		p->addItem(0x5001, "Save to current (" + presetName+")", true, isOverride);
+		p->addItem(0x5001, "Save to current (" + presetName + ")", true, isOverride);
 
 		PopupMenu saveToOtherMenu;
 		RootPresetManager::getInstance()->fillPresetMenu(saveToOtherMenu, 0x20000, param);
@@ -107,7 +107,7 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 		RootPresetManager::getInstance()->toggleParameterPresettable(p);
 		return true;
 	}
-	else if (result == 0x5001 || result  == 0x5002)
+	else if (result == 0x5001 || result == 0x5002)
 	{
 		if (Preset* preset = RootPresetManager::getInstance()->currentPreset)
 		{
@@ -115,7 +115,7 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 			if (result == 0x5001)
 			{
 				preset->save(p);
-				LOG("Saved " << p->niceName << " to preset " << preset->niceName << (preset->isMain()?"":" (Override)"));
+				LOG("Saved " << p->niceName << " to preset " << preset->niceName << (preset->isMain() ? "" : " (Override)"));
 			}
 			else if (result == 0x5002)
 			{

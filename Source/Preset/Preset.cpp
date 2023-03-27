@@ -20,12 +20,25 @@ Preset::Preset(var params) :
 	subPresets->addBaseManagerListener(this);
 
 	Random r;
-	color = addColorParameter("Color", "Color for UI convenience", Colour::fromHSV(r.nextFloat(), .3f, .5f, 1));
-	color->forceSaveValue = true;
-	saveTrigger = addTrigger("Save", "Save the current state in this preset. If this is a sub-preset, this will only save overriden values");
-	loadTrigger = addTrigger("Load", "Load the values in this preset. It this is a sub-preset, this will fetch all values up to its root preset");
 	isCurrent = addBoolParameter("Is Current", "If this is the currently loaded preset", false);
 	isCurrent->setControllableFeedbackOnly(true);
+
+	setHasCustomColor(true);
+	itemColor->forceSaveValue = true;
+
+	saveTrigger = addTrigger("Save", "Save the current state in this preset. If this is a sub-preset, this will only save overriden values");
+	loadTrigger = addTrigger("Load", "Load the values in this preset. It this is a sub-preset, this will fetch all values up to its root preset");
+	
+
+	transitionTime = addFloatParameter("Transition Time", "Time to transition.", 0, 0);
+	transitionTime->defaultUI = FloatParameter::TIME;
+
+	directTransitionMode = addEnumParameter("Direct Transition Mode", "For Boolean, String, Enum and other non transitionnable parameters.");
+	directTransitionMode->addOption("Change at start", AT_START)->addOption("Change at end", AT_END);
+	transition.addKey(0, 0);
+	transition.addKey(1, 1);
+	addChildControllableContainer(&transition);
+
 	listUISize->isSavable = false;
 
 	editorIsCollapsed = true;
@@ -236,7 +249,7 @@ void Preset::onContainerTriggerTriggered(Trigger* t)
 
 void Preset::itemAdded(Preset* p)
 {
-	if (!isCurrentlyLoadingData) p->color->setColor(color->getColor().brighter(.3f));
+	if (!isCurrentlyLoadingData) p->itemColor->setColor(itemColor->getColor().brighter(.3f));
 }
 
 var Preset::getJSONData()

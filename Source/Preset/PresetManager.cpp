@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Preset/PresetIncludes.h"
+
 juce_ImplementSingleton(RootPresetManager);
 
 PresetManager::PresetManager() :
@@ -24,23 +26,17 @@ PresetManager::~PresetManager()
 RootPresetManager::RootPresetManager() :
 	PresetManager(),
 	Thread("Preset Manager"),
-	currentPreset(nullptr),
-	transition("Transition Curve")
+	currentPreset(nullptr)
 {
 	saveCurrentTrigger = addTrigger("Save Current", "Save state to current preset");
 	loadCurrentTrigger = addTrigger("Load Current", "Load state to current preset");
 
+	nextPreset = addTrigger("Next", "Load next preset");
+	previousPreset = addTrigger("Previous", "Load previous preset");
+
 	curPresetName = addStringParameter("Current Preset", "The name of the current preset, for reference", "");
 	curPresetName->setControllableFeedbackOnly(true);
 
-	transitionTime = addFloatParameter("Transition Time", "Time to transition.", 0, 0);
-	transitionTime->defaultUI = FloatParameter::TIME;
-
-	directTransitionMode = addEnumParameter("Direct Transition Mode", "For Boolean, String, Enum and other non transitionnable parameters.");
-	directTransitionMode->addOption("Change at start", AT_START)->addOption("Change at end", AT_END);
-	transition.addKey(0, 0);
-	transition.addKey(1, 1);
-	addChildControllableContainer(&transition);
 }
 
 RootPresetManager::~RootPresetManager()
@@ -72,11 +68,65 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 	{
 		currentPreset->addInspectableListener(this);
 		currentPreset->isCurrent->setValue(true);
-		if (transitionTime->floatValue() == 0) currentPreset->load();
+		if (currentPreset->transitionTime->floatValue() == 0) currentPreset->load();
 		else startThread();
 	}
 
 	curPresetName->setValue(currentPreset != nullptr ? currentPreset->niceName : "");
+}
+
+void RootPresetManager::loadNextPreset(Preset* p, bool recursive)
+{
+	if (p == nullptr) return;
+
+	if (recursive && p->subPresets->items.size() > 0)
+	{
+		setCurrentPreset(p->subPresets->items.getFirst());
+		return;
+	}
+
+	PresetManager* pm = p != nullptr ? (PresetManager*)p->parentContainer.get() : this;
+	if (pm == nullptr) return;
+	Preset* np = pm->items.indexOf(p) < pm->items.size() - 1 ? pm->items[pm->items.indexOf(p) + 1] : nullptr;
+	if (np != nullptr) setCurrentPreset(np);
+	else
+	{
+		Preset* pp = (Preset*)pm->parentContainer.get();
+		if (pp == nullptr) return;
+		loadNextPreset(pp, false);
+	}
+}
+
+void RootPresetManager::loadPreviousPreset(Preset* p)
+{
+	PresetManager* pm = p != nullptr ? (PresetManager*)p->parentContainer.get() : this;
+	if (pm == nullptr) return;
+
+	Preset* prevP = pm->items.indexOf(p) > 0 ? pm->items[pm->items.indexOf(p) - 1] : nullptr;
+	if (prevP != nullptr)
+	{
+		loadLastNestedPresetFor(prevP);
+		return;
+	}
+
+	Preset* pp = ControllableUtil::findParentAs<Preset>(p);
+	if (pp != nullptr) setCurrentPreset(pp);
+	
+}
+
+void RootPresetManager::loadLastNestedPresetFor(Preset* p)
+{
+	if (p == nullptr) return;
+
+	PresetManager* pm = p->subPresets.get();
+
+	if (pm->items.size() == 0)
+	{
+		setCurrentPreset(p);
+		return;
+	}
+
+	loadLastNestedPresetFor(pm->items.getLast());
 }
 
 void RootPresetManager::onContainerTriggerTriggered(Trigger* t)
@@ -88,6 +138,14 @@ void RootPresetManager::onContainerTriggerTriggered(Trigger* t)
 	else if (t == loadCurrentTrigger)
 	{
 		if (currentPreset != nullptr) currentPreset->loadTrigger->trigger();
+	}
+	else if (t == nextPreset)
+	{
+		loadNextPreset(currentPreset, true);
+	}
+	else if (t == previousPreset)
+	{
+		loadPreviousPreset(currentPreset);
 	}
 }
 
@@ -127,11 +185,11 @@ void RootPresetManager::inspectableDestroyed(Inspectable* i)
 	if (i == currentPreset) setCurrentPreset(nullptr);
 }
 
-Array<Preset*> RootPresetManager::getAllPresets(Preset * parent)
+Array<Preset*> RootPresetManager::getAllPresets(Preset* parent)
 {
 	PresetManager* pm = parent == nullptr ? RootPresetManager::getInstance() : parent->subPresets.get();
 	Array<Preset*> result;
-	if(parent != nullptr) result.add(parent);
+	if (parent != nullptr) result.add(parent);
 	for (auto& sp : pm->items) result.addArray(getAllPresets(sp));
 
 	return result;
@@ -145,24 +203,12 @@ void RootPresetManager::fillPresetMenu(PopupMenu& menu, int indexOffset, Paramet
 	for (auto& p : presets) menu.addItem(index++, p->niceName, true, p->hasPresetParam(targetParam));
 }
 
-Preset * RootPresetManager::getPresetForMenuResult(int result)
+Preset* RootPresetManager::getPresetForMenuResult(int result)
 {
 	Array<Preset*> presets = getAllPresets();
 	return presets[result];
 }
 
-var RootPresetManager::getJSONData()
-{
-	var data = BaseManager::getJSONData();
-	data.getDynamicObject()->setProperty(transition.shortName, transition.getJSONData());
-	return data;
-}
-
-void RootPresetManager::loadJSONDataManagerInternal(var data)
-{
-	BaseManager::loadJSONDataManagerInternal(data);
-	transition.loadJSONData(transition.shortName);
-}
 
 void RootPresetManager::run()
 {
@@ -172,7 +218,7 @@ void RootPresetManager::run()
 
 	initTargetMap.clear();
 
-	TransitionMode tm = directTransitionMode->getValueDataAsEnum<TransitionMode>();
+	Preset::TransitionMode tm = currentPreset->directTransitionMode->getValueDataAsEnum<Preset::TransitionMode>();
 
 	for (auto& val : props)
 	{
@@ -184,8 +230,8 @@ void RootPresetManager::run()
 			initTargetValue.append(val.value);
 
 			bool canInterpolate = tp->type != Parameter::BOOL && tp->type != Parameter::ENUM && tp->type != Parameter::STRING && tp->type != Parameter::ENUM;
-			int option = getParameterPresetOption(tp, "transition", canInterpolate ? INTERPOLATE : DEFAULT);
-			if (option == DEFAULT) option = tm;
+			int option = getParameterPresetOption(tp, "transition", canInterpolate ? Preset::INTERPOLATE : Preset::DEFAULT);
+			if (option == Preset::DEFAULT) option = tm;
 			initTargetValue.append(option);
 			initTargetMap.set(tp, initTargetValue);
 		}
@@ -194,16 +240,16 @@ void RootPresetManager::run()
 	float progression = 0;
 
 
-	lerpParameters(0, transition.getValueAtPosition(0)); //force for at_start changes
+	lerpParameters(0, currentPreset->transition.getValueAtPosition(0)); //force for at_start changes
 
 	double timeAtStart = Time::getMillisecondCounter() / 1000.0;
-	float totalTime = transitionTime->floatValue();
+	float totalTime = currentPreset->transitionTime->floatValue();
 
 	while (!threadShouldExit())
 	{
 		double currentTime = Time::getMillisecondCounter() / 1000.0 - timeAtStart;
 		progression = jmin<float>(currentTime / totalTime, 1);
-		float weight = transition.getValueAtPosition(progression);
+		float weight = currentPreset->transition.getValueAtPosition(progression);
 		lerpParameters(progression, weight);
 		if (progression == 1) return;
 		wait(30); //~30fps
@@ -220,10 +266,10 @@ void RootPresetManager::lerpParameters(float progression, float weight)
 		if (it.getKey().wasObjectDeleted()) continue;
 		Parameter* p = it.getKey().get();
 
-		TransitionMode itm = (TransitionMode)(int)it.getValue()[2];
-		if ((itm == AT_START && progression != 0) || (itm == AT_END && progression != 1)) continue;
+		Preset::TransitionMode itm = (Preset::TransitionMode)(int)it.getValue()[2];
+		if ((itm == Preset::AT_START && progression != 0) || (itm == Preset::AT_END && progression != 1)) continue;
 
-		if (itm == AT_START || itm == AT_END) p->setValue(it.getValue()[1]);
+		if (itm == Preset::AT_START || itm == Preset::AT_END) p->setValue(it.getValue()[1]);
 		else
 		{
 			if (p->isComplex())
