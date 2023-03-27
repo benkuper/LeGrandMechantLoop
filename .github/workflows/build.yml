@@ -100,8 +100,6 @@ jobs:
         
       fail-fast: false
 
-    runs-on: macos-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
