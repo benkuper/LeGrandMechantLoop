@@ -17,7 +17,8 @@ SamplerNode::SamplerNode(var params) :
 	lastPlayedNote(-1),
 	recordedSamples(0),
 	noteStatesCC("Notes"),
-	viewStartKey(20)
+	viewStartKey(20),
+	isUpdatingBank(false)
 {
 	numChannels = addIntParameter("Num Channels", "Num Channels to use for recording and playing", 1);
 
@@ -56,11 +57,12 @@ SamplerNode::SamplerNode(var params) :
 
 	releaseCurve = addFloatParameter("Release Curve", "Bend the release", 0.001f, 0, 0.1f);
 
-
 	samplesFolder = addFileParameter("Samples Folder", "To export and import");
 	samplesFolder->directoryMode = true;
-	saveSamplesTrigger = addTrigger("Export Samples", "Export all samples at once to the Samples Folder above");
 
+	currentBank = addEnumParameter("Current Bank", "Select a specific sub folder or the none for the root folder");
+	saveSamplesTrigger = addTrigger("Export Samples", "Export all samples at once to the Samples Folder above");
+	showFolderTrigger = addTrigger("Show Folder", "Show the folder in explorer");
 	keyboardState.addListener(this);
 
 	int sr = processor->getSampleRate();
@@ -93,6 +95,7 @@ SamplerNode::SamplerNode(var params) :
 	//	LOG(i << "\t" << values << "\t" << decibels);
 	//}
 
+	updateBanks();
 	updateBuffers();
 
 	setAudioInputs(numChannels->intValue());
@@ -242,6 +245,10 @@ void SamplerNode::onContainerTriggerTriggered(Trigger* t)
 	{
 		exportSamples();
 	}
+	else if (t == showFolderTrigger)
+	{
+		samplesFolder->getFile().startAsProcess();
+	}
 }
 
 void SamplerNode::onContainerParameterChangedInternal(Parameter* p)
@@ -273,7 +280,47 @@ void SamplerNode::onContainerParameterChangedInternal(Parameter* p)
 	}
 	else if (p == samplesFolder)
 	{
+		updateBanks();
 		loadSamples();
+	}
+	else if (p == currentBank)
+	{
+		if (!isUpdatingBank)
+		{
+			String b = currentBank->getValueData().toString();
+			if (b == "new")
+			{
+				//create a window with name parameter to create a new folder
+				AlertWindow* window = new AlertWindow("Add a Bank", "Add a new bank", AlertWindow::AlertIconType::NoIcon);
+				window->addTextEditor("bank", samplesFolder->getFile().getNonexistentChildFile("Bank", "", true).getFileName(), "Bank Name");
+				window->addButton("OK", 1, KeyPress(KeyPress::returnKey));
+				window->addButton("Cancel", 0, KeyPress(KeyPress::escapeKey));
+
+				window->enterModalState(true, ModalCallbackFunction::create([window, this](int result)
+					{
+
+						if (result)
+						{
+							String bankName = window->getTextEditorContents("bank");
+							File f = samplesFolder->getFile().getChildFile(bankName);
+							if (f.exists())
+							{
+								LOGWARNING("Bank already exists with name " << f.getFileName());
+								return;
+							}
+
+							f.createDirectory();
+							updateBanks(false);
+							currentBank->setValueWithKey(f.getFileName());
+						}
+					}
+				), true);
+			}
+			else
+			{
+				loadSamples();
+			}
+		}
 	}
 }
 
@@ -374,9 +421,42 @@ int SamplerNode::getFadeNumSamples()
 	return fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000;
 }
 
+void SamplerNode::updateBanks(bool loadAfter)
+{
+	File folder = samplesFolder->getFile();
+	if (!folder.exists() || !folder.isDirectory()) return;
+
+	var oldData = currentBank->getValueData();
+
+	isUpdatingBank = true;
+	currentBank->clearOptions();
+	currentBank->addOption("Default", "");
+	Array<File> files = folder.findChildFiles(File::findDirectories, false);
+	for (auto& f : files)
+	{
+		currentBank->addOption(f.getFileName(), f.getFullPathName());
+	}
+
+	currentBank->addOption("Add new...", "new");
+
+	if (oldData.isVoid()) oldData = "";
+	if (oldData.toString() != "new") currentBank->setValue(oldData);
+
+	isUpdatingBank = false;
+
+	if (loadAfter) loadSamples();
+}
+
 void SamplerNode::exportSamples()
 {
 	File folder = samplesFolder->getFile();
+
+	String bank = currentBank->getValueData().toString();
+	if (bank != "new" && bank != "")
+	{
+		File f(bank);
+		if (f.exists()) folder = f;
+	}
 
 	if (!folder.exists() && !folder.isDirectory())
 	{
@@ -391,7 +471,8 @@ void SamplerNode::exportSamples()
 		}
 	}
 
-	folder.deleteRecursively();
+	Array<File> filesToDelete = folder.findChildFiles(File::TypesOfFileToFind::findFiles, false);
+	for (auto& f : filesToDelete) f.deleteFile();
 	folder.createDirectory();
 
 	LOG("Exporting samples...");
@@ -437,6 +518,13 @@ void SamplerNode::exportSamples()
 void SamplerNode::loadSamples()
 {
 	File folder = samplesFolder->getFile();
+
+	String bank = currentBank->getValueData().toString();
+	if (bank != "new" && bank != "")
+	{
+		File f(bank);
+		if (f.exists()) folder = f;
+	}
 
 	if (!folder.exists() || !folder.isDirectory())
 	{
@@ -645,7 +733,11 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			s->playingSample += blockSize;
 			if (s->playingSample >= targetBuffer->getNumSamples())
 			{
-				if (pm == HIT_ONESHOT) s->oneShotted = true;
+				if (pm == HIT_ONESHOT)
+				{
+					s->oneShotted = true;
+					s->jumpGhostSample = -1;
+				}
 				s->playingSample = 0;
 			}
 		}
@@ -675,7 +767,7 @@ void SamplerNode::SamplerNote::setAutoKey(SamplerNote* remoteNote, double shift)
 		return;
 	}
 
-	if (pitcher == nullptr) pitcher.reset(new RubberBand::RubberBandStretcher(Transport::getInstance()->sampleRate, 2,
+	if (pitcher == nullptr) pitcher.reset(new RubberBand::RubberBandStretcher(Transport::getInstance()->sampleRate, autoKeyFromNote->buffer.getNumChannels(),
 		RubberBand::RubberBandStretcher::OptionProcessRealTime
 		| RubberBand::RubberBandStretcher::OptionStretchPrecise
 		| RubberBand::RubberBandStretcher::OptionFormantPreserved

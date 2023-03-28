@@ -53,12 +53,12 @@ public:
 
 	FileParameter* samplesFolder;
 	Trigger* saveSamplesTrigger;
+	Trigger* showFolderTrigger;
 
 	enum NoteState { EMPTY, RECORDING, FILLED, PLAYING };
 	struct SamplerNote
 	{
 	public:
-
 		EnumParameter* state;
 		int playingSample = 0;
 		int jumpGhostSample = -1;
@@ -72,7 +72,6 @@ public:
 		SamplerNote* autoKeyFromNote = nullptr;
 		int rtPitchReadSample = 0;
 		std::unique_ptr<RubberBand::RubberBandStretcher> pitcher;
-
 
 		void setAutoKey(SamplerNote* remoteNote, double shift= 0);
 		
@@ -90,6 +89,8 @@ public:
 
 	MidiKeyboardState keyboardState;
 
+	bool isUpdatingBank;
+	EnumParameter* currentBank;
 
 	void clearNote(int note);
 	void clearAllNotes();
@@ -111,6 +112,7 @@ public:
 
 	virtual int getFadeNumSamples(); //for ring buffer fade
 
+	void updateBanks(bool loadAfter = true);
 	void exportSamples();
 	void loadSamples();
 
