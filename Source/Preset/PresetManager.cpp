@@ -26,13 +26,14 @@ PresetManager::~PresetManager()
 RootPresetManager::RootPresetManager() :
 	PresetManager(),
 	Thread("Preset Manager"),
+	prevPreset(nullptr),
 	currentPreset(nullptr)
 {
 	saveCurrentTrigger = addTrigger("Save Current", "Save state to current preset");
 	loadCurrentTrigger = addTrigger("Load Current", "Load state to current preset");
 
-	nextPreset = addTrigger("Next", "Load next preset");
-	previousPreset = addTrigger("Previous", "Load previous preset");
+	nextPresetTrigger = addTrigger("Next", "Load next preset");
+	previousPresetTrigger = addTrigger("Previous", "Load previous preset");
 
 	curPresetName = addStringParameter("Current Preset", "The name of the current preset, for reference", "");
 	curPresetName->setControllableFeedbackOnly(true);
@@ -55,6 +56,9 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 {
 	//if (currentPreset == p) return; // commented to be able to reload
 
+
+	prevPreset = currentPreset;
+
 	if (currentPreset != nullptr)
 	{
 		currentPreset->removeInspectableListener(this);
@@ -68,7 +72,16 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 	{
 		currentPreset->addInspectableListener(this);
 		currentPreset->isCurrent->setValue(true);
-		if (currentPreset->transitionTime->floatValue() == 0) currentPreset->load();
+		if (currentPreset->transitionTime->floatValue() == 0)
+		{
+			bool recursive = true;
+
+			if (currentPreset->noParentOnNearbyLoad->boolValue()
+				&& prevPreset != nullptr
+				&& prevPreset->parentContainer == currentPreset->parentContainer) recursive = false;
+
+			currentPreset->load(recursive);
+		}
 		else startThread();
 	}
 
@@ -146,11 +159,11 @@ void RootPresetManager::onContainerTriggerTriggered(Trigger* t)
 	{
 		if (currentPreset != nullptr) currentPreset->loadTrigger->trigger();
 	}
-	else if (t == nextPreset)
+	else if (t == nextPresetTrigger)
 	{
 		loadNextPreset(currentPreset, true);
 	}
-	else if (t == previousPreset)
+	else if (t == previousPresetTrigger)
 	{
 		loadPreviousPreset(currentPreset);
 	}
@@ -220,7 +233,13 @@ Preset* RootPresetManager::getPresetForMenuResult(int result)
 void RootPresetManager::run()
 {
 	if (currentPreset == nullptr) return;
-	var targetValues = currentPreset->getPresetValues();
+
+	bool recursive = true;
+	if (currentPreset->noParentOnNearbyLoad->boolValue()
+		&& prevPreset != nullptr
+		&& prevPreset->parentContainer == currentPreset->parentContainer) recursive = false;
+
+	var targetValues = currentPreset->getPresetValues(recursive);
 	NamedValueSet props = targetValues.getDynamicObject()->getProperties();
 
 	initTargetMap.clear();

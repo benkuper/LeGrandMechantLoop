@@ -11,7 +11,8 @@
 #include "Preset/PresetIncludes.h"
 
 Preset::Preset(var params) :
-	BaseItem("Preset", false)
+	BaseItem(getTypeString(), false),
+	linkedPresetsCC("Linked Presets")
 {
 	itemDataType = "Preset";
 
@@ -30,6 +31,7 @@ Preset::Preset(var params) :
 	loadTrigger = addTrigger("Load", "Load the values in this preset. It this is a sub-preset, this will fetch all values up to its root preset");
 
 	skipInPrevNext = addBoolParameter("Skip in Prev/Next", "Skip this preset in the next/previous preset actions", false);
+	noParentOnNearbyLoad = addBoolParameter("No Parent on Nearby Load", "If checked, this will prevent from loading the parent preset when loading this preset from a nearby preset", false);
 
 	transitionTime = addFloatParameter("Transition Time", "Time to transition.", 0, 0);
 	transitionTime->defaultUI = FloatParameter::TIME;
@@ -38,7 +40,23 @@ Preset::Preset(var params) :
 	directTransitionMode->addOption("Change at start", AT_START)->addOption("Change at end", AT_END);
 	transition.addKey(0, 0);
 	transition.addKey(1, 1);
+	transition.editorCanBeCollapsed = true;
+	transition.editorIsCollapsed = true;
 	addChildControllableContainer(&transition);
+
+	linkedPresetsCC.userCanAddControllables = true;
+	linkedPresetsCC.userAddControllablesFilters.add(TargetParameter::getTypeStringStatic());
+	linkedPresetsCC.customUserCreateControllableFunc = [this](ControllableContainer* cc)
+	{
+		TargetParameter* p = cc->addTargetParameter("Preset 1", "Linked preset to load values from", RootPresetManager::getInstance());
+		p->targetType = TargetParameter::CONTAINER;
+		p->saveValueOnly = false;
+		p->canBeDisabledByUser = true;
+		p->isRemovableByUser = true;
+		p->typesFilter.add(Preset::getTypeStringStatic());
+	};
+
+	addChildControllableContainer(&linkedPresetsCC);
 
 	listUISize->isSavable = false;
 
@@ -84,10 +102,13 @@ var Preset::getPresetValues(bool includeParents)
 	return data;
 }
 
-var Preset::getPresetValueForParameter(Parameter* p)
+var Preset::getPresetValueForParameter(Parameter* p, bool includeParents)
 {
+	Array<Preset*> presets;
+	if (includeParents) presets = getPresetChain();
+	else presets.add(this);
+
 	String add = p->getControlAddress();
-	Array<Preset*> presets = getPresetChain();
 	for (auto& p : presets) if (p->addressMap.contains(add)) return p->addressMap[add];
 	return var();
 }
@@ -143,36 +164,47 @@ void Preset::save(Parameter* parameter, bool saveAllPresettables, bool noCheck)
 
 void Preset::load(ControllableContainer* container, bool recursive)
 {
+	if (container == nullptr)
+	{
+		load(recursive);
+		return;
+	}
+
 	Array<WeakReference<Parameter>> pList = container->getAllParameters(recursive);
 	for (auto& p : pList) load(p);
 }
 
-void Preset::load(Parameter* parameter)
+void Preset::load(Parameter* parameter, bool recursive)
 {
-	if (parameter != nullptr)
+	if (parameter == nullptr)
 	{
-		if (!RootPresetManager::getInstance()->isParameterPresettable(parameter)) return;
-		var value = getPresetValueForParameter(parameter);
-		parameter->setValue(value);
+		load(recursive);
+		return;
 	}
-	else
-	{
-		int numLoaded = 0;
-		var data = getPresetValues();
-		NamedValueSet props = data.getDynamicObject()->getProperties();
-		for (auto& p : props)
-		{
-			if (Parameter* tp = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
-			{
-				if (!RootPresetManager::getInstance()->isParameterPresettable(tp)) continue;
-				tp->setValue(p.value);
-				numLoaded++;
-			}
-		}
 
-		NLOG(niceName, "Loaded " << numLoaded << " values.");
-	}
+	if (!RootPresetManager::getInstance()->isParameterPresettable(parameter)) return;
+	var value = getPresetValueForParameter(parameter, recursive);
+	parameter->setValue(value);
 }
+
+
+void Preset::load(bool recursive)
+{
+	int numLoaded = 0;
+	var data = getPresetValues(recursive);
+	NamedValueSet props = data.getDynamicObject()->getProperties();
+	for (auto& p : props)
+	{
+		if (Parameter* tp = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
+		{
+			if (!RootPresetManager::getInstance()->isParameterPresettable(tp)) continue;
+			tp->setValue(p.value);
+			numLoaded++;
+		}
+	}
+	NLOG(niceName, "Loaded " << numLoaded << " values.");
+}
+
 
 void Preset::addParameterToDataMap(Parameter* p, var forceValue)
 {
@@ -253,10 +285,31 @@ void Preset::itemAdded(Preset* p)
 	if (!isCurrentlyLoadingData) p->itemColor->setColor(itemColor->getColor().brighter(.3f));
 }
 
+void Preset::controllableAdded(Controllable* c)
+{
+	BaseItem::controllableAdded(c);
+
+	if (c->parentContainer == &linkedPresetsCC)
+	{
+		if (TargetParameter* p = (TargetParameter*)c)
+		{
+			p->targetType = TargetParameter::CONTAINER;
+			p->saveValueOnly = false;
+			p->canBeDisabledByUser = true;
+			p->isRemovableByUser = true;
+			p->typesFilter.add(Preset::getTypeStringStatic());
+			p->setRootContainer(RootPresetManager::getInstance());
+		}
+
+
+	}
+}
+
 var Preset::getJSONData()
 {
 	var data = BaseItem::getJSONData();
 	data.getDynamicObject()->setProperty("subPresets", subPresets->getJSONData());
+	data.getDynamicObject()->setProperty("linkedPresets", linkedPresetsCC.getJSONData());
 	data.getDynamicObject()->setProperty("values", getPresetValues(false));
 	return data;
 }
@@ -264,6 +317,7 @@ var Preset::getJSONData()
 void Preset::loadJSONDataItemInternal(var data)
 {
 	subPresets->loadJSONData(data["subPresets"]);
+	linkedPresetsCC.loadJSONData(data["linkedPresets"], true);
 
 	var values = data["values"];
 	if (values.isObject())
@@ -316,11 +370,19 @@ Array<Preset*> Preset::getPresetChain()
 {
 	Array<Preset*> result;
 	result.add(this);
-	ControllableContainer* pc = parentContainer;
-	while (pc != RootPresetManager::getInstance())
+	if (parentContainer != nullptr && parentContainer != RootPresetManager::getInstance())
 	{
-		if (Preset* p = dynamic_cast<Preset*>(pc)) result.add(p);
-		pc = pc->parentContainer;
+		Preset* p = dynamic_cast<Preset*>(parentContainer->parentContainer.get());
+		if (p != nullptr) result.addArray(p->getPresetChain()); // preset > manager > preset, so a parent preset is 2 levels up a child preset
+	}
+
+	for (auto& c : linkedPresetsCC.controllables)
+	{
+		if (!c->enabled) continue;
+		Preset* p = dynamic_cast<Preset*>(((TargetParameter*)c)->targetContainer.get());
+		if (p == nullptr) continue;
+
+		result.add(p);
 	}
 
 	return result;

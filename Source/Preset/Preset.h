@@ -26,6 +26,7 @@ public:
     Trigger* loadTrigger;
 
     BoolParameter* skipInPrevNext;
+    BoolParameter* noParentOnNearbyLoad;
 
     FloatParameter* transitionTime;
     Automation transition;
@@ -41,15 +42,18 @@ public:
 
     std::unique_ptr<PresetManager> subPresets;
 
+    ControllableContainer linkedPresetsCC;
+
     void clearItem() override;
 
     var getPresetValues(bool includeParents = true);
-    var getPresetValueForParameter(Parameter* c);
+    var getPresetValueForParameter(Parameter* c, bool includeParents = true);
 
     void saveContainer(ControllableContainer* container, bool recursive);
     void save(Parameter* controllable = nullptr, bool saveAllPresettables = false, bool noCheck = false);
     void load(ControllableContainer* container, bool recursive);
-    void load(Parameter* controllable = nullptr);
+    void load(Parameter* controllable, bool recursive);
+    void load(bool recursive = false);
 
     void addParameterToDataMap(Parameter* p, var forceValue = var());
     void updateParameterAddress(Parameter* p);
@@ -63,6 +67,9 @@ public:
 
     void itemAdded(Preset * p) override;
 
+    void controllableAdded(Controllable* c); //for linked presets
+
+
     var getJSONData() override;
     void loadJSONDataItemInternal(var data) override;
 
@@ -74,5 +81,5 @@ public:
 
     InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> controllables = {}) override;
 
-    String getTypeString() const override { return "Preset"; }
+    DECLARE_TYPE("Preset");
 };

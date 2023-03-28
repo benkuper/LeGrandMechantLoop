@@ -30,8 +30,9 @@ public:
 
     Trigger* saveCurrentTrigger;
     Trigger* loadCurrentTrigger;
-    Trigger* nextPreset;
-    Trigger* previousPreset;
+    Trigger* nextPresetTrigger;
+    Trigger* previousPresetTrigger;
+    WeakReference<ControllableContainer> prevPreset;
     Preset* currentPreset;
 
     StringParameter* curPresetName;
