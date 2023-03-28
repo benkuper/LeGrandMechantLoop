@@ -20,9 +20,12 @@ public:
     Preset(var params = var());
     ~Preset();
 
+    BoolParameter* isCurrent;
+    
     Trigger* saveTrigger;
     Trigger* loadTrigger;
-    BoolParameter* isCurrent;
+
+    BoolParameter* skipInPrevNext;
 
     FloatParameter* transitionTime;
     Automation transition;

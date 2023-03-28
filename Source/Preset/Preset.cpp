@@ -28,7 +28,8 @@ Preset::Preset(var params) :
 
 	saveTrigger = addTrigger("Save", "Save the current state in this preset. If this is a sub-preset, this will only save overriden values");
 	loadTrigger = addTrigger("Load", "Load the values in this preset. It this is a sub-preset, this will fetch all values up to its root preset");
-	
+
+	skipInPrevNext = addBoolParameter("Skip in Prev/Next", "Skip this preset in the next/previous preset actions", false);
 
 	transitionTime = addFloatParameter("Transition Time", "Time to transition.", 0, 0);
 	transitionTime->defaultUI = FloatParameter::TIME;

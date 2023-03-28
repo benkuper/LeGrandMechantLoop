@@ -88,7 +88,11 @@ void RootPresetManager::loadNextPreset(Preset* p, bool recursive)
 	PresetManager* pm = p != nullptr ? (PresetManager*)p->parentContainer.get() : this;
 	if (pm == nullptr) return;
 	Preset* np = pm->items.indexOf(p) < pm->items.size() - 1 ? pm->items[pm->items.indexOf(p) + 1] : nullptr;
-	if (np != nullptr) setCurrentPreset(np);
+	if (np != nullptr)
+	{
+		if (np->skipInPrevNext->boolValue()) loadNextPreset(np, true);
+		else setCurrentPreset(np);
+	}
 	else
 	{
 		Preset* pp = (Preset*)pm->parentContainer.get();
@@ -110,8 +114,11 @@ void RootPresetManager::loadPreviousPreset(Preset* p)
 	}
 
 	Preset* pp = ControllableUtil::findParentAs<Preset>(p);
-	if (pp != nullptr) setCurrentPreset(pp);
-	
+	if (pp != nullptr)
+	{
+		if (pp->skipInPrevNext->boolValue()) loadPreviousPreset(pp);
+		else setCurrentPreset(pp);
+	}
 }
 
 void RootPresetManager::loadLastNestedPresetFor(Preset* p)
