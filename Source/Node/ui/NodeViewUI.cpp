@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 BaseNodeViewUI::BaseNodeViewUI(Node* node) :
 	BaseItemUI(node, Direction::ALL, true)
 {
@@ -16,6 +18,10 @@ BaseNodeViewUI::BaseNodeViewUI(Node* node) :
 	drawEmptyDragIcon = true;
 	showRemoveBT = false;
 
+	removeChildComponent(itemColorUI.get());
+	itemColorUI.reset();
+	showColorUI = false;
+	
 	viewFilterUpdated(); //force refresh
 
 	updateInputConnectors();
