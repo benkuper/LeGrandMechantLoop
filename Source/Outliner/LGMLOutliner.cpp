@@ -18,7 +18,7 @@ LGMLOutlinerItemComponent::LGMLOutlinerItemComponent(LGMLOutlinerItem* item) :
     if (!item->isContainer && item->controllable->type != Controllable::TRIGGER && !item->controllable->isControllableFeedbackOnly)
     {
         presetBT.reset(AssetManager::getInstance()->getToggleBTImage(ImageCache::getFromMemory(BinaryData::p_png, BinaryData::p_pngSize)));
-        presetBT->setToggleState(RootPresetManager::getInstance()->isParameterPresettable((Parameter *)item->controllable.get()), dontSendNotification);
+        presetBT->setToggleState(RootPresetManager::getInstance()->isControllablePresettable((Parameter *)item->controllable.get()), dontSendNotification);
         presetBT->addListener(this);
         addAndMakeVisible(presetBT.get());
     }
@@ -44,8 +44,8 @@ void LGMLOutlinerItemComponent::buttonClicked(Button* b)
 
     if (presetBT != nullptr && b == presetBT.get())
     {
-        RootPresetManager::getInstance()->toggleParameterPresettable((Parameter *)lgmlItem->controllable.get());
-        presetBT->setToggleState(RootPresetManager::getInstance()->isParameterPresettable((Parameter*)item->controllable.get()), dontSendNotification);
+        RootPresetManager::getInstance()->toggleControllablePresettable(lgmlItem->controllable.get());
+        presetBT->setToggleState(RootPresetManager::getInstance()->isControllablePresettable(item->controllable.get()), dontSendNotification);
     }
 }
 

@@ -59,7 +59,7 @@ public:
 
     Preset* preset;
 
-    HashMap<Parameter*, Parameter*> paramMap;
+    HashMap<Controllable*, Controllable*> controllableMap;
     ControllableContainer valuesCC;
     
     void resetAndBuild() override;

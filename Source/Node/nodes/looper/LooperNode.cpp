@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	Node(name, params, looperType == AUDIO, looperType == AUDIO, false, looperType == AUDIO, looperType == MIDI, looperType == MIDI),
 	looperType(looperType),
@@ -64,6 +66,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	clearSamplesTrigger = saveLoadCC.addTrigger("Clear samples", "Clear samples in the directory, and the buffer in the tracks");
 
 
+	controlsCC.includeTriggersInSaveLoad = true;
 	recTrigger = controlsCC.addTrigger("Rec", "Record to the current track");
 	clearCurrentTrigger = controlsCC.addTrigger("Clear", "Clear the current track if not empty, otherwise clear the past one");
 	playAllTrigger = controlsCC.addTrigger("Play All", "Stop all tracks");

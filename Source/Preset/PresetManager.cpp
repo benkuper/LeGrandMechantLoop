@@ -169,35 +169,65 @@ void RootPresetManager::onContainerTriggerTriggered(Trigger* t)
 	}
 }
 
-void RootPresetManager::toggleParameterPresettable(Parameter* p)
+void RootPresetManager::toggleControllablePresettable(Controllable* c)
 {
-	if (p == nullptr) return;
-	if (isParameterPresettable(p)) p->customData = var();
+	if (c == nullptr) return;
+	if (isControllablePresettable(c))
+	{
+		AlertWindow* window = new AlertWindow("Remove from presets", "Do you want to remove all presets related to this parameter ?", AlertWindow::AlertIconType::QuestionIcon);
+		window->addButton("Yes", 1, KeyPress(KeyPress::returnKey));
+		window->addButton("No", 2);
+		window->addButton("Cancel", 0, KeyPress(KeyPress::escapeKey));
+
+		window->enterModalState(true, ModalCallbackFunction::create([window, c, this](int result)
+			{
+				if (result == 0) return;
+
+				if (result == 1)
+				{
+					RootPresetManager::getInstance()->removeAllPresetsFor(c);
+				}
+
+				c->customData = var();
+
+			}
+		), true);
+	}
 	else
 	{
-		p->customData = var(new DynamicObject());
-		p->customData.getDynamicObject()->setProperty("presettable", true);
-		p->isOverriden = true;
+		c->customData = var(new DynamicObject());
+		c->customData.getDynamicObject()->setProperty("presettable", true);
+		if (c->type != Controllable::TRIGGER) ((Parameter*)c)->isOverriden = true;
 	}
 }
 
-var RootPresetManager::getParameterPresetOption(Parameter* p, String option, var defaultVal)
+var RootPresetManager::getControllablePresetOption(Controllable* c, String option, var defaultVal)
 {
-	if (p == nullptr) return defaultVal;
-	if (p->customData.isObject()) return p->customData.getProperty(option, defaultVal);
+	if (c == nullptr) return defaultVal;
+	if (c->customData.isObject()) return c->customData.getProperty(option, defaultVal);
 	return defaultVal;
 }
 
-void RootPresetManager::setParameterPresetOption(Parameter* p, String option, var val)
+void RootPresetManager::setControllablePresetOption(Controllable* c, String option, var val)
 {
-	if (p == nullptr) return;
-	if (p->customData.isObject()) p->customData.getDynamicObject()->setProperty(option, val);
+	if (c == nullptr) return;
+	if (c->customData.isObject()) c->customData.getDynamicObject()->setProperty(option, val);
 }
 
-bool RootPresetManager::isParameterPresettable(Parameter* p)
+bool RootPresetManager::isControllablePresettable(Controllable* c)
 {
-	if (p == nullptr) return false;
-	return p->customData.getProperty("presettable", false);
+	if (c == nullptr) return false;
+	return c->customData.getProperty("presettable", false);
+}
+
+void RootPresetManager::removeAllPresetsFor(Controllable* c)
+{
+	if (c == nullptr) return;
+	Array<Preset*> presets = getAllPresets();
+	for (auto& pr : presets)
+	{
+		pr->removeControllableFromDataMap(c);
+	}
 }
 
 void RootPresetManager::inspectableDestroyed(Inspectable* i)
@@ -216,11 +246,11 @@ Array<Preset*> RootPresetManager::getAllPresets(Preset* parent)
 }
 
 
-void RootPresetManager::fillPresetMenu(PopupMenu& menu, int indexOffset, Parameter* targetParam)
+void RootPresetManager::fillPresetMenu(PopupMenu& menu, int indexOffset, Controllable* targetControllable = nullptr)
 {
 	Array<Preset*> presets = getAllPresets();
 	int index = indexOffset;
-	for (auto& p : presets) menu.addItem(index++, p->niceName, true, p->hasPresetParam(targetParam));
+	for (auto& p : presets) menu.addItem(index++, p->niceName, true, p->hasPresetControllable(targetControllable));
 }
 
 Preset* RootPresetManager::getPresetForMenuResult(int result)
@@ -250,13 +280,13 @@ void RootPresetManager::run()
 	{
 		if (Parameter* tp = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(val.name.toString())))
 		{
-			if (!isParameterPresettable(tp)) continue;
+			if (!isControllablePresettable(tp)) continue;
 			var initTargetValue;
 			initTargetValue.append(tp->value);
 			initTargetValue.append(val.value);
 
 			bool canInterpolate = tp->type != Parameter::BOOL && tp->type != Parameter::ENUM && tp->type != Parameter::STRING && tp->type != Parameter::ENUM;
-			int option = getParameterPresetOption(tp, "transition", canInterpolate ? Preset::INTERPOLATE : Preset::DEFAULT);
+			int option = getControllablePresetOption(tp, "transition", canInterpolate ? Preset::INTERPOLATE : Preset::DEFAULT);
 			if (option == Preset::DEFAULT) option = tm;
 			initTargetValue.append(option);
 			initTargetMap.set(tp, initTargetValue);
@@ -266,7 +296,7 @@ void RootPresetManager::run()
 	float progression = 0;
 
 
-	lerpParameters(0, currentPreset->transition.getValueAtPosition(0)); //force for at_start changes
+	process(0, currentPreset->transition.getValueAtPosition(0)); //force for at_start changes
 
 	double timeAtStart = Time::getMillisecondCounter() / 1000.0;
 	float totalTime = currentPreset->transitionTime->floatValue();
@@ -276,40 +306,49 @@ void RootPresetManager::run()
 		double currentTime = Time::getMillisecondCounter() / 1000.0 - timeAtStart;
 		progression = jmin<float>(currentTime / totalTime, 1);
 		float weight = currentPreset->transition.getValueAtPosition(progression);
-		lerpParameters(progression, weight);
+		process(progression, weight);
 		if (progression == 1) return;
 		wait(30); //~30fps
 	}
 
 }
 
-void RootPresetManager::lerpParameters(float progression, float weight)
+void RootPresetManager::process(float progression, float weight)
 {
-	HashMap<WeakReference<Parameter>, var>::Iterator it(initTargetMap);
+	HashMap<WeakReference<Controllable>, var>::Iterator it(initTargetMap);
 
 	while (it.next())
 	{
 		if (it.getKey().wasObjectDeleted()) continue;
-		Parameter* p = it.getKey().get();
+		Controllable* c = it.getKey().get();
 
 		Preset::TransitionMode itm = (Preset::TransitionMode)(int)it.getValue()[2];
 		if ((itm == Preset::AT_START && progression != 0) || (itm == Preset::AT_END && progression != 1)) continue;
 
-		if (itm == Preset::AT_START || itm == Preset::AT_END) p->setValue(it.getValue()[1]);
+
+		if (c->type == Controllable::TRIGGER)
+		{
+			if (itm == Preset::AT_START || itm == Preset::AT_END) ((Trigger*)c)->trigger();
+		}
 		else
 		{
-			if (p->isComplex())
-			{
-				var newVal;
-				for (int i = 0; i < p->value.size(); i++)
-				{
-					newVal.append(jmap<float>(weight, it.getValue()[0][i], it.getValue()[1][i]));
-					p->setValue(newVal);
-				}
-			}
+			Parameter* p = (Parameter*)c;
+			if (itm == Preset::AT_START || itm == Preset::AT_END) p->setValue(it.getValue()[1]);
 			else
 			{
-				p->setValue(jmap<float>(weight, it.getValue()[0], it.getValue()[1]));
+				if (p->isComplex())
+				{
+					var newVal;
+					for (int i = 0; i < p->value.size(); i++)
+					{
+						newVal.append(jmap<float>(weight, it.getValue()[0][i], it.getValue()[1][i]));
+						p->setValue(newVal);
+					}
+				}
+				else
+				{
+					p->setValue(jmap<float>(weight, it.getValue()[0], it.getValue()[1]));
+				}
 			}
 		}
 	}

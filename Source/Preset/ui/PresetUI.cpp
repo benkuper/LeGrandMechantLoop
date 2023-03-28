@@ -175,7 +175,7 @@ PresetEditor::~PresetEditor()
 void PresetEditor::resetAndBuild()
 {
 	BaseItemEditor::resetAndBuild();
-	GenericControllableContainerEditor * e = (GenericControllableContainerEditor *)addEditorUI(&valuesCC, true);
+	GenericControllableContainerEditor* e = (GenericControllableContainerEditor*)addEditorUI(&valuesCC, true);
 	for (auto& ce : e->childEditors)
 	{
 		if (ControllableEditor* cce = dynamic_cast<ControllableEditor*>(ce)) cce->minLabelWidth = 250;
@@ -186,16 +186,23 @@ void PresetEditor::buildValuesCC()
 {
 	valuesCC.clear();
 
-	HashMap<WeakReference<Parameter>, var>::Iterator it(preset->dataMap);
+	HashMap<WeakReference<Controllable>, var>::Iterator it(preset->dataMap);
 	while (it.next())
 	{
-		Parameter* op = it.getKey();
-		if (op == nullptr) continue;
-		Parameter* p = ControllableFactory::createParameterFrom(it.getKey().get(), false, false);
-		p->isRemovableByUser = true;
-		p->setValue(it.getValue());
-		String s = op->niceName;
-		ControllableContainer* pc = op->parentContainer;
+		Controllable* oc = it.getKey();
+		if (oc == nullptr) continue;
+
+		Controllable* c = nullptr;
+		if (oc->type == Controllable::TRIGGER) c = new Trigger(oc->niceName, "Preset for this trigger");
+		else c = ControllableFactory::createParameterFrom(oc, false, false);
+
+		c->showWarningInUI = true;
+		if (!RootPresetManager::getInstance()->isControllablePresettable(oc)) c->setWarningMessage("This parameter is not presettable");
+
+		c->isRemovableByUser = true;
+		if (c->type != Controllable::TRIGGER) ((Parameter*)c)->setValue(it.getValue());
+		String s = oc->niceName;
+		ControllableContainer* pc = oc->parentContainer;
 		while (pc != nullptr && pc != RootNodeManager::getInstance())
 		{
 			if (dynamic_cast<NodeManager*>(pc))
@@ -208,10 +215,10 @@ void PresetEditor::buildValuesCC()
 			pc = pc->parentContainer;
 		}
 
-		p->setNiceName(s);
-		p->addAsyncParameterListener(this);
-		paramMap.set(p, op);
-		valuesCC.addParameter(p);
+		c->setNiceName(s);
+		if (c->type != Controllable::TRIGGER) ((Parameter*)c)->addAsyncParameterListener(this);
+		controllableMap.set(c, oc);
+		valuesCC.addControllable(c);
 	}
 
 	valuesCC.sortControllables();
@@ -229,7 +236,7 @@ void PresetEditor::newMessage(const ContainerAsyncEvent& e)
 			if (e.targetControllable != nullptr && !e.targetControllable.wasObjectDeleted())
 			{
 				Parameter* p = (Parameter*)e.targetControllable.get();
-				preset->removeParameterFromDataMap(paramMap[p]);
+				preset->removeControllableFromDataMap(controllableMap[p]);
 				buildValuesCC();
 			}
 		}
@@ -244,7 +251,7 @@ void PresetEditor::newMessage(const Parameter::ParameterEvent& e)
 {
 	if (e.type == Parameter::ParameterEvent::VALUE_CHANGED)
 	{
-		preset->addParameterToDataMap(paramMap[e.parameter], e.parameter->value);
+		preset->addControllableToDataMap(controllableMap[e.parameter], e.parameter->value);
 	}
 }
 

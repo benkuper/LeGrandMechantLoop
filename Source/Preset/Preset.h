@@ -34,8 +34,8 @@ public:
     EnumParameter* directTransitionMode;
 
     //overriding
-    HashMap<WeakReference<Parameter>, var> dataMap;
-    HashMap<WeakReference<Parameter>, String> paramGhostAddressMap;
+    HashMap<WeakReference<Controllable>, var> dataMap;
+    HashMap<WeakReference<Controllable>, String> controllableGhostAddressMap;
     Array<String> lostParamAddresses;
     HashMap<String, var> addressMap;
     Array<String> overridenControllables;
@@ -50,18 +50,18 @@ public:
     var getPresetValueForParameter(Parameter* c, bool includeParents = true);
 
     void saveContainer(ControllableContainer* container, bool recursive);
-    void save(Parameter* controllable = nullptr, bool saveAllPresettables = false, bool noCheck = false);
+    void save(Controllable* controllable = nullptr, bool saveAllPresettables = false, bool noCheck = false);
     void load(ControllableContainer* container, bool recursive);
-    void load(Parameter* controllable, bool recursive);
+    void load(Controllable * controllable, bool recursive);
     void load(bool recursive = false);
 
-    void addParameterToDataMap(Parameter* p, var forceValue = var());
-    void updateParameterAddress(Parameter* p);
-    void removeParameterFromDataMap(Parameter* p);
+    void addControllableToDataMap(Controllable * c, var forceValue = var());
+    void updateControllableAddress(Controllable * c);
+    void removeControllableFromDataMap(Controllable * c);
     void removeAddressFromDataMap(String address);
 
     bool isMain(); //check if it's not an override
-    bool hasPresetParam(Parameter* p);
+    bool hasPresetControllable(Controllable * c);
 
     void onContainerTriggerTriggered(Trigger* t) override;
 

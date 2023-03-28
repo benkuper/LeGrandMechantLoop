@@ -39,7 +39,7 @@ public:
 
     //Transition
     
-    HashMap<WeakReference<Parameter>, var> initTargetMap;
+    HashMap<WeakReference<Controllable>, var> initTargetMap;
 
 
 
@@ -51,19 +51,21 @@ public:
     void loadLastNestedPresetFor(Preset* p);
     void onContainerTriggerTriggered(Trigger* t) override;
 
-    void toggleParameterPresettable(Parameter* p);
-    var getParameterPresetOption(Parameter* p, String option, var defaultVal);
-    void setParameterPresetOption(Parameter * p, String option, var val);
-    bool isParameterPresettable(Parameter *p);
+    void toggleControllablePresettable(Controllable* c);
+    var getControllablePresetOption(Controllable* c, String option, var defaultVal);
+    void setControllablePresetOption(Controllable * c, String option, var val);
+    bool isControllablePresettable(Controllable * c);
+
+    void removeAllPresetsFor(Controllable * c);
 
     void inspectableDestroyed(Inspectable* i) override;
 
     Array<Preset*> getAllPresets(Preset * parent = nullptr);
 
-    void fillPresetMenu(PopupMenu & menu, int indexOffset, Parameter * targetParam = nullptr);
+    void fillPresetMenu(PopupMenu & menu, int indexOffset, Controllable * targetControllable);
     Preset * getPresetForMenuResult(int result);
 
     void run() override;
-    void lerpParameters(float progression, float weight);
+    void process(float progression, float weight);
 };
 

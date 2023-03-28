@@ -57,10 +57,10 @@ Outliner* MainComponent::createOutliner(const String& contentName)
 
 void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 {
-	if (ui->controllable->type == Controllable::TRIGGER && !ui->controllable->isControllableFeedbackOnly) return;
+	if (ui->controllable->isControllableFeedbackOnly) return;
 
-	Parameter* param = (Parameter*)ui->controllable.get();
-	bool isPresettable = RootPresetManager::getInstance()->isParameterPresettable(param);
+	Controllable* c = ui->controllable.get();
+	bool isPresettable = RootPresetManager::getInstance()->isControllablePresettable(c);
 	p->addItem(0x5000, "Presettable", true, isPresettable);
 
 	if (isPresettable)
@@ -72,10 +72,10 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 		bool isOverride = canBeOverride && preset->overridenControllables.contains(add);
 
 
-		bool canInterpolate = param->type != Parameter::BOOL && param->type != Parameter::ENUM && param->type != Parameter::STRING && param->type != Parameter::ENUM;
-		int option = RootPresetManager::getInstance()->getParameterPresetOption(param, "transition", (int)(canInterpolate ? Preset::INTERPOLATE : Preset::DEFAULT));
+		bool canInterpolate = c->type != Controllable::TRIGGER && c->type != Parameter::BOOL && c->type != Parameter::ENUM && c->type != Parameter::STRING && c->type != Parameter::ENUM;
+		int option = RootPresetManager::getInstance()->getControllablePresetOption(c, "transition", (int)(canInterpolate ? Preset::INTERPOLATE : Preset::DEFAULT));
 		PopupMenu interpMenu;
-		interpMenu.addItem(0x5010, "Interpolate", canInterpolate, option == Preset::INTERPOLATE);
+		if (canInterpolate) interpMenu.addItem(0x5010, "Interpolate", canInterpolate, option == Preset::INTERPOLATE);
 		interpMenu.addItem(0x5013, "Default", !canInterpolate, option == Preset::DEFAULT);
 
 		interpMenu.addItem(0x5011, "Change at start", true, option == Preset::AT_START);
@@ -85,60 +85,73 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 		p->addItem(0x5001, "Save to current (" + presetName + ")", true, isOverride);
 
 		PopupMenu saveToOtherMenu;
-		RootPresetManager::getInstance()->fillPresetMenu(saveToOtherMenu, 0x20000, param);
+		RootPresetManager::getInstance()->fillPresetMenu(saveToOtherMenu, 0x20000, c);
 		p->addSubMenu("Save to...", saveToOtherMenu);
 
 		p->addItem(0x5002, "Remove from current (" + presetName + ")", isOverride);
 		PopupMenu removeFromMenu;
-		RootPresetManager::getInstance()->fillPresetMenu(removeFromMenu, 0x30000, param);
+		RootPresetManager::getInstance()->fillPresetMenu(removeFromMenu, 0x30000, c);
 		p->addSubMenu("Remove from...", removeFromMenu);
+		p->addItem(0x5003, "Remove from all");
 	}
 }
 
 bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 {
 	if (result < 0x5000 && result > 0x5020) return false;
-	if (ui->controllable->type == Controllable::TRIGGER) return true;
 
-	Parameter* p = (Parameter*)ui->controllable.get();
+	Controllable* c = ui->controllable.get();
 
 	if (result == 0x5000)
 	{
-		RootPresetManager::getInstance()->toggleParameterPresettable(p);
+		RootPresetManager::getInstance()->toggleControllablePresettable(c);
 		return true;
 	}
 	else if (result == 0x5001 || result == 0x5002)
 	{
 		if (Preset* preset = RootPresetManager::getInstance()->currentPreset)
 		{
-			String add = p->getControlAddress();
+			String add = c->getControlAddress();
 			if (result == 0x5001)
 			{
-				preset->save(p);
-				LOG("Saved " << p->niceName << " to preset " << preset->niceName << (preset->isMain() ? "" : " (Override)"));
+				preset->save(c);
+				LOG("Saved " << c->niceName << " to preset " << preset->niceName << (preset->isMain() ? "" : " (Override)"));
 			}
 			else if (result == 0x5002)
 			{
-				preset->removeParameterFromDataMap(p);
-				preset->load(p);
-				LOG("Removed " << p->niceName << " from preset " << preset->niceName << (preset->isMain() ? "" : " (Override)"));
+				preset->removeControllableFromDataMap(c);
+				preset->load(c);
+				LOG("Removed " << c->niceName << " from preset " << preset->niceName << (preset->isMain() ? "" : " (Override)"));
 			}
 
 		}
 		return true;
 	}
+	else if (result == 0x5003)
+	{
+		AlertWindow::showOkCancelBox(AlertWindow::QuestionIcon, "Remove from all presets", "Are you sure you want to remove this parameter from all presets ?", "Yes", "No", nullptr, ModalCallbackFunction::create([c](int result)
+			{
+				if (result)
+				{
+					RootPresetManager::getInstance()->removeAllPresetsFor(c);
+					LOG("Removed " << c->niceName << " from all presets");
+				}
+
+			})
+		);
+	}
 	else if (result >= 0x5010 && result <= 0x5013)
 	{
 		int option = result - 0x5010;
-		RootPresetManager::getInstance()->setParameterPresetOption(p, "transition", option);
+		RootPresetManager::getInstance()->setControllablePresetOption(c, "transition", option);
 	}
 	else if (result >= 0x20000 && result < 0x30000)
 	{
-		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x20000)) preset->save(p);
+		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x20000)) preset->save(c);
 	}
 	else if (result >= 0x30000)
 	{
-		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x30000)) preset->removeParameterFromDataMap(p);
+		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x30000)) preset->removeControllableFromDataMap(c);
 	}
 
 	return false;
