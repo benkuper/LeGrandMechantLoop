@@ -261,7 +261,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		if (firstPlayAfterRecord)
 		{
 			prevGain = 0;
-			firstPlayAfterRecord = false;
+//			firstPlayAfterRecord = false;
 		}
 		else if (antiClickFadeBeforeClear || antiClickFadeBeforeStop)
 		{
