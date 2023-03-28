@@ -14,11 +14,15 @@
 MIDIInterface::MIDIInterface(var params) :
 	Interface(getTypeString(), params),
 	inputDevice(nullptr),
-	outputDevice(nullptr)
+	outputDevice(nullptr),
+	clock(true)
 {
 
 	midiParam = new MIDIDeviceParameter("Devices");
 	addParameter(midiParam);
+
+	autoFeedback = addBoolParameter("Auto feedback", "If auto feedback, this will send received message to output", false);
+	enableClock = addBoolParameter("Send Clock", "If checked, this will send the clock to the connected output device", true);
 
 	isConnected = addBoolParameter("Is Connected", "This is checked if the module is connected to at least one input or output device", false);
 	isConnected->setControllableFeedbackOnly(true);
@@ -50,6 +54,28 @@ MIDIInterface::~MIDIInterface()
 		}
 	};
 	if (outputDevice != nullptr) outputDevice->close();
+}
+
+
+
+void MIDIInterface::onContainerParameterChangedInternal(Parameter* p)
+{
+	Interface::onContainerParameterChangedInternal(p);
+
+	if (p == midiParam)
+	{
+		updateMIDIDevices();
+	}
+
+	if (p == enabled)
+	{
+		updateMIDIDevices();
+	}
+
+	if (p == enableClock || p == enabled)
+	{
+		clock.setOutput(enabled->boolValue() && enableClock->boolValue() ? outputDevice : nullptr);
+	}
 }
 
 
@@ -150,14 +176,6 @@ void MIDIInterface::sendMidiMachineControlCommand(MidiMessage::MidiMachineContro
 }
 
 
-void MIDIInterface::onContainerParameterChangedInternal(Parameter* p)
-{
-	Interface::onContainerParameterChangedInternal(p);
-	if (p == midiParam)
-	{
-		updateMIDIDevices();
-	}
-}
 
 void MIDIInterface::updateMIDIDevices()
 {
@@ -170,22 +188,42 @@ void MIDIInterface::updateMIDIDevices()
 		AudioManager::getInstance()->am.removeMidiInputDeviceCallback(inputDevice->id, this);
 		//inputDevice->removeMIDIInputListener(this);
 	}
-	inputDevice = newInput;
-	if (inputDevice != nullptr)
+
+	if (enabled->boolValue())
 	{
-		AudioManager::getInstance()->am.setMidiInputDeviceEnabled(inputDevice->id, true);
-		AudioManager::getInstance()->am.addMidiInputDeviceCallback(inputDevice->id, this);
-		//inputDevice->addMIDIInputListener(this);
+		inputDevice = newInput;
+		if (inputDevice != nullptr)
+		{
+			AudioManager::getInstance()->am.setMidiInputDeviceEnabled(inputDevice->id, true);
+			AudioManager::getInstance()->am.addMidiInputDeviceCallback(inputDevice->id, this);
+			//inputDevice->addMIDIInputListener(this);
+		}
 	}
+	else
+	{
+		inputDevice = nullptr;
+	}
+
 	//}
 
 	MIDIOutputDevice* newOutput = midiParam->outputDevice;
-	//if (outputDevice != newOutput)
-	//{
+
 	if (outputDevice != nullptr) outputDevice->close();
-	outputDevice = newOutput;
-	if (outputDevice != nullptr) outputDevice->open();
-	//} 
+
+	if (!enabled->boolValue())
+	{
+		outputDevice = newOutput;
+
+		if (outputDevice != nullptr)
+		{
+			outputDevice->open();
+			clock.setOutput(enabled->boolValue() && enableClock->boolValue() ? outputDevice : nullptr);
+		}
+	}
+	else
+	{
+		outputDevice = nullptr;
+	}
 
 	isConnected->setValue(inputDevice != nullptr || outputDevice != nullptr);
 }
@@ -193,6 +231,7 @@ void MIDIInterface::updateMIDIDevices()
 void MIDIInterface::handleIncomingMidiMessage(MidiInput* source, const MidiMessage& message)
 {
 	midiMessageReceived(message);
+
 	if (message.isNoteOn()) noteOnReceived(message.getChannel(), message.getNoteNumber(), message.getVelocity());
 	else if (message.isNoteOn()) noteOnReceived(message.getChannel(), message.getNoteNumber(), message.getVelocity());
 	else if (message.isNoteOff()) noteOffReceived(message.getChannel(), message.getNoteNumber(), message.getVelocity());
@@ -202,6 +241,10 @@ void MIDIInterface::handleIncomingMidiMessage(MidiInput* source, const MidiMessa
 	else if (message.isAftertouch()) afterTouchReceived(message.getChannel(), message.getNoteNumber(), message.getAfterTouchValue());
 	else if (message.isChannelPressure()) channelPressureReceived(message.getChannel(), message.getChannelPressureValue());
 	else if (message.isFullFrame()) fullFrameTimecodeReceived(message);
+
+
+	if (autoFeedback->boolValue() && outputDevice != nullptr) outputDevice->sendMessage(message);
+
 }
 
 void MIDIInterface::noteOnReceived(const int& channel, const int& pitch, const int& velocity)

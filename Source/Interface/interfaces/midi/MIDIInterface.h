@@ -23,6 +23,11 @@ public:
 	MIDIInputDevice* inputDevice;
 	MIDIOutputDevice* outputDevice;
 
+	MIDIClock clock;
+	BoolParameter* enableClock;
+	BoolParameter* autoFeedback;
+
+
 	BoolParameter* isConnected;
 
 	//Script
