@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 AudioLooperTrack::AudioLooperTrack(AudioLooperNode* looper, int index, int numChannels) :
 	LooperTrack(looper, index),
 	audioLooper(looper),
@@ -15,7 +17,7 @@ AudioLooperTrack::AudioLooperTrack(AudioLooperNode* looper, int index, int numCh
 	rtStretchBuffer(numChannels, Transport::getInstance()->blockSize),
 	antiClickFadeBeforeClear(false),
 	antiClickFadeBeforeStop(false),
-	antiClickFadeBeforePause(true)
+	antiClickFadeBeforePause(false)
 {
 }
 
@@ -219,15 +221,22 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 	if (isReallyPlaying)
 	{
-		if (playQuantization != Transport::FREE && !transportIsPlaying && !antiClickFadeBeforePause)
+		if (playQuantization != Transport::FREE)
 		{
-			outputToSeparateTrack = false;
-			outputToMainTrack = false;
+			if (!transportIsPlaying && !antiClickFadeBeforePause)
+			{
+				outputToSeparateTrack = false;
+				outputToMainTrack = false;
+			}
+			else
+			{
+				outputToMainTrack = true;
+				if (transportIsPlaying) antiClickFadeBeforePause = true;
+			}
 		}
 		else
 		{
 			outputToMainTrack = true;
-			if (transportIsPlaying) antiClickFadeBeforePause = true;
 		}
 	}
 
@@ -352,6 +361,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 			}
 		}
 
+		//DBG("Play here " << targetSample << ",prevGain " << prevGain << " / " << (int)antiClickFadeBeforePause);
 
 		for (int i = 0; i < numChannels; i++)
 		{
@@ -438,7 +448,7 @@ void AudioLooperTrack::loadSampleFile(File dir)
 	bpmAtRecord = infoSplit[0].getFloatValue();
 	numBeats = infoSplit[1].getIntValue();
 	playQuantization = (Transport::Quantization)infoSplit[2].getIntValue();
-	
+
 	curSample = 0;
 	bufferNumSamples = buffer.getNumSamples();
 

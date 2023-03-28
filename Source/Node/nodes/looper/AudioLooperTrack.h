@@ -28,8 +28,8 @@ public:
     AudioBuffer<float> preRecBuffer; //a snapshot of the looper's ringbuffer just before recording. This allows for delay adjustement and nice fades for the end of the loop
     
     bool antiClickFadeBeforeClear;
-    int antiClickFadeBeforeStop;
-    int antiClickFadeBeforePause;
+    bool antiClickFadeBeforeStop;
+    bool antiClickFadeBeforePause;
     bool recordOnNextSample;
 
      std::unique_ptr<RubberBand::RubberBandStretcher> stretcher;
