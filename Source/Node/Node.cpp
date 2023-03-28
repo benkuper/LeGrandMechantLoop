@@ -140,7 +140,7 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 		{
 			for (auto& c : outAudioConnections) c->activityLevel = 0;
 			if (outControl != nullptr) outControl->rms->setValue(0);
-			midiCollector.reset(processor->getSampleRate());
+			if(processor->getSampleRate() > 0) midiCollector.reset(processor->getSampleRate());
 			updateSustainedNotes();
 		}
 
