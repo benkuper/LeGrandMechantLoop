@@ -33,6 +33,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	nodeNotifier(5)
 {
 	setHasCustomColor(true);
+	itemColor->setDefaultValue(Colours::darkgrey);
 	
 	processor = new NodeAudioProcessor(this);
 	processor->setPlayHead(Transport::getInstance());

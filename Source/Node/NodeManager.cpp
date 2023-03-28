@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 juce_ImplementSingleton(RootNodeManager)
 
 NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID) :
@@ -21,6 +23,8 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 	isPlaying = addBoolParameter("Is Node Playing", "This is a feedback to know if a node has playing content. Used by the global time to automatically stop if no content is playing", false);
 	isPlaying->setControllableFeedbackOnly(true);
 	isPlaying->hideInEditor = true;
+
+	includeTriggersInSaveLoad = true;
 
 	playAllLoopers = addTrigger("Play All Loopers", "This will play all loopers");
 	stopAllLoopers = addTrigger("Stop All Loopers", "This will stop all loopers");

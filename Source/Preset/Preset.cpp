@@ -338,7 +338,7 @@ void Preset::loadJSONDataItemInternal(var data)
 		NamedValueSet params = values.getDynamicObject()->getProperties();
 		for (auto& p : params)
 		{
-			if (Parameter* tp = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
+			if (Controllable* tp = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
 			{
 				addControllableToDataMap(tp, p.value);
 			}

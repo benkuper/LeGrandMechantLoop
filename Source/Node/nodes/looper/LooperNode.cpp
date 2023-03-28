@@ -490,6 +490,7 @@ Transport::Quantization LooperNode::getFreeFillMode()
 var LooperNode::getJSONData()
 {
 	var data = Node::getJSONData();
+	data.getDynamicObject()->setProperty(controlsCC.shortName, controlsCC.getJSONData());
 	data.getDynamicObject()->setProperty(trackParamsCC.shortName, trackParamsCC.getJSONData());
 	data.getDynamicObject()->setProperty(recordCC.shortName, recordCC.getJSONData());
 	data.getDynamicObject()->setProperty(saveLoadCC.shortName, saveLoadCC.getJSONData());
@@ -502,6 +503,7 @@ var LooperNode::getJSONData()
 void LooperNode::loadJSONDataItemInternal(var data)
 {
 	Node::loadJSONDataItemInternal(data);
+	controlsCC.loadJSONData(data.getProperty(controlsCC.shortName, var()));
 	trackParamsCC.loadJSONData(data.getProperty(trackParamsCC.shortName, var()));
 	recordCC.loadJSONData(data.getProperty(recordCC.shortName, var()));
 	saveLoadCC.loadJSONData(data.getProperty(saveLoadCC.shortName, var()));

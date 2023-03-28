@@ -20,6 +20,8 @@ SamplerNode::SamplerNode(var params) :
 	viewStartKey(20),
 	isUpdatingBank(false)
 {
+	includeTriggersInSaveLoad = true;
+
 	numChannels = addIntParameter("Num Channels", "Num Channels to use for recording and playing", 1);
 
 	monitor = addBoolParameter("Monitor", "Monitor input audio", true);
