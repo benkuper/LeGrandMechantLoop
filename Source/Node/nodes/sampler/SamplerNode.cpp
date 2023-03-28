@@ -284,8 +284,8 @@ void SamplerNode::controllableStateChanged(Controllable* c)
 
 void SamplerNode::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 {
-	Node::midiMessageReceived(i, m);
-	//midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
+	//Node::midiMessageReceived(i, m);
+	midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
 }
 
 
