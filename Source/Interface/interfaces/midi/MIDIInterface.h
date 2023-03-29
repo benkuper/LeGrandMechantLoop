@@ -30,6 +30,7 @@ public:
 
 	BoolParameter* isConnected;
 
+
 	//Script
 	const Identifier noteOnEventId = "noteOnEvent";
 	const Identifier noteOffEventId = "noteOffEvent";
@@ -50,6 +51,10 @@ public:
 
 	bool useGenericControls;
 
+	virtual void clearItem() override;
+
+	virtual void sendMessage(const MidiMessage& m);
+	virtual void sendMidiBuffer(const MidiBuffer &buffer);
 	virtual void sendNoteOn(int channel, int pitch, int velocity);
 	virtual void sendNoteOff(int channel, int pitch);
 	virtual void sendControlChange(int channel, int number, int value);

@@ -8,6 +8,7 @@
   ==============================================================================
 */
 
+#include "Interface/InterfaceIncludes.h"
 #include "LGMLAssetManager.h"
 
 Interface::Interface(StringRef name, var params) :
@@ -17,6 +18,9 @@ Interface::Interface(StringRef name, var params) :
 
     logIncomingData = addBoolParameter("Log Incoming Data", "", false);
     logOutgoingData = addBoolParameter("Log Outgoing Data", "", false);
+
+    inActivityTrigger.reset(new Trigger("IN Activity", "Incoming Activity Signal"));
+    outActivityTrigger.reset(new Trigger("OUT Activity", "Outgoing Activity Signal"));
 }
 
 Interface::~Interface()

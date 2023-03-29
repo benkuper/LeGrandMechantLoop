@@ -45,15 +45,7 @@ MIDIInterface::MIDIInterface(var params) :
 
 MIDIInterface::~MIDIInterface()
 {
-	if (inputDevice != nullptr)
-	{
-		if (AudioManager::getInstanceWithoutCreating() != nullptr)
-		{
-			AudioManager::getInstance()->am.removeMidiInputDeviceCallback(inputDevice->name, this);
-			AudioManager::getInstance()->am.setMidiInputDeviceEnabled(inputDevice->name, false);
-		}
-	};
-	if (outputDevice != nullptr) outputDevice->close();
+
 }
 
 
@@ -79,12 +71,47 @@ void MIDIInterface::onContainerParameterChangedInternal(Parameter* p)
 }
 
 
+void MIDIInterface::clearItem()
+{
+	Interface::clearItem();
+	
+	if (inputDevice != nullptr)
+	{
+		if (AudioManager::getInstanceWithoutCreating() != nullptr)
+		{
+			AudioManager::getInstance()->am.setMidiInputDeviceEnabled(inputDevice->name, false);
+			AudioManager::getInstance()->am.removeMidiInputDeviceCallback(inputDevice->name, this);
+		}
+	};
+
+	if (outputDevice != nullptr) outputDevice->close();
+}
+
+void MIDIInterface::sendMessage(const MidiMessage& m)
+{
+	if (!enabled->boolValue()) return;
+	if (outputDevice == nullptr) return;
+	if (logOutgoingData->boolValue()) NLOG(niceName, "Send Message " << m.getDescription());
+	outActivityTrigger->trigger();
+	outputDevice->sendMessage(m);
+
+}
+
+void MIDIInterface::sendMidiBuffer(const MidiBuffer& buffer)
+{
+	if (!enabled->boolValue()) return;
+	if (outputDevice == nullptr || outputDevice->device == nullptr) return;
+	if (logOutgoingData->boolValue()) NLOG(niceName, "Send Buffer, " << buffer.getNumEvents() << " events.");
+	outActivityTrigger->trigger();
+	outputDevice->device->sendBlockOfMessagesNow(buffer);
+}
+
 void MIDIInterface::sendNoteOn(int channel, int pitch, int velocity)
 {
 	if (!enabled->boolValue()) return;
 	if (outputDevice == nullptr) return;
 	if (logOutgoingData->boolValue()) NLOG(niceName, "Send Note on, channel : " << channel << ", pitch : " << MIDIManager::getNoteName(pitch) << ", velociy " << velocity);
-	//outActivityTrigger->trigger();
+	outActivityTrigger->trigger();
 	outputDevice->sendNoteOn(channel, pitch, velocity);
 }
 
@@ -93,7 +120,7 @@ void MIDIInterface::sendNoteOff(int channel, int pitch)
 	if (!enabled->boolValue()) return;
 	if (outputDevice == nullptr) return;
 	if (logOutgoingData->boolValue()) NLOG(niceName, "Send Note off, channel : " << channel << ", pitch");
-	//outActivityTrigger->trigger();
+	outActivityTrigger->trigger();
 	outputDevice->sendNoteOff(channel, pitch);
 }
 
@@ -102,7 +129,7 @@ void MIDIInterface::sendControlChange(int channel, int number, int value)
 	if (!enabled->boolValue()) return;
 	if (outputDevice == nullptr) return;
 	if (logOutgoingData->boolValue()) NLOG(niceName, "Send Control Change, channel : " << channel << ", number : " << number << ", value " << value);
-	//outActivityTrigger->trigger();
+	outActivityTrigger->trigger();
 	outputDevice->sendControlChange(channel, number, value);
 }
 
@@ -111,7 +138,7 @@ void MIDIInterface::sendProgramChange(int channel, int program)
 	if (!enabled->boolValue()) return;
 	if (outputDevice == nullptr) return;
 	if (logOutgoingData->boolValue()) NLOG(niceName, "Send ProgramChange, channel : " << channel << ", program : " << program);
-	//outActivityTrigger->trigger();
+	outActivityTrigger->trigger();
 	outputDevice->sendProgramChange(channel, program);
 }
 
@@ -125,7 +152,7 @@ void MIDIInterface::sendSysex(Array<uint8> data)
 		for (int i = 0; i < data.size(); ++i) s += "\n" + String(data[i]);
 		NLOG(niceName, s);
 	}
-	//outActivityTrigger->trigger();
+	outActivityTrigger->trigger();
 	outputDevice->sendSysEx(data);
 }
 
@@ -134,6 +161,7 @@ void MIDIInterface::sendPitchWheel(int channel, int value)
 	if (!enabled->boolValue()) return;
 	if (outputDevice == nullptr) return;
 	if (logOutgoingData->boolValue()) NLOG(niceName, "Send PitchWheel channel : " << channel << ", value : " << value);
+	outActivityTrigger->trigger();
 	outputDevice->sendPitchWheel(channel, value);
 }
 
@@ -142,6 +170,7 @@ void MIDIInterface::sendChannelPressure(int channel, int value)
 	if (!enabled->boolValue()) return;
 	if (outputDevice == nullptr) return;
 	if (logOutgoingData->boolValue()) NLOG(niceName, "Send Channel Pressure channel : " << channel << ", value : " << value);
+	outActivityTrigger->trigger();
 	outputDevice->sendChannelPressure(channel, value);
 }
 
@@ -150,6 +179,7 @@ void MIDIInterface::sendAfterTouch(int channel, int note, int value)
 	if (!enabled->boolValue()) return;
 	if (outputDevice == nullptr) return;
 	if (logOutgoingData->boolValue()) NLOG(niceName, "Send After touch channel : " << channel << ", note : " << note << ", value : " << value);
+	outActivityTrigger->trigger();
 	outputDevice->sendAfterTouch(channel, note, value);
 }
 
@@ -157,10 +187,8 @@ void MIDIInterface::sendFullFrameTimecode(int hours, int minutes, int seconds, i
 {
 	if (!enabled->boolValue()) return;
 	if (outputDevice == nullptr) return;
-	if (logOutgoingData->boolValue())
-	{
-		NLOG(niceName, "Send full frame timecode : " << hours << ":" << minutes << ":" << seconds << "." << frames << " / " << timecodeType);
-	}
+	if (logOutgoingData->boolValue()) NLOG(niceName, "Send full frame timecode : " << hours << ":" << minutes << ":" << seconds << "." << frames << " / " << timecodeType);
+	outActivityTrigger->trigger();
 	outputDevice->sendFullframeTimecode(hours, minutes, seconds, frames, timecodeType);
 }
 
@@ -168,10 +196,9 @@ void MIDIInterface::sendMidiMachineControlCommand(MidiMessage::MidiMachineContro
 {
 	if (!enabled->boolValue()) return;
 	if (outputDevice == nullptr) return;
-	if (logOutgoingData->boolValue())
-	{
-		NLOG(niceName, "Send midi machine control command : " << command);
-	}
+	if (logOutgoingData->boolValue()) NLOG(niceName, "Send midi machine control command : " << command);
+	outActivityTrigger->trigger();
+
 	outputDevice->sendMidiMachineControlCommand(command);
 }
 
@@ -232,6 +259,7 @@ void MIDIInterface::handleIncomingMidiMessage(MidiInput* source, const MidiMessa
 {
 	midiMessageReceived(message);
 
+
 	if (message.isNoteOn()) noteOnReceived(message.getChannel(), message.getNoteNumber(), message.getVelocity());
 	else if (message.isNoteOn()) noteOnReceived(message.getChannel(), message.getNoteNumber(), message.getVelocity());
 	else if (message.isNoteOff()) noteOffReceived(message.getChannel(), message.getNoteNumber(), message.getVelocity());
@@ -241,7 +269,12 @@ void MIDIInterface::handleIncomingMidiMessage(MidiInput* source, const MidiMessa
 	else if (message.isAftertouch()) afterTouchReceived(message.getChannel(), message.getNoteNumber(), message.getAfterTouchValue());
 	else if (message.isChannelPressure()) channelPressureReceived(message.getChannel(), message.getChannelPressureValue());
 	else if (message.isFullFrame()) fullFrameTimecodeReceived(message);
+	else
+	{
+		if (logIncomingData->boolValue()) NLOG(niceName, "Unhandled MIDI message : " << message.getDescription());
+	}
 
+	inActivityTrigger->trigger();
 
 	if (autoFeedback->boolValue() && outputDevice != nullptr) outputDevice->sendMessage(message);
 
