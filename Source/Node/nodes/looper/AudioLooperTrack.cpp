@@ -52,7 +52,7 @@ void AudioLooperTrack::updateStretch(bool force)
 
 	if (stretcher == nullptr)
 	{
-		stretcher.reset(new RubberBand::RubberBandStretcher(looper->processor->getSampleRate(), 2,
+		stretcher.reset(new RubberBand::RubberBandStretcher(looper->processor->getSampleRate(), numChannels,
 			RubberBand::RubberBandStretcher::OptionProcessRealTime
 			| RubberBand::RubberBandStretcher::OptionStretchPrecise
 			| RubberBand::RubberBandStretcher::OptionFormantPreserved
