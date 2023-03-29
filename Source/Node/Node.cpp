@@ -470,7 +470,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
 		if (midiInterface != nullptr && midiInterface->outputDevice != nullptr)
 		{
-			for (auto m : inMidiBuffer) midiInterface->outputDevice->sendMessage(m.getMessage());
+			for (auto m : inMidiBuffer) midiInterface->sendMessage(m.getMessage());
 		}
 	}
 

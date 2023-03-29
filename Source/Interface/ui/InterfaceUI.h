@@ -15,4 +15,11 @@ class InterfaceUI :
 public:
     InterfaceUI(Interface* i);
     virtual ~InterfaceUI();
+
+    std::unique_ptr<TriggerImageUI> inActivityUI;
+    std::unique_ptr<TriggerImageUI> outActivityUI;
+
+    void paintOverChildren(Graphics& g);
+    virtual void resizedHeader(Rectangle<int>& r) override;
+    virtual void mouseDown(const MouseEvent& e) override;
 };

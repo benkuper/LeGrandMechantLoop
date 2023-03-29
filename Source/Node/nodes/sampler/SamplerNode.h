@@ -73,9 +73,13 @@ public:
 		AudioSampleBuffer rtPitchedBuffer;
 		SamplerNote* autoKeyFromNote = nullptr;
 		int rtPitchReadSample = 0;
+
+		SpinLock pitcherLock;
 		std::unique_ptr<RubberBand::RubberBandStretcher> pitcher;
 
 		void setAutoKey(SamplerNote* remoteNote, double shift= 0);
+
+		void reset();
 		
 		bool hasContent() const { return buffer.getNumSamples() > 0; }
 		bool isProxyNote() const { return autoKeyFromNote != nullptr;  }
@@ -96,6 +100,7 @@ public:
 
 	void clearNote(int note);
 	void clearAllNotes();
+	void resetAllNotes();
 
 	void updateBuffers();
 	void updateRingBuffer();

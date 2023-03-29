@@ -47,7 +47,7 @@ void MIDIIONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& mi
 		for (const auto m : midiMessages)
 		{
 			MidiMessage msg = m.getMessage();
-			midiInterface->outputDevice->sendMessage(msg);
+			midiInterface->sendMessage(msg);
 		}
 	}
 }

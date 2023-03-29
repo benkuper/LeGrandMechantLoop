@@ -137,6 +137,15 @@ void SamplerNode::clearAllNotes()
 	}
 }
 
+void SamplerNode::resetAllNotes()
+{
+	ScopedSuspender sp(processor);
+	for (auto& n : samplerNotes)
+	{
+		n->reset();
+	}
+}
+
 void SamplerNode::updateBuffers()
 {
 	ScopedSuspender sp(processor);
@@ -327,6 +336,10 @@ void SamplerNode::onContainerParameterChangedInternal(Parameter* p)
 			}
 		}
 	}
+	else if (p == playMode)
+	{
+		resetAllNotes();
+	}
 }
 
 void SamplerNode::controllableStateChanged(Controllable* c)
@@ -389,6 +402,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 				{
 					sn->jumpGhostSample = -1;
 					sn->playingSample = 0;
+					sn->rtPitchReadSample = 0;
 				}
 			}
 			else
@@ -703,33 +717,32 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 				auto readPointers = tmpBuffer.getArrayOfReadPointers();
 
 				DBG("Rt pitch sample before");
+				GenericScopedLock pLock(s->pitcherLock);
 				while (s->pitcher->available() < blockSize)
 				{
 
 					for (int ch = 0; ch < buffer.getNumChannels(); ch++) tmpBuffer.copyFrom(ch, 0, s->autoKeyFromNote->buffer.getReadPointer(ch, s->rtPitchReadSample), blockSize);
-
 					s->pitcher->process(readPointers, tmpBuffer.getNumSamples(), false);
 					s->rtPitchReadSample += blockSize;
 
 					if (s->rtPitchReadSample >= s->autoKeyFromNote->buffer.getNumSamples())
 					{
+						DBG("Reset RT read sample");
+						s->rtPitchReadSample = 0;
+
 						if (pm == HIT_ONESHOT)
 						{
 							DBG("One shot break");
 							s->oneShotted = true;
-							HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
-							if (hm == HIT_FULL || hm == HIT_RESET)
-							{
-								s->adsr.gate(0);
-								s->state->setValueWithData(FILLED);
-							}
+							s->jumpGhostSample = -1;
+							s->playingSample = 0;
+							s->oneShotted = false;
+							s->state->setValueWithData(s->hasContent() ? NoteState::FILLED : NoteState::EMPTY);
 							break; //stop here
 						}
-
-						DBG("Reset RT read sample");
-						s->rtPitchReadSample = 0;
 					}
 				}
+
 				DBG("Available : " << s->pitcher->available() << " / " << blockSize);
 				s->pitcher->retrieve(s->rtPitchedBuffer.getArrayOfWritePointers(), s->rtPitchedBuffer.getNumSamples());
 
@@ -782,7 +795,9 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			}
 
 			s->playingSample += blockSize;
-			if (s->playingSample >= targetBuffer->getNumSamples())
+
+			int numSamplesToCheck = s->isProxyNote() ? s->autoKeyFromNote->buffer.getNumSamples() : targetBuffer->getNumSamples();
+			if (!s->isProxyNote() && s->playingSample >= numSamplesToCheck)
 			{
 				if (pm == HIT_ONESHOT)
 				{
@@ -790,10 +805,11 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 					s->jumpGhostSample = -1;
 
 					HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
-					if (hm == HIT_FULL || hm == HIT_RESET)
+					if (hm == HIT_FULL || hm == HIT_RESET || hm == TOGGLE)
 					{
-						s->adsr.gate(0);
-						s->state->setValueWithData(FILLED);
+						s->reset();
+						//s->adsr.gate(0);
+						//s->state->setValueWithData(FILLED);
 					}
 				}
 				s->playingSample = 0;
@@ -825,19 +841,34 @@ void SamplerNode::SamplerNote::setAutoKey(SamplerNote* remoteNote, double shift)
 		return;
 	}
 
-	if (pitcher == nullptr) pitcher.reset(new RubberBand::RubberBandStretcher(Transport::getInstance()->sampleRate, autoKeyFromNote->buffer.getNumChannels(),
-		RubberBand::RubberBandStretcher::OptionProcessRealTime
-		| RubberBand::RubberBandStretcher::OptionStretchPrecise
-		| RubberBand::RubberBandStretcher::OptionFormantPreserved
-		| RubberBand::RubberBandStretcher::OptionWindowLong
-		| RubberBand::RubberBandStretcher::OptionTransientsCrisp
-		| RubberBand::RubberBandStretcher::OptionPitchHighQuality
-		| RubberBand::RubberBandStretcher::OptionChannelsTogether
-	));
-	else pitcher->reset();
+	GenericScopedLock lock(pitcherLock);
+
+	if (pitcher == nullptr)
+	{
+		pitcher.reset(new RubberBand::RubberBandStretcher(Transport::getInstance()->sampleRate, autoKeyFromNote->buffer.getNumChannels(),
+			RubberBand::RubberBandStretcher::OptionProcessRealTime
+			| RubberBand::RubberBandStretcher::OptionStretchPrecise
+			| RubberBand::RubberBandStretcher::OptionFormantPreserved
+			| RubberBand::RubberBandStretcher::OptionWindowLong
+			| RubberBand::RubberBandStretcher::OptionTransientsCrisp
+			| RubberBand::RubberBandStretcher::OptionPitchHighQuality
+			| RubberBand::RubberBandStretcher::OptionChannelsTogether
+		));
+	}
 
 	pitcher->setMaxProcessSize(Transport::getInstance()->blockSize);
 	pitcher->setPitchScale(shift);
 	//LOG("Set with pitchScale : " << shift);
+	rtPitchReadSample = 0;
 	rtPitchedBuffer.setSize(autoKeyFromNote->buffer.getNumChannels(), Transport::getInstance()->blockSize);
+}
+
+void SamplerNode::SamplerNote::reset()
+{
+	adsr.reset();
+	setAutoKey(nullptr);
+	jumpGhostSample = -1;
+	playingSample = 0;
+	oneShotted = false;
+	state->setValueWithData(hasContent() ? NoteState::FILLED : NoteState::EMPTY);
 }
