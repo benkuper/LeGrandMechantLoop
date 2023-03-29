@@ -237,7 +237,7 @@ void MIDIInterface::updateMIDIDevices()
 
 	if (outputDevice != nullptr) outputDevice->close();
 
-	if (!enabled->boolValue())
+	if (enabled->boolValue())
 	{
 		outputDevice = newOutput;
 

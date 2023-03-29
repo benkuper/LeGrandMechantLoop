@@ -394,7 +394,6 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 			{
 				samplerNotes[midiNoteNumber]->adsr.gate(0);
 				samplerNotes[midiNoteNumber]->state->setValueWithData(FILLED);
-				//handleNoteOff(source, midiChannel, midiNoteNumber, velocity);
 			}
 			else if (ns == PLAYING && (hm == HIT_RESET || hm == HIT_FULL))
 			{
