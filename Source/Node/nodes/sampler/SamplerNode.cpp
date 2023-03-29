@@ -29,6 +29,9 @@ SamplerNode::SamplerNode(var params) :
 	playMode = addEnumParameter("Play Mode", "How samples are treated");
 	playMode->addOption("Hit (Loop)", HIT_LOOP)->addOption("Hit (One shot)", HIT_ONESHOT)->addOption("Peek (Continuous)", PEEK)->addOption("Keep (Hold)", KEEP);
 
+	hitMode = addEnumParameter("Hit Mode", "How playing a sample is handled.\nPiano is normal playing, releasing a key stops the sample.\nHit is starting the sample but releasing doesn't affect (only works in One Shot play mode) Full will not take in account playing again the note if the sample is still playing. Reset will allow to replay from start.\nToggle is alternating key presses to start/stop instead of using key release");
+	hitMode->addOption("Piano", PIANO)->addOption("Hit (Full Sample)", HIT_FULL)->addOption("Hit (Reset)", HIT_RESET)->addOption("Toggle", TOGGLE);
+
 	autoKeyMode = addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
 	fadeTimeMS = addIntParameter("Fade Time MS", "Time to fade between start and end of recording", 50);
 
@@ -341,14 +344,15 @@ void SamplerNode::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
 {
 	PlayMode pm = playMode->getValueDataAsEnum<PlayMode>();
+	HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
 
 	SamplerNote* sn = samplerNotes[midiNoteNumber];
 
-	if (clearMode->boolValue())
+	if (clearMode->boolValue()) //clearing
 	{
 		clearNote(midiNoteNumber);
 	}
-	else if (!samplerNotes[midiNoteNumber]->hasContent())
+	else if (!samplerNotes[midiNoteNumber]->hasContent()) //record and proxy autokey playing
 	{
 		int closestNote = -1;
 		if (autoKeyMode->boolValue())
@@ -372,46 +376,85 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 
 		if (closestNote != -1)
 		{
-			double shift = MidiMessage::getMidiNoteInHertz(midiNoteNumber) / MidiMessage::getMidiNoteInHertz(closestNote);
-			samplerNotes[midiNoteNumber]->setAutoKey(samplerNotes[closestNote], shift);
+			NoteState ns = samplerNotes[closestNote]->state->getValueDataAsEnum<NoteState>();
+			if (hm == TOGGLE && ns == PLAYING)
+			{
+				samplerNotes[midiNoteNumber]->adsr.gate(0);
+				samplerNotes[midiNoteNumber]->state->setValueWithData(FILLED);
+				//handleNoteOff(source, midiChannel, midiNoteNumber, velocity);
+			}
+			else if (ns == PLAYING && (hm == HIT_RESET || hm == HIT_FULL))
+			{
+				if (hm == HIT_RESET)
+				{
+					samplerNotes[closestNote]->jumpGhostSample = -1;
+					samplerNotes[closestNote]->playingSample = 0;
+				}
+			}
+			else
+			{
+				double shift = MidiMessage::getMidiNoteInHertz(midiNoteNumber) / MidiMessage::getMidiNoteInHertz(closestNote);
+				samplerNotes[midiNoteNumber]->setAutoKey(samplerNotes[closestNote], shift);
 
-			sn->velocity = velocity;
-			sn->adsr.gate(1);
-			lastPlayedNote = midiNoteNumber;
-			sn->state->setValueWithData(PLAYING);
+				sn->velocity = velocity;
+				sn->adsr.gate(1);
+				lastPlayedNote = midiNoteNumber;
+				sn->state->setValueWithData(PLAYING);
+			}
 		}
 		else
 		{
 			startRecording(midiNoteNumber);
 		}
 	}
-	else
+	else //filled note playing
 	{
-		if (pm == HIT_LOOP || pm == HIT_ONESHOT)
+		NoteState ns = sn->state->getValueDataAsEnum<NoteState>();
+		if (hm == TOGGLE && ns == PLAYING)
 		{
-			if (sn->adsr.getState() != CurvedADSR::env_idle) sn->jumpGhostSample = sn->playingSample;
-			sn->playingSample = 0;
-			sn->oneShotted = false;
+			samplerNotes[midiNoteNumber]->adsr.gate(0);
+			samplerNotes[midiNoteNumber]->state->setValueWithData(FILLED);
+			//handleNoteOff(source, midiChannel, midiNoteNumber, velocity);
 		}
-
-		if (sn->isProxyNote())
+		else if (ns == PLAYING && (hm == HIT_RESET || hm == HIT_FULL))
 		{
-			sn->pitcher->reset(); //here even with peek
-			sn->rtPitchReadSample = sn->playingSample;
+			if (hm == HIT_RESET)
+			{
+				sn->jumpGhostSample = -1;
+				sn->playingSample = 0;
+			}
 		}
+		else
+		{
+			if (pm == HIT_LOOP || pm == HIT_ONESHOT)
+			{
+				if (sn->adsr.getState() != CurvedADSR::env_idle) sn->jumpGhostSample = sn->playingSample;
+				sn->playingSample = 0;
+				sn->oneShotted = false;
+			}
 
-		sn->velocity = velocity;
-		sn->adsr.gate(1);
-		lastPlayedNote = midiNoteNumber;
-		sn->state->setValueWithData(PLAYING);
+			if (sn->isProxyNote())
+			{
+				sn->pitcher->reset(); //here even with peek
+				sn->rtPitchReadSample = sn->playingSample;
+			}
+
+			sn->velocity = velocity;
+			sn->adsr.gate(1);
+			lastPlayedNote = midiNoteNumber;
+			sn->state->setValueWithData(PLAYING);
+		}
 	}
 }
 
 void SamplerNode::handleNoteOff(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
 {
+	HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
+
 	if (samplerNotes[midiNoteNumber]->state->getValueDataAsEnum<NoteState>() == RECORDING) stopRecording();
 	else if (samplerNotes[midiNoteNumber]->hasContent() || samplerNotes[midiNoteNumber]->isProxyNote())
 	{
+		if (hm != PIANO) return;
 		samplerNotes[midiNoteNumber]->adsr.gate(0);
 		samplerNotes[midiNoteNumber]->state->setValueWithData(FILLED);
 	}
@@ -674,6 +717,12 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 						{
 							DBG("One shot break");
 							s->oneShotted = true;
+							HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
+							if (hm == HIT_FULL || hm == HIT_RESET)
+							{
+								s->adsr.gate(0);
+								s->state->setValueWithData(FILLED);
+							}
 							break; //stop here
 						}
 
@@ -739,6 +788,13 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 				{
 					s->oneShotted = true;
 					s->jumpGhostSample = -1;
+
+					HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
+					if (hm == HIT_FULL || hm == HIT_RESET)
+					{
+						s->adsr.gate(0);
+						s->state->setValueWithData(FILLED);
+					}
 				}
 				s->playingSample = 0;
 			}

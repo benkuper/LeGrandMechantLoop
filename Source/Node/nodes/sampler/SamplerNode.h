@@ -19,11 +19,13 @@ public:
 	virtual ~SamplerNode();
 
 	enum PlayMode { HIT_LOOP, HIT_ONESHOT, PEEK, KEEP };
+	enum HitMode { PIANO, HIT_RESET, HIT_FULL, TOGGLE };
 
 
 	IntParameter* numChannels;
 	BoolParameter* showKeyboard;
 	EnumParameter* playMode;
+	EnumParameter* hitMode;
 	BoolParameter* autoKeyMode;
 
 	BoolParameter* monitor;
