@@ -376,7 +376,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 
 		if (closestNote != -1)
 		{
-			NoteState ns = samplerNotes[closestNote]->state->getValueDataAsEnum<NoteState>();
+			NoteState ns = sn->state->getValueDataAsEnum<NoteState>();
 			if (hm == TOGGLE && ns == PLAYING)
 			{
 				samplerNotes[midiNoteNumber]->adsr.gate(0);
@@ -387,8 +387,8 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 			{
 				if (hm == HIT_RESET)
 				{
-					samplerNotes[closestNote]->jumpGhostSample = -1;
-					samplerNotes[closestNote]->playingSample = 0;
+					sn->jumpGhostSample = -1;
+					sn->playingSample = 0;
 				}
 			}
 			else
