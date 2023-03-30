@@ -31,7 +31,7 @@ void MappingUI::resizedInternalHeader(Rectangle<int>& r)
 
     if (valueUI != nullptr)
     {
-        valueUI->setBounds(r.removeFromRight(200));
+        valueUI->setBounds(r.removeFromRight(r.getWidth()/3));
     }
 }
 
@@ -67,6 +67,7 @@ void MappingUI::updateValueUI()
     else if (MacroMapping* m = dynamic_cast<MacroMapping*>(item))
     {
         valueUI.reset(m->sourceParam->createDefaultUI());
+        valueUI->showLabel = false;
     }
     else
     {
