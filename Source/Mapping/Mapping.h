@@ -21,7 +21,7 @@ public:
     Mapping(var params = var());
     virtual ~Mapping();
 
-    TargetParameter * destParam;
+    TargetParameter* destParam;
 
     Point2DParameter* inputRange;
     Point2DParameter* outputRange;
@@ -34,11 +34,19 @@ public:
     BoolParameter* boolToggle;
     bool prevVal; //for toggle
 
+    BoolParameter* autoFeedback;
+    bool isProcessing;
+    bool isSendingFeedback;
+
     WeakReference<Controllable> dest;
 
     void setDest(Controllable* c);
 
     virtual void onContainerParameterChangedInternal(Parameter*) override;
+    virtual void onExternalParameterValueChanged(Parameter*) override;
+
+
+    virtual void sendFeedback() {}
 
     virtual void process(var value);
 };
@@ -59,7 +67,7 @@ public:
     void onExternalParameterValueChanged(Parameter* p) override;
     void onExternalTriggerTriggered(Trigger* t) override;
 
-    String getTypeString() const override { return "Generic"; }
+    DECLARE_TYPE("Generic")
 };
 
 class MacroMapping :
@@ -73,7 +81,7 @@ public:
 
     void onContainerParameterChangedInternal(Parameter* p) override;
 
-    String getTypeString() const override { return "Macro"; }
+    DECLARE_TYPE("Macro");
 };
 
 class MIDIMapping :
@@ -84,6 +92,8 @@ public:
     MIDIMapping(var params = var());
     ~MIDIMapping();
 
+    void clearItem() override;
+
     TargetParameter* interfaceParam;
     MIDIInterface* midiInterface;
     IntParameter* channel;
@@ -92,15 +102,17 @@ public:
     EnumParameter * type;
     IntParameter* pitchOrNumber;
     BoolParameter* learn;
-    
+
     void setMIDIInterface(MIDIInterface* d);
     void onContainerParameterChangedInternal(Parameter* p) override;
+
+    void sendFeedback() override;
 
     void noteOnReceived(MIDIInterface*, const int& channel, const int& pitch, const int& velocity) override;
     void noteOffReceived(MIDIInterface*, const int& channel, const int& pitch, const int& velocity) override;
     void controlChangeReceived(MIDIInterface*, const int& channel, const int& number, const int& value) override;
     void pitchWheelReceived(MIDIInterface*, const int& channel, const int &value) override;
 
-    String getTypeString() const override { return "MIDI"; }
+    DECLARE_TYPE("MIDI");
 
 };

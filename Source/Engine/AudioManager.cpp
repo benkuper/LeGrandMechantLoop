@@ -141,6 +141,11 @@ StringArray AudioManager::getOutputChannelNames() const
     return result;
 }
 
+void AudioManager::stop()
+{
+    am.closeAudioDevice();
+}
+
 void AudioManager::startLoadFile()
 {
     graph.suspendProcessing(true);

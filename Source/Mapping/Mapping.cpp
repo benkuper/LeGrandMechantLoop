@@ -25,13 +25,15 @@ Mapping::Mapping(var params) :
 	inputRange->setPoint(0, 1);
 	outputRange = addPoint2DParameter("Output Range", "Working range to process the output with");
 	outputRange->setPoint(0, 1);
-	outsideBehaviour = addEnumParameter("Outside Behaviour", "How to behave when values are outside the output range");
-	outsideBehaviour->addOption("Clip", CLIP);//->addOption("Loop", LOOP)/;
+	//outsideBehaviour = addEnumParameter("Outside Behaviour", "How to behave when values are outside the output range");
+	//outsideBehaviour->addOption("Clip", CLIP);//->addOption("Loop", LOOP)/;
 
 	boolBehaviour = addEnumParameter("Boolean Behaviour", "How to behave when setting a boolean. \"Non-zero\" means any positive, non-zero value will be treated as TRUE.\
  \n\"One\" means that only values from 1 and up will be treated as TRUE", false);
 	boolBehaviour->addOption("Non-Zero", NONZERO)->addOption("One", ONE)->addOption("Default", DEFAULT);
 	boolToggle = addBoolParameter("Toggle Mode", "If checked, boolean values will be used with a toggle", false, false);
+
+	autoFeedback = addBoolParameter("Auto Feedback", "If checked, this will send back the value to the MIDI interface", false);
 }
 
 Mapping::~Mapping()
@@ -44,6 +46,10 @@ void Mapping::setDest(Controllable* c)
 	if (dest != nullptr)
 	{
 		//
+		if (dest->type != Controllable::TRIGGER)
+		{
+			((Parameter*)dest.get())->removeParameterListener(this);
+		}
 	}
 
 	dest = c;
@@ -52,6 +58,11 @@ void Mapping::setDest(Controllable* c)
 	{
 		boolBehaviour->setEnabled(dest->type == Parameter::BOOL);
 		boolToggle->setEnabled(dest->type == Parameter::BOOL);
+
+		if (dest->type != Controllable::TRIGGER)
+		{
+			((Parameter*)dest.get())->addParameterListener(this);
+		}
 	}
 }
 
@@ -63,9 +74,21 @@ void Mapping::onContainerParameterChangedInternal(Parameter* p)
 	}
 }
 
+void Mapping::onExternalParameterValueChanged(Parameter* p)
+{
+	BaseItem::onExternalParameterValueChanged(p);
+	if (p == dest && autoFeedback->boolValue())
+	{
+		isSendingFeedback = true;
+		sendFeedback();
+		isSendingFeedback = false;
+	}
+}
+
 void Mapping::process(var value)
 {
 	if (dest == nullptr || dest.wasObjectDeleted()) return;
+	if (isSendingFeedback) return;
 
 	float val = value.isInt() ? (float)(int)value : (float)value;
 	float destVal = jmap(val, inputRange->x, inputRange->y, outputRange->x, outputRange->y);
@@ -115,9 +138,10 @@ GenericMapping::GenericMapping(var params) :
 	controllables.move(controllables.indexOf(destParam), controllables.size() - 1);
 	controllables.move(controllables.indexOf(inputRange), controllables.size() - 1);
 	controllables.move(controllables.indexOf(outputRange), controllables.size() - 1);
-	controllables.move(controllables.indexOf(outsideBehaviour), controllables.size() - 1);
+	//controllables.move(controllables.indexOf(outsideBehaviour), controllables.size() - 1);
 	controllables.move(controllables.indexOf(boolBehaviour), controllables.size() - 1);
 	controllables.move(controllables.indexOf(boolToggle), controllables.size() - 1);
+	controllables.move(controllables.indexOf(autoFeedback), controllables.size() - 1);
 }
 
 GenericMapping::~GenericMapping()
@@ -172,7 +196,7 @@ MIDIMapping::MIDIMapping(var params) :
 
 	type = addEnumParameter("Type", "Type of Midi message");
 	type->addOption("Control Change", CC)->addOption("Note", NOTE)->addOption("PitchWheel", PitchWheel);
-	channel = addIntParameter("Channel", "Channel to use for this mapping. 0 means all channels", 0, 0, 16);
+	channel = addIntParameter("Channel", "Channel to use for this mapping. 0 means all channels", 1, 1, 16);
 	pitchOrNumber = addIntParameter("Number", "The pitch if it's a note, or number if it's a control change", 0, 0, 127);
 
 	learn = addBoolParameter("Learn MIDI", "When enabled, this will automatically assign info from the next midi message received", false);
@@ -181,15 +205,23 @@ MIDIMapping::MIDIMapping(var params) :
 	controllables.move(controllables.indexOf(destParam), controllables.size() - 1);
 	controllables.move(controllables.indexOf(inputRange), controllables.size() - 1);
 	controllables.move(controllables.indexOf(outputRange), controllables.size() - 1);
-	controllables.move(controllables.indexOf(outsideBehaviour), controllables.size() - 1);
+	//controllables.move(controllables.indexOf(outsideBehaviour), controllables.size() - 1);
 	controllables.move(controllables.indexOf(boolBehaviour), controllables.size() - 1);
 	controllables.move(controllables.indexOf(boolToggle), controllables.size() - 1);
+	controllables.move(controllables.indexOf(autoFeedback), controllables.size() - 1);
 	inputRange->setPoint(0, 127);
+
 }
 
 MIDIMapping::~MIDIMapping()
 {
-	//setMIDIInterface(nullptr);
+}
+
+void MIDIMapping::clearItem()
+{
+	Mapping::clearItem();
+	setMIDIInterface(nullptr);
+
 }
 
 void MIDIMapping::setMIDIInterface(MIDIInterface* d)
@@ -210,7 +242,7 @@ void MIDIMapping::setMIDIInterface(MIDIInterface* d)
 void MIDIMapping::onContainerParameterChangedInternal(Parameter* p)
 {
 	Mapping::onContainerParameterChangedInternal(p);
-	if (p == interfaceParam) setMIDIInterface((MIDIInterface *)interfaceParam->targetContainer.get());
+	if (p == interfaceParam) setMIDIInterface((MIDIInterface*)interfaceParam->targetContainer.get());
 	else if (p == type)
 	{
 		if (!isCurrentlyLoadingData)
@@ -229,12 +261,39 @@ void MIDIMapping::noteOnReceived(MIDIInterface*, const int& _channel, const int&
 		pitchOrNumber->setValue(pitch);
 		learn->setValue(false);
 	}
-	
+
 	if (type->getValueDataAsEnum<MIDIType>() != NOTE) return;
 	if (channel->intValue() > 0 && _channel != channel->intValue()) return;
 	if (pitch != pitchOrNumber->intValue()) return;
-	
+
 	process(velocity);
+}
+
+void MIDIMapping::sendFeedback()
+{
+	if (midiInterface == nullptr) return;
+	if (dest->type == Controllable::TRIGGER) return;
+
+	MIDIType mt = type->getValueDataAsEnum<MIDIType>();
+
+	float val = ((Parameter*)dest.get())->floatValue();
+	float destVal = jmap(val, outputRange->x, outputRange->y, inputRange->x, inputRange->y);
+	float minVal = jmin(inputRange->x, inputRange->y);
+	float maxVal = jmax(inputRange->x, inputRange->y);
+	destVal = jlimit(minVal, maxVal, destVal);
+
+	if (mt == NOTE)
+	{
+		midiInterface->sendNoteOn(channel->intValue(), pitchOrNumber->intValue(), destVal);
+	}
+	else if (mt == CC)
+	{
+		midiInterface->sendControlChange(channel->intValue(), pitchOrNumber->intValue(), destVal);
+	}
+	else if (mt == PitchWheel)
+	{
+		midiInterface->sendPitchWheel(channel->intValue(), destVal);
+	}
 }
 
 void MIDIMapping::noteOffReceived(MIDIInterface*, const int& _channel, const int& pitch, const int& velocity)
@@ -254,7 +313,7 @@ void MIDIMapping::controlChangeReceived(MIDIInterface*, const int& _channel, con
 		pitchOrNumber->setValue(number);
 		learn->setValue(false);
 	}
-	
+
 	if (type->getValueDataAsEnum<MIDIType>() != CC) return;
 	if (channel->intValue() > 0 && _channel != channel->intValue()) return;
 	if (number != pitchOrNumber->intValue()) return;
@@ -270,7 +329,7 @@ void MIDIMapping::pitchWheelReceived(MIDIInterface*, const int& _channel, const 
 		pitchOrNumber->setValue(0);
 		learn->setValue(false);
 	}
-	
+
 	if (type->getValueDataAsEnum<MIDIType>() != PitchWheel) return;
 	if (channel->intValue() > 0 && _channel != channel->intValue()) return;
 	process(value);
@@ -283,9 +342,10 @@ MacroMapping::MacroMapping(var params) :
 	controllables.move(controllables.indexOf(destParam), controllables.size() - 1);
 	controllables.move(controllables.indexOf(inputRange), controllables.size() - 1);
 	controllables.move(controllables.indexOf(outputRange), controllables.size() - 1);
-	controllables.move(controllables.indexOf(outsideBehaviour), controllables.size() - 1);	
+	//controllables.move(controllables.indexOf(outsideBehaviour), controllables.size() - 1);	
 	controllables.move(controllables.indexOf(boolBehaviour), controllables.size() - 1);
-	controllables.move(controllables.indexOf(boolToggle), controllables.size() - 1); 
+	controllables.move(controllables.indexOf(boolToggle), controllables.size() - 1);
+	controllables.move(controllables.indexOf(autoFeedback), controllables.size() - 1);
 	inputRange->setPoint(0, 1);
 }
 
@@ -296,5 +356,5 @@ MacroMapping::~MacroMapping()
 void MacroMapping::onContainerParameterChangedInternal(Parameter* p)
 {
 	Mapping::onContainerParameterChangedInternal(p);
-	if(p == sourceParam) process(p->getValue());
+	if (p == sourceParam) process(p->getValue());
 }

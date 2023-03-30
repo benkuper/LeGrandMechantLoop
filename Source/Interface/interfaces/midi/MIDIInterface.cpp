@@ -22,7 +22,7 @@ MIDIInterface::MIDIInterface(var params) :
 	addParameter(midiParam);
 
 	autoFeedback = addBoolParameter("Auto feedback", "If auto feedback, this will send received message to output", false);
-	enableClock = addBoolParameter("Send Clock", "If checked, this will send the clock to the connected output device", true);
+	enableClock = addBoolParameter("Send Clock", "If checked, this will send the clock to the connected output device", false);
 
 	isConnected = addBoolParameter("Is Connected", "This is checked if the module is connected to at least one input or output device", false);
 	isConnected->setControllableFeedbackOnly(true);
@@ -73,18 +73,19 @@ void MIDIInterface::onContainerParameterChangedInternal(Parameter* p)
 
 void MIDIInterface::clearItem()
 {
-	Interface::clearItem();
-	
+
+	GenericScopedLock lock(AudioManager::getInstance()->am.getMidiCallbackLock());
 	if (inputDevice != nullptr)
 	{
 		if (AudioManager::getInstanceWithoutCreating() != nullptr)
 		{
-			AudioManager::getInstance()->am.setMidiInputDeviceEnabled(inputDevice->name, false);
-			AudioManager::getInstance()->am.removeMidiInputDeviceCallback(inputDevice->name, this);
+			AudioManager::getInstance()->am.setMidiInputDeviceEnabled(inputDevice->id, false);
+			AudioManager::getInstance()->am.removeMidiInputDeviceCallback(inputDevice->id, this);
 		}
 	};
 
 	if (outputDevice != nullptr) outputDevice->close();
+	Interface::clearItem();
 }
 
 void MIDIInterface::sendMessage(const MidiMessage& m)
@@ -206,6 +207,8 @@ void MIDIInterface::sendMidiMachineControlCommand(MidiMessage::MidiMachineContro
 
 void MIDIInterface::updateMIDIDevices()
 {
+	GenericScopedLock lock(AudioManager::getInstance()->am.getMidiCallbackLock());
+	
 	MIDIInputDevice* newInput = midiParam->inputDevice;
 	//if (inputDevice != newInput)
 	//{
@@ -257,6 +260,7 @@ void MIDIInterface::updateMIDIDevices()
 
 void MIDIInterface::handleIncomingMidiMessage(MidiInput* source, const MidiMessage& message)
 {
+
 	midiMessageReceived(message);
 
 

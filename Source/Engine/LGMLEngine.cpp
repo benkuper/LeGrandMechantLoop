@@ -68,6 +68,7 @@ LGMLEngine::~LGMLEngine()
 
 void LGMLEngine::clearInternal()
 {
+    AudioManager::getInstance()->stop();
     RootPresetManager::getInstance()->clear();
     MappingManager::getInstance()->clear();
     InterfaceManager::getInstance()->clear();

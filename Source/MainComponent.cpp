@@ -94,6 +94,14 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 		p->addSubMenu("Remove from...", removeFromMenu);
 		p->addItem(0x5003, "Remove from all");
 	}
+
+	p->addSeparator();
+
+	PopupMenu mappingMenu;
+	mappingMenu.addItem(0x6001, MIDIMapping::getTypeStringStatic());
+	mappingMenu.addItem(0x6002, MacroMapping::getTypeStringStatic());
+	mappingMenu.addItem(0x6003, GenericMapping::getTypeStringStatic());
+	p->addSubMenu("Create Mapping...", mappingMenu);
 }
 
 bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
@@ -139,21 +147,33 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 
 			})
 		);
+		return true;
 	}
 	else if (result >= 0x5010 && result <= 0x5013)
 	{
 		int option = result - 0x5010;
 		RootPresetManager::getInstance()->setControllablePresetOption(c, "transition", option);
+		return true;
 	}
 	else if (result >= 0x20000 && result < 0x30000)
 	{
 		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x20000)) preset->save(c);
+		return true;
 	}
 	else if (result >= 0x30000)
 	{
 		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x30000)) preset->removeControllableFromDataMap(c);
+		return true;
 	}
+	else if (result >= 0x6001 && result <= 0x6003)
+	{
+		if (result >= 0x6001) MappingManager::getInstance()->createMappingForControllable(c, MIDIMapping::getTypeStringStatic());
+		if (result >= 0x6002) MappingManager::getInstance()->createMappingForControllable(c, MacroMapping::getTypeStringStatic());
+		if (result >= 0x6003) MappingManager::getInstance()->createMappingForControllable(c, GenericMapping::getTypeStringStatic());
 
+		return true;
+	}
+	
 	return false;
 }
 

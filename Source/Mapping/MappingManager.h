@@ -22,4 +22,6 @@ public:
     ~MappingManager();
 
     Factory<Mapping> factory;
+
+    void createMappingForControllable(Controllable* c, const String& type);
 };

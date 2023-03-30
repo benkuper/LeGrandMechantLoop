@@ -77,6 +77,8 @@ public:
 	StringArray getInputChannelNames() const;
 	StringArray getOutputChannelNames() const;
 
+	void stop();
+
 	void startLoadFile() override;
 	void endLoadFile() override;
 
