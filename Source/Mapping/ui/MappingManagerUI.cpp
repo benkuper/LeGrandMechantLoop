@@ -13,6 +13,7 @@
 MappingManagerUI::MappingManagerUI(const String& name) :
 	BaseManagerShapeShifterUI(name, MappingManager::getInstance())
 {
+	setShowSearchBar(true);
 	addExistingItems();
 }
 
