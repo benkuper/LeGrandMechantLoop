@@ -191,10 +191,9 @@ MIDIMapping::MIDIMapping(var params) :
 	Mapping(params),
 	midiInterface(nullptr)
 {
-	bool defaultLearnVal = false;
-	if (!Engine::mainEngine->isLoadingFile) defaultLearnVal = LGMLSettings::getInstance()->autoLearnOnCreateMapping->boolValue();
+	
 
-	learn = addBoolParameter("Learn MIDI", "When enabled, this will automatically assign info from the next midi message received", defaultLearnVal);
+	learn = addBoolParameter("Learn MIDI", "When enabled, this will automatically assign info from the next midi message received", false);
 	learn->isSavable = false;
 
 	interfaceParam = addTargetParameter("Interface", "Interface to receive from", InterfaceManager::getInstance());
@@ -215,6 +214,8 @@ MIDIMapping::MIDIMapping(var params) :
 	controllables.move(controllables.indexOf(boolToggle), controllables.size() - 1);
 	controllables.move(controllables.indexOf(autoFeedback), controllables.size() - 1);
 	inputRange->setPoint(0, 127);
+
+	if (!Engine::mainEngine->isLoadingFile && LGMLSettings::getInstance()->autoLearnOnCreateMapping->boolValue()) learn->setValue(true);
 
 }
 
@@ -280,32 +281,6 @@ void MIDIMapping::noteOnReceived(MIDIInterface*, const int& _channel, const int&
 	process(velocity);
 }
 
-void MIDIMapping::sendFeedback()
-{
-	if (midiInterface == nullptr) return;
-	if (dest->type == Controllable::TRIGGER) return;
-
-	MIDIType mt = type->getValueDataAsEnum<MIDIType>();
-
-	float val = ((Parameter*)dest.get())->floatValue();
-	float destVal = jmap(val, outputRange->x, outputRange->y, inputRange->x, inputRange->y);
-	float minVal = jmin(inputRange->x, inputRange->y);
-	float maxVal = jmax(inputRange->x, inputRange->y);
-	destVal = jlimit(minVal, maxVal, destVal);
-
-	if (mt == NOTE)
-	{
-		midiInterface->sendNoteOn(channel->intValue(), pitchOrNumber->intValue(), destVal);
-	}
-	else if (mt == CC)
-	{
-		midiInterface->sendControlChange(channel->intValue(), pitchOrNumber->intValue(), destVal);
-	}
-	else if (mt == PitchWheel)
-	{
-		midiInterface->sendPitchWheel(channel->intValue(), destVal);
-	}
-}
 
 void MIDIMapping::noteOffReceived(MIDIInterface*, const int& _channel, const int& pitch, const int& velocity)
 {
@@ -350,6 +325,37 @@ void MIDIMapping::pitchWheelReceived(MIDIInterface*, const int& _channel, const 
 void MIDIMapping::managerMidiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 {
 	if (learn->boolValue()) interfaceParam->setValueFromTarget(i);
+	if (m.isNoteOn()) noteOnReceived(i, m.getChannel(), m.getNoteNumber(), m.getVelocity());
+	else if (m.isNoteOff()) noteOffReceived(i, m.getChannel(), m.getNoteNumber(), m.getVelocity());
+	else if (m.isController()) controlChangeReceived(i, m.getChannel(), m.getControllerNumber(), m.getControllerValue());
+	else if (m.isPitchWheel()) pitchWheelReceived(i, m.getChannel(), m.getPitchWheelValue());
+}
+
+void MIDIMapping::sendFeedback()
+{
+	if (midiInterface == nullptr) return;
+	if (dest->type == Controllable::TRIGGER) return;
+
+	MIDIType mt = type->getValueDataAsEnum<MIDIType>();
+
+	float val = ((Parameter*)dest.get())->floatValue();
+	float destVal = jmap(val, outputRange->x, outputRange->y, inputRange->x, inputRange->y);
+	float minVal = jmin(inputRange->x, inputRange->y);
+	float maxVal = jmax(inputRange->x, inputRange->y);
+	destVal = jlimit(minVal, maxVal, destVal);
+
+	if (mt == NOTE)
+	{
+		midiInterface->sendNoteOn(channel->intValue(), pitchOrNumber->intValue(), destVal);
+	}
+	else if (mt == CC)
+	{
+		midiInterface->sendControlChange(channel->intValue(), pitchOrNumber->intValue(), destVal);
+	}
+	else if (mt == PitchWheel)
+	{
+		midiInterface->sendPitchWheel(channel->intValue(), destVal);
+	}
 }
 
 MacroMapping::MacroMapping(var params) :
