@@ -25,13 +25,13 @@ void MappingUI::resizedInternalHeader(Rectangle<int>& r)
 {
     if (outUI != nullptr)
     {
-        outUI->setBounds(r.removeFromRight(100));
+        outUI->setBounds(r.removeFromRight(r.getWidth() / 2));
         r.removeFromRight(2);
     }
 
     if (valueUI != nullptr)
     {
-        valueUI->setBounds(r.removeFromRight(r.getWidth()/3));
+        valueUI->setBounds(r.removeFromRight(200));
     }
 }
 
@@ -47,6 +47,7 @@ void MappingUI::updateOutUI()
 
     if(outUI != nullptr)
     {
+        outUI->showLabel = false;
         addAndMakeVisible(outUI.get());
     }
     resized();
@@ -67,7 +68,6 @@ void MappingUI::updateValueUI()
     else if (MacroMapping* m = dynamic_cast<MacroMapping*>(item))
     {
         valueUI.reset(m->sourceParam->createDefaultUI());
-        valueUI->showLabel = false;
     }
     else
     {
