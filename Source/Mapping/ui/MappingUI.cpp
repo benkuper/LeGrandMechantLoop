@@ -25,7 +25,7 @@ void MappingUI::resizedInternalHeader(Rectangle<int>& r)
 {
     if (outUI != nullptr)
     {
-        outUI->setBounds(r.removeFromRight(r.getWidth() / 2));
+        outUI->setBounds(r.removeFromRight(jmin(r.getWidth() / 2,150)));
         r.removeFromRight(2);
     }
 
