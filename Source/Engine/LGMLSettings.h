@@ -18,6 +18,7 @@ public:
     juce_DeclareSingleton(LGMLSettings, true);
 
     BoolParameter* animateConnectionIntensity;
+    BoolParameter* autoLearnOnCreateMapping;
 
     LGMLSettings();
     ~LGMLSettings();

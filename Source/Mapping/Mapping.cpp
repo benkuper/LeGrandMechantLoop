@@ -10,6 +10,7 @@
 
 #include "Mapping.h"
 #include "Macro/MacroManager.h"
+#include "Engine/LGMLSettings.h"
 
 Mapping::Mapping(var params) :
 	BaseItem("Mapping"),
@@ -33,7 +34,7 @@ Mapping::Mapping(var params) :
 	boolBehaviour->addOption("Non-Zero", NONZERO)->addOption("One", ONE)->addOption("Default", DEFAULT);
 	boolToggle = addBoolParameter("Toggle Mode", "If checked, boolean values will be used with a toggle", false, false);
 
-	autoFeedback = addBoolParameter("Auto Feedback", "If checked, this will send back the value to the MIDI interface", false);
+	autoFeedback = addBoolParameter("Auto Feedback", "If checked, this will send back the value to the MIDI interface", true);
 }
 
 Mapping::~Mapping()
@@ -84,6 +85,7 @@ void Mapping::onExternalParameterValueChanged(Parameter* p)
 		isSendingFeedback = false;
 	}
 }
+
 
 void Mapping::process(var value)
 {
@@ -189,6 +191,12 @@ MIDIMapping::MIDIMapping(var params) :
 	Mapping(params),
 	midiInterface(nullptr)
 {
+	bool defaultLearnVal = false;
+	if (!Engine::mainEngine->isLoadingFile) defaultLearnVal = LGMLSettings::getInstance()->autoLearnOnCreateMapping->boolValue();
+
+	learn = addBoolParameter("Learn MIDI", "When enabled, this will automatically assign info from the next midi message received", defaultLearnVal);
+	learn->isSavable = false;
+
 	interfaceParam = addTargetParameter("Interface", "Interface to receive from", InterfaceManager::getInstance());
 	interfaceParam->targetType = TargetParameter::CONTAINER;
 	interfaceParam->maxDefaultSearchLevel = 0;
@@ -198,9 +206,6 @@ MIDIMapping::MIDIMapping(var params) :
 	type->addOption("Control Change", CC)->addOption("Note", NOTE)->addOption("PitchWheel", PitchWheel);
 	channel = addIntParameter("Channel", "Channel to use for this mapping. 0 means all channels", 1, 1, 16);
 	pitchOrNumber = addIntParameter("Number", "The pitch if it's a note, or number if it's a control change", 0, 0, 127);
-
-	learn = addBoolParameter("Learn MIDI", "When enabled, this will automatically assign info from the next midi message received", false);
-	learn->isSavable = false;
 
 	controllables.move(controllables.indexOf(destParam), controllables.size() - 1);
 	controllables.move(controllables.indexOf(inputRange), controllables.size() - 1);
@@ -220,6 +225,7 @@ MIDIMapping::~MIDIMapping()
 void MIDIMapping::clearItem()
 {
 	Mapping::clearItem();
+	InterfaceManager::getInstance()->removeInterfaceManagerListener(this);
 	setMIDIInterface(nullptr);
 
 }
@@ -249,6 +255,11 @@ void MIDIMapping::onContainerParameterChangedInternal(Parameter* p)
 		{
 			inputRange->setPoint(0, type->getValueDataAsEnum<MIDIType>() == PitchWheel ? 65535 : 127);
 		}
+	}
+	else if (p == learn)
+	{
+		if (learn->boolValue()) InterfaceManager::getInstance()->addInterfaceManagerListener(this);
+		else InterfaceManager::getInstance()->removeInterfaceManagerListener(this);
 	}
 }
 
@@ -333,6 +344,12 @@ void MIDIMapping::pitchWheelReceived(MIDIInterface*, const int& _channel, const 
 	if (type->getValueDataAsEnum<MIDIType>() != PitchWheel) return;
 	if (channel->intValue() > 0 && _channel != channel->intValue()) return;
 	process(value);
+}
+
+
+void MIDIMapping::managerMidiMessageReceived(MIDIInterface* i, const MidiMessage& m)
+{
+	if (learn->boolValue()) interfaceParam->setValueFromTarget(i);
 }
 
 MacroMapping::MacroMapping(var params) :

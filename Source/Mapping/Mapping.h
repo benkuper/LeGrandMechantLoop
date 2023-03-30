@@ -86,7 +86,8 @@ public:
 
 class MIDIMapping :
     public Mapping,
-    public MIDIInterface::MIDIInterfaceListener
+    public MIDIInterface::MIDIInterfaceListener,
+    public InterfaceManager::InterfaceManagerListener
 {
 public:
     MIDIMapping(var params = var());
@@ -112,6 +113,9 @@ public:
     void noteOffReceived(MIDIInterface*, const int& channel, const int& pitch, const int& velocity) override;
     void controlChangeReceived(MIDIInterface*, const int& channel, const int& number, const int& value) override;
     void pitchWheelReceived(MIDIInterface*, const int& channel, const int &value) override;
+
+    void managerMidiMessageReceived(MIDIInterface*, const MidiMessage&m) override;
+
 
     DECLARE_TYPE("MIDI");
 

@@ -11,7 +11,8 @@
 #pragma once
 
 class InterfaceManager :
-    public BaseManager<Interface>
+    public BaseManager<Interface>,
+    public MIDIInterface::MIDIInterfaceListener
 {
 public:
     juce_DeclareSingleton(InterfaceManager, true);
@@ -19,4 +20,21 @@ public:
     ~InterfaceManager();
 
     Factory<Interface> factory;
+
+    void addItemInternal(Interface* i, var data) override;
+    void removeItemInternal(Interface* i) override;
+    
+    void midiMessageReceived(MIDIInterface*, const MidiMessage& msg) override;
+
+
+    class InterfaceManagerListener
+    {
+    public:
+        virtual ~InterfaceManagerListener() {}
+        virtual void managerMidiMessageReceived(MIDIInterface*, const MidiMessage& msg) {}
+    };
+
+    ListenerList<InterfaceManagerListener> interfaceManagerListeners;
+    void addInterfaceManagerListener(InterfaceManagerListener* newListener) { interfaceManagerListeners.add(newListener); }
+    void removeInterfaceManagerListener(InterfaceManagerListener* listener) { interfaceManagerListeners.remove(listener); }
 };

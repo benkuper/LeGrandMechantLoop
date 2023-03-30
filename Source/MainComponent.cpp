@@ -102,6 +102,10 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 	mappingMenu.addItem(0x6002, MacroMapping::getTypeStringStatic());
 	mappingMenu.addItem(0x6003, GenericMapping::getTypeStringStatic());
 	p->addSubMenu("Create Mapping...", mappingMenu);
+
+	Mapping* cm = MappingManager::getInstance()->getMappingForDestControllable(c);
+	p->addItem(0x6100, "Select Mapping", cm != nullptr);
+
 }
 
 bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
@@ -171,6 +175,12 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 		if (result >= 0x6002) MappingManager::getInstance()->createMappingForControllable(c, MacroMapping::getTypeStringStatic());
 		if (result >= 0x6003) MappingManager::getInstance()->createMappingForControllable(c, GenericMapping::getTypeStringStatic());
 
+		return true;
+	}
+	else if (result == 0x6100)
+	{
+		Mapping* cm = MappingManager::getInstance()->getMappingForDestControllable(c);
+		if (cm != nullptr) cm->selectThis();
 		return true;
 	}
 	

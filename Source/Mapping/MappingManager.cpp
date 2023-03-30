@@ -32,3 +32,9 @@ void MappingManager::createMappingForControllable(Controllable* c, const String&
 	m->destParam->setValueFromTarget(c);
 	addItem(m);
 }
+
+Mapping* MappingManager::getMappingForDestControllable(Controllable* c)
+{
+	for (auto& m : items) if (m->destParam->target == c) return m;
+	return nullptr;
+}
