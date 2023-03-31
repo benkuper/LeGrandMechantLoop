@@ -22,7 +22,8 @@ class RootPresetManager :
     public PresetManager,
     public Inspectable::InspectableListener,
     public EngineListener,
-    public Thread
+    public Thread,
+    public OSCRemoteControl::RemoteControlListener
 {
 public:
     juce_DeclareSingleton(RootPresetManager, true);
@@ -67,6 +68,8 @@ public:
 
     void fillPresetMenu(PopupMenu & menu, int indexOffset, Controllable * targetControllable);
     Preset * getPresetForMenuResult(int result);
+
+    void processMessage(const OSCMessage& m) override;
 
     void run() override;
     void process(float progression, float weight);

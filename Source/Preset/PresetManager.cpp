@@ -9,6 +9,7 @@
 */
 
 #include "Preset/PresetIncludes.h"
+#include "PresetManager.h"
 
 juce_ImplementSingleton(RootPresetManager);
 
@@ -43,11 +44,14 @@ RootPresetManager::RootPresetManager() :
 	curPresetName->setControllableFeedbackOnly(true);
 
 	Engine::mainEngine->addEngineListener(this);
+	OSCRemoteControl::getInstance()->addRemoteControlListener(this);
 }
 
 RootPresetManager::~RootPresetManager()
 {
-	Engine::mainEngine->removeEngineListener(this);
+	if (Engine::mainEngine != nullptr) Engine::mainEngine->removeEngineListener(this);
+	if (OSCRemoteControl::getInstanceWithoutCreating()) OSCRemoteControl::getInstance()->removeRemoteControlListener(this);
+
 	stopThread(100);
 	setCurrentPreset(nullptr);
 }
@@ -61,7 +65,6 @@ void RootPresetManager::clear()
 void RootPresetManager::setCurrentPreset(Preset* p)
 {
 	//if (currentPreset == p) return; // commented to be able to reload
-
 
 	if (currentPreset != nullptr && !currentPreset->isClearing)
 	{
@@ -262,6 +265,22 @@ Preset* RootPresetManager::getPresetForMenuResult(int result)
 {
 	Array<Preset*> presets = getAllPresets();
 	return presets[result];
+}
+
+void RootPresetManager::processMessage(const OSCMessage& m)
+{
+	StringArray addSplit;
+	addSplit.addTokens(m.getAddressPattern().toString(), "/", "");
+	if (m.size() < 3) return;
+	if (addSplit[1] != "presets") return;
+
+	String action = addSplit[2];
+	if (action == "loadPreset")
+	{
+		String presetName = m[0].getString();
+		Array<Preset*> presets = getAllPresets();
+		for (auto& p : presets) if (p->niceName == presetName || p->shortName == presetName) p->loadTrigger->trigger();
+	}
 }
 
 
