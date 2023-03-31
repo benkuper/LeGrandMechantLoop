@@ -105,14 +105,14 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 	if (includeParents && parentContainer != nullptr && parentContainer != RootPresetManager::getInstance())
 	{
 		presetsToInclude.add((Preset*)parentContainer->parentContainer.get());
-	}
 
-	for (auto& c : linkedPresetsCC.controllables)
-	{
-		if (!c->enabled) continue;
-		Preset* p = dynamic_cast<Preset*>(((TargetParameter*)c)->targetContainer.get());
-		if (p == nullptr) continue;
-		presetsToInclude.add(p);
+		for (auto& c : linkedPresetsCC.controllables)
+		{
+			if (!c->enabled) continue;
+			Preset* p = dynamic_cast<Preset*>(((TargetParameter*)c)->targetContainer.get());
+			if (p == nullptr) continue;
+			presetsToInclude.add(p);
+		}
 	}
 
 	for (auto& p : presetsToInclude)
