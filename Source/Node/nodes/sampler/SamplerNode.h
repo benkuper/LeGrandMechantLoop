@@ -22,8 +22,9 @@ public:
 	enum HitMode { PIANO, HIT_RESET, HIT_FULL, TOGGLE };
 
 
+	ControllableContainer playCC;
 	IntParameter* numChannels;
-	BoolParameter* showKeyboard;
+	BoolParameter* monitor;
 	EnumParameter* playMode;
 	EnumParameter* hitMode;
 	Trigger* computeAutoKeysTrigger;
@@ -31,14 +32,17 @@ public:
 	IntParameter* endAutoKey;
 	BoolParameter* autoKeyLiveMode;
 
-	BoolParameter* monitor;
-	BoolParameter* clearMode;
+	ControllableContainer recordCC;
+	BoolParameter* isRecording;
+	IntParameter* fadeTimeMS;
 
+	BoolParameter* clearMode;
 	enum ClearMode { LAST_PLAYED, LAST_RECORDED };
 	EnumParameter* clearLastMode;
 	Trigger* clearLastRecordedTrigger;
 	Trigger* clearAllNotesTrigger;
 
+	ControllableContainer adsrCC;
 	FloatParameter* attack;
 	FloatParameter* attackCurve;
 	FloatParameter* decay;
@@ -47,7 +51,19 @@ public:
 	FloatParameter* releaseCurve;
 	ControllableContainer noteStatesCC;
 
-	BoolParameter* isRecording;
+	//Bank
+	ControllableContainer libraryCC;
+	FileParameter* libraryFolder;
+	EnumParameter* currentLibrary;
+	IntParameter* currentBank;
+	StringParameter* bankDescription;
+	Trigger* saveBankTrigger;
+	Trigger* showFolderTrigger;
+
+	//ui
+	BoolParameter* showKeyboard;
+
+
 	int recordingNote;
 	int lastRecordedNote;
 	int lastPlayedNote;
@@ -56,9 +72,15 @@ public:
 
 	SpinLock recLock;
 
-	FileParameter* samplesFolder;
-	Trigger* saveSamplesTrigger;
-	Trigger* showFolderTrigger;
+	bool isUpdatingLibrary;
+	File bankFolder;
+
+	std::unique_ptr<RingBuffer<float>> ringBuffer;
+	AudioSampleBuffer preRecBuffer;
+	int recordedSamples;
+
+	MidiKeyboardState keyboardState;
+
 
 	enum NoteState { EMPTY, RECORDING, FILLED, PROCESSING, PLAYING };
 	class SamplerNote :
@@ -101,22 +123,12 @@ public:
 
 	OwnedArray<SamplerNote> samplerNotes;
 
-	std::unique_ptr<RingBuffer<float>> ringBuffer;
-	AudioSampleBuffer preRecBuffer;
-	int recordedSamples;
-
-	IntParameter* fadeTimeMS;
-
-	MidiKeyboardState keyboardState;
-
-	bool isUpdatingBank;
-	EnumParameter* currentBank;
-
 	void clearNote(int note);
 	void clearAllNotes();
 	void resetAllNotes();
 
 	void computeAutoKeys();
+
 
 	void updateBuffers();
 	void updateRingBuffer();
@@ -124,8 +136,7 @@ public:
 	void startRecording(int note);
 	void stopRecording();
 
-	void onContainerTriggerTriggered(Trigger* t) override;
-	void onContainerParameterChangedInternal(Parameter* p) override;
+	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 	void controllableStateChanged(Controllable* c) override;
 
 	void midiMessageReceived(MIDIInterface* i, const MidiMessage& m) override;
@@ -135,9 +146,11 @@ public:
 
 	virtual int getFadeNumSamples(); //for ring buffer fade
 
-	void updateBanks(bool loadAfter = true);
-	void exportSamples();
-	void loadSamples();
+	void updateLibraries(bool loadAfter = true);
+	void setBankIndex(int index, bool force = false);
+
+	void saveBankSamples();
+	void loadBankSamples();
 
 
 	var getJSONData() override;

@@ -18,60 +18,76 @@ SamplerNode::SamplerNode(var params) :
 	recordedSamples(0),
 	noteStatesCC("Notes"),
 	viewStartKey(20),
-	isUpdatingBank(false)
+	isUpdatingLibrary(false),
+	playCC("Play"),
+	recordCC("Record"),
+	adsrCC("ADSR"),
+	libraryCC("Library")
 {
 	includeTriggersInSaveLoad = true;
 
-	numChannels = addIntParameter("Num Channels", "Num Channels to use for recording and playing", 1);
+	numChannels = playCC.addIntParameter("Channels", "Number of channels", 1, 1, 2);
 
-	monitor = addBoolParameter("Monitor", "Monitor input audio", true);
+	monitor = playCC.addBoolParameter("Monitor", "Monitor input audio", true);
 
-	playMode = addEnumParameter("Play Mode", "How samples are treated");
+	playMode = playCC.addEnumParameter("Play Mode", "How samples are treated");
 	playMode->addOption("Hit (Loop)", HIT_LOOP)->addOption("Hit (One shot)", HIT_ONESHOT)->addOption("Peek (Continuous)", PEEK)->addOption("Keep (Hold)", KEEP);
 
-	hitMode = addEnumParameter("Hit Mode", "How playing a sample is handled.\nPiano is normal playing, releasing a key stops the sample.\nHit is starting the sample but releasing doesn't affect (only works in One Shot play mode) Full will not take in account playing again the note if the sample is still playing. Reset will allow to replay from start.\nToggle is alternating key presses to start/stop instead of using key release");
+	hitMode = playCC.addEnumParameter("Hit Mode", "How playing a sample is handled.\nPiano is normal playing, releasing a key stops the sample.\nHit is starting the sample but releasing doesn't affect (only works in One Shot play mode) Full will not take in account playing again the note if the sample is still playing. Reset will allow to replay from start.\nToggle is alternating key presses to start/stop instead of using key release");
 	hitMode->addOption("Piano", PIANO)->addOption("Hit (Full Sample)", HIT_FULL)->addOption("Hit (Reset)", HIT_RESET)->addOption("Toggle", TOGGLE);
 
-	computeAutoKeysTrigger = addTrigger("Compute Auto Keys", "If checked, the auto keys will be computed from the recorded notes", true);
-	startAutoKey = addIntParameter("Start Auto Key", "The pitch to start auto key computation from", 0, 0, 127);
-	endAutoKey = addIntParameter("End Auto Key", "The pitch to end auto key computation from", 127, 0, 127);
+	computeAutoKeysTrigger = playCC.addTrigger("Compute Auto Keys", "If checked, the auto keys will be computed from the recorded notes", true);
+	startAutoKey = playCC.addIntParameter("Start Auto Key", "The pitch to start auto key computation from", 0, 0, 127);
+	endAutoKey = playCC.addIntParameter("End Auto Key", "The pitch to end auto key computation from", 127, 0, 127);
 
-	autoKeyLiveMode = addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
-	fadeTimeMS = addIntParameter("Fade Time MS", "Time to fade between start and end of recording", 50);
+	autoKeyLiveMode = playCC.addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
+	fadeTimeMS = playCC.addIntParameter("Fade Time MS", "Time to fade between start and end of recording", 50);
 
-	isRecording = addBoolParameter("Is Recording", "Is recording a note ?", false);
+
+	addChildControllableContainer(&playCC, false, 0);
+
+	isRecording = recordCC.addBoolParameter("Is Recording", "Is recording a note ?", false);
 	isRecording->setControllableFeedbackOnly(true);
 
-	clearMode = addBoolParameter("Clear Mode", "When checked, recorded or played notes are cleared depending on clearing mode", false);
-
-	clearLastMode = addEnumParameter("Clear Last Mode", "The way to clear when clear last is triggered");
+	clearMode = recordCC.addBoolParameter("Clear Mode", "When checked, recorded or played notes are cleared depending on clearing mode", false);
+	clearLastMode = recordCC.addEnumParameter("Clear Last Mode", "The way to clear when clear last is triggered");
 	clearLastMode->addOption("Last Played", LAST_PLAYED)->addOption("Last Recorded", LAST_RECORDED);
 
-	clearLastRecordedTrigger = addTrigger("Clear Last", "Clear Last recorded or played note");
-	clearAllNotesTrigger = addTrigger("Clear All Notes", "Clear all recorded notes");
+	clearLastRecordedTrigger = recordCC.addTrigger("Clear Last", "Clear Last recorded or played note");
+	clearAllNotesTrigger = recordCC.addTrigger("Clear All Notes", "Clear all recorded notes");
 
-	attack = addFloatParameter("Attack", "Time of the attack in seconds", .01f, 0);
+	addChildControllableContainer(&recordCC, false, 1);
+
+	attack = adsrCC.addFloatParameter("Attack", "Time of the attack in seconds", .01f, 0);
 	attack->defaultUI = FloatParameter::TIME;
 
-	attackCurve = addFloatParameter("Attack Curve", "Bend the attack", 0.06f, 0, 0.1f);
+	attackCurve = adsrCC.addFloatParameter("Attack Curve", "Bend the attack", 0.06f, 0, 0.1f);
 
-	decay = addFloatParameter("Decay", "Time of decay in seconds", .2f, 0);
+	decay = adsrCC.addFloatParameter("Decay", "Time of decay in seconds", .2f, 0);
 	decay->defaultUI = FloatParameter::TIME;
 
 	sustain = new DecibelFloatParameter("Sustain", "Sustain dB");
-	addParameter(sustain);
+	adsrCC.addParameter(sustain);
 
-	release = addFloatParameter("Release", "Time of the release in seconds", .2f, 0);
+	release = adsrCC.addFloatParameter("Release", "Time of the release in seconds", .2f, 0);
 	release->defaultUI = FloatParameter::TIME;
 
-	releaseCurve = addFloatParameter("Release Curve", "Bend the release", 0.001f, 0, 0.1f);
+	releaseCurve = adsrCC.addFloatParameter("Release Curve", "Bend the release", 0.001f, 0, 0.1f);
 
-	samplesFolder = addFileParameter("Samples Folder", "To export and import");
-	samplesFolder->directoryMode = true;
+	addChildControllableContainer(&adsrCC, false, 2);
 
-	currentBank = addEnumParameter("Current Bank", "Select a specific sub folder or the none for the root folder");
-	saveSamplesTrigger = addTrigger("Export Samples", "Export all samples at once to the Samples Folder above");
-	showFolderTrigger = addTrigger("Show Folder", "Show the folder in explorer");
+	libraryFolder = libraryCC.addFileParameter("Lirbary Folder", "To export and import");
+	libraryFolder->directoryMode = true;
+
+	currentLibrary = libraryCC.addEnumParameter("Current Bank", "Select a specific sub folder or the none for the root folder");
+	currentBank = libraryCC.addIntParameter("Current Bank", "Index of the bank in the library folder, starting with 1. This will load a folder with a name starting with this number", 1, 1, 100);
+	bankDescription = libraryCC.addStringParameter("Bank Description", "Description for this bank if available", "");
+
+	saveBankTrigger = libraryCC.addTrigger("Save Bank", "Export all samples at once to this bank's folder");
+	showFolderTrigger = libraryCC.addTrigger("Show Folder", "Show the folder in explorer");
+
+	addChildControllableContainer(&libraryCC, false, 3);
+
 	keyboardState.addListener(this);
 
 	int sr = processor->getSampleRate();
@@ -96,19 +112,7 @@ SamplerNode::SamplerNode(var params) :
 		samplerNotes.add(sn);
 	}
 
-
-	//for (float i = -50; i <= -6; i+=.25f)
-	//{
-	//	float values = DecibelsHelpers::decibelsToValue(i);
-	//	float decibels = DecibelsHelpers::valueToDecibels(values);
-	//	LOG(i << "\t" << values << "\t" << decibels);
-	//}
-
-	updateBanks();
 	updateBuffers();
-
-	setAudioInputs(numChannels->intValue());
-	setAudioOutputs(numChannels->intValue());
 
 	addChildControllableContainer(&noteStatesCC);
 
@@ -197,17 +201,18 @@ void SamplerNode::computeAutoKeys()
 	}
 }
 
+
 void SamplerNode::updateBuffers()
 {
 	ScopedSuspender sp(processor);
 	updateRingBuffer();
-	for (auto& n : samplerNotes)  n->buffer.setSize(numChannels->intValue(), n->buffer.getNumSamples(), false, true);
+	for (auto& n : samplerNotes)  n->buffer.setSize(getNumAudioInputs(), n->buffer.getNumSamples(), false, true);
 }
 
 void SamplerNode::updateRingBuffer()
 {
 	ScopedSuspender sp(processor);
-	ringBuffer.reset(new RingBuffer<float>(numChannels->intValue(), getFadeNumSamples() * 2)); //double to not have overlapping read and write
+	ringBuffer.reset(new RingBuffer<float>(getNumAudioInputs(), getFadeNumSamples() * 2)); //double to not have overlapping read and write
 
 }
 
@@ -227,7 +232,7 @@ void SamplerNode::startRecording(int note)
 	SamplerNote* samplerNote = samplerNotes[note];
 	samplerNote->state->setValueWithData(RECORDING);
 
-	samplerNote->buffer.setSize(numChannels->intValue(), recNumSamples, false, true);
+	samplerNote->buffer.setSize(getNumAudioInputs(), recNumSamples, false, true);
 
 	int fadeNumSamples = getFadeNumSamples();
 	if (fadeNumSamples > 0)
@@ -287,9 +292,85 @@ void SamplerNode::stopRecording()
 }
 
 
-void SamplerNode::onContainerTriggerTriggered(Trigger* t)
+void SamplerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
 {
-	if (t == clearLastRecordedTrigger)
+	Node::onControllableFeedbackUpdateInternal(cc, c);
+
+	if (c == numChannels)
+	{
+		updateBuffers();
+	}
+	if (c == attack || c == decay || c == sustain || c == release || c == attackCurve || c == releaseCurve)
+	{
+		int sr = processor->getSampleRate();
+		for (int i = 0; i < 128; i++)
+		{
+			if (c == attack) samplerNotes[i]->adsr.setAttackRate(attack->floatValue() * sr);
+			else if (c == attackCurve) samplerNotes[i]->adsr.setTargetRatioA(attackCurve->floatValue());
+			else if (c == decay) samplerNotes[i]->adsr.setDecayRate(decay->floatValue() * sr);
+			else if (c == sustain) samplerNotes[i]->adsr.setSustainLevel(sustain->gain);
+			else if (c == release) samplerNotes[i]->adsr.setReleaseRate(release->floatValue() * sr);
+			else if (c == releaseCurve) samplerNotes[i]->adsr.setTargetRatioDR(releaseCurve->floatValue());
+		}
+
+	}
+	else if (c == fadeTimeMS)
+	{
+		updateRingBuffer();
+	}
+	else if (c == libraryFolder)
+	{
+		if (!isUpdatingLibrary)
+		{
+			String b = currentLibrary->getValueData().toString();
+			if (b == "new")
+			{
+				//create a window with name parameter to create a new folder
+				AlertWindow* window = new AlertWindow("Add a Bank", "Add a new bank", AlertWindow::AlertIconType::NoIcon);
+				window->addTextEditor("bank", libraryFolder->getFile().getNonexistentChildFile("Library", "", true).getFileName(), "Library Name");
+				window->addButton("OK", 1, KeyPress(KeyPress::returnKey));
+				window->addButton("Cancel", 0, KeyPress(KeyPress::escapeKey));
+
+				window->enterModalState(true, ModalCallbackFunction::create([window, this](int result)
+					{
+
+						if (result)
+						{
+							String bankName = window->getTextEditorContents("bank");
+							File f = libraryFolder->getFile().getChildFile(bankName);
+							if (f.exists())
+							{
+								LOGWARNING("Bank already exists with name " << f.getFileName());
+								return;
+							}
+
+							f.createDirectory();
+							updateLibraries(false);
+							currentLibrary->setValueWithKey(f.getFileName());
+						}
+					}
+				), true);
+			}
+			else
+			{
+
+			}
+		}
+
+	}
+	else if (c == currentLibrary)
+	{
+		currentBank->setValue(1, false, true); //force reload bank
+	}
+	else if (c == currentBank)
+	{
+		setBankIndex(currentBank->intValue());
+	}
+	else if (c == playMode)
+	{
+		resetAllNotes();
+	}
+	else if (c == clearLastRecordedTrigger)
 	{
 		if (clearLastMode->getValueDataAsEnum<ClearMode>() == LAST_RECORDED)
 		{
@@ -302,98 +383,21 @@ void SamplerNode::onContainerTriggerTriggered(Trigger* t)
 			lastPlayedNote = -1;
 		}
 	}
-	else if (t == clearAllNotesTrigger)
+	else if (c == clearAllNotesTrigger)
 	{
 		clearAllNotes();
 	}
-	else if (t == saveSamplesTrigger)
+	else if (c == saveBankTrigger)
 	{
-		exportSamples();
+		saveBankSamples();
 	}
-	else if (t == showFolderTrigger)
+	else if (c == showFolderTrigger)
 	{
-		samplesFolder->getFile().startAsProcess();
+		bankFolder.startAsProcess();
 	}
-	else if (t == computeAutoKeysTrigger)
+	else if (c == computeAutoKeysTrigger)
 	{
 		computeAutoKeys();
-	}
-}
-
-void SamplerNode::onContainerParameterChangedInternal(Parameter* p)
-{
-	Node::onContainerParameterChangedInternal(p);
-	if (p == numChannels)
-	{
-		setAudioInputs(numChannels->intValue());
-		setAudioOutputs(numChannels->intValue());
-		updateBuffers();
-	}
-	else if (p == attack || p == decay || p == sustain || p == release || p == attackCurve || p == releaseCurve)
-	{
-		int sr = processor->getSampleRate();
-		for (int i = 0; i < 128; i++)
-		{
-			if (p == attack) samplerNotes[i]->adsr.setAttackRate(attack->floatValue() * sr);
-			else if (p == attackCurve) samplerNotes[i]->adsr.setTargetRatioA(attackCurve->floatValue());
-			else if (p == decay) samplerNotes[i]->adsr.setDecayRate(decay->floatValue() * sr);
-			else if (p == sustain) samplerNotes[i]->adsr.setSustainLevel(sustain->gain);
-			else if (p == release) samplerNotes[i]->adsr.setReleaseRate(release->floatValue() * sr);
-			else if (p == releaseCurve) samplerNotes[i]->adsr.setTargetRatioDR(releaseCurve->floatValue());
-		}
-
-	}
-	else if (p == fadeTimeMS)
-	{
-		updateRingBuffer();
-	}
-	else if (p == samplesFolder)
-	{
-		updateBanks();
-		loadSamples();
-	}
-	else if (p == currentBank)
-	{
-		if (!isUpdatingBank)
-		{
-			String b = currentBank->getValueData().toString();
-			if (b == "new")
-			{
-				//create a window with name parameter to create a new folder
-				AlertWindow* window = new AlertWindow("Add a Bank", "Add a new bank", AlertWindow::AlertIconType::NoIcon);
-				window->addTextEditor("bank", samplesFolder->getFile().getNonexistentChildFile("Bank", "", true).getFileName(), "Bank Name");
-				window->addButton("OK", 1, KeyPress(KeyPress::returnKey));
-				window->addButton("Cancel", 0, KeyPress(KeyPress::escapeKey));
-
-				window->enterModalState(true, ModalCallbackFunction::create([window, this](int result)
-					{
-
-						if (result)
-						{
-							String bankName = window->getTextEditorContents("bank");
-							File f = samplesFolder->getFile().getChildFile(bankName);
-							if (f.exists())
-							{
-								LOGWARNING("Bank already exists with name " << f.getFileName());
-								return;
-							}
-
-							f.createDirectory();
-							updateBanks(false);
-							currentBank->setValueWithKey(f.getFileName());
-						}
-					}
-				), true);
-			}
-			else
-			{
-				loadSamples();
-			}
-		}
-	}
-	else if (p == playMode)
-	{
-		resetAllNotes();
 	}
 }
 
@@ -534,63 +538,79 @@ int SamplerNode::getFadeNumSamples()
 	return fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000;
 }
 
-void SamplerNode::updateBanks(bool loadAfter)
+void SamplerNode::updateLibraries(bool loadAfter)
 {
-	File folder = samplesFolder->getFile();
+	File folder = libraryFolder->getFile();
 	if (!folder.exists() || !folder.isDirectory()) return;
 
-	var oldData = currentBank->getValueData();
+	var oldData = currentLibrary->getValueData();
 
-	isUpdatingBank = true;
-	currentBank->clearOptions();
-	currentBank->addOption("Default", "");
+	isUpdatingLibrary = true;
+	currentLibrary->clearOptions();
+	currentLibrary->addOption("Default", "");
 	Array<File> files = folder.findChildFiles(File::findDirectories, false);
 	for (auto& f : files)
 	{
-		currentBank->addOption(f.getFileName(), f.getFullPathName());
+		currentLibrary->addOption(f.getFileName(), f.getFullPathName());
 	}
 
-	currentBank->addOption("Add new...", "new");
+	currentLibrary->addOption("Add new...", "new");
 
 	if (oldData.isVoid()) oldData = "";
-	if (oldData.toString() != "new") currentBank->setValue(oldData);
+	if (oldData.toString() != "new") currentLibrary->setValue(oldData);
 
-	isUpdatingBank = false;
+	isUpdatingLibrary = false;
 
-	if (loadAfter) loadSamples();
+	if (loadAfter) currentBank->setValue(1, false, true);
 }
 
-void SamplerNode::exportSamples()
+void SamplerNode::setBankIndex(int index, bool force)
 {
-	File folder = samplesFolder->getFile();
+	if (index == currentBank->intValue() && !force) return;
 
-	String bank = currentBank->getValueData().toString();
-	if (bank != "new" && bank != "")
+	File libRootFolder = libraryFolder->getFile();
+	if (!libRootFolder.exists() || !libRootFolder.isDirectory()) return;
+
+	File libFolder = libRootFolder.getChildFile(currentLibrary->getValueData().toString());
+	File bFolder;
+	Array<File> bFolders = libFolder.findChildFiles(File::findDirectories, false);
+
+	String desc = "";
+	for (auto& bf : bFolders)
 	{
-		File f(bank);
-		if (f.exists()) folder = f;
+		StringArray split;
+		split.addTokens(bf.getFileName(), "-", "");
+		if (split[0] == String(index))
+		{
+			desc = split.size() > 0 ? split[1] : "";
+			bFolder = bf;
+			break;
+		}
 	}
 
-	if (!folder.exists() && !folder.isDirectory())
+	if (bFolder == File())
 	{
-		if (Engine::mainEngine->getFile().existsAsFile())
-		{
-			NLOGWARNING(niceName, "Samples folder is not valid, creating one in the session's directory");
-			samplesFolder->setValue(Engine::mainEngine->getFile().getParentDirectory().getChildFile(niceName).getFullPathName());
-		}
-		else
-		{
-			NLOGERROR(niceName, "Samples folder is not valid and current session is not saved in a file.");
-		}
+		bFolder = libFolder.getChildFile(String(index));
+		bFolder.createDirectory();
 	}
 
-	Array<File> filesToDelete = folder.findChildFiles(File::TypesOfFileToFind::findFiles, false);
+	bankFolder = bFolder;
+	bankDescription->setValue(desc);
+
+	loadBankSamples();
+}
+
+void SamplerNode::saveBankSamples()
+{
+	if (!bankFolder.exists()) bankFolder.createDirectory();
+
+	Array<File> filesToDelete = bankFolder.findChildFiles(File::TypesOfFileToFind::findFiles, false);
 	for (auto& f : filesToDelete) f.deleteFile();
-	folder.createDirectory();
+	bankFolder.createDirectory();
 
 	LOG("Exporting samples...");
 
-	if (!folder.exists()) return;
+	if (!bankFolder.exists()) return;
 
 	int numSamplesExported = 0;
 	for (int i = 0; i < samplerNotes.size(); i++)
@@ -598,7 +618,7 @@ void SamplerNode::exportSamples()
 		SamplerNote* n = samplerNotes[i];
 		if (!n->hasContent() || n->isProxyNote()) continue;
 
-		File f = folder.getChildFile(String(i) + ".wav");
+		File f = bankFolder.getChildFile(String(i) + ".wav");
 		if (f.exists()) f.deleteFile();
 
 		if (auto fileStream = std::unique_ptr<FileOutputStream>(f.createOutputStream()))
@@ -625,21 +645,12 @@ void SamplerNode::exportSamples()
 		}
 	}
 
-	NLOG(niceName, numSamplesExported << " sampler notes exported to " << folder.getFullPathName());
+	NLOG(niceName, numSamplesExported << " sampler notes exported to " << bankFolder.getFullPathName());
 }
 
-void SamplerNode::loadSamples()
+void SamplerNode::loadBankSamples()
 {
-	File folder = samplesFolder->getFile();
-
-	String bank = currentBank->getValueData().toString();
-	if (bank != "new" && bank != "")
-	{
-		File f(bank);
-		if (f.exists()) folder = f;
-	}
-
-	if (!folder.exists() || !folder.isDirectory())
+	if (!bankFolder.exists() || !bankFolder.isDirectory())
 	{
 		NLOGWARNING(niceName, "Samples folder is not valid");
 		return;
@@ -653,7 +664,7 @@ void SamplerNode::loadSamples()
 		SamplerNote* n = samplerNotes[i];
 		if (n->hasContent()) clearNote(i);
 
-		File f = folder.getChildFile(String(i) + ".wav");
+		File f = bankFolder.getChildFile(String(i) + ".wav");
 
 		if (!f.existsAsFile()) continue;
 
@@ -671,7 +682,7 @@ void SamplerNode::loadSamples()
 		}
 	}
 
-	NLOG(niceName, numSamplesImported << " sampler notes imported from " << folder.getFullPathName());
+	NLOG(niceName, numSamplesImported << " sampler notes imported from " << bankFolder.getFullPathName());
 }
 
 
