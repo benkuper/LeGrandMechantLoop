@@ -15,7 +15,7 @@ AudioLooperTrack::AudioLooperTrack(AudioLooperNode* looper, int index, int numCh
 	audioLooper(looper),
 	numChannels(numChannels),
 	rtStretchBuffer(numChannels, Transport::getInstance()->blockSize),
-	antiClickFadeBeforeClear(false),
+	antiClickFadeBeforeClear(true), //needs that otherwise first clear doesn't work
 	antiClickFadeBeforeStop(false),
 	antiClickFadeBeforePause(false)
 {
