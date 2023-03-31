@@ -27,10 +27,13 @@ public:
     FloatParameter* cpuUsage;
 
     BoolParameter* isPlaying;
+
+    ControllableContainer looperControlCC;
     Trigger* stopAllLoopers;
     Trigger* playAllLoopers;
     Trigger* clearAllLoopers;
     Trigger* tmpMuteAllLoopers;
+    Trigger* clearSelectedTrack;
 
     AudioProcessorGraph* graph;
     AudioProcessorGraph::NodeID inputNodeID;
@@ -62,7 +65,6 @@ public:
     virtual Array<UndoableAction*> getRemoveItemUndoableAction(Node* n) override;
     virtual Array<UndoableAction*> getRemoveItemsUndoableAction(Array<Node*> n) override;
 
-    void onContainerTriggerTriggered(Trigger* t) override;
     void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
 
     bool hasPlayingNodes();

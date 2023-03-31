@@ -16,7 +16,8 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 	BaseManager("Nodes"),
 	graph(graph),
 	inputNodeID(inputNodeID),
-	outputNodeID(outputNodeID)
+	outputNodeID(outputNodeID),
+	looperControlCC("Looper Control")
 {
 	managerFactory = NodeFactory::getInstance();
 
@@ -26,10 +27,11 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 
 	includeTriggersInSaveLoad = true;
 
-	playAllLoopers = addTrigger("Play All Loopers", "This will play all loopers");
-	stopAllLoopers = addTrigger("Stop All Loopers", "This will stop all loopers");
-	clearAllLoopers = addTrigger("Clear All Loopers", "This will clear all loopers");
-	tmpMuteAllLoopers = addTrigger("Temp Mute All Loopers", "This will temporary mute all loopers");
+	playAllLoopers = looperControlCC.addTrigger("Play All Loopers", "This will play all loopers");
+	stopAllLoopers = looperControlCC.addTrigger("Stop All Loopers", "This will stop all loopers");
+	clearAllLoopers = looperControlCC.addTrigger("Clear All Loopers", "This will clear all loopers");
+	tmpMuteAllLoopers = looperControlCC.addTrigger("Temp Mute All Loopers", "This will temporary mute all loopers");
+	addChildControllableContainer(&looperControlCC);
 
 	connectionManager.reset(new NodeConnectionManager(this));
 	connectionManager->hideInRemoteControl = true;
@@ -162,45 +164,6 @@ Array<UndoableAction*> NodeManager::getRemoveItemsUndoableAction(Array<Node*> it
 	return result;
 }
 
-
-void NodeManager::onContainerTriggerTriggered(Trigger* t)
-{
-	BaseManager::onContainerTriggerTriggered(t);
-
-	if (t == playAllLoopers)
-	{
-		for (auto& n : items)
-		{
-			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->playAllTrigger->trigger();
-			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->playAllLoopers->trigger();
-		}
-	}
-	else if (t == stopAllLoopers)
-	{
-		for (auto& n : items)
-		{
-			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->stopAllTrigger->trigger();
-			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->stopAllLoopers->trigger();
-		}
-	}
-	else if (t == clearAllLoopers)
-	{
-		for (auto& n : items)
-		{
-			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->clearAllTrigger->trigger();
-			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->clearAllLoopers->trigger();
-		}
-	}
-	else if (t == tmpMuteAllLoopers)
-	{
-		for (auto& n : items)
-		{
-			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->tmpMuteAllTrigger->trigger();
-			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->tmpMuteAllLoopers->trigger();
-		}
-	}
-}
-
 void NodeManager::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
 {
 	if (Node* n = c->getParentAs<Node>())
@@ -208,6 +171,45 @@ void NodeManager::onControllableFeedbackUpdate(ControllableContainer* cc, Contro
 		if (c == n->isNodePlaying)
 		{
 			isPlaying->setValue(hasPlayingNodes());
+		}
+	}
+	else if (c == playAllLoopers)
+	{
+		for (auto& n : items)
+		{
+			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->playAllTrigger->trigger();
+			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->playAllLoopers->trigger();
+		}
+	}
+	else if (c == stopAllLoopers)
+	{
+		for (auto& n : items)
+		{
+			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->stopAllTrigger->trigger();
+			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->stopAllLoopers->trigger();
+		}
+	}
+	else if (c == clearAllLoopers)
+	{
+		for (auto& n : items)
+		{
+			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->clearAllTrigger->trigger();
+			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->clearAllLoopers->trigger();
+		}
+	}
+	else if (c == tmpMuteAllLoopers)
+	{
+		for (auto& n : items)
+		{
+			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->tmpMuteAllTrigger->trigger();
+			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->tmpMuteAllLoopers->trigger();
+		}
+	}
+	else if (c == clearSelectedTrack)
+	{
+		if (LooperTrack* t = InspectableSelectionManager::activeSelectionManager->getInspectableAs<LooperTrack>())
+		{
+			if (containsControllable(t->clearTrigger)) t->clearTrigger->trigger();
 		}
 	}
 }

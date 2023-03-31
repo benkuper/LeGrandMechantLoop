@@ -25,6 +25,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	numTracks = trackParamsCC.addIntParameter("Track Count", "Number of tracks to use for this looper", defaultNumTracks, 1, 32);
 	currentTrackIndex = trackParamsCC.addIntParameter("Current Track", "Index of the current track", 1, 1, defaultNumTracks);
 	currentTrackIndex->isSavable = false;
+	selectTrackOnRecOrPlay = trackParamsCC.addBoolParameter("Select Track on Rec/Play", "If enabled, when a track is about to record or play, it will be selected automatically", true);
 
 	section = trackParamsCC.addIntParameter("Current Section", "The Section to set for the next recorded track (like A,B,C in a song). This allow to make changing structure and switch between sections during performance", 1, 1);
 	playStopFadeMS = trackParamsCC.addIntParameter("Play Stop Fade", "Number of ms to fade when a track is about to stop", 10, 0, 2000);
@@ -214,6 +215,8 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			{
 				currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
 			}
+
+			if (selectTrackOnRecOrPlay->boolValue()) currentTrack->selectThis();
 		}
 	}
 	else if (c == clearCurrentTrigger)

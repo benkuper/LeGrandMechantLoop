@@ -34,6 +34,7 @@ public:
     ControllableContainer trackParamsCC;
     IntParameter* numTracks;
     IntParameter* currentTrackIndex;
+    BoolParameter* selectTrackOnRecOrPlay;
     IntParameter* section;
 
     ControllableContainer recordCC;
