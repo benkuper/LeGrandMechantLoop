@@ -21,6 +21,7 @@ public:
 class RootPresetManager :
     public PresetManager,
     public Inspectable::InspectableListener,
+    public EngineListener,
     public Thread
 {
 public:
@@ -34,6 +35,8 @@ public:
     Trigger* previousPresetTrigger;
     WeakReference<ControllableContainer> prevPreset;
     Preset* currentPreset;
+
+    TargetParameter* presetOnFileLoad;
 
     StringParameter* curPresetName;
 
@@ -67,5 +70,7 @@ public:
 
     void run() override;
     void process(float progression, float weight);
+
+    void endLoadFile() override;
 };
 

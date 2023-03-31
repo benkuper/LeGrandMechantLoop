@@ -35,13 +35,19 @@ RootPresetManager::RootPresetManager() :
 	nextPresetTrigger = addTrigger("Next", "Load next preset");
 	previousPresetTrigger = addTrigger("Previous", "Load previous preset");
 
+	presetOnFileLoad = addTargetParameter("Preset On File Load", "Preset to load when the file is loaded", this);
+	presetOnFileLoad->targetType = TargetParameter::CONTAINER;
+	presetOnFileLoad->typesFilter.add(Preset::getTypeStringStatic());
+
 	curPresetName = addStringParameter("Current Preset", "The name of the current preset, for reference", "");
 	curPresetName->setControllableFeedbackOnly(true);
 
+	Engine::mainEngine->addEngineListener(this);
 }
 
 RootPresetManager::~RootPresetManager()
 {
+	Engine::mainEngine->removeEngineListener(this);
 	stopThread(100);
 	setCurrentPreset(nullptr);
 }
@@ -351,5 +357,13 @@ void RootPresetManager::process(float progression, float weight)
 				}
 			}
 		}
+	}
+}
+
+void RootPresetManager::endLoadFile()
+{
+	if (presetOnFileLoad->targetContainer != nullptr)
+	{
+		setCurrentPreset((Preset*)presetOnFileLoad->targetContainer.get());
 	}
 }
