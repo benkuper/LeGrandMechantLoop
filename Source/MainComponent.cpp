@@ -33,7 +33,7 @@ void MainComponent::init()
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Nodes (2D View)", &NodeManagerViewPanel::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Transport", &TransportUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Presets", &RootPresetManagerUI::create));
-	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Macros", &MacroManagerUI::create));
+	//ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Macros", &MacroManagerUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Mappings", &MappingManagerUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Interfaces", &InterfaceManagerUI::create));
 

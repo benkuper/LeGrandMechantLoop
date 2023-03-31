@@ -18,7 +18,7 @@
 #include "Transport/Transport.h"
 #include "Common/CommonIncludes.h"
 #include "Preset/PresetIncludes.h"
-#include "Macro/MacroManager.h"
+//#include "Macro/MacroManager.h"
 #include "Mapping/MappingManager.h"
 #include "Interface/InterfaceIncludes.h"
 
@@ -31,12 +31,12 @@ LGMLEngine::LGMLEngine() :
 
     MIDIManager::getInstance(); //force init
 
-    addChildControllableContainer(RootNodeManager::getInstance());
-    addChildControllableContainer(Transport::getInstance());
-    addChildControllableContainer(RootPresetManager::getInstance());
-    addChildControllableContainer(MacroManager::getInstance());
-    addChildControllableContainer(MappingManager::getInstance());
-    addChildControllableContainer(InterfaceManager::getInstance());
+    addChildControllableContainer(RootNodeManager::getInstance(), false, 0);
+    addChildControllableContainer(Transport::getInstance(), false, 1);
+    addChildControllableContainer(RootPresetManager::getInstance(), false, 2);
+    //addChildControllableContainer(MacroManager::getInstance());
+    addChildControllableContainer(MappingManager::getInstance(), false, 3);
+    addChildControllableContainer(InterfaceManager::getInstance(), false, 4);
 
     ProjectSettings::getInstance()->addChildControllableContainer(AudioManager::getInstance());
     GlobalSettings::getInstance()->addChildControllableContainer(LGMLSettings::getInstance());
@@ -54,7 +54,7 @@ LGMLEngine::~LGMLEngine()
     RootPresetManager::deleteInstance();
     MappingManager::deleteInstance();
     InterfaceManager::deleteInstance();
-    MacroManager::deleteInstance();
+    //MacroManager::deleteInstance();
     RootNodeManager::deleteInstance();
     Transport::deleteInstance();
 
@@ -72,7 +72,7 @@ void LGMLEngine::clearInternal()
     RootPresetManager::getInstance()->clear();
     MappingManager::getInstance()->clear();
     InterfaceManager::getInstance()->clear();
-    MacroManager::getInstance()->clear();
+    //MacroManager::getInstance()->clear();
     RootNodeManager::getInstance()->clear();
     Transport::getInstance()->clear();
 }
@@ -82,7 +82,7 @@ var LGMLEngine::getJSONData()
     var data = Engine::getJSONData();
     data.getDynamicObject()->setProperty(RootNodeManager::getInstance()->shortName, RootNodeManager::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(Transport::getInstance()->shortName, Transport::getInstance()->getJSONData());
-    data.getDynamicObject()->setProperty(MacroManager::getInstance()->shortName, MacroManager::getInstance()->getJSONData());
+    //data.getDynamicObject()->setProperty(MacroManager::getInstance()->shortName, MacroManager::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(MappingManager::getInstance()->shortName, MappingManager::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(RootPresetManager::getInstance()->shortName, RootPresetManager::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(InterfaceManager::getInstance()->shortName, InterfaceManager::getInstance()->getJSONData());
@@ -93,7 +93,7 @@ void LGMLEngine::loadJSONDataInternalEngine(var data, ProgressTask* loadingTask)
 {
     RootNodeManager::getInstance()->loadJSONData(data.getProperty(RootNodeManager::getInstance()->shortName, var()));
     Transport::getInstance()->loadJSONData(data.getProperty(Transport::getInstance()->shortName, var()));
-    MacroManager::getInstance()->loadJSONData(data.getProperty(MacroManager::getInstance()->shortName, var()));
+    //MacroManager::getInstance()->loadJSONData(data.getProperty(MacroManager::getInstance()->shortName, var()));
     RootPresetManager::getInstance()->loadJSONData(data.getProperty(RootPresetManager::getInstance()->shortName, var()));
     InterfaceManager::getInstance()->loadJSONData(data.getProperty(InterfaceManager::getInstance()->shortName, var()));
     MappingManager::getInstance()->loadJSONData(data.getProperty(MappingManager::getInstance()->shortName, var()));
