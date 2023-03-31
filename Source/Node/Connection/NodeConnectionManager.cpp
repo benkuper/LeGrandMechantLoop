@@ -8,10 +8,13 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 NodeConnectionManager::NodeConnectionManager(NodeManager * nodeManager) :
     BaseManager("Connections"),
     nodeManager(nodeManager)
 {
+    hideInEditor = true;
     userCanAddItemsManually = false;
 }
 

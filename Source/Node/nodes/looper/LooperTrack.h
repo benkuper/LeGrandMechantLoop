@@ -10,7 +10,6 @@
 
 #pragma once
 
-
 class LooperNode;
 
 class LooperTrack :
@@ -21,6 +20,8 @@ public:
 	virtual ~LooperTrack();
 
 	LooperNode* looper; //to get the ringbuffer
+
+	static LooperTrack* lastManipulatedTrack;
 
 	enum TrackState { IDLE, WILL_RECORD, RECORDING, FINISH_RECORDING, PLAYING, WILL_STOP, STOPPED, WILL_PLAY, STATES_MAX };
 	static String trackStateNames[STATES_MAX];

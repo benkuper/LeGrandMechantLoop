@@ -33,7 +33,7 @@ public:
     Trigger* playAllLoopers;
     Trigger* clearAllLoopers;
     Trigger* tmpMuteAllLoopers;
-    Trigger* clearSelectedTrack;
+    Trigger* clearLastManipTrack;
 
     AudioProcessorGraph* graph;
     AudioProcessorGraph::NodeID inputNodeID;

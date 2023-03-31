@@ -10,8 +10,6 @@
 
 #pragma once
 
-class LooperTrack;
-
 class LooperNode :
     public Node,
     public Transport::TransportListener,
@@ -34,7 +32,6 @@ public:
     ControllableContainer trackParamsCC;
     IntParameter* numTracks;
     IntParameter* currentTrackIndex;
-    BoolParameter* selectTrackOnRecOrPlay;
     IntParameter* section;
 
     ControllableContainer recordCC;

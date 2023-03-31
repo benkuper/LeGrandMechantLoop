@@ -12,6 +12,8 @@
 
 String LooperTrack::trackStateNames[LooperTrack::STATES_MAX] = { "Idle", "Will Record", "Recording", "Finish Recording", "Playing", "Will Stop", "Stopped", "Will Play" };
 
+LooperTrack* LooperTrack::lastManipulatedTrack = nullptr;
+
 LooperTrack::LooperTrack(LooperNode* looper, int index) :
 	VolumeControl(String(index + 1), false),
 	looper(looper),
@@ -34,7 +36,8 @@ LooperTrack::LooperTrack(LooperNode* looper, int index) :
 	stretchSample(-1)
 {
 	saveAndLoadRecursiveData = true;
-	editorIsCollapsed = true;
+	//editorIsCollapsed = true;
+	hideInEditor = true;
 
 	isCurrent = addBoolParameter("Is Current", "Is this track the current one controlled by the looper ?", false);
 	isCurrent->hideInEditor = true;
@@ -107,7 +110,10 @@ void LooperTrack::recordOrPlay()
 	default:
 		break;
 	}
+
+	looper->setCurrentTrack(this);
 }
+
 
 void LooperTrack::stateChanged()
 {
@@ -369,6 +375,7 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 	{
 		if (s == STOPPED) trackState->setValueWithData(WILL_PLAY);
 		else if (s == WILL_STOP) trackState->setValueWithData(PLAYING); //meaning it was already playing, cancel the will stop and keep playing
+		looper->setCurrentTrack(this);
 	}
 	else if (t == stopTrigger)
 	{
@@ -379,6 +386,8 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 		}
 		else if (s == PLAYING) trackState->setValueWithData(WILL_STOP);
 		else if (s == WILL_PLAY) trackState->setValueWithData(STOPPED);
+		looper->setCurrentTrack(this);
+
 	}
 	else if (t == clearTrigger)
 	{

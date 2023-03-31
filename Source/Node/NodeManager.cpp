@@ -21,6 +21,8 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 {
 	managerFactory = NodeFactory::getInstance();
 
+	comparator.compareFunc = [](Node* n1, Node* n2) { return n1->niceName.compare(n2->niceName); };
+
 	isPlaying = addBoolParameter("Is Node Playing", "This is a feedback to know if a node has playing content. Used by the global time to automatically stop if no content is playing", false);
 	isPlaying->setControllableFeedbackOnly(true);
 	isPlaying->hideInEditor = true;
@@ -31,6 +33,7 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 	stopAllLoopers = looperControlCC.addTrigger("Stop All Loopers", "This will stop all loopers");
 	clearAllLoopers = looperControlCC.addTrigger("Clear All Loopers", "This will clear all loopers");
 	tmpMuteAllLoopers = looperControlCC.addTrigger("Temp Mute All Loopers", "This will temporary mute all loopers");
+	clearLastManipTrack = looperControlCC.addTrigger("Clear Last Manip Track", "This will clear the last manipulated track, in any looper");
 	addChildControllableContainer(&looperControlCC);
 
 	connectionManager.reset(new NodeConnectionManager(this));
@@ -205,9 +208,9 @@ void NodeManager::onControllableFeedbackUpdate(ControllableContainer* cc, Contro
 			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->tmpMuteAllLoopers->trigger();
 		}
 	}
-	else if (c == clearSelectedTrack)
+	else if (c == clearLastManipTrack)
 	{
-		if (LooperTrack* t = InspectableSelectionManager::activeSelectionManager->getInspectableAs<LooperTrack>())
+		if (LooperTrack* t = LooperTrack::lastManipulatedTrack)
 		{
 			if (containsControllable(t->clearTrigger)) t->clearTrigger->trigger();
 		}

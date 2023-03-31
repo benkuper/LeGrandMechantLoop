@@ -38,6 +38,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	processor = new NodeAudioProcessor(this);
 	processor->setPlayHead(Transport::getInstance());
 
+	hideInEditor = true;
 	editorIsCollapsed = true;
 
 	isNodePlaying = addBoolParameter("Is Node Playing", "This is a feedback to know if a node has playing content. Used by the global time to automatically stop if no content is playing", false);
