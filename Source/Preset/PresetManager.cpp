@@ -271,7 +271,7 @@ void RootPresetManager::processMessage(const OSCMessage& m)
 {
 	StringArray addSplit;
 	addSplit.addTokens(m.getAddressPattern().toString(), "/", "");
-	if (m.size() < 3) return;
+	if (addSplit.size() < 3) return;
 	if (addSplit[1] != "presets") return;
 
 	String action = addSplit[2];
