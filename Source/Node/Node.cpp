@@ -46,6 +46,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	//isNodePlaying->hideInEditor = true;
 	isNodePlaying->hideInRemoteControl = true;
 	isNodePlaying->defaultHideInRemoteControl = true;
+	isNodePlaying->hideInEditor = true;
 
 	if (userCanSetIO)
 	{
