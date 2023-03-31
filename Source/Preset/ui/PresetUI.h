@@ -61,6 +61,7 @@ public:
 
     HashMap<Controllable*, Controllable*> controllableMap;
     ControllableContainer valuesCC;
+    ControllableContainer ignoreCC;
     
     void resetAndBuild() override;
     void buildValuesCC();

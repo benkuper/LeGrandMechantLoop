@@ -70,7 +70,7 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 		String add = ui->controllable->getControlAddress();
 		bool canBeOverride = preset != nullptr && !preset->isMain();
 		bool isOverride = canBeOverride && preset->overridenControllables.contains(add);
-
+		bool isIgnored = preset != nullptr ? preset->ignoredControllables.contains(c) : false;
 
 		bool canInterpolate = c->type != Controllable::TRIGGER && c->type != Parameter::BOOL && c->type != Parameter::ENUM && c->type != Parameter::STRING && c->type != Parameter::ENUM;
 		int option = RootPresetManager::getInstance()->getControllablePresetOption(c, "transition", (int)(canInterpolate ? Preset::INTERPOLATE : Preset::DEFAULT));
@@ -93,6 +93,11 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 		RootPresetManager::getInstance()->fillPresetMenu(removeFromMenu, 0x30000, c);
 		p->addSubMenu("Remove from...", removeFromMenu);
 		p->addItem(0x5003, "Remove from all");
+
+		p->addItem(0x5004, "Ignore in current (" + presetName + ")", preset != nullptr, isIgnored);
+		PopupMenu ignoreMenu;
+		RootPresetManager::getInstance()->fillPresetMenu(ignoreMenu, 0x40000, c);
+		p->addSubMenu("Ignore in...", ignoreMenu);
 	}
 
 	p->addSeparator();
@@ -153,6 +158,30 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 		);
 		return true;
 	}
+	else if (result == 0x5004 || (result >= 0x40000 && result < 0x40000))
+	{
+		Preset* preset = nullptr;
+		if (result == 0x5004) preset = RootPresetManager::getInstance()->currentPreset;
+		else preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x40000);
+
+		if (preset != nullptr)
+		{
+			String add = c->getControlAddress();
+			if (preset->ignoredControllables.contains(c))
+			{
+				preset->ignoredControllables.removeAllInstancesOf(c);
+				LOG("Removed " << c->niceName << " from ignore list in preset " << preset->niceName);
+			}
+			else
+			{
+				preset->ignoredControllables.add(c);
+				LOG("Added " << c->niceName << " to ignore list in preset " << preset->niceName);
+			}
+
+		}
+
+		return true;
+	}
 	else if (result >= 0x5010 && result <= 0x5013)
 	{
 		int option = result - 0x5010;
@@ -164,11 +193,12 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x20000)) preset->save(c);
 		return true;
 	}
-	else if (result >= 0x30000)
+	else if (result >= 0x30000 && result < 0x40000)
 	{
 		if (Preset* preset = RootPresetManager::getInstance()->getPresetForMenuResult(result - 0x30000)) preset->removeControllableFromDataMap(c);
 		return true;
 	}
+
 	else if (result >= 0x6001 && result <= 0x6003)
 	{
 		if (result >= 0x6001) MappingManager::getInstance()->createMappingForControllable(c, MIDIMapping::getTypeStringStatic());
@@ -183,7 +213,7 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 		if (cm != nullptr) cm->selectThis();
 		return true;
 	}
-	
+
 	return false;
 }
 

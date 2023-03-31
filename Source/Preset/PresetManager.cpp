@@ -63,15 +63,14 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 	//if (currentPreset == p) return; // commented to be able to reload
 
 
-	prevPreset = currentPreset;
-
-	if (currentPreset != nullptr)
+	if (currentPreset != nullptr && !currentPreset->isClearing)
 	{
 		currentPreset->removeInspectableListener(this);
 		currentPreset->isCurrent->setValue(false);
 	}
 
 	stopThread(100);
+	prevPreset = currentPreset;
 	currentPreset = p;
 
 	if (currentPreset != nullptr)

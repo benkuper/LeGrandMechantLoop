@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    Preset.h
-    Created: 17 Apr 2021 12:08:52pm
-    Author:  bkupe
+	Preset.h
+	Created: 17 Apr 2021 12:08:52pm
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -13,73 +13,75 @@
 class PresetManager;
 
 class Preset :
-    public BaseItem,
-    public BaseManager<Preset>::ManagerListener
+	public BaseItem,
+	public BaseManager<Preset>::ManagerListener
 {
 public:
-    Preset(var params = var());
-    ~Preset();
+	Preset(var params = var());
+	~Preset();
 
-    BoolParameter* isCurrent;
-    
-    Trigger* saveTrigger;
-    Trigger* loadTrigger;
+	BoolParameter* isCurrent;
 
-    BoolParameter* skipInPrevNext;
-    BoolParameter* noParentOnNearbyLoad;
+	Trigger* saveTrigger;
+	Trigger* loadTrigger;
 
-    FloatParameter* transitionTime;
-    Automation transition;
-    enum TransitionMode { INTERPOLATE, AT_START, AT_END, DEFAULT };
-    EnumParameter* directTransitionMode;
+	BoolParameter* skipInPrevNext;
+	BoolParameter* noParentOnNearbyLoad;
 
-    //overriding
-    HashMap<WeakReference<Controllable>, var> dataMap;
-    HashMap<WeakReference<Controllable>, String> controllableGhostAddressMap;
-    Array<String> lostParamAddresses;
-    HashMap<String, var> addressMap;
-    Array<String> overridenControllables;
+	FloatParameter* transitionTime;
+	Automation transition;
+	enum TransitionMode { INTERPOLATE, AT_START, AT_END, DEFAULT };
+	EnumParameter* directTransitionMode;
 
-    std::unique_ptr<PresetManager> subPresets;
+	//overriding
+	HashMap<WeakReference<Controllable>, var> dataMap;
+	HashMap<WeakReference<Controllable>, String> controllableGhostAddressMap;
+	Array<String> lostParamAddresses;
+	HashMap<String, var> addressMap;
+	Array<String> overridenControllables;
+	Array<WeakReference<Controllable>> ignoredControllables;
 
-    ControllableContainer linkedPresetsCC;
+	std::unique_ptr<PresetManager> subPresets;
 
-    void clearItem() override;
+	ControllableContainer linkedPresetsCC;
 
-    var getPresetValues(bool includeParents = true);
-    var getPresetValueForParameter(Parameter* c, bool includeParents = true);
+	void clearItem() override;
 
-    void saveContainer(ControllableContainer* container, bool recursive);
-    void save(Controllable* controllable = nullptr, bool saveAllPresettables = false, bool noCheck = false);
-    void load(ControllableContainer* container, bool recursive);
-    void load(Controllable * controllable, bool recursive);
-    void load(bool recursive = false);
+	var getPresetValues(bool includeParents = true, Array<Controllable*> ignoreList = Array<Controllable*>());
+	//var getPresetValueForParameter(Parameter* c, bool includeParents = true);
 
-    void addControllableToDataMap(Controllable * c, var forceValue = var());
-    void updateControllableAddress(Controllable * c);
-    void removeControllableFromDataMap(Controllable * c);
-    void removeAddressFromDataMap(String address);
+	void saveContainer(ControllableContainer* container, bool recursive);
+	void save(Controllable* controllable = nullptr, bool saveAllPresettables = false, bool noCheck = false);
+	//void load(ControllableContainer* container, bool recursive);
+	//void load(Controllable* controllable, bool recursive);
+	void load(bool recursive = false);
 
-    bool isMain(); //check if it's not an override
-    bool hasPresetControllable(Controllable * c);
+	void addControllableToDataMap(Controllable* c, var forceValue = var());
+	void updateControllableAddress(Controllable* c);
+	void removeControllableFromDataMap(Controllable* c);
+	void removeAddressFromDataMap(String address);
 
-    void onContainerTriggerTriggered(Trigger* t) override;
+	bool isMain(); //check if it's not an override
+	bool hasPresetControllable(Controllable* c);
 
-    void itemAdded(Preset * p) override;
+	void onContainerTriggerTriggered(Trigger* t) override;
 
-    void controllableAdded(Controllable* c); //for linked presets
+	void itemAdded(Preset* p) override;
+
+	void controllableAdded(Controllable* c); //for linked presets
 
 
-    var getJSONData() override;
-    void loadJSONDataItemInternal(var data) override;
+	var getJSONData() override;
+	void loadJSONDataItemInternal(var data) override;
 
-    void controllableControlAddressChanged(Controllable* c) override;
-    
-    void childStructureChanged(ControllableContainer* cc) override;
+	void controllableControlAddressChanged(Controllable* c) override;
 
-    Array<Preset*> getPresetChain();
+	void childStructureChanged(ControllableContainer* cc) override;
 
-    InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> controllables = {}) override;
+	//Array<Preset*> getPresetChain(Controllable* c = nullptr);
+	//Array<Controllable*> getAllPresettableControllables(bool recursive = true, Array<String> ignoreList = Array<String>());
 
-    DECLARE_TYPE("Preset");
+	InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> controllables = {}) override;
+
+	DECLARE_TYPE("Preset");
 };

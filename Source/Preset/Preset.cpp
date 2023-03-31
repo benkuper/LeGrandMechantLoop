@@ -58,6 +58,7 @@ Preset::Preset(var params) :
 
 	addChildControllableContainer(&linkedPresetsCC);
 
+
 	listUISize->isSavable = false;
 
 	editorIsCollapsed = true;
@@ -82,36 +83,67 @@ void Preset::clearItem()
 	}
 }
 
-var Preset::getPresetValues(bool includeParents)
+var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList)
 {
 	var data(new DynamicObject());
-	Array<Preset*> presets;
 
-	if (includeParents) presets = getPresetChain();
-	else presets.add(this);
+	ignoreList.addArray(ignoredControllables);
 
-	for (auto& p : presets)
+	HashMap<WeakReference<Controllable>, var>::Iterator it(dataMap);
+	while (it.next())
 	{
-		HashMap<String, var>::Iterator it(p->addressMap);
-		while (it.next())
+		WeakReference<Controllable> c = it.getKey();
+		if (c == nullptr || c.wasObjectDeleted()) continue;
+		if (ignoreList.contains(c)) continue;
+
+		String add = c->getControlAddress();
+		if (!data.hasProperty(add)) data.getDynamicObject()->setProperty(add, it.getValue());
+		ignoreList.add(c);
+	}
+
+	Array<Preset*> presetsToInclude;
+	if (includeParents && parentContainer != nullptr && parentContainer != RootPresetManager::getInstance())
+	{
+		presetsToInclude.add((Preset*)parentContainer->parentContainer.get());
+	}
+
+	for (auto& c : linkedPresetsCC.controllables)
+	{
+		if (!c->enabled) continue;
+		Preset* p = dynamic_cast<Preset*>(((TargetParameter*)c)->targetContainer.get());
+		if (p == nullptr) continue;
+		presetsToInclude.add(p);
+	}
+
+	for (auto& p : presetsToInclude)
+	{
+		var pData = p->getPresetValues(true, ignoreList);
+
+		NamedValueSet props = pData.getDynamicObject()->getProperties();
+		for (auto& p : props)
 		{
-			if (!data.hasProperty(it.getKey())) data.getDynamicObject()->setProperty(it.getKey(), it.getValue());
+			if (data.hasProperty(p.name)) continue;
+			data.getDynamicObject()->setProperty(p.name, p.value);
 		}
 	}
 
 	return data;
 }
 
-var Preset::getPresetValueForParameter(Parameter* p, bool includeParents)
-{
-	Array<Preset*> presets;
-	if (includeParents) presets = getPresetChain();
-	else presets.add(this);
 
-	String add = p->getControlAddress();
-	for (auto& p : presets) if (p->addressMap.contains(add)) return p->addressMap[add];
-	return var();
-}
+
+//var Preset::getPresetValueForParameter(Parameter* p, bool includeParents)
+//{
+//	String add = p->getControlAddress();
+//	if (ignoredControllables.contains(p)) return var();
+//
+//	Array<Preset*> presets;
+//	if (includeParents) presets = getPresetChain(p);
+//	else presets.add(this);
+//
+//	for (auto& p : presets) if (p->addressMap.contains(add)) return p->addressMap[add];
+//	return var();
+//}
 
 void Preset::saveContainer(ControllableContainer* container, bool recursive)
 {
@@ -162,40 +194,40 @@ void Preset::save(Controllable* controllable, bool saveAllPresettables, bool noC
 	}
 }
 
-void Preset::load(ControllableContainer* container, bool recursive)
-{
-	if (container == nullptr)
-	{
-		load(recursive);
-		return;
-	}
-
-	Array<WeakReference<Parameter>> pList = container->getAllParameters(recursive);
-	for (auto& p : pList) load(p);
-}
-
-void Preset::load(Controllable* controllable, bool recursive)
-{
-	if (controllable == nullptr)
-	{
-		load(recursive);
-		return;
-	}
-
-	if (!RootPresetManager::getInstance()->isControllablePresettable(controllable)) return;
-
-	if (controllable->type == Controllable::TRIGGER)
-	{
-		((Trigger*)controllable)->trigger();
-	}
-	else
-	{
-		Parameter* parameter = (Parameter*)controllable;
-		var value = getPresetValueForParameter(parameter, recursive);
-		parameter->setValue(value);
-	}
-
-}
+//void Preset::load(ControllableContainer* container, bool recursive)
+//{
+//	if (container == nullptr)
+//	{
+//		load(recursive);
+//		return;
+//	}
+//
+//	Array<WeakReference<Parameter>> pList = container->getAllParameters(recursive);
+//	for (auto& p : pList) load(p);
+//}
+//
+//void Preset::load(Controllable* controllable, bool recursive)
+//{
+//	if (controllable == nullptr)
+//	{
+//		load(recursive);
+//		return;
+//	}
+//
+//	if (!RootPresetManager::getInstance()->isControllablePresettable(controllable)) return;
+//
+//	if (controllable->type == Controllable::TRIGGER)
+//	{
+//		((Trigger*)controllable)->trigger();
+//	}
+//	else
+//	{
+//		Parameter* parameter = (Parameter*)controllable;
+//		var value = getPresetValueForParameter(parameter, recursive);
+//		if (!value.isVoid()) parameter->setValue(value);
+//	}
+//
+//}
 
 
 void Preset::load(bool recursive)
@@ -324,6 +356,11 @@ var Preset::getJSONData()
 	data.getDynamicObject()->setProperty("subPresets", subPresets->getJSONData());
 	data.getDynamicObject()->setProperty("linkedPresets", linkedPresetsCC.getJSONData());
 	data.getDynamicObject()->setProperty("values", getPresetValues(false));
+
+	var ignoreData;
+	for (auto& c : ignoredControllables) ignoreData.append(c->getControlAddress());
+	data.getDynamicObject()->setProperty("ignores", ignoreData);
+
 	return data;
 }
 
@@ -342,6 +379,15 @@ void Preset::loadJSONDataItemInternal(var data)
 			{
 				addControllableToDataMap(tp, p.value);
 			}
+		}
+	}
+
+	var ignoreData = data.getProperty("ignores", var());
+	for (int i = 0; i < ignoreData.size(); i++)
+	{
+		if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(ignoreData[i].toString())))
+		{
+			ignoredControllables.add(tc);
 		}
 	}
 }
@@ -379,27 +425,58 @@ void Preset::childStructureChanged(ControllableContainer* cc)
 	}
 }
 
-Array<Preset*> Preset::getPresetChain()
-{
-	Array<Preset*> result;
-	result.add(this);
-	if (parentContainer != nullptr && parentContainer != RootPresetManager::getInstance())
-	{
-		Preset* p = dynamic_cast<Preset*>(parentContainer->parentContainer.get());
-		if (p != nullptr) result.addArray(p->getPresetChain()); // preset > manager > preset, so a parent preset is 2 levels up a child preset
-	}
+//Array<Preset*> Preset::getPresetChain(Controllable* c)
+//{
+//	Array<Preset*> result;
+//
+//	if (c != nullptr && ignoredControllables.contains(c)) return result;
+//
+//	result.add(this);
+//	if (parentContainer != nullptr && parentContainer != RootPresetManager::getInstance())
+//	{
+//		Preset* p = dynamic_cast<Preset*>(parentContainer->parentContainer.get());
+//		if (p != nullptr) result.addArray(p->getPresetChain(c)); // preset > manager > preset, so a parent preset is 2 levels up a child preset
+//	}
+//
+//	for (auto& c : linkedPresetsCC.controllables)
+//	{
+//		if (!c->enabled) continue;
+//		Preset* p = dynamic_cast<Preset*>(((TargetParameter*)c)->targetContainer.get());
+//		if (p == nullptr) continue;
+//		result.add(p);
+//	}
+//
+//	return result;
+//}
 
-	for (auto& c : linkedPresetsCC.controllables)
-	{
-		if (!c->enabled) continue;
-		Preset* p = dynamic_cast<Preset*>(((TargetParameter*)c)->targetContainer.get());
-		if (p == nullptr) continue;
-
-		result.add(p);
-	}
-
-	return result;
-}
+//Array<Controllable*> Preset::getAllPresettableControllables(bool recursive, Array<String> ignoreList)
+//{
+//	ignoreList.addArray(ignoredControllables);
+//
+//	Array<Controllable*> result;
+//	HashMap<WeakReference<Controllable>, var>::Iterator it(dataMap);
+//	while (it.next())
+//	{
+//		WeakReference<Controllable> c = it.getKey();
+//		if (c == nullptr || c.wasObjectDeleted()) continue;
+//
+//		String add = c->getControlAddress();
+//		if (ignoreList.contains(add)) continue;
+//
+//		result.add(c);
+//		ignoreList.add(add);
+//	}
+//
+//	if (recursive)
+//	{
+//		if (parentContainer != nullptr && parentContainer != RootPresetManager::getInstance())
+//		{
+//			Preset* p = dynamic_cast<Preset*>(parentContainer->parentContainer.get());
+//			if (p != nullptr) result.addArray(p->getAllPresettableControllables(true, ignoreList)); // preset > manager > preset, so a parent preset is 2 levels up a child preset
+//		}
+//	}
+//	return result;
+//}
 
 InspectableEditor* Preset::getEditorInternal(bool isRoot, Array<Inspectable*> controllables)
 {

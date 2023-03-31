@@ -163,7 +163,8 @@ void PresetUI::buttonClicked(Button* b)
 PresetEditor::PresetEditor(Preset* preset, bool isRoot) :
 	BaseItemEditor(preset, isRoot),
 	preset(preset),
-	valuesCC("Values")
+	valuesCC("Values"),
+	ignoreCC("Ignore Parameters")
 {
 	buildValuesCC();
 }
@@ -175,8 +176,14 @@ PresetEditor::~PresetEditor()
 void PresetEditor::resetAndBuild()
 {
 	BaseItemEditor::resetAndBuild();
-	GenericControllableContainerEditor* e = (GenericControllableContainerEditor*)addEditorUI(&valuesCC, true);
-	for (auto& ce : e->childEditors)
+	GenericControllableContainerEditor* ve = (GenericControllableContainerEditor*)addEditorUI(&valuesCC, true);
+	for (auto& ce : ve->childEditors)
+	{
+		if (ControllableEditor* cce = dynamic_cast<ControllableEditor*>(ce)) cce->minLabelWidth = 250;
+	}
+
+	GenericControllableContainerEditor* ie = (GenericControllableContainerEditor*)addEditorUI(&ignoreCC, true);
+	for (auto& ce : ie->childEditors)
 	{
 		if (ControllableEditor* cce = dynamic_cast<ControllableEditor*>(ce)) cce->minLabelWidth = 250;
 	}
@@ -224,22 +231,70 @@ void PresetEditor::buildValuesCC()
 	valuesCC.sortControllables();
 	valuesCC.addAsyncContainerListener(this);
 
+
+
+	//IGNORES
+	ignoreCC.clear();
+
+	for (auto& oc : preset->ignoredControllables)
+	{
+		if (oc == nullptr) continue;
+
+		Controllable* c = nullptr;
+		if (oc->type == Controllable::TRIGGER) c = new Trigger(oc->niceName, "Preset for this trigger");
+		else c = ControllableFactory::createParameterFrom(oc, true, true);
+
+		c->showWarningInUI = true;
+		if (!RootPresetManager::getInstance()->isControllablePresettable(oc)) c->setWarningMessage("This parameter is not presettable");
+
+		c->isRemovableByUser = true;
+		String s = oc->niceName;
+		ControllableContainer* pc = oc->parentContainer;
+		while (pc != nullptr && pc != RootNodeManager::getInstance())
+		{
+			if (dynamic_cast<NodeManager*>(pc))
+			{
+				pc = pc->parentContainer;
+				continue;
+			}
+
+			s = pc->niceName + ">" + s;
+			pc = pc->parentContainer;
+		}
+
+		c->setNiceName(s);
+		ignoreCC.addControllable(c);
+	}
+
+	ignoreCC.sortControllables();
+	ignoreCC.addAsyncContainerListener(this);
+
 	resetAndBuild();
 }
 
 void PresetEditor::newMessage(const ContainerAsyncEvent& e)
 {
-	if (e.source == &valuesCC)
+	if (e.source == &valuesCC || e.source == &ignoreCC)
 	{
 		if (e.type == ContainerAsyncEvent::ControllableRemoved)
 		{
 			if (e.targetControllable != nullptr && !e.targetControllable.wasObjectDeleted())
 			{
-				Parameter* p = (Parameter*)e.targetControllable.get();
-				preset->removeControllableFromDataMap(controllableMap[p]);
+				Controllable* c = e.targetControllable.get();
+				if (e.source == &valuesCC)
+				{
+					preset->removeControllableFromDataMap(controllableMap[c]);
+				}
+
+				if (e.source == &valuesCC)
+				{
+					preset->ignoredControllables.removeAllInstancesOf(c);
+				}
+
 				buildValuesCC();
 			}
 		}
+
 	}
 	else
 	{
