@@ -48,12 +48,9 @@ public:
 	void clearItem() override;
 
 	var getPresetValues(bool includeParents = true, Array<Controllable*> ignoreList = Array<Controllable*>());
-	//var getPresetValueForParameter(Parameter* c, bool includeParents = true);
 
 	void saveContainer(ControllableContainer* container, bool recursive);
 	void save(Controllable* controllable = nullptr, bool saveAllPresettables = false, bool noCheck = false);
-	//void load(ControllableContainer* container, bool recursive);
-	//void load(Controllable* controllable, bool recursive);
 	void load(bool recursive = false);
 
 	void addControllableToDataMap(Controllable* c, var forceValue = var());
@@ -77,9 +74,6 @@ public:
 	void controllableControlAddressChanged(Controllable* c) override;
 
 	void childStructureChanged(ControllableContainer* cc) override;
-
-	//Array<Preset*> getPresetChain(Controllable* c = nullptr);
-	//Array<Controllable*> getAllPresettableControllables(bool recursive = true, Array<String> ignoreList = Array<String>());
 
 	InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> controllables = {}) override;
 

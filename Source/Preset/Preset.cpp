@@ -15,10 +15,12 @@ Preset::Preset(var params) :
 	linkedPresetsCC("Linked Presets")
 {
 	itemDataType = "Preset";
+	hideInEditor = true;
 
 	subPresets.reset(new PresetManager());
 	addChildControllableContainer(subPresets.get());
 	subPresets->addBaseManagerListener(this);
+	subPresets->hideInEditor = true;
 
 	Random r;
 	isCurrent = addBoolParameter("Is Current", "If this is the currently loaded preset", false);
@@ -424,59 +426,6 @@ void Preset::childStructureChanged(ControllableContainer* cc)
 		}
 	}
 }
-
-//Array<Preset*> Preset::getPresetChain(Controllable* c)
-//{
-//	Array<Preset*> result;
-//
-//	if (c != nullptr && ignoredControllables.contains(c)) return result;
-//
-//	result.add(this);
-//	if (parentContainer != nullptr && parentContainer != RootPresetManager::getInstance())
-//	{
-//		Preset* p = dynamic_cast<Preset*>(parentContainer->parentContainer.get());
-//		if (p != nullptr) result.addArray(p->getPresetChain(c)); // preset > manager > preset, so a parent preset is 2 levels up a child preset
-//	}
-//
-//	for (auto& c : linkedPresetsCC.controllables)
-//	{
-//		if (!c->enabled) continue;
-//		Preset* p = dynamic_cast<Preset*>(((TargetParameter*)c)->targetContainer.get());
-//		if (p == nullptr) continue;
-//		result.add(p);
-//	}
-//
-//	return result;
-//}
-
-//Array<Controllable*> Preset::getAllPresettableControllables(bool recursive, Array<String> ignoreList)
-//{
-//	ignoreList.addArray(ignoredControllables);
-//
-//	Array<Controllable*> result;
-//	HashMap<WeakReference<Controllable>, var>::Iterator it(dataMap);
-//	while (it.next())
-//	{
-//		WeakReference<Controllable> c = it.getKey();
-//		if (c == nullptr || c.wasObjectDeleted()) continue;
-//
-//		String add = c->getControlAddress();
-//		if (ignoreList.contains(add)) continue;
-//
-//		result.add(c);
-//		ignoreList.add(add);
-//	}
-//
-//	if (recursive)
-//	{
-//		if (parentContainer != nullptr && parentContainer != RootPresetManager::getInstance())
-//		{
-//			Preset* p = dynamic_cast<Preset*>(parentContainer->parentContainer.get());
-//			if (p != nullptr) result.addArray(p->getAllPresettableControllables(true, ignoreList)); // preset > manager > preset, so a parent preset is 2 levels up a child preset
-//		}
-//	}
-//	return result;
-//}
 
 InspectableEditor* Preset::getEditorInternal(bool isRoot, Array<Inspectable*> controllables)
 {
