@@ -14,7 +14,9 @@
 
 Mapping::Mapping(var params) :
 	BaseItem("Mapping"),
-	prevVal(false)
+	prevVal(false),
+	isSendingFeedback(false),
+	isProcessing(false)
 {
 	destParam = addTargetParameter("Target", "Target parameter to change");
 	destParam->typesFilter.add(FloatParameter::getTypeStringStatic());
@@ -80,9 +82,13 @@ void Mapping::onExternalParameterValueChanged(Parameter* p)
 	BaseItem::onExternalParameterValueChanged(p);
 	if (p == dest && autoFeedback->boolValue())
 	{
-		isSendingFeedback = true;
-		sendFeedback();
-		isSendingFeedback = false;
+		if (!isProcessing)
+		{
+			isSendingFeedback = true;
+			sendFeedback();
+			isSendingFeedback = false;
+		}
+		
 	}
 }
 
@@ -92,6 +98,7 @@ void Mapping::process(var value)
 	if (dest == nullptr || dest.wasObjectDeleted()) return;
 	if (isSendingFeedback) return;
 
+	isProcessing = true;
 	float val = value.isInt() ? (float)(int)value : (float)value;
 	float destVal = jmap(val, inputRange->x, inputRange->y, outputRange->x, outputRange->y);
 	float minVal = jmin(outputRange->x, outputRange->y);
@@ -130,6 +137,7 @@ void Mapping::process(var value)
 			p->setValue(destVal);
 		}
 	}
+	isProcessing = false;
 }
 
 
