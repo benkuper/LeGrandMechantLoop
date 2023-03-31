@@ -54,7 +54,7 @@ public:
 	virtual void clearItem() override;
 
 	virtual void sendMessage(const MidiMessage& m);
-	virtual void sendMidiBuffer(const MidiBuffer &buffer);
+	virtual void sendMidiBuffer(const MidiBuffer& buffer);
 	virtual void sendNoteOn(int channel, int pitch, int velocity);
 	virtual void sendNoteOff(int channel, int pitch);
 	virtual void sendControlChange(int channel, int number, int value);
@@ -83,10 +83,25 @@ public:
 	virtual void afterTouchReceived(const int& channel, const int& note, const int& value);
 	virtual void midiMessageReceived(const MidiMessage& msg);
 
+	//Script
+	static var sendNoteOnFromScript(const var::NativeFunctionArgs& args);
+	static var sendNoteOffFromScript(const var::NativeFunctionArgs& args);
+	static var sendCCFromScript(const var::NativeFunctionArgs& args);
+	static var sendSysexFromScript(const var::NativeFunctionArgs& args);
+	static var sendProgramChangeFromScript(const var::NativeFunctionArgs& args);
+	static var sendPitchWheelFromScript(const var::NativeFunctionArgs& args);
+	static var sendChannelPressureFromScript(const var::NativeFunctionArgs& args);
+	static var sendAfterTouchFromScript(const var::NativeFunctionArgs& args);
+
+
+	void loadJSONDataInternal(var data) override;
+
+
 	class MIDIInterfaceListener
 	{
 	public:
 		virtual ~MIDIInterfaceListener() {}
+		virtual void deviceChanged(MIDIInterface*) {}
 		virtual void noteOnReceived(MIDIInterface*, const int& channel, const int& pitch, const int& velocity) {}
 		virtual void noteOffReceived(MIDIInterface*, const int& channel, const int& pitch, const int& velocity) {}
 		virtual void controlChangeReceived(MIDIInterface*, const int& channel, const int& number, const int& value) {}
@@ -103,22 +118,8 @@ public:
 	void removeMIDIInterfaceListener(MIDIInterfaceListener* listener) { midiInterfaceListeners.remove(listener); }
 
 
-	//Script
-	static var sendNoteOnFromScript(const var::NativeFunctionArgs& args);
-	static var sendNoteOffFromScript(const var::NativeFunctionArgs& args);
-	static var sendCCFromScript(const var::NativeFunctionArgs& args);
-	static var sendSysexFromScript(const var::NativeFunctionArgs& args);
-	static var sendProgramChangeFromScript(const var::NativeFunctionArgs& args);
-	static var sendPitchWheelFromScript(const var::NativeFunctionArgs& args);
-	static var sendChannelPressureFromScript(const var::NativeFunctionArgs& args);
-	static var sendAfterTouchFromScript(const var::NativeFunctionArgs& args);
 
-
-	void loadJSONDataInternal(var data) override;
-
-	static MIDIInterface* create() { return new MIDIInterface(); }
-	virtual String getTypeString() const override { return getTypeStringStatic(); }
-	static String getTypeStringStatic() { return "MIDI"; }
+	DECLARE_TYPE("MIDI")
 
 	//InspectableEditor * getEditor(bool isRoot) override;
 };

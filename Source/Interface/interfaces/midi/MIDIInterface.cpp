@@ -256,6 +256,8 @@ void MIDIInterface::updateMIDIDevices()
 	}
 
 	isConnected->setValue(inputDevice != nullptr || outputDevice != nullptr);
+
+	midiInterfaceListeners.call(&MIDIInterfaceListener::deviceChanged, this);
 }
 
 void MIDIInterface::handleIncomingMidiMessage(MidiInput* source, const MidiMessage& message)

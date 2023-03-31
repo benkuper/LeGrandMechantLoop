@@ -191,7 +191,7 @@ MIDIMapping::MIDIMapping(var params) :
 	Mapping(params),
 	midiInterface(nullptr)
 {
-	
+
 
 	learn = addBoolParameter("Learn MIDI", "When enabled, this will automatically assign info from the next midi message received", false);
 	learn->isSavable = false;
@@ -243,6 +243,7 @@ void MIDIMapping::setMIDIInterface(MIDIInterface* d)
 	if (midiInterface != nullptr)
 	{
 		midiInterface->addMIDIInterfaceListener(this);
+		sendFeedback();
 	}
 }
 
@@ -321,6 +322,11 @@ void MIDIMapping::pitchWheelReceived(MIDIInterface*, const int& _channel, const 
 	process(value);
 }
 
+void MIDIMapping::deviceChanged(MIDIInterface*)
+{
+	sendFeedback();
+}
+
 
 void MIDIMapping::managerMidiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 {
@@ -334,6 +340,7 @@ void MIDIMapping::managerMidiMessageReceived(MIDIInterface* i, const MidiMessage
 void MIDIMapping::sendFeedback()
 {
 	if (midiInterface == nullptr) return;
+	if (dest == nullptr) return;
 	if (dest->type == Controllable::TRIGGER) return;
 
 	MIDIType mt = type->getValueDataAsEnum<MIDIType>();

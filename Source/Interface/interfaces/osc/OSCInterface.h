@@ -126,7 +126,7 @@ public:
 
 	//InspectableEditor * getEditor(bool isRoot) override;	
 
-	String getTypeString() const override { return "OSC"; }
+	DECLARE_TYPE("MIDI")
 
 private:
 	Array<std::tuple<OSCAddressPattern, Identifier>> scriptCallbacks;
