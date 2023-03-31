@@ -32,7 +32,11 @@ SamplerNode::SamplerNode(var params) :
 	hitMode = addEnumParameter("Hit Mode", "How playing a sample is handled.\nPiano is normal playing, releasing a key stops the sample.\nHit is starting the sample but releasing doesn't affect (only works in One Shot play mode) Full will not take in account playing again the note if the sample is still playing. Reset will allow to replay from start.\nToggle is alternating key presses to start/stop instead of using key release");
 	hitMode->addOption("Piano", PIANO)->addOption("Hit (Full Sample)", HIT_FULL)->addOption("Hit (Reset)", HIT_RESET)->addOption("Toggle", TOGGLE);
 
-	autoKeyMode = addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
+	computeAutoKeysTrigger = addTrigger("Compute Auto Keys", "If checked, the auto keys will be computed from the recorded notes", true);
+	startAutoKey = addIntParameter("Start Auto Key", "The pitch to start auto key computation from", 0, 0, 127);
+	endAutoKey = addIntParameter("End Auto Key", "The pitch to end auto key computation from", 127, 0, 127);
+
+	autoKeyLiveMode = addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
 	fadeTimeMS = addIntParameter("Fade Time MS", "Time to fade between start and end of recording", 50);
 
 	isRecording = addBoolParameter("Is Recording", "Is recording a note ?", false);
@@ -84,7 +88,7 @@ SamplerNode::SamplerNode(var params) :
 		sn->adsr.setTargetRatioDR(releaseCurve->floatValue());
 
 		sn->state = noteStatesCC.addEnumParameter(MidiMessage::getMidiNoteName(i, true, true, 3), "State for this note");
-		sn->state->addOption("Empty", EMPTY)->addOption("Recording", RECORDING)->addOption("Filled", FILLED)->addOption("Playing", PLAYING);
+		sn->state->addOption("Empty", EMPTY)->addOption("Recording", RECORDING)->addOption("Filled", FILLED)->addOption("Processing", PROCESSING)->addOption("Playing", PLAYING);
 		sn->state->setControllableFeedbackOnly(true);
 
 		sn->oneShotted = false;
@@ -143,6 +147,53 @@ void SamplerNode::resetAllNotes()
 	for (auto& n : samplerNotes)
 	{
 		n->reset();
+	}
+}
+
+void SamplerNode::computeAutoKeys()
+{
+	//ScopedSuspender sp(processor);
+
+	for (int i = 0; i < samplerNotes.size(); i++)
+	{
+		NoteState ns = samplerNotes[i]->state->getValueDataAsEnum<NoteState>();
+		if (ns == PROCESSING || samplerNotes[i]->isProxyNote()) clearNote(i);
+	}
+
+	int startKey = startAutoKey->intValue();
+	int endKey = endAutoKey->intValue();
+
+	for (int i = startKey; i <= endKey; i++)
+	{
+		SamplerNote* n = samplerNotes[i];
+		if (n == nullptr) return;
+		NoteState ns = n->state->getValueDataAsEnum<NoteState>();
+		if (ns != EMPTY) continue;
+
+		int closestNote = -1;
+		{
+			for (int j = 1; j <= 127; j++)
+			{
+				int lowI = i - j;
+				int highI = i + j;
+				if (lowI >= 0 && samplerNotes[lowI]->hasContent())
+				{
+					closestNote = lowI;
+					break;
+				}
+				else if (highI < 128 && samplerNotes[highI]->hasContent())
+				{
+					closestNote = highI;
+					break;
+				}
+			}
+		}
+
+		if (closestNote != -1)
+		{
+			double shift = MidiMessage::getMidiNoteInHertz(i) / MidiMessage::getMidiNoteInHertz(closestNote);
+			n->computeAutoKey(samplerNotes[closestNote], shift, getFadeNumSamples());
+		}
 	}
 }
 
@@ -263,6 +314,10 @@ void SamplerNode::onContainerTriggerTriggered(Trigger* t)
 	{
 		samplesFolder->getFile().startAsProcess();
 	}
+	else if (t == computeAutoKeysTrigger)
+	{
+		computeAutoKeys();
+	}
 }
 
 void SamplerNode::onContainerParameterChangedInternal(Parameter* p)
@@ -368,7 +423,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 	else if (!samplerNotes[midiNoteNumber]->hasContent()) //record and proxy autokey playing
 	{
 		int closestNote = -1;
-		if (autoKeyMode->boolValue())
+		if (autoKeyLiveMode->boolValue())
 		{
 			for (int i = 1; i <= 127; i++)
 			{
@@ -619,6 +674,7 @@ void SamplerNode::loadSamples()
 	NLOG(niceName, numSamplesImported << " sampler notes imported from " << folder.getFullPathName());
 }
 
+
 var SamplerNode::getJSONData()
 {
 	var data = Node::getJSONData();
@@ -684,7 +740,7 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 		SamplerNote* s = samplerNotes[i];
 
 		NoteState st = s->state->getValueDataAsEnum<NoteState>();
-		if (st == EMPTY || st == RECORDING) continue;
+		if (st == EMPTY || st == RECORDING || st == PROCESSING) continue;
 
 
 
@@ -709,6 +765,7 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 		{
 			AudioSampleBuffer* targetBuffer = &s->buffer;
 			int targetReadSample = s->playingSample;
+
 			if (s->isProxyNote())
 			{
 
@@ -800,16 +857,14 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			{
 				if (pm == HIT_ONESHOT)
 				{
-					s->oneShotted = true;
-					s->jumpGhostSample = -1;
+					//s->oneShotted = true;
+					//s->jumpGhostSample = -1;
 
-					HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
-					if (hm == HIT_FULL || hm == HIT_RESET || hm == TOGGLE)
-					{
-						s->reset();
-						//s->adsr.gate(0);
-						//s->state->setValueWithData(FILLED);
-					}
+					//HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
+					//if (hm == HIT_FULL || hm == HIT_RESET || hm == TOGGLE)
+					//{
+					s->reset();
+					//}
 				}
 				s->playingSample = 0;
 			}
@@ -828,6 +883,16 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 BaseNodeViewUI* SamplerNode::createViewUI()
 {
 	return new SamplerNodeViewUI(this);
+}
+
+SamplerNode::SamplerNote::SamplerNote() :
+	Thread("Sampler Stretcher")
+{
+}
+
+SamplerNode::SamplerNote::~SamplerNote()
+{
+	stopThread(1000);
 }
 
 void SamplerNode::SamplerNote::setAutoKey(SamplerNote* remoteNote, double shift)
@@ -860,6 +925,71 @@ void SamplerNode::SamplerNote::setAutoKey(SamplerNote* remoteNote, double shift)
 	//LOG("Set with pitchScale : " << shift);
 	rtPitchReadSample = 0;
 	rtPitchedBuffer.setSize(autoKeyFromNote->buffer.getNumChannels(), Transport::getInstance()->blockSize);
+}
+
+void SamplerNode::SamplerNote::computeAutoKey(SamplerNote* remoteNote, double shift, int fadeSamples)
+{
+	shifting = shift;
+	fadeNumSamples = fadeSamples;
+	autoKeyFromNote = remoteNote;
+
+	startThread();
+
+}
+
+void SamplerNode::SamplerNote::run()
+{
+	state->setValueWithData(NoteState::PROCESSING);
+
+
+	// Create a Rubber Band instance with the desired shift
+	RubberBand::RubberBandStretcher rubberBand(Transport::getInstance()->sampleRate, autoKeyFromNote->buffer.getNumChannels(),
+		RubberBand::RubberBandStretcher::OptionProcessOffline
+		| RubberBand::RubberBandStretcher::OptionStretchPrecise
+		| RubberBand::RubberBandStretcher::OptionFormantPreserved
+		| RubberBand::RubberBandStretcher::OptionWindowShort
+		| RubberBand::RubberBandStretcher::OptionTransientsSmooth
+		| RubberBand::RubberBandStretcher::OptionPitchHighConsistency
+		| RubberBand::RubberBandStretcher::OptionChannelsTogether
+	);
+	rubberBand.setPitchScale(shifting);
+	rubberBand.setTimeRatio(1.0f);
+
+	// Set up a temporary buffer to hold the resampled audio
+	const int numChannels = autoKeyFromNote->buffer.getNumChannels();
+	const int numSamples = autoKeyFromNote->buffer.getNumSamples();
+
+	buffer = AudioSampleBuffer(numChannels, 0);
+
+	// Process each channel with Rubber Band
+	const float* const* channelData = autoKeyFromNote->buffer.getArrayOfReadPointers();
+
+	rubberBand.study(channelData, numSamples, true);
+	rubberBand.process(channelData, numSamples, true);
+	while (rubberBand.available() > 0)
+	{
+		juce::AudioBuffer<float> tmpBuffer(numChannels, rubberBand.available());
+		int numRetrieved = rubberBand.retrieve(tmpBuffer.getArrayOfWritePointers(), rubberBand.available());
+
+		int curSize = buffer.getNumSamples();
+		buffer.setSize(numChannels, curSize + numRetrieved, true, false, true);
+		for (int i = 0; i < numChannels; i++) buffer.copyFrom(i, curSize, tmpBuffer, i, 0, numRetrieved);
+	}
+
+
+	buffer.setSize(buffer.getNumChannels(), Transport::getInstance()->getBlockPerfectNumSamples(buffer.getNumSamples()), true, true, true);
+
+	if (fadeNumSamples > 0)
+	{
+		for (int i = 0; i < buffer.getNumChannels(); i++)
+		{
+			buffer.applyGainRamp(buffer.getNumSamples() - fadeNumSamples, fadeNumSamples, 1, 0);
+			buffer.addFromWithRamp(i, buffer.getNumSamples() - fadeNumSamples, buffer.getReadPointer(i), fadeNumSamples, 0, 1);
+		}
+	}
+
+	autoKeyFromNote = nullptr;
+	state->setValueWithData(NoteState::FILLED);
 }
 
 void SamplerNode::SamplerNote::reset()

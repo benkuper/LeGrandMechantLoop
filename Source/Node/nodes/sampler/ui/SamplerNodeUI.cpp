@@ -121,11 +121,15 @@ void SamplerMidiKeyboardComponent::drawWhiteNote(int midiNoteNumber, Graphics& g
 void SamplerMidiKeyboardComponent::drawBlackNote(int midiNoteNumber, Graphics& g, Rectangle<float> area,
 	bool isDown, bool isOver, Colour noteFillColour)
 {
-	auto c = samplerNode->samplerNotes[midiNoteNumber]->hasContent() ? BLUE_COLOR.darker() : noteFillColour;
+	SamplerNode::SamplerNote* n = samplerNode->samplerNotes[midiNoteNumber];
+	SamplerNode::NoteState s = n->state->getValueDataAsEnum<SamplerNode::NoteState>();
 
-	SamplerNode::NoteState s = samplerNode->samplerNotes[midiNoteNumber]->state->getValueDataAsEnum<SamplerNode::NoteState>();
+	auto c = n->hasContent() ? BLUE_COLOR.darker() : (s == SamplerNode::PROCESSING ? Colours::darkgrey : noteFillColour);
+
+
 	if (isDown) c = s == SamplerNode::RECORDING ? RED_COLOR : GREEN_COLOR;
 	if (isOver)  c = c.overlaidWith(findColour(mouseOverKeyOverlayColourId));
+
 
 	g.setColour(c);
 	g.fillRect(area);

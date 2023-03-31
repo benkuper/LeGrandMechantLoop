@@ -26,7 +26,10 @@ public:
 	BoolParameter* showKeyboard;
 	EnumParameter* playMode;
 	EnumParameter* hitMode;
-	BoolParameter* autoKeyMode;
+	Trigger* computeAutoKeysTrigger;
+	IntParameter* startAutoKey;
+	IntParameter* endAutoKey;
+	BoolParameter* autoKeyLiveMode;
 
 	BoolParameter* monitor;
 	BoolParameter* clearMode;
@@ -57,19 +60,27 @@ public:
 	Trigger* saveSamplesTrigger;
 	Trigger* showFolderTrigger;
 
-	enum NoteState { EMPTY, RECORDING, FILLED, PLAYING };
-	struct SamplerNote
+	enum NoteState { EMPTY, RECORDING, FILLED, PROCESSING, PLAYING };
+	class SamplerNote :
+		public Thread
 	{
 	public:
+		SamplerNote();
+		~SamplerNote();
 		EnumParameter* state;
 		int playingSample = 0;
 		int jumpGhostSample = -1;
 		float velocity = 0;
 		CurvedADSR adsr;
-		bool oneShotted;
+		bool oneShotted = false;
 
 		AudioSampleBuffer buffer;
-		//pitch shifting
+
+		//offline pitching
+		double shifting = 0;
+		int fadeNumSamples = 0;
+
+		//rt pitch shifting // now trying to do it offline
 		AudioSampleBuffer rtPitchedBuffer;
 		SamplerNote* autoKeyFromNote = nullptr;
 		int rtPitchReadSample = 0;
@@ -77,12 +88,15 @@ public:
 		SpinLock pitcherLock;
 		std::unique_ptr<RubberBand::RubberBandStretcher> pitcher;
 
-		void setAutoKey(SamplerNote* remoteNote, double shift= 0);
+		void setAutoKey(SamplerNote* remoteNote, double shift = 0);
+		void computeAutoKey(SamplerNote* remoteNote, double shift = 0, int fadeSamples = 0);
+
+		void run();
 
 		void reset();
-		
+
 		bool hasContent() const { return buffer.getNumSamples() > 0; }
-		bool isProxyNote() const { return autoKeyFromNote != nullptr;  }
+		bool isProxyNote() const { return autoKeyFromNote != nullptr; }
 	};
 
 	OwnedArray<SamplerNote> samplerNotes;
@@ -101,6 +115,8 @@ public:
 	void clearNote(int note);
 	void clearAllNotes();
 	void resetAllNotes();
+
+	void computeAutoKeys();
 
 	void updateBuffers();
 	void updateRingBuffer();
@@ -122,6 +138,7 @@ public:
 	void updateBanks(bool loadAfter = true);
 	void exportSamples();
 	void loadSamples();
+
 
 	var getJSONData() override;
 	void loadJSONDataItemInternal(var data) override;
