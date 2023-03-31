@@ -95,8 +95,8 @@ void LGMLEngine::loadJSONDataInternalEngine(var data, ProgressTask* loadingTask)
     Transport::getInstance()->loadJSONData(data.getProperty(Transport::getInstance()->shortName, var()));
     MacroManager::getInstance()->loadJSONData(data.getProperty(MacroManager::getInstance()->shortName, var()));
     RootPresetManager::getInstance()->loadJSONData(data.getProperty(RootPresetManager::getInstance()->shortName, var()));
-    MappingManager::getInstance()->loadJSONData(data.getProperty(MappingManager::getInstance()->shortName, var()));
     InterfaceManager::getInstance()->loadJSONData(data.getProperty(InterfaceManager::getInstance()->shortName, var()));
+    MappingManager::getInstance()->loadJSONData(data.getProperty(MappingManager::getInstance()->shortName, var()));
 }
 
 void LGMLEngine::timerCallback(int timerID)
