@@ -22,11 +22,13 @@ SamplerNode::SamplerNode(var params) :
 	playCC("Play"),
 	recordCC("Record"),
 	adsrCC("ADSR"),
-	libraryCC("Library")
+	libraryCC("Library"),
+	curBankIndex(1)
 {
 	includeTriggersInSaveLoad = true;
+	saveAndLoadRecursiveData = true;
 
-	numChannels = playCC.addIntParameter("Channels", "Number of channels", 1, 1, 2);
+	numChannels = playCC.addIntParameter("Channels", "Number of channels", 1, 1);
 
 	monitor = playCC.addBoolParameter("Monitor", "Monitor input audio", true);
 
@@ -79,8 +81,12 @@ SamplerNode::SamplerNode(var params) :
 	libraryFolder = libraryCC.addFileParameter("Lirbary Folder", "To export and import");
 	libraryFolder->directoryMode = true;
 
-	currentLibrary = libraryCC.addEnumParameter("Current Bank", "Select a specific sub folder or the none for the root folder");
+	currentLibrary = libraryCC.addEnumParameter("Current Library", "Select a specific sub folder or the none for the root folder");
 	currentBank = libraryCC.addIntParameter("Current Bank", "Index of the bank in the library folder, starting with 1. This will load a folder with a name starting with this number", 1, 1, 100);
+
+	nextBank = libraryCC.addTrigger("Next Bank", "Goes to next bank");
+	prevBank = libraryCC.addTrigger("Previous Bank", "Goes to previous bank");
+
 	bankDescription = libraryCC.addStringParameter("Bank Description", "Description for this bank if available", "");
 
 	saveBankTrigger = libraryCC.addTrigger("Save Bank", "Export all samples at once to this bank's folder");
@@ -113,8 +119,11 @@ SamplerNode::SamplerNode(var params) :
 	}
 
 	updateBuffers();
+	setAudioInputs(numChannels->intValue());
+	setAudioOutputs(numChannels->intValue());
 
 	addChildControllableContainer(&noteStatesCC);
+	noteStatesCC.hideInEditor = true;
 
 	setMIDIIO(true, true);
 }
@@ -298,6 +307,8 @@ void SamplerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc
 
 	if (c == numChannels)
 	{
+		setAudioInputs(numChannels->intValue());
+		setAudioOutputs(numChannels->intValue());
 		updateBuffers();
 	}
 	if (c == attack || c == decay || c == sustain || c == release || c == attackCurve || c == releaseCurve)
@@ -319,6 +330,10 @@ void SamplerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc
 		updateRingBuffer();
 	}
 	else if (c == libraryFolder)
+	{
+		updateLibraries();
+	}
+	else if (c == currentLibrary)
 	{
 		if (!isUpdatingLibrary)
 		{
@@ -353,18 +368,28 @@ void SamplerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc
 			}
 			else
 			{
-
+				currentBank->setValue(1, false, true); //force reload bank
 			}
 		}
-
-	}
-	else if (c == currentLibrary)
-	{
-		currentBank->setValue(1, false, true); //force reload bank
 	}
 	else if (c == currentBank)
 	{
-		setBankIndex(currentBank->intValue());
+		updateBank();
+	}
+	else if (c == nextBank)
+	{
+		currentBank->setValue(currentBank->intValue() + 1);
+	}
+	else if (c == prevBank)
+	{
+		currentBank->setValue(currentBank->intValue() - 1);
+	}
+	else if (c == bankDescription)
+	{
+		if (!bankFolder.exists() && bankFolder != File()) bankFolder.createDirectory();
+		File newFolder = bankFolder.getParentDirectory().getChildFile(currentBank->stringValue() + "-" + bankDescription->stringValue());
+		bankFolder.moveFileTo(newFolder);
+		bankFolder = newFolder;
 	}
 	else if (c == playMode)
 	{
@@ -547,7 +572,6 @@ void SamplerNode::updateLibraries(bool loadAfter)
 
 	isUpdatingLibrary = true;
 	currentLibrary->clearOptions();
-	currentLibrary->addOption("Default", "");
 	Array<File> files = folder.findChildFiles(File::findDirectories, false);
 	for (auto& f : files)
 	{
@@ -556,22 +580,27 @@ void SamplerNode::updateLibraries(bool loadAfter)
 
 	currentLibrary->addOption("Add new...", "new");
 
-	if (oldData.isVoid()) oldData = "";
-	if (oldData.toString() != "new") currentLibrary->setValue(oldData);
+	if (oldData.isVoid()) currentLibrary->setValue(currentLibrary->enumValues[0]->key);
+	else if (oldData.toString() != "new") currentLibrary->setValue(oldData);
 
 	isUpdatingLibrary = false;
 
 	if (loadAfter) currentBank->setValue(1, false, true);
 }
 
-void SamplerNode::setBankIndex(int index, bool force)
+void SamplerNode::updateBank()
 {
-	if (index == currentBank->intValue() && !force) return;
-
 	File libRootFolder = libraryFolder->getFile();
 	if (!libRootFolder.exists() || !libRootFolder.isDirectory()) return;
 
-	File libFolder = libRootFolder.getChildFile(currentLibrary->getValueData().toString());
+	String libName = currentLibrary->getValueData().toString();
+	if (libName.isEmpty())
+	{
+		NLOG(niceName, "No library selected in folder, please choose or create a library to load and save.");
+		return;
+	}
+
+	File libFolder = libRootFolder.getChildFile(libName);
 	File bFolder;
 	Array<File> bFolders = libFolder.findChildFiles(File::findDirectories, false);
 
@@ -580,7 +609,7 @@ void SamplerNode::setBankIndex(int index, bool force)
 	{
 		StringArray split;
 		split.addTokens(bf.getFileName(), "-", "");
-		if (split[0] == String(index))
+		if (split[0] == String(currentBank->intValue()))
 		{
 			desc = split.size() > 0 ? split[1] : "";
 			bFolder = bf;
@@ -590,7 +619,7 @@ void SamplerNode::setBankIndex(int index, bool force)
 
 	if (bFolder == File())
 	{
-		bFolder = libFolder.getChildFile(String(index));
+		bFolder = libFolder.getChildFile(String(currentBank->intValue()));
 		bFolder.createDirectory();
 	}
 

@@ -59,6 +59,8 @@ public:
 	StringParameter* bankDescription;
 	Trigger* saveBankTrigger;
 	Trigger* showFolderTrigger;
+	Trigger* nextBank;
+	Trigger* prevBank;
 
 	//ui
 	BoolParameter* showKeyboard;
@@ -74,6 +76,7 @@ public:
 
 	bool isUpdatingLibrary;
 	File bankFolder;
+	int curBankIndex;
 
 	std::unique_ptr<RingBuffer<float>> ringBuffer;
 	AudioSampleBuffer preRecBuffer;
@@ -147,7 +150,7 @@ public:
 	virtual int getFadeNumSamples(); //for ring buffer fade
 
 	void updateLibraries(bool loadAfter = true);
-	void setBankIndex(int index, bool force = false);
+	void updateBank();
 
 	void saveBankSamples();
 	void loadBankSamples();

@@ -132,12 +132,14 @@ void AudioLooperNode::playStateChanged(bool isPlaying, bool forceRestart)
 
 void AudioLooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+	if (ringBuffer->bufferSize == 0) return;
+
 	TrackOutputMode tom = trackOutputMode->getValueDataAsEnum<TrackOutputMode>();
 	MonitorMode mm = monitorMode->getValueDataAsEnum<MonitorMode>();
 	int numMainChannels = tom == SEPARATE_ONLY ? 0 : numChannelsPerTrack->intValue();
 	bool oneIsRecording = isOneTrackRecording();
 
-	if (fadeTimeMS->intValue() > 0) ringBuffer->writeSamples(buffer, 0, jmin(buffer.getNumSamples(), ringBuffer->bufferSize));
+	if (fadeTimeMS->intValue() > 0 ) ringBuffer->writeSamples(buffer, 0, jmin(buffer.getNumSamples(), ringBuffer->bufferSize));
 
 	AudioBuffer<float> tmpBuffer;
 	tmpBuffer.makeCopyOf(buffer);
