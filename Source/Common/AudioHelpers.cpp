@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Common/CommonIncludes.h"
+
 Point<float> DecibelsHelpers::start = Point<float>(-100, 0);
 Point<float> DecibelsHelpers::mid1 = Point<float>(-42, .14f);
 Point<float> DecibelsHelpers::mid2 = Point<float>(-18, .4f);
@@ -111,6 +113,8 @@ VolumeControl::VolumeControl(const String& name, bool hasRMS) :
 	rmsSampleCount(0),
 	rmsMax(0)
 {
+	editorIsCollapsed = true;
+
 	gain = new DecibelFloatParameter("Gain", "Gain for this");
 	addParameter(gain);
 	active = addBoolParameter("Active", "Fast way to mute this", true);
