@@ -191,6 +191,12 @@ void PresetEditor::resetAndBuild()
 
 void PresetEditor::buildValuesCC()
 {
+
+	if (isRoot && parentInspector != nullptr)
+	{
+		parentInspector->storeScrollPosition();
+	}
+
 	valuesCC.clear();
 	controllableMap.clear();
 
@@ -273,6 +279,9 @@ void PresetEditor::buildValuesCC()
 	ignoreCC.addAsyncContainerListener(this);
 
 	resetAndBuild();
+
+	if (isRoot && parentInspector != nullptr) parentInspector->restoreScrollPosition();
+
 }
 
 void PresetEditor::newMessage(const ContainerAsyncEvent& e)
