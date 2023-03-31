@@ -192,6 +192,7 @@ void PresetEditor::resetAndBuild()
 void PresetEditor::buildValuesCC()
 {
 	valuesCC.clear();
+	controllableMap.clear();
 
 	HashMap<WeakReference<Controllable>, var>::Iterator it(preset->dataMap);
 	while (it.next())
@@ -235,6 +236,7 @@ void PresetEditor::buildValuesCC()
 
 	//IGNORES
 	ignoreCC.clear();
+	ignoreMap.clear();
 
 	for (auto& oc : preset->ignoredControllables)
 	{
@@ -263,6 +265,7 @@ void PresetEditor::buildValuesCC()
 		}
 
 		c->setNiceName(s);
+		ignoreMap.set(c, oc);
 		ignoreCC.addControllable(c);
 	}
 
@@ -286,9 +289,9 @@ void PresetEditor::newMessage(const ContainerAsyncEvent& e)
 					preset->removeControllableFromDataMap(controllableMap[c]);
 				}
 
-				if (e.source == &valuesCC)
+				if (e.source == &ignoreCC)
 				{
-					preset->ignoredControllables.removeAllInstancesOf(c);
+					preset->ignoredControllables.removeAllInstancesOf(ignoreMap[c]);
 				}
 
 				buildValuesCC();
