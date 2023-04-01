@@ -160,7 +160,7 @@ InputLineCC::InputLineCC(int index) :
 	index(index)
 {
 	saveAndLoadRecursiveData = true;
-	exclusiveIndex = addIntParameter("Index", "Exclusive Index", 1, 1, 1, false);
+	exclusiveIndex = addIntParameter("Index", "Exclusive Index", 1, 0, 1, false);
 	exclusiveIndex->canBeDisabledByUser = true;
 	exclusiveIndex->forceSaveValue = true;
 }
@@ -200,12 +200,15 @@ void InputLineCC::updateExclusiveOutput()
 {
 	if (!exclusiveIndex->enabled) return;
 
-	int index = jlimit(0, mixerItems.size(), exclusiveIndex->intValue() - 1);
-	
-	MixerItem* item = mixerItems[index];
-	if (item == nullptr) return;
+	MixerItem* item = nullptr;
 
-	item->active->setValue(true); 
+	if (exclusiveIndex->intValue() > 0)
+	{
+		int index = jlimit(0, mixerItems.size(), exclusiveIndex->intValue() - 1);
+		item = mixerItems[index];
+		if (item == nullptr) return;
+		item->active->setValue(true);
+	}
 	
 	for (auto& mi : mixerItems)
 	{
