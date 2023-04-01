@@ -104,9 +104,9 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 	}
 
 	Array<Preset*> presetsToInclude;
-	if (includeParents && parentContainer != nullptr && parentContainer != RootPresetManager::getInstance())
+	if (includeParents)
 	{
-		presetsToInclude.add((Preset*)parentContainer->parentContainer.get());
+		if(parentContainer != nullptr && parentContainer != RootPresetManager::getInstance()) presetsToInclude.add((Preset*)parentContainer->parentContainer.get());
 
 		for (auto& c : linkedPresetsCC.controllables)
 		{
