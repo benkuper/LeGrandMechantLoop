@@ -855,12 +855,12 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			}
 
 
-			String dbg;
-			dbg << "[" << i << "] Jump ghost sample : " << s->jumpGhostSample << ", playingSample : " << s->playingSample << ", adsr : " << s->adsr.getOutput() << ", velocity " << s->velocity;
+			//String dbg;
+			//dbg << "[" << i << "] Jump ghost sample : " << s->jumpGhostSample << ", playingSample : " << s->playingSample << ", adsr : " << s->adsr.getOutput() << ", velocity " << s->velocity;
 
 			if (s->jumpGhostSample != -1 && s->jumpGhostSample != s->playingSample && s->jumpGhostSample < s->buffer.getNumSamples())
 			{
-				dbg += " > Interpolate";
+				//dbg += " > Interpolate";
 				for (int j = 0; j < buffer.getNumChannels(); j++)
 				{
 					tmpNoteBuffer.copyFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->jumpGhostSample), blockSize, 1, 0);
@@ -894,8 +894,6 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 					}
 				}
 			}
-
-			LOG(dbg);
 
 			s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
 			for (int j = 0; j < buffer.getNumChannels(); j++)
