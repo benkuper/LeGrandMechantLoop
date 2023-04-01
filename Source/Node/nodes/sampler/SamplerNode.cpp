@@ -19,6 +19,7 @@ SamplerNode::SamplerNode(var params) :
 	noteStatesCC("Notes"),
 	viewStartKey(20),
 	isUpdatingLibrary(false),
+	controlsCC("Controls"),
 	playCC("Play"),
 	recordCC("Record"),
 	adsrCC("ADSR"),
@@ -29,36 +30,37 @@ SamplerNode::SamplerNode(var params) :
 	saveAndLoadRecursiveData = true;
 
 	numChannels = playCC.addIntParameter("Channels", "Number of channels", 1, 1);
-
 	monitor = playCC.addBoolParameter("Monitor", "Monitor input audio", true);
-
 	playMode = playCC.addEnumParameter("Play Mode", "How samples are treated");
 	playMode->addOption("Hit (Loop)", HIT_LOOP)->addOption("Hit (One shot)", HIT_ONESHOT)->addOption("Peek (Continuous)", PEEK)->addOption("Keep (Hold)", KEEP);
 
 	hitMode = playCC.addEnumParameter("Hit Mode", "How playing a sample is handled.\nPiano is normal playing, releasing a key stops the sample.\nHit is starting the sample but releasing doesn't affect (only works in One Shot play mode) Full will not take in account playing again the note if the sample is still playing. Reset will allow to replay from start.\nToggle is alternating key presses to start/stop instead of using key release");
 	hitMode->addOption("Piano", PIANO)->addOption("Hit (Full Sample)", HIT_FULL)->addOption("Hit (Reset)", HIT_RESET)->addOption("Toggle", TOGGLE);
 
-	computeAutoKeysTrigger = playCC.addTrigger("Compute Auto Keys", "If checked, the auto keys will be computed from the recorded notes", true);
-	startAutoKey = playCC.addIntParameter("Start Auto Key", "The pitch to start auto key computation from", 0, 0, 127);
-	endAutoKey = playCC.addIntParameter("End Auto Key", "The pitch to end auto key computation from", 127, 0, 127);
-
 	autoKeyLiveMode = playCC.addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
-	fadeTimeMS = playCC.addIntParameter("Fade Time MS", "Time to fade between start and end of recording", 50);
-
+	autoKeyFadeTimeMS = playCC.addIntParameter("Auto Key Fade", "Fade for anticlick when repitching auto keys, in milliseconds", 50);
 
 	addChildControllableContainer(&playCC, false, 0);
 
-	isRecording = recordCC.addBoolParameter("Is Recording", "Is recording a note ?", false);
-	isRecording->setControllableFeedbackOnly(true);
 
 	clearMode = recordCC.addBoolParameter("Clear Mode", "When checked, recorded or played notes are cleared depending on clearing mode", false);
 	clearLastMode = recordCC.addEnumParameter("Clear Last Mode", "The way to clear when clear last is triggered");
 	clearLastMode->addOption("Last Played", LAST_PLAYED)->addOption("Last Recorded", LAST_RECORDED);
 
-	clearLastRecordedTrigger = recordCC.addTrigger("Clear Last", "Clear Last recorded or played note");
+	clearLastRecordedTrigger = recordCC.addTrigger("Clear", "Clear Last recorded or played note");
 	clearAllNotesTrigger = recordCC.addTrigger("Clear All Notes", "Clear all recorded notes");
 
-	addChildControllableContainer(&recordCC, false, 1);
+	startAutoKey = playCC.addIntParameter("Start Auto Key", "The pitch to start auto key computation from", 0, 0, 127);
+	endAutoKey = playCC.addIntParameter("End Auto Key", "The pitch to end auto key computation from", 127, 0, 127);
+	computeAutoKeysTrigger = playCC.addTrigger("Compute Auto Keys", "If checked, the auto keys will be computed from the recorded notes", true);
+
+	addChildControllableContainer(&controlsCC, false, 1);
+
+	fadeTimeMS = recordCC.addIntParameter("Fade Time", "Time to fade between start and end of recording, in milliseconds", 20);
+	isRecording = recordCC.addBoolParameter("Is Recording", "Is recording a note ?", false);
+	isRecording->setControllableFeedbackOnly(true);
+
+	addChildControllableContainer(&recordCC, false, 2);
 
 	attack = adsrCC.addFloatParameter("Attack", "Time of the attack in seconds", .01f, 0);
 	attack->defaultUI = FloatParameter::TIME;
@@ -76,7 +78,7 @@ SamplerNode::SamplerNode(var params) :
 
 	releaseCurve = adsrCC.addFloatParameter("Release Curve", "Bend the release", 0.001f, 0, 0.1f);
 
-	addChildControllableContainer(&adsrCC, false, 2);
+	addChildControllableContainer(&adsrCC, false, 3);
 
 	libraryFolder = libraryCC.addFileParameter("Lirbary Folder", "To export and import");
 	libraryFolder->directoryMode = true;
@@ -92,7 +94,7 @@ SamplerNode::SamplerNode(var params) :
 	saveBankTrigger = libraryCC.addTrigger("Save Bank", "Export all samples at once to this bank's folder");
 	showFolderTrigger = libraryCC.addTrigger("Show Folder", "Show the folder in explorer");
 
-	addChildControllableContainer(&libraryCC, false, 3);
+	addChildControllableContainer(&libraryCC, false, 4);
 
 	keyboardState.addListener(this);
 
@@ -205,7 +207,7 @@ void SamplerNode::computeAutoKeys()
 		if (closestNote != -1)
 		{
 			double shift = MidiMessage::getMidiNoteInHertz(i) / MidiMessage::getMidiNoteInHertz(closestNote);
-			n->computeAutoKey(samplerNotes[closestNote], shift, getFadeNumSamples());
+			n->computeAutoKey(samplerNotes[closestNote], shift, getFadeNumSamples(autoKeyFadeTimeMS->intValue()));
 		}
 	}
 }
@@ -221,7 +223,7 @@ void SamplerNode::updateBuffers()
 void SamplerNode::updateRingBuffer()
 {
 	ScopedSuspender sp(processor);
-	ringBuffer.reset(new RingBuffer<float>(getNumAudioInputs(), getFadeNumSamples() * 2)); //double to not have overlapping read and write
+	ringBuffer.reset(new RingBuffer<float>(getNumAudioInputs(), getFadeNumSamples(fadeTimeMS->intValue()) * 2)); //double to not have overlapping read and write
 
 }
 
@@ -243,7 +245,7 @@ void SamplerNode::startRecording(int note)
 
 	samplerNote->buffer.setSize(getNumAudioInputs(), recNumSamples, false, true);
 
-	int fadeNumSamples = getFadeNumSamples();
+	int fadeNumSamples = getFadeNumSamples(fadeTimeMS->intValue());
 	if (fadeNumSamples > 0)
 	{
 		preRecBuffer.setSize(samplerNote->buffer.getNumChannels(), fadeNumSamples, false, true);
@@ -267,7 +269,7 @@ void SamplerNode::stopRecording()
 	if (recordedSamples > 0)
 	{
 		//fade with ring buffer using looper fadeTimeMS
-		int fadeNumSamples = getFadeNumSamples();
+		int fadeNumSamples = getFadeNumSamples(fadeTimeMS->intValue());
 		samplerNote->buffer.setSize(samplerNote->buffer.getNumChannels(), recordedSamples, true);
 
 		if (fadeNumSamples > 0)
@@ -558,9 +560,9 @@ void SamplerNode::handleNoteOff(MidiKeyboardState* source, int midiChannel, int 
 }
 
 
-int SamplerNode::getFadeNumSamples()
+int SamplerNode::getFadeNumSamples(int fadeMS)
 {
-	return fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000;
+	return fadeMS * AudioManager::getInstance()->currentSampleRate / 1000;
 }
 
 void SamplerNode::updateLibraries(bool loadAfter)
@@ -981,28 +983,28 @@ void SamplerNode::SamplerNote::run()
 {
 	state->setValueWithData(NoteState::PROCESSING);
 
+	// Set up a temporary buffer to hold the resampled audio
+	const int numChannels = autoKeyFromNote->buffer.getNumChannels();
+	const int numSamples = autoKeyFromNote->buffer.getNumSamples();
+	const float* const* channelData = autoKeyFromNote->buffer.getArrayOfReadPointers();
+	buffer = AudioSampleBuffer(numChannels, 0);
 
 	// Create a Rubber Band instance with the desired shift
 	RubberBand::RubberBandStretcher rubberBand(Transport::getInstance()->sampleRate, autoKeyFromNote->buffer.getNumChannels(),
 		RubberBand::RubberBandStretcher::OptionProcessOffline
 		| RubberBand::RubberBandStretcher::OptionStretchPrecise
 		| RubberBand::RubberBandStretcher::OptionFormantPreserved
-		| RubberBand::RubberBandStretcher::OptionWindowShort
-		| RubberBand::RubberBandStretcher::OptionTransientsSmooth
-		| RubberBand::RubberBandStretcher::OptionPitchHighConsistency
+		| RubberBand::RubberBandStretcher::OptionWindowLong
+		| RubberBand::RubberBandStretcher::OptionTransientsCrisp
+		| RubberBand::RubberBandStretcher::OptionPitchHighQuality
 		| RubberBand::RubberBandStretcher::OptionChannelsTogether
 	);
+
+	double timeRatio = (numSamples + fadeNumSamples) * 1.0 / numSamples;
+
 	rubberBand.setPitchScale(shifting);
-	rubberBand.setTimeRatio(1.0f);
-
-	// Set up a temporary buffer to hold the resampled audio
-	const int numChannels = autoKeyFromNote->buffer.getNumChannels();
-	const int numSamples = autoKeyFromNote->buffer.getNumSamples();
-
-	buffer = AudioSampleBuffer(numChannels, 0);
-
-	// Process each channel with Rubber Band
-	const float* const* channelData = autoKeyFromNote->buffer.getArrayOfReadPointers();
+	rubberBand.setTimeRatio(timeRatio);
+	rubberBand.setExpectedInputDuration(autoKeyFromNote->buffer.getNumSamples());
 
 	rubberBand.study(channelData, numSamples, true);
 	rubberBand.process(channelData, numSamples, true);
@@ -1016,17 +1018,21 @@ void SamplerNode::SamplerNote::run()
 		for (int i = 0; i < numChannels; i++) buffer.copyFrom(i, curSize, tmpBuffer, i, 0, numRetrieved);
 	}
 
+	jassert(buffer.getNumSamples() == numSamples + fadeNumSamples);
 
-	buffer.setSize(buffer.getNumChannels(), Transport::getInstance()->getBlockPerfectNumSamples(buffer.getNumSamples()), true, true, true);
+
+	//buffer.setSize(buffer.getNumChannels(), Transport::getInstance()->getBlockPerfectNumSamples(buffer.getNumSamples()), true, true, true);
 
 	if (fadeNumSamples > 0)
 	{
 		for (int i = 0; i < buffer.getNumChannels(); i++)
 		{
-			buffer.applyGainRamp(buffer.getNumSamples() - fadeNumSamples, fadeNumSamples, 1, 0);
-			buffer.addFromWithRamp(i, buffer.getNumSamples() - fadeNumSamples, buffer.getReadPointer(i), fadeNumSamples, 0, 1);
+			buffer.applyGainRamp(0, fadeNumSamples, 0, 1);
+			buffer.addFromWithRamp(i, 0, buffer.getReadPointer(i, numSamples), fadeNumSamples, 1, 0);
 		}
 	}
+
+	buffer.setSize(numChannels, numSamples, true, true, true);
 
 	autoKeyFromNote = nullptr;
 	state->setValueWithData(NoteState::FILLED);

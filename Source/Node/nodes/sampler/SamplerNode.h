@@ -27,20 +27,23 @@ public:
 	BoolParameter* monitor;
 	EnumParameter* playMode;
 	EnumParameter* hitMode;
-	Trigger* computeAutoKeysTrigger;
+	BoolParameter* autoKeyLiveMode;
+
+	ControllableContainer controlsCC;
+	BoolParameter* clearMode;
+	enum ClearMode { LAST_PLAYED, LAST_RECORDED };
+	EnumParameter* clearLastMode; 
+	Trigger* clearLastRecordedTrigger;
+	Trigger* clearAllNotesTrigger;
 	IntParameter* startAutoKey;
 	IntParameter* endAutoKey;
-	BoolParameter* autoKeyLiveMode;
+	Trigger* computeAutoKeysTrigger;
 
 	ControllableContainer recordCC;
 	BoolParameter* isRecording;
 	IntParameter* fadeTimeMS;
-
-	BoolParameter* clearMode;
-	enum ClearMode { LAST_PLAYED, LAST_RECORDED };
-	EnumParameter* clearLastMode;
-	Trigger* clearLastRecordedTrigger;
-	Trigger* clearAllNotesTrigger;
+	IntParameter* autoKeyFadeTimeMS;
+	
 
 	ControllableContainer adsrCC;
 	FloatParameter* attack;
@@ -147,7 +150,7 @@ public:
 	virtual void handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
 	virtual void handleNoteOff(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
 
-	virtual int getFadeNumSamples(); //for ring buffer fade
+	virtual int getFadeNumSamples(int fadeMS); //for ring buffer fade
 
 	void updateLibraries(bool loadAfter = true);
 	void updateBank();
