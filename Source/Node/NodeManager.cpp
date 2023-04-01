@@ -224,6 +224,7 @@ bool NodeManager::hasPlayingNodes()
 var NodeManager::getJSONData()
 {
 	var data = BaseManager::getJSONData();
+	data.getDynamicObject()->setProperty(looperControlCC.shortName, looperControlCC.getJSONData());
 	data.getDynamicObject()->setProperty(connectionManager->shortName, connectionManager->getJSONData());
 	return data;
 }
@@ -231,6 +232,7 @@ var NodeManager::getJSONData()
 void NodeManager::loadJSONDataManagerInternal(var data)
 {
 	BaseManager::loadJSONDataManagerInternal(data);
+	looperControlCC.loadJSONData(data.getProperty(looperControlCC.shortName, var()));
 	connectionManager->loadJSONData(data.getProperty(connectionManager->shortName, var()));
 }
 
