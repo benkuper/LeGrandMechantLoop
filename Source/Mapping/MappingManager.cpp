@@ -19,10 +19,13 @@ MappingManager::MappingManager() :
 	factory.defs.add(Factory<Mapping>::Definition::createDef<MacroMapping>("", "Macro"));
 	factory.defs.add(Factory<Mapping>::Definition::createDef<GenericMapping>("", "Generic"));
 	managerFactory = &factory;
+
+	Engine::mainEngine->addEngineListener(this);
 }
 
 MappingManager::~MappingManager()
 {
+	if(Engine::mainEngine != nullptr) Engine::mainEngine->removeEngineListener(this);
 }
 
 void MappingManager::createMappingForControllable(Controllable* c, const String& type)
@@ -37,4 +40,9 @@ Mapping* MappingManager::getMappingForDestControllable(Controllable* c)
 {
 	for (auto& m : items) if (m->destParam->target == c) return m;
 	return nullptr;
+}
+
+void MappingManager::endLoadFile()
+{
+	for(auto & m : items) m->sendFeedback();
 }

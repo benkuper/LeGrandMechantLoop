@@ -13,7 +13,8 @@
 #include "Mapping.h"
 
 class MappingManager :
-    public BaseManager<Mapping>
+    public BaseManager<Mapping>,
+    public EngineListener
 {
 public:
     juce_DeclareSingleton(MappingManager, true);
@@ -27,4 +28,6 @@ public:
     void createMappingForControllable(Controllable* c, const String& type);
 
     Mapping* getMappingForDestControllable(Controllable* c);
+
+    void endLoadFile() override;
 };
