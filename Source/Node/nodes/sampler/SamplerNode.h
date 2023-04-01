@@ -100,6 +100,7 @@ public:
 		EnumParameter* state;
 		int playingSample = 0;
 		int jumpGhostSample = -1;
+		float prevVelocity = 0;
 		float velocity = 0;
 		CurvedADSR adsr;
 		bool oneShotted = false;

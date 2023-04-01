@@ -855,9 +855,12 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			}
 
 
+			String dbg;
+			dbg << "[" << i << "] Jump ghost sample : " << s->jumpGhostSample << ", playingSample : " << s->playingSample << ", adsr : " << s->adsr.getOutput() << ", velocity " << s->velocity;
 
 			if (s->jumpGhostSample != -1 && s->jumpGhostSample != s->playingSample && s->jumpGhostSample < s->buffer.getNumSamples())
 			{
+				dbg += " > Interpolate";
 				for (int j = 0; j < buffer.getNumChannels(); j++)
 				{
 					tmpNoteBuffer.copyFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->jumpGhostSample), blockSize, 1, 0);
@@ -892,11 +895,15 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 				}
 			}
 
+			LOG(dbg);
+
 			s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
 			for (int j = 0; j < buffer.getNumChannels(); j++)
 			{
-				buffer.addFrom(j, 0, tmpNoteBuffer, j, 0, blockSize, s->velocity);
+				buffer.addFromWithRamp(j, 0, tmpNoteBuffer.getReadPointer(j), blockSize, s->prevVelocity, s->velocity);
 			}
+
+			s->prevVelocity = s->velocity;
 
 			s->playingSample += blockSize;
 
@@ -905,13 +912,13 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			{
 				if (pm == HIT_ONESHOT)
 				{
-					//s->oneShotted = true;
-					//s->jumpGhostSample = -1;
+					s->oneShotted = true;
+					s->jumpGhostSample = -1;
 
 					//HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
 					//if (hm == HIT_FULL || hm == HIT_RESET || hm == TOGGLE)
 					//{
-					s->reset();
+					//s->reset();
 					//}
 				}
 				s->playingSample = 0;
