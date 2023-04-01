@@ -491,7 +491,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 			{
 				if (hm == HIT_RESET)
 				{
-					sn->jumpGhostSample = -1;
+					sn->jumpGhostSample = sn->playingSample;
 					sn->playingSample = 0;
 					sn->rtPitchReadSample = 0;
 				}
