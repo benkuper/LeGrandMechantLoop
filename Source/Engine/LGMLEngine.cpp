@@ -44,8 +44,6 @@ LGMLEngine::LGMLEngine() :
 
     cpuUsage = addFloatParameter("Audio CPU Usage", "Audio CPU Usage indicator. /!\\ This is only showing the audio processing, not the UI and other processes !", 0, 0, 100);
     cpuUsage->setControllableFeedbackOnly(true);
-    cpuUsage->forceSaveValue = true;
-    cpuUsage->saveValueOnly = false;
 
     startTimer(2, 200);
 }

@@ -25,8 +25,6 @@ Transport::Transport() :
 	setTempoSampleCount(0),
 	timeAtStart(0)
 {
-	includeTriggersInSaveLoad = true;
-
 	bpm = addFloatParameter("BPM", "Current BPM", 120, 10, 900);
 	bpm->defaultUI = FloatParameter::LABEL;
 	//bpm->setControllableFeedbackOnly(true);

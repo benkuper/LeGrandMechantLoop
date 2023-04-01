@@ -196,41 +196,6 @@ void Preset::save(Controllable* controllable, bool saveAllPresettables, bool noC
 	}
 }
 
-//void Preset::load(ControllableContainer* container, bool recursive)
-//{
-//	if (container == nullptr)
-//	{
-//		load(recursive);
-//		return;
-//	}
-//
-//	Array<WeakReference<Parameter>> pList = container->getAllParameters(recursive);
-//	for (auto& p : pList) load(p);
-//}
-//
-//void Preset::load(Controllable* controllable, bool recursive)
-//{
-//	if (controllable == nullptr)
-//	{
-//		load(recursive);
-//		return;
-//	}
-//
-//	if (!RootPresetManager::getInstance()->isControllablePresettable(controllable)) return;
-//
-//	if (controllable->type == Controllable::TRIGGER)
-//	{
-//		((Trigger*)controllable)->trigger();
-//	}
-//	else
-//	{
-//		Parameter* parameter = (Parameter*)controllable;
-//		var value = getPresetValueForParameter(parameter, recursive);
-//		if (!value.isVoid()) parameter->setValue(value);
-//	}
-//
-//}
-
 
 void Preset::load(bool recursive)
 {

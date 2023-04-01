@@ -205,6 +205,7 @@ void RootPresetManager::toggleControllablePresettable(Controllable* c)
 	{
 		c->customData = var(new DynamicObject());
 		c->customData.getDynamicObject()->setProperty("presettable", true);
+		c->saveCustomData = true;
 		if (c->type != Controllable::TRIGGER) ((Parameter*)c)->isOverriden = true;
 	}
 }

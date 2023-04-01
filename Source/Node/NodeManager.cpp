@@ -27,9 +27,6 @@ NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID
 	isPlaying->setControllableFeedbackOnly(true);
 	isPlaying->hideInEditor = true;
 
-	includeTriggersInSaveLoad = true;
-
-	looperControlCC.includeTriggersInSaveLoad = true;
 	playAllLoopers = looperControlCC.addTrigger("Play All Loopers", "This will play all loopers");
 	stopAllLoopers = looperControlCC.addTrigger("Stop All Loopers", "This will stop all loopers");
 	clearAllLoopers = looperControlCC.addTrigger("Clear All Loopers", "This will clear all loopers");
