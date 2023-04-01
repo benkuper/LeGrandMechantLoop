@@ -60,6 +60,8 @@ public:
 	EnumParameter* currentLibrary;
 	IntParameter* currentBank;
 	StringParameter* bankDescription;
+	BoolParameter* autoLoadBank;
+	Trigger* loadBankTrigger;
 	Trigger* saveBankTrigger;
 	Trigger* showFolderTrigger;
 	Trigger* nextBank;

@@ -26,7 +26,7 @@ SamplerNode::SamplerNode(var params) :
 	libraryCC("Library"),
 	curBankIndex(1)
 {
-	includeTriggersInSaveLoad = true;
+	controlsCC.includeTriggersInSaveLoad = true;
 	saveAndLoadRecursiveData = true;
 
 	numChannels = playCC.addIntParameter("Channels", "Number of channels", 1, 1);
@@ -91,6 +91,8 @@ SamplerNode::SamplerNode(var params) :
 
 	bankDescription = libraryCC.addStringParameter("Bank Description", "Description for this bank if available", "");
 
+	autoLoadBank = libraryCC.addBoolParameter("Auto Load Bank", "If checked, the bank will be loaded when the current bank is changed", true);
+	loadBankTrigger = libraryCC.addTrigger("Load Bank", "Load all samples from the current bank");
 	saveBankTrigger = libraryCC.addTrigger("Save Bank", "Export all samples at once to this bank's folder");
 	showFolderTrigger = libraryCC.addTrigger("Show Folder", "Show the folder in explorer");
 
@@ -414,6 +416,10 @@ void SamplerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc
 	{
 		clearAllNotes();
 	}
+	else if (c == loadBankTrigger)
+	{
+		loadBankSamples();
+	}
 	else if (c == saveBankTrigger)
 	{
 		saveBankSamples();
@@ -628,7 +634,7 @@ void SamplerNode::updateBank()
 	bankFolder = bFolder;
 	bankDescription->setValue(desc);
 
-	loadBankSamples();
+	if (autoLoadBank->boolValue()) loadBankSamples();
 }
 
 void SamplerNode::saveBankSamples()
