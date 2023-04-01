@@ -32,6 +32,7 @@ public:
 
 	Array<MixerItem*> mixerItems;
 	IntParameter* exclusiveIndex;
+	bool isSettingFromIndex;
 
 	void onContainerParameterChanged(Parameter* p) override;
 	void onControllableStateChanged(Controllable* p) override;

@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 MixerNode::MixerNode(var params) :
 	Node(getTypeString(), params, true, true, true, true)
 {
@@ -98,12 +100,12 @@ void MixerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& mid
 
 	for (int outputIndex = 0; outputIndex < numAudioOutputs->intValue(); outputIndex++)
 	{
-		VolumeControl * outMI = mainOuts[outputIndex];
+		VolumeControl* outMI = mainOuts[outputIndex];
 		float newGain = outMI->getGain();
 		buffer.clear(outputIndex, 0, numSamples);
 		buffer.addFromWithRamp(outputIndex, 0, tmpBuffer.getReadPointer(outputIndex), numSamples, outMI->prevGain, newGain);
 		outMI->prevGain = newGain;
-		
+
 		outMI->updateRMS(buffer, outputIndex);
 	}
 }
@@ -136,7 +138,7 @@ void MixerNode::loadJSONDataItemInternal(var data)
 
 void MixerNode::afterLoadJSONDataInternal()
 {
-	
+
 }
 
 BaseNodeViewUI* MixerNode::createViewUI()
@@ -157,7 +159,8 @@ MixerItem::~MixerItem()
 
 InputLineCC::InputLineCC(int index) :
 	ControllableContainer("In " + String(index + 1)),
-	index(index)
+	index(index),
+	isSettingFromIndex(false)
 {
 	saveAndLoadRecursiveData = true;
 	exclusiveIndex = addIntParameter("Index", "Exclusive Index", 1, 0, 1, false);
@@ -183,13 +186,30 @@ void InputLineCC::onControllableFeedbackUpdate(ControllableContainer* cc, Contro
 {
 	if (MixerItem* mi = dynamic_cast<MixerItem*>(cc))
 	{
-		if (c == mi->active)
+		if (c == mi->active && !isSettingFromIndex)
 		{
 			if (mi->active->boolValue())
 			{
 				if (exclusiveIndex->enabled && mixerItems.indexOf(mi) != exclusiveIndex->intValue() - 1)
 				{
-					if(!isCurrentlyLoadingData) exclusiveIndex->setValue(mixerItems.indexOf(mi)+1);
+					if (!isCurrentlyLoadingData) exclusiveIndex->setValue(mixerItems.indexOf(mi) + 1);
+				}
+			}
+			else
+			{
+				if (exclusiveIndex->enabled)
+				{
+					bool hasOneActive = false;
+					for (auto& i : mixerItems)
+					{
+						if (i->active->boolValue())
+						{
+							hasOneActive = true;
+							break;
+						}
+					}
+
+					if(!hasOneActive) exclusiveIndex->setValue(0);
 				}
 			}
 		}
@@ -200,6 +220,7 @@ void InputLineCC::updateExclusiveOutput()
 {
 	if (!exclusiveIndex->enabled) return;
 
+	isSettingFromIndex = true;
 	MixerItem* item = nullptr;
 
 	if (exclusiveIndex->intValue() > 0)
@@ -209,12 +230,14 @@ void InputLineCC::updateExclusiveOutput()
 		if (item == nullptr) return;
 		item->active->setValue(true);
 	}
-	
+
 	for (auto& mi : mixerItems)
 	{
-		if(mi == item) continue;
+		if (mi == item) continue;
 		mi->active->setValue(false);
 	}
+
+	isSettingFromIndex = false;
 }
 
 void InputLineCC::setNumOutputs(int numOutputs)
@@ -233,5 +256,5 @@ void InputLineCC::setNumOutputs(int numOutputs)
 		mixerItems.add(mi);
 	}
 
-	exclusiveIndex->setRange(1, jmax(mixerItems.size(), 1));
+	exclusiveIndex->setRange(0, jmax(mixerItems.size(), 1));
 }
