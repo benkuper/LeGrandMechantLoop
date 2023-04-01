@@ -1021,8 +1021,6 @@ void SamplerNode::SamplerNote::run()
 	jassert(buffer.getNumSamples() == numSamples + fadeNumSamples);
 
 
-	//buffer.setSize(buffer.getNumChannels(), Transport::getInstance()->getBlockPerfectNumSamples(buffer.getNumSamples()), true, true, true);
-
 	if (fadeNumSamples > 0)
 	{
 		for (int i = 0; i < buffer.getNumChannels(); i++)
