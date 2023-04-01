@@ -43,16 +43,16 @@ SamplerNode::SamplerNode(var params) :
 	addChildControllableContainer(&playCC, false, 0);
 
 
-	clearMode = recordCC.addBoolParameter("Clear Mode", "When checked, recorded or played notes are cleared depending on clearing mode", false);
-	clearLastMode = recordCC.addEnumParameter("Clear Last Mode", "The way to clear when clear last is triggered");
+	clearMode = controlsCC.addBoolParameter("Clear Mode", "When checked, recorded or played notes are cleared depending on clearing mode", false);
+	clearLastMode = controlsCC.addEnumParameter("Clear Last Mode", "The way to clear when clear last is triggered");
 	clearLastMode->addOption("Last Played", LAST_PLAYED)->addOption("Last Recorded", LAST_RECORDED);
 
-	clearLastRecordedTrigger = recordCC.addTrigger("Clear", "Clear Last recorded or played note");
-	clearAllNotesTrigger = recordCC.addTrigger("Clear All Notes", "Clear all recorded notes");
+	clearLastRecordedTrigger = controlsCC.addTrigger("Clear", "Clear Last recorded or played note");
+	clearAllNotesTrigger = controlsCC.addTrigger("Clear All Notes", "Clear all recorded notes");
 
-	startAutoKey = playCC.addIntParameter("Start Auto Key", "The pitch to start auto key computation from", 0, 0, 127);
-	endAutoKey = playCC.addIntParameter("End Auto Key", "The pitch to end auto key computation from", 127, 0, 127);
-	computeAutoKeysTrigger = playCC.addTrigger("Compute Auto Keys", "If checked, the auto keys will be computed from the recorded notes", true);
+	startAutoKey = controlsCC.addIntParameter("Start Auto Key", "The pitch to start auto key computation from", 0, 0, 127);
+	endAutoKey = controlsCC.addIntParameter("End Auto Key", "The pitch to end auto key computation from", 127, 0, 127);
+	computeAutoKeysTrigger = controlsCC.addTrigger("Compute Auto Keys", "If checked, the auto keys will be computed from the recorded notes", true);
 
 	addChildControllableContainer(&controlsCC, false, 1);
 
