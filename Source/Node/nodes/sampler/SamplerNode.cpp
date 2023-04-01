@@ -1050,6 +1050,7 @@ void SamplerNode::SamplerNote::run()
 void SamplerNode::SamplerNote::reset()
 {
 	//adsr.reset();
+	adsr.gate(0);
 	setAutoKey(nullptr);
 	jumpGhostSample = -1;
 	playingSample = 0;
