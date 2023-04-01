@@ -186,31 +186,28 @@ void InputLineCC::onControllableFeedbackUpdate(ControllableContainer* cc, Contro
 {
 	if (MixerItem* mi = dynamic_cast<MixerItem*>(cc))
 	{
-		if (c == mi->active && !isSettingFromIndex)
+		if (c == mi->active && !isSettingFromIndex && exclusiveIndex->enabled)
 		{
 			if (mi->active->boolValue())
 			{
-				if (exclusiveIndex->enabled && mixerItems.indexOf(mi) != exclusiveIndex->intValue() - 1)
+				if (mixerItems.indexOf(mi) != exclusiveIndex->intValue() - 1)
 				{
 					if (!isCurrentlyLoadingData) exclusiveIndex->setValue(mixerItems.indexOf(mi) + 1);
 				}
 			}
 			else
 			{
-				if (exclusiveIndex->enabled)
+				bool hasOneActive = false;
+				for (auto& i : mixerItems)
 				{
-					bool hasOneActive = false;
-					for (auto& i : mixerItems)
+					if (i->active->boolValue())
 					{
-						if (i->active->boolValue())
-						{
-							hasOneActive = true;
-							break;
-						}
+						hasOneActive = true;
+						break;
 					}
-
-					if(!hasOneActive) exclusiveIndex->setValue(0);
 				}
+
+				if(!hasOneActive) exclusiveIndex->setValue(0);
 			}
 		}
 	}
