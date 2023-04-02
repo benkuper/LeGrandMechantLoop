@@ -193,6 +193,7 @@ void Transport::setCurrentTime(int samples)
 
 	curBar->setValue(getBarForSamples(timeInSamples));
 	curBeat->setValue(getBeatForSamples(timeInSamples));
+	currentTime->setValue(getTimeForSamples(timeInSamples));
 
 	bool barChanged = prevBar != curBar->intValue();
 	bool beatChanged = prevBeat != curBeat->intValue();
@@ -329,12 +330,31 @@ double Transport::getBeatLength() const
 
 double Transport::getTimeToNextBar() const
 {
-	return getTimeForBar(curBar->intValue() + 1);
+	double barTime = getTimeForBar(1);
+	double relBarTime = fmodf(currentTime->floatValue(), barTime);
+	return barTime - relBarTime;
 }
 
 double Transport::getTimeToNextBeat() const
 {
-	return getTimeForBeat(curBeat->intValue() + 1);
+	double beatTime = getTimeForBeat(1);
+	double relBeatTime = fmodf(currentTime->floatValue(), beatTime);
+	return beatTime - relBeatTime;
+}
+
+double Transport::getTimeToNextFirstLoop() const
+{
+	int flBeats = firstLoopBeats->intValue();
+	int curTotalBeats = getTotalBeatCount();
+	if (flBeats == 0) return 0;
+
+	int relBeatInFirstLoop = curTotalBeats % flBeats;
+	int nextFirstLoopBeat = curTotalBeats + (flBeats - relBeatInFirstLoop);
+
+	jassert(nextFirstLoopBeat % flBeats == 0);
+
+	return getTimeForBeat(nextFirstLoopBeat, 0, false) - currentTime->doubleValue();
+
 }
 
 double Transport::getTimeForSamples(int samples) const

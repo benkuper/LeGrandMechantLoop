@@ -95,6 +95,7 @@ public:
 	double getBeatLength() const;
 	double getTimeToNextBar() const;
 	double getTimeToNextBeat() const;
+	double getTimeToNextFirstLoop() const;
 	double getTimeForSamples(int samples) const;
 
 	double getCurrentTime() const;

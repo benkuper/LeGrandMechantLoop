@@ -28,10 +28,12 @@ public:
 	BoolParameter* skipInPrevNext;
 	BoolParameter* noParentOnNearbyLoad;
 
+	EnablingControllableContainer transitionCC;
+	EnumParameter* transitionQuantiz;
 	FloatParameter* transitionTime;
-	Automation transition;
 	enum TransitionMode { INTERPOLATE, AT_START, AT_END, DEFAULT };
 	EnumParameter* directTransitionMode;
+	Automation transitionCurve;
 
 	//overriding
 	HashMap<WeakReference<Controllable>, var> dataMap;
@@ -47,7 +49,7 @@ public:
 
 	void clearItem() override;
 
-	var getPresetValues(bool includeParents = true, Array<Controllable*> ignoreList = Array<Controllable*>());
+	var getPresetValues(bool includeParents = true, Array<Controllable*> ignoreList = Array<Controllable*>(), bool force = false);
 
 	void saveContainer(ControllableContainer* container, bool recursive);
 	void save(Controllable* controllable = nullptr, bool saveAllPresettables = false, bool noCheck = false);
@@ -62,6 +64,7 @@ public:
 	bool hasPresetControllable(Controllable* c);
 
 	void onContainerTriggerTriggered(Trigger* t) override;
+	void controllableStateChanged(Controllable* c) override;
 
 	void itemAdded(Preset* p) override;
 

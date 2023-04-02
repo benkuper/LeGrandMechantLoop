@@ -9,10 +9,13 @@
 */
 
 #include "Preset/PresetIncludes.h"
+#include "Transport/Transport.h"
 
 Preset::Preset(var params) :
-	BaseItem(getTypeString(), false),
-	linkedPresetsCC("Linked Presets")
+	BaseItem(getTypeString()),
+	linkedPresetsCC("Linked Presets"),
+	transitionCC("Transition"),
+	transitionCurve("Transition Curve")
 {
 	itemDataType = "Preset";
 	hideInEditor = true;
@@ -35,16 +38,22 @@ Preset::Preset(var params) :
 	skipInPrevNext = addBoolParameter("Skip in Prev/Next", "Skip this preset in the next/previous preset actions", false);
 	noParentOnNearbyLoad = addBoolParameter("No Parent on Nearby Load", "If checked, this will prevent from loading the parent preset when loading this preset from a nearby preset", false);
 
-	transitionTime = addFloatParameter("Transition Time", "Time to transition.", 0, 0);
+	transitionQuantiz = transitionCC.addEnumParameter("Quantization", "Transition quantization for this preset");
+	transitionQuantiz->addOption("Custom", Transport::FREE)->addOption("From Transport", Transport::DEFAULT)->addOption("First Loop", Transport::FIRSTLOOP)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT);
+
+	transitionTime = transitionCC.addFloatParameter("Transition Time", "Time to transition.", 0, 0);
 	transitionTime->defaultUI = FloatParameter::TIME;
 
-	directTransitionMode = addEnumParameter("Direct Transition Mode", "For Boolean, String, Enum and other non transitionnable parameters.");
+	directTransitionMode = transitionCC.addEnumParameter("Direct Transition Mode", "For Boolean, String, Enum and other non transitionnable parameters.");
 	directTransitionMode->addOption("Change at start", AT_START)->addOption("Change at end", AT_END);
-	transition.addKey(0, 0);
-	transition.addKey(1, 1);
-	transition.editorCanBeCollapsed = true;
-	transition.editorIsCollapsed = true;
-	addChildControllableContainer(&transition);
+	transitionCurve.addKey(0, 0);
+	transitionCurve.addKey(1, 1);
+	transitionCurve.editorCanBeCollapsed = true;
+	transitionCurve.editorIsCollapsed = true;
+	transitionCC.enabled->setDefaultValue(false);
+	transitionCC.addChildControllableContainer(&transitionCurve);
+
+	addChildControllableContainer(&transitionCC);
 
 	linkedPresetsCC.userCanAddControllables = true;
 	linkedPresetsCC.userAddControllablesFilters.add(TargetParameter::getTypeStringStatic());
@@ -85,9 +94,11 @@ void Preset::clearItem()
 	}
 }
 
-var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList)
+var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList, bool force)
 {
 	var data(new DynamicObject());
+
+	if (!enabled->boolValue() && !force) return data;
 
 	ignoreList.addArray(ignoredControllables);
 
@@ -106,7 +117,7 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 	Array<Preset*> presetsToInclude;
 	if (includeParents)
 	{
-		if(parentContainer != nullptr && parentContainer != RootPresetManager::getInstance()) presetsToInclude.add((Preset*)parentContainer->parentContainer.get());
+		if (parentContainer != nullptr && parentContainer != RootPresetManager::getInstance()) presetsToInclude.add((Preset*)parentContainer->parentContainer.get());
 
 		for (auto& c : linkedPresetsCC.controllables)
 		{
@@ -131,21 +142,6 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 
 	return data;
 }
-
-
-
-//var Preset::getPresetValueForParameter(Parameter* p, bool includeParents)
-//{
-//	String add = p->getControlAddress();
-//	if (ignoredControllables.contains(p)) return var();
-//
-//	Array<Preset*> presets;
-//	if (includeParents) presets = getPresetChain(p);
-//	else presets.add(this);
-//
-//	for (auto& p : presets) if (p->addressMap.contains(add)) return p->addressMap[add];
-//	return var();
-//}
 
 void Preset::saveContainer(ControllableContainer* container, bool recursive)
 {
@@ -292,6 +288,19 @@ void Preset::onContainerTriggerTriggered(Trigger* t)
 	else if (t == loadTrigger) RootPresetManager::getInstance()->setCurrentPreset(this);
 }
 
+void Preset::controllableStateChanged(Controllable* c)
+{
+	BaseItem::controllableStateChanged(c);
+
+	if (c == transitionQuantiz)
+	{
+		Transport::Quantization q = transitionQuantiz->getValueDataAsEnum<Transport::Quantization>();
+		transitionTime->setEnabled(q == Transport::FREE);
+		directTransitionMode->setEnabled(q != Transport::FREE);
+
+	}
+}
+
 void Preset::itemAdded(Preset* p)
 {
 	if (!isCurrentlyLoadingData) p->itemColor->setColor(itemColor->getColor().brighter(.3f));
@@ -322,7 +331,8 @@ var Preset::getJSONData()
 	var data = BaseItem::getJSONData();
 	data.getDynamicObject()->setProperty("subPresets", subPresets->getJSONData());
 	data.getDynamicObject()->setProperty("linkedPresets", linkedPresetsCC.getJSONData());
-	data.getDynamicObject()->setProperty("values", getPresetValues(false));
+	data.getDynamicObject()->setProperty("values", getPresetValues(false, Array<Controllable*>(), true));
+	data.getDynamicObject()->setProperty("transition", transitionCC.getJSONData());
 
 	var ignoreData;
 	for (auto& c : ignoredControllables) ignoreData.append(c->getControlAddress());
@@ -335,6 +345,7 @@ void Preset::loadJSONDataItemInternal(var data)
 {
 	subPresets->loadJSONData(data["subPresets"]);
 	linkedPresetsCC.loadJSONData(data["linkedPresets"], true);
+	transitionCC.loadJSONData(data["transition"], true);
 
 	var values = data["values"];
 	if (values.isObject())

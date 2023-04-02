@@ -9,7 +9,7 @@
 */
 
 #include "Preset/PresetIncludes.h"
-#include "PresetManager.h"
+#include "Transport/Transport.h"
 
 juce_ImplementSingleton(RootPresetManager);
 
@@ -74,13 +74,31 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 
 	stopThread(100);
 	prevPreset = currentPreset;
+
+	if (p != nullptr && !p->enabled->boolValue())
+	{
+		currentPreset = nullptr;
+		return;
+	}
+
 	currentPreset = p;
 
 	if (currentPreset != nullptr)
 	{
 		currentPreset->addInspectableListener(this);
 		currentPreset->isCurrent->setValue(true);
-		if (currentPreset->transitionTime->floatValue() == 0)
+
+		bool isDirectTransition = true;
+
+		if (currentPreset->transitionCC.enabled->boolValue())
+		{
+			Transport::Quantization q = currentPreset->transitionQuantiz->getValueDataAsEnum<Transport::Quantization>();
+			if (q == Transport::DEFAULT) q = Transport::getInstance()->quantization->getValueDataAsEnum<Transport::Quantization>();
+			if (q == Transport::FREE) isDirectTransition = currentPreset->transitionTime->floatValue() > 0;
+			else isDirectTransition = !Transport::getInstance()->isCurrentlyPlaying->boolValue();
+		}
+
+		if (isDirectTransition)
 		{
 			bool recursive = true;
 
@@ -111,7 +129,7 @@ void RootPresetManager::loadNextPreset(Preset* p, bool recursive)
 	Preset* np = pm->items.indexOf(p) < pm->items.size() - 1 ? pm->items[pm->items.indexOf(p) + 1] : nullptr;
 	if (np != nullptr)
 	{
-		if (np->skipInPrevNext->boolValue()) loadNextPreset(np, true);
+		if (np->skipInPrevNext->boolValue() || !np->enabled->boolValue()) loadNextPreset(np, true);
 		else setCurrentPreset(np);
 	}
 	else
@@ -137,7 +155,7 @@ void RootPresetManager::loadPreviousPreset(Preset* p)
 	Preset* pp = ControllableUtil::findParentAs<Preset>(p);
 	if (pp != nullptr)
 	{
-		if (pp->skipInPrevNext->boolValue()) loadPreviousPreset(pp);
+		if (pp->skipInPrevNext->boolValue() || !pp->enabled->boolValue()) loadPreviousPreset(pp);
 		else setCurrentPreset(pp);
 	}
 }
@@ -321,16 +339,33 @@ void RootPresetManager::run()
 	float progression = 0;
 
 
-	process(0, currentPreset->transition.getValueAtPosition(0)); //force for at_start changes
+	process(0, currentPreset->transitionCurve.getValueAtPosition(0)); //force for at_start changes
 
 	double timeAtStart = Time::getMillisecondCounter() / 1000.0;
-	float totalTime = currentPreset->transitionTime->floatValue();
+
+	Transport::Quantization q = currentPreset->transitionQuantiz->getValueDataAsEnum<Transport::Quantization>();
+	if (q == Transport::DEFAULT) q = Transport::getInstance()->quantization->getValueDataAsEnum<Transport::Quantization>();
+
+	float totalTime = 0;
+	switch (q)
+	{
+	case Transport::FREE: currentPreset->transitionTime->floatValue(); break;;
+	case Transport::BEAT: totalTime = Transport::getInstance()->getTimeToNextBeat(); break;;
+	case Transport::BAR: totalTime = Transport::getInstance()->getTimeToNextBar(); break;;
+	case Transport::FIRSTLOOP: totalTime = Transport::getInstance()->getTimeToNextFirstLoop(); break;
+	default:
+		jassertfalse;
+		break;
+	}
+
+
+	//LOG("Loading preset " << currentPreset->niceName << " in " << totalTime << " seconds.");
 
 	while (!threadShouldExit())
 	{
 		double currentTime = Time::getMillisecondCounter() / 1000.0 - timeAtStart;
 		progression = jmin<float>(currentTime / totalTime, 1);
-		float weight = currentPreset->transition.getValueAtPosition(progression);
+		float weight = currentPreset->transitionCurve.getValueAtPosition(progression);
 		process(progression, weight);
 		if (progression == 1) return;
 		wait(30); //~30fps
