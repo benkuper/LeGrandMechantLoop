@@ -60,7 +60,6 @@
 
 #include "nodes/sampler/SamplerNode.h"
 
-#include "nodes/spat/SpatSource.h"
 #include "nodes/spat/SpatItem.h"
 #include "nodes/spat/SpatNode.h"
 

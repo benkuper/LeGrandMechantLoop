@@ -47,7 +47,6 @@
 #include "nodes/sampler/SamplerNode.cpp"
 #include "nodes/sampler/ui/SamplerNodeUI.cpp"
 
-#include "nodes/spat/SpatSource.cpp"
 #include "nodes/spat/SpatItem.cpp"
 #include "nodes/spat/SpatNode.cpp"
 
