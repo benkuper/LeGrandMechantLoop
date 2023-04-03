@@ -130,6 +130,8 @@ public:
 	virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {}
 	virtual void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);
 
+	virtual void bypassInternal() {}
+
 	virtual var getJSONData() override;
 	virtual void loadJSONDataItemInternal(var data) override;
 

@@ -69,6 +69,8 @@ public:
 	void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	void processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer &midiMessages, bool bypassed);
 
+	void bypassInternal() override;
+
 	var getJSONData() override;
 	void loadJSONDataItemInternal(var data) override;
 

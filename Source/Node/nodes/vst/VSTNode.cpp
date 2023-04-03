@@ -236,15 +236,6 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 {
 	Node::onContainerParameterChangedInternal(p);
 
-	if (p == enabled)
-	{
-		if (!enabled->boolValue() && clearBufferOnDisable->boolValue())
-		{
-			vst->reset();
-			vst->releaseResources();
-		}
-	}
-
 	if (p == pluginParam) setupVST(pluginParam->getPluginDescription());
 	else if (p == numAudioInputs || p == numAudioOutputs) setIOFromVST();
 	else if (p == presetEnum)
@@ -385,6 +376,15 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessag
 			//}
 		}
 
+	}
+}
+
+void VSTNode::bypassInternal()
+{
+	if (clearBufferOnDisable->boolValue())
+	{
+		vst->reset();
+		//vst->releaseResources();
 	}
 }
 

@@ -434,6 +434,11 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		bypassAntiClickCount += isEnabled ? 1 : -1;
 		float nextVal = bypassAntiClickCount * 1.0f / anticlickBlocks;
 
+		if (bypassAntiClickCount == 0)
+		{
+			bypassInternal();
+		}
+
 		for (int i = 0; i < buffer.getNumChannels(); i++)
 		{
 			buffer.addFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), curVal, nextVal);
