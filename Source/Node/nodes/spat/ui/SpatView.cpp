@@ -14,7 +14,6 @@ SpatView::SpatView(SpatNode* node) :
 	node(node)
 {
 	updateItemsUI();
-	addAndMakeVisible(&target);
 
 	setInterceptsMouseClicks(true, true);
 
@@ -38,58 +37,88 @@ void SpatView::paint(Graphics& g)
 
 void SpatView::resized()
 {
-	Point<float> pos = node->position->getPoint();
-	Point<int> centre = getLocalBounds().getRelativePoint(pos.x, pos.y);
-	target.setBounds(Rectangle<int>(30, 30).withCentre(centre));
 
-	for (auto& s : itemsUI)
+	for (auto& s : targetsUI)
 	{
-		placeItem(s);
+		placeTarget(s);
+	}
+
+	for (auto& s : sourcesUI)
+	{
+		placeSource(s);
 	}
 }
 
 void SpatView::updateItemsUI()
 {
-	int numOutputs = node->spatCC.controllableContainers.size();
-	while (itemsUI.size() > numOutputs)
+	int numInputs = node->sources.items.size();
+
+
+	while (sourcesUI.size() > numInputs)
 	{
-		removeChildComponent(itemsUI[itemsUI.size()]);
-		itemsUI.removeLast();
+		removeChildComponent(sourcesUI[sourcesUI.size()]);
+		sourcesUI.removeLast();
 	}
 
-	while (itemsUI.size() < numOutputs)
+	while (sourcesUI.size() < numInputs)
 	{
-		SpatItemUI* si = new SpatItemUI((SpatItem*)node->spatCC.controllableContainers[itemsUI.size()].get());
+		SpatSourceUI* ss = new SpatSourceUI(node->sources.items[sourcesUI.size()]);
+		addAndMakeVisible(ss);
+		sourcesUI.add(ss);
+	}
+
+
+	int numOutputs = node->targets.items.size();
+
+	while (targetsUI.size() > numOutputs)
+	{
+		removeChildComponent(targetsUI[targetsUI.size()]);
+		targetsUI.removeLast();
+	}
+
+	while (targetsUI.size() < numOutputs)
+	{
+		SpatTargetUI* si = new SpatTargetUI(node->targets.items[targetsUI.size()]);
 		addAndMakeVisible(si);
-		itemsUI.add(si);
+		targetsUI.add(si);
 	}
 
-	target.toFront(false);
+
+	for (auto& s : sourcesUI)
+	{
+		s->toFront(false);
+	}
+
 	resized();
 }
 
 void SpatView::mouseDown(const MouseEvent& e)
 {
-	if (SpatTarget* st = dynamic_cast<SpatTarget*>(e.eventComponent))
+	if (SpatItemUI* si = dynamic_cast<SpatItemUI*>(e.eventComponent))
 	{
-		posAtMouseDown = node->position->getPoint();
+		si->posAtMouseDown = si->item->position->getPoint();
 	}
 }
 
 void SpatView::mouseDrag(const MouseEvent& e)
 {
-
 	Point<float> pos = getMouseXYRelative().toFloat() / Point<float>(getWidth(), getHeight());
+	pos.y = 1 - pos.y;
+
 	if (SpatItemUI* si = dynamic_cast<SpatItemUI*>(e.eventComponent))
 	{
-		if (node->spatMode->getValueDataAsEnum<SpatNode::SpatMode>() == SpatNode::FREE)
+		if (SpatSource* ss = dynamic_cast<SpatSource*>(e.eventComponent))
 		{
-			si->item->position->setPoint(pos);
+			SpatSource::ControlMode m = ss->controlMode->getValueDataAsEnum<SpatSource::ControlMode>();
+			if (m != SpatSource::FREE_2D) return;
+
 		}
-	}
-	else if (SpatTarget* st = dynamic_cast<SpatTarget*>(e.eventComponent))
-	{
-		node->position->setPoint(pos);
+		else if (SpatTarget* ss = dynamic_cast<SpatTarget*>(e.eventComponent))
+		{
+			if (node->spatMode->getValueDataAsEnum<SpatNode::SpatMode>() != SpatNode::FREE) return;
+		}
+
+		si->item->position->setPoint(pos);
 	}
 }
 
@@ -98,38 +127,47 @@ void SpatView::mouseUp(const MouseEvent& e)
 
 	if (SpatItemUI* si = dynamic_cast<SpatItemUI*>(e.eventComponent))
 	{
-		if (node->spatMode->getValueDataAsEnum<SpatNode::SpatMode>() == SpatNode::FREE)
+		if (SpatSource* ss = dynamic_cast<SpatSource*>(e.eventComponent))
 		{
-			if (si->posAtMouseDown != si->item->position->getPoint())
-			{
-				si->item->position->setUndoablePoint(si->posAtMouseDown, si->item->position->getPoint());
-			}
+			SpatSource::ControlMode m = ss->controlMode->getValueDataAsEnum<SpatSource::ControlMode>();
+			if (m != SpatSource::FREE_2D) return;
+
 		}
-	}
-	else if (SpatTarget* st = dynamic_cast<SpatTarget*>(e.eventComponent))
-	{
-		node->position->setUndoablePoint(posAtMouseDown, node->position->getPoint());
+		else if (SpatTarget* ss = dynamic_cast<SpatTarget*>(e.eventComponent))
+		{
+			if (node->spatMode->getValueDataAsEnum<SpatNode::SpatMode>() != SpatNode::FREE) return;
+		}
+
+		si->item->position->setUndoablePoint(si->posAtMouseDown, si->item->position->getPoint());
 	}
 }
 
+void SpatView::placeSource(SpatSourceUI* ui)
+{
+	if (ui == nullptr) return;
+	Point<float> pos = ui->source->position->getPoint();
+	ui->setCentrePosition(getLocalBounds().getRelativePoint(pos.x, 1 - pos.y));
+}
 
-void SpatView::placeItem(SpatItemUI* ui)
+void SpatView::placeTarget(SpatTargetUI* ui)
 {
 	if (ui == nullptr) return;
 
 	float size = ui->item->radius->floatValue() * 2;
-	Rectangle<int> bounds = getLocalBounds().getProportion(Rectangle<float>().withSize(size, size).withCentre(ui->item->position->getPoint()));
+	Point<float> pos = ui->item->position->getPoint();
+	pos.y = 1 - pos.y;
+	Rectangle<int> bounds = getLocalBounds().getProportion(Rectangle<float>().withSize(size, size).withCentre(pos));
 	ui->setBounds(bounds);
 }
 
-SpatItemUI* SpatView::getUIForItem(SpatItem* item)
+SpatTargetUI* SpatView::getUIForTarget(SpatTarget* item)
 {
-	for (auto& ui : itemsUI) if (ui->item == item) return ui;
+	for (auto& ui : targetsUI) if (ui->item == item) return ui;
 	return nullptr;
 }
 
-void SpatView::SpatTarget::paint(Graphics& g)
+SpatSourceUI* SpatView::getUIForSource(SpatSource* source)
 {
-	g.setColour(BLUE_COLOR.brighter(isMouseOverOrDragging() ? .3f : 0));
-	g.fillEllipse(getLocalBounds().reduced(5).toFloat());
+	for (auto& ui : sourcesUI) if (ui->source == source) return ui;
+	return nullptr;
 }

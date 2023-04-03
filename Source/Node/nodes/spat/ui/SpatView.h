@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    SpatView.h
-    Created: 21 Nov 2020 6:32:59pm
-    Author:  bkupe
+	SpatView.h
+	Created: 21 Nov 2020 6:32:59pm
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -11,36 +11,28 @@
 #pragma once
 
 class SpatView :
-    public Component
+	public Component
 {
 public:
-    SpatView(SpatNode * item);
-    ~SpatView();
+	SpatView(SpatNode* item);
+	~SpatView();
 
-    SpatNode* node;
-    class SpatTarget :
-        public Component
-    {
-    public:
-        SpatTarget() {}
-        ~SpatTarget() {}
+	SpatNode* node;
 
+	OwnedArray<SpatSourceUI> sourcesUI;
+	OwnedArray<SpatTargetUI> targetsUI;
+	Point<float> posAtMouseDown;
 
-        void paint(Graphics& g) override;
-    };
+	void paint(Graphics& g) override;
+	void resized() override;
 
-    SpatTarget target;
-    OwnedArray<SpatItemUI> itemsUI;
-    Point<float> posAtMouseDown;
+	void updateItemsUI();
+	void placeTarget(SpatTargetUI* ui);
+	void placeSource(SpatSourceUI* ui);
+	SpatTargetUI* getUIForTarget(SpatTarget* item);
+	SpatSourceUI* getUIForSource(SpatSource* source);
 
-    void paint(Graphics& g) override;
-    void resized() override;
-
-    void updateItemsUI();
-    void placeItem(SpatItemUI* ui);
-    SpatItemUI* getUIForItem(SpatItem* item);
-
-    void mouseDown(const MouseEvent& e) override;
-    void mouseDrag(const MouseEvent& e) override;
-    void mouseUp(const MouseEvent& e) override;
+	void mouseDown(const MouseEvent& e) override;
+	void mouseDrag(const MouseEvent& e) override;
+	void mouseUp(const MouseEvent& e) override;
 };

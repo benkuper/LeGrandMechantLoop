@@ -11,7 +11,9 @@
 #pragma once
 
 class SpatNode :
-	public Node
+	public Node,
+	public BaseManager<SpatSource>::ManagerListener,
+	public BaseManager<SpatTarget>::ManagerListener
 {
 public:
 	SpatNode(var params = var());
@@ -27,43 +29,28 @@ public:
 	FloatParameter* circleRadius;
 	FloatParameter* circleAngle;
 
-	ControllableContainer positionCC;
+	BaseManager<SpatSource> sources;
+	BaseManager<SpatTarget> targets;
 
-	enum ControlMode { FREE_2D, FREE_POLAR, CONTROL_CIRCLE, CONTROL_NOISE };
-	EnumParameter* controlMode;
-	Point2DParameter* position;
-	siv::PerlinNoise noise;
-
-	//parameters
-	Trigger* controlResetTime;
-	FloatParameter* controlSpeed;
-	FloatParameter* controlAngle;
-	FloatParameter* controlRadius;
-	Array<Parameter*> controlParams;
-
-	float controlCurTime;
-	float lastControlUpdate;
-
-	ControllableContainer spatCC;
-
-	AudioBuffer<float> tmpBuffer;
-
-	void updateAudioOutputsInternal() override;
-
-	void updateSpatPoints();
-	void updateControlMode();
-
-	void placeItems();
+	void placeTargets();
 	void updateRadiuses();
 
+	void updateAudioInputsInternal() override;
+
 	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
+	void itemAdded(SpatSource* s) override;
+	void itemRemoved(SpatSource* s) override;
+	void itemAdded(SpatTarget* s) override;
+	void itemRemoved(SpatTarget* s) override;
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	void processSource(int index, AudioBuffer<float>& sourceBuffer, AudioBuffer<float>& targetBuffer);
 
-	void updateSpatControl();
 
-	String getTypeString() const override { return getTypeStringStatic(); }
-	static const String getTypeStringStatic() { return "Spat"; }
+	void afterLoadJSONDataInternal() override;
+
+
+	DECLARE_TYPE("Spatializer");
 
 	BaseNodeViewUI* createViewUI() override;
 };

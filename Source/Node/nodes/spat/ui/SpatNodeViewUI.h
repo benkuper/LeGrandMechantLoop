@@ -19,6 +19,7 @@ public:
 
     SpatView spatView;
 
+    void nodeInputsChanged() override;
     void nodeOutputsChanged() override;
 
     void resizedInternalContentNode(Rectangle<int> &r) override;
