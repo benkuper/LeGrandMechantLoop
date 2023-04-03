@@ -235,6 +235,16 @@ void VSTNode::updatePlayConfigInternal()
 void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 {
 	Node::onContainerParameterChangedInternal(p);
+
+	if (p == enabled)
+	{
+		if (!enabled->boolValue() && clearBufferOnDisable->boolValue())
+		{
+			vst->reset();
+			vst->releaseResources();
+		}
+	}
+
 	if (p == pluginParam) setupVST(pluginParam->getPluginDescription());
 	else if (p == numAudioInputs || p == numAudioOutputs) setIOFromVST();
 	else if (p == presetEnum)
@@ -347,11 +357,7 @@ void VSTNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBloc
 void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	processVSTBlock(buffer, midiMessages, false);
-	
-	if (!enabled->boolValue() && bypassAntiClickCount == 1 && clearBufferOnDisable->boolValue())
-	{
-		vst->reset();
-	}
+
 }
 
 void VSTNode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
