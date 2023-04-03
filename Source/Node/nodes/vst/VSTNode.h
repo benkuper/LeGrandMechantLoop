@@ -20,6 +20,7 @@ public:
 	~VSTNode();
 
 	VSTPluginParameter* pluginParam;
+	BoolParameter* clearBufferOnDisable;
 	std::unique_ptr<VSTParameterContainer> vstParamsCC;
 	ControllableContainer macrosCC;
 	IntParameter * numMacros;

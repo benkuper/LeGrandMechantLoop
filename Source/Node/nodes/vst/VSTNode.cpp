@@ -26,7 +26,7 @@ VSTNode::VSTNode(var params) :
 	pluginParam = new VSTPluginParameter("VST", "The VST to use");
 	ControllableContainer::addParameter(pluginParam);
 
-
+	clearBufferOnDisable = addBoolParameter("Clear Buffer On Disable", "If checked, this will clear the buffer when the vst is disable. This allows to avoid long reverb staying when re-enabling for instance.", true);
 	presetEnum = addEnumParameter("Preset", "Load a preset");
 	numMacros = addIntParameter("Num Macros", "Choose the number of macros you want for this VST", 0, 0);
 	autoActivateMacroIndex = addIntParameter("Auto Bypass Macro", "Index of the macro that automatically bypasses the VST if value is in the range", 1, 1, 1, false);
@@ -347,11 +347,17 @@ void VSTNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBloc
 void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	processVSTBlock(buffer, midiMessages, false);
+	
+	if (!enabled->boolValue() && bypassAntiClickCount == 1 && clearBufferOnDisable->boolValue())
+	{
+		vst->reset();
+	}
 }
 
 void VSTNode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	if (getNumAudioInputs() == 0) buffer.clear();
+
 	processVSTBlock(buffer, midiMessages, true);
 }
 
@@ -372,6 +378,7 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessag
 			//	}
 			//}
 		}
+
 	}
 }
 
