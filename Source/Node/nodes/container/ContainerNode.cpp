@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 ContainerNode::ContainerNode(var params) :
     Node(getTypeString(), params, true, true, true, true),
     inputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),
@@ -80,7 +82,10 @@ void ContainerNode::nodePlayConfigUpdated(Node* n)
 
 void ContainerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
 {
-    if (c == nodeManager->isPlaying) isNodePlaying->setValue(nodeManager->isPlaying->boolValue());
+    if (c == nodeManager->isPlaying)
+    {
+        isNodePlaying->setValue(nodeManager->isPlaying->boolValue());
+    }
     Node::onControllableFeedbackUpdateInternal(cc, c);
 }
 
