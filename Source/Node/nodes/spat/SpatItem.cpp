@@ -1,12 +1,14 @@
 /*
   ==============================================================================
 
-    SpatItem.cpp
-    Created: 21 Nov 2020 6:32:24pm
-    Author:  bkupe
+	SpatItem.cpp
+	Created: 21 Nov 2020 6:32:24pm
+	Author:  bkupe
 
   ==============================================================================
 */
+
+#include "Node/NodeIncludes.h"
 
 SpatItem::SpatItem(int index) :
 	ControllableContainer("Point " + String(index + 1)),

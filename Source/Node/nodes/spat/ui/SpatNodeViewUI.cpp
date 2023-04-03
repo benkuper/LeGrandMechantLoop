@@ -35,7 +35,7 @@ void SpatNodeViewUI::resizedInternalContentNode(Rectangle<int> &r)
 void SpatNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
     NodeViewUI::controllableFeedbackUpdateInternal(c);
-    if (c == node->spatPosition || c == node->circleRadius || c == node->circleAngle || c == node->spatRadius)
+    if (c == node->position || c == node->circleRadius || c == node->circleAngle || c == node->spatRadius)
     {
         spatView.resized();
     }

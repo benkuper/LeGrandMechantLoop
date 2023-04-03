@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 SpatView::SpatView(SpatNode* node) :
 	node(node)
 {
@@ -36,7 +38,8 @@ void SpatView::paint(Graphics& g)
 
 void SpatView::resized()
 {
-	Point<int> centre = getLocalBounds().getRelativePoint(node->spatPosition->x, node->spatPosition->y);
+	Point<float> pos = node->position->getPoint();
+	Point<int> centre = getLocalBounds().getRelativePoint(pos.x, pos.y);
 	target.setBounds(Rectangle<int>(30, 30).withCentre(centre));
 
 	for (auto& s : itemsUI)
@@ -69,7 +72,7 @@ void SpatView::mouseDown(const MouseEvent& e)
 {
 	if (SpatTarget* st = dynamic_cast<SpatTarget*>(e.eventComponent))
 	{
-		posAtMouseDown = node->spatPosition->getPoint();
+		posAtMouseDown = node->position->getPoint();
 	}
 }
 
@@ -86,7 +89,7 @@ void SpatView::mouseDrag(const MouseEvent& e)
 	}
 	else if (SpatTarget* st = dynamic_cast<SpatTarget*>(e.eventComponent))
 	{
-		node->spatPosition->setPoint(pos);
+		node->position->setPoint(pos);
 	}
 }
 
@@ -105,7 +108,7 @@ void SpatView::mouseUp(const MouseEvent& e)
 	}
 	else if (SpatTarget* st = dynamic_cast<SpatTarget*>(e.eventComponent))
 	{
-		node->spatPosition->setUndoablePoint(posAtMouseDown, node->spatPosition->getPoint());
+		node->position->setUndoablePoint(posAtMouseDown, node->position->getPoint());
 	}
 }
 
