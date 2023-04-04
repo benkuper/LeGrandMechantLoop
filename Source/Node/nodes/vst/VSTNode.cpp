@@ -386,7 +386,6 @@ void VSTNode::bypassInternal()
 		if(vst != nullptr)
         {
             vst->reset();
-            vst->releaseResources();
         }
 	}
 }
