@@ -434,7 +434,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		bypassAntiClickCount += isEnabled ? 1 : -1;
 		float nextVal = bypassAntiClickCount * 1.0f / anticlickBlocks;
 
-		if (bypassAntiClickCount == 0)
+		if (!antiClickFinished && bypassAntiClickCount == 0)
 		{
 			bypassInternal();
 		}

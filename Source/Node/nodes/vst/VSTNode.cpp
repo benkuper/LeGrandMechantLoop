@@ -383,8 +383,11 @@ void VSTNode::bypassInternal()
 {
 	if (clearBufferOnDisable->boolValue())
 	{
-		vst->reset();
-		//vst->releaseResources();
+		if(vst != nullptr)
+        {
+            vst->reset();
+            vst->releaseResources();
+        }
 	}
 }
 
