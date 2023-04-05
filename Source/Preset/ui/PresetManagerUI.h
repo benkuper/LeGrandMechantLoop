@@ -29,6 +29,7 @@ public:
     RootPresetManagerUI();
     ~RootPresetManagerUI();
     std::unique_ptr<TriggerUI> saveCurrentUI;
+    std::unique_ptr<FloatSliderUI> loadProgressionUI;
 
     void resizedInternalHeader(Rectangle<int>& r) override;
 

@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    PresetUI.h
-    Created: 17 Apr 2021 3:30:09pm
-    Author:  bkupe
+	PresetUI.h
+	Created: 17 Apr 2021 3:30:09pm
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -13,63 +13,80 @@
 class PresetManagerUI;
 
 class PresetUI :
-    public BaseItemUI<Preset>,
-    public BaseManagerUI<PresetManager,Preset,PresetUI>::ManagerUIListener
+	public BaseItemUI<Preset>,
+	public BaseManagerUI<PresetManager, Preset, PresetUI>::ManagerUIListener
 {
 public:
-    PresetUI(Preset* p);
-    ~PresetUI();
+	PresetUI(Preset* p);
+	~PresetUI();
 
-    std::unique_ptr<PresetManagerUI> pmui;
-    std::unique_ptr<ImageButton> addBT;
-    //std::unique_ptr<ColorParameterUI> colorUI;
-    std::unique_ptr<TriggerButtonUI> loadUI;
+	std::unique_ptr<PresetManagerUI> pmui;
+	std::unique_ptr<ImageButton> addBT;
+	//std::unique_ptr<ColorParameterUI> colorUI;
+	std::unique_ptr<TriggerButtonUI> loadUI;
 
-    void paintOverChildren(Graphics& g) override;
-    
-    void mouseEnter(const MouseEvent& e) override;
-    void mouseExit(const MouseEvent& e) override;
-    void mouseDown(const MouseEvent& e) override;
-    void addContextMenuItems(PopupMenu &p) override;
-    void handleContextMenuResult(int result) override;
+	void paintOverChildren(Graphics& g) override;
 
-    void resizedInternalHeader(Rectangle<int>& r) override;
-    void resizedInternalContent(Rectangle<int> &r) override;
+	void mouseEnter(const MouseEvent& e) override;
+	void mouseExit(const MouseEvent& e) override;
+	void mouseDown(const MouseEvent& e) override;
+	void addContextMenuItems(PopupMenu& p) override;
+	void handleContextMenuResult(int result) override;
 
-    void itemUIAdded(PresetUI* ui) override;
-    void itemUIRemoved(PresetUI* ui) override;
+	void resizedInternalHeader(Rectangle<int>& r) override;
+	void resizedInternalContent(Rectangle<int>& r) override;
 
-    void updateManagerBounds();
+	void itemUIAdded(PresetUI* ui) override;
+	void itemUIRemoved(PresetUI* ui) override;
 
-    void childBoundsChanged(Component* c) override;
+	void updateManagerBounds();
 
-    void controllableFeedbackUpdateInternal(Controllable * c) override;
+	void childBoundsChanged(Component* c) override;
 
-    void buttonClicked(Button * b) override;
+	void controllableFeedbackUpdateInternal(Controllable* c) override;
+
+	void buttonClicked(Button* b) override;
 };
 
 
-class PresetEditor :
-    public BaseItemEditor,
-    public Parameter::AsyncListener
+class PresetValueEditor :
+	public ControllableEditor,
+	public ComboBox::Listener
 {
 public:
-    PresetEditor(Preset* preset, bool isRoot);
-    ~PresetEditor();
+	PresetValueEditor(Preset* p, Controllable* c, Controllable* sourceControllable);
+	~PresetValueEditor();
 
-    Preset* preset;
+	Preset* preset;
+	Controllable* sourceControllable;
 
-    HashMap<Controllable*, Controllable*> controllableMap;
-    ControllableContainer valuesCC;
-    HashMap<Controllable*, Controllable*> ignoreMap;
-    ControllableContainer ignoreCC;
-    
-    void resetAndBuild() override;
-    void buildValuesCC();
+	ComboBox transitionMode;
 
-    void newMessage(const ContainerAsyncEvent& e) override;
+	void resizedInternal(Rectangle<int> &r) override;
 
-    void newMessage(const Parameter::ParameterEvent& e) override;
-    
-    void resizedInternalContent(Rectangle<int> &r) override;
+	void comboBoxChanged(ComboBox* cb) override;
+};;
+class PresetEditor :
+	public BaseItemEditor,
+	public Parameter::AsyncListener
+{
+public:
+	PresetEditor(Preset* preset, bool isRoot);
+	~PresetEditor();
+
+	Preset* preset;
+
+	HashMap<Controllable*, Controllable*> controllableMap;
+	ControllableContainer valuesCC;
+	HashMap<Controllable*, Controllable*> ignoreMap;
+	ControllableContainer ignoreCC;
+
+	void resetAndBuild() override;
+	void buildValuesCC();
+
+	void newMessage(const ContainerAsyncEvent& e) override;
+
+	void newMessage(const Parameter::ParameterEvent& e) override;
+
+	void resizedInternalContent(Rectangle<int>& r) override;
 };

@@ -21,6 +21,7 @@ public:
 	~Preset();
 
 	BoolParameter* isCurrent;
+	StringParameter* description;
 
 	Trigger* saveTrigger;
 	Trigger* loadTrigger;
@@ -30,13 +31,15 @@ public:
 
 	EnablingControllableContainer transitionCC;
 	EnumParameter* transitionQuantiz;
+	IntParameter* numBeatBarQuantiz;
 	FloatParameter* transitionTime;
 	enum TransitionMode { INTERPOLATE, AT_START, AT_END, DEFAULT };
-	EnumParameter* directTransitionMode;
+	EnumParameter* defaultTransitionMode;
 	Automation transitionCurve;
 
 	//overriding
 	HashMap<WeakReference<Controllable>, var> dataMap;
+	HashMap<WeakReference<Controllable>, TransitionMode> transitionMap;
 	HashMap<WeakReference<Controllable>, String> controllableGhostAddressMap;
 	Array<String> lostParamAddresses;
 	HashMap<String, var> addressMap;
@@ -64,7 +67,7 @@ public:
 	bool hasPresetControllable(Controllable* c);
 
 	void onContainerTriggerTriggered(Trigger* t) override;
-	void controllableStateChanged(Controllable* c) override;
+	void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
 
 	void itemAdded(Preset* p) override;
 

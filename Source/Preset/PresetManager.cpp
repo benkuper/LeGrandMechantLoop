@@ -40,8 +40,16 @@ RootPresetManager::RootPresetManager() :
 	presetOnFileLoad->targetType = TargetParameter::CONTAINER;
 	presetOnFileLoad->typesFilter.add(Preset::getTypeStringStatic());
 
+
+	loadProgress = addFloatParameter("Load Progression", "Progression of the current preset loading", 0, 0, 1);
+	loadProgress->setControllableFeedbackOnly(true);
+
 	curPresetName = addStringParameter("Current Preset", "The name of the current preset, for reference", "");
 	curPresetName->setControllableFeedbackOnly(true);
+
+	curPresetDescription = addStringParameter("Current Preset Description", "The description of the current preset, for reference", "");
+	curPresetDescription->multiline = true;
+	curPresetDescription->setControllableFeedbackOnly(true);
 
 	Engine::mainEngine->addEngineListener(this);
 	OSCRemoteControl::getInstance()->addRemoteControlListener(this);
@@ -94,8 +102,18 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 		{
 			Transport::Quantization q = currentPreset->transitionQuantiz->getValueDataAsEnum<Transport::Quantization>();
 			if (q == Transport::DEFAULT) q = Transport::getInstance()->quantization->getValueDataAsEnum<Transport::Quantization>();
-			if (q == Transport::FREE) isDirectTransition = currentPreset->transitionTime->floatValue() > 0;
-			else isDirectTransition = !Transport::getInstance()->isCurrentlyPlaying->boolValue();
+			if (q == Transport::FREE) isDirectTransition = currentPreset->transitionTime->floatValue() == 0;
+			else
+			{
+				if (Transport::getInstance()->isCurrentlyPlaying->boolValue())
+				{
+					isDirectTransition = false;
+				}
+				else
+				{
+					LOGWARNING("Preset transition set to quantized, but transport is not playing, switching to direct transition");
+				}
+			}
 		}
 
 		if (isDirectTransition)
@@ -112,6 +130,7 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 	}
 
 	curPresetName->setValue(currentPreset != nullptr ? currentPreset->niceName : "");
+	curPresetDescription->setValue(currentPreset != nullptr ? currentPreset->description->stringValue() : "");
 }
 
 void RootPresetManager::loadNextPreset(Preset* p, bool recursive)
@@ -273,11 +292,24 @@ Array<Preset*> RootPresetManager::getAllPresets(Preset* parent)
 }
 
 
-void RootPresetManager::fillPresetMenu(PopupMenu& menu, int indexOffset, Controllable* targetControllable = nullptr)
+
+void RootPresetManager::fillPresetMenu(PopupMenu& menu, int indexOffset, Controllable* targetControllable, bool showValue, std::function<bool(Preset*, Controllable*)> tickCheckFunction)
 {
+	if (targetControllable == nullptr) return;
+
 	Array<Preset*> presets = getAllPresets();
 	int index = indexOffset;
-	for (auto& p : presets) menu.addItem(index++, p->niceName, true, p->hasPresetControllable(targetControllable));
+	for (auto& p : presets)
+	{
+		String s = p->niceName;
+		bool isChecked = tickCheckFunction != nullptr ? tickCheckFunction(p, targetControllable) : false;
+		if (isChecked && showValue)
+		{
+			if (targetControllable->type != Controllable::TRIGGER)	s += " (" + p->dataMap[targetControllable].toString() + ")";
+		}
+
+		menu.addItem(index++, p->niceName, true, isChecked);
+	}
 }
 
 Preset* RootPresetManager::getPresetForMenuResult(int result)
@@ -317,27 +349,44 @@ void RootPresetManager::run()
 
 	initTargetMap.clear();
 
-	Preset::TransitionMode tm = currentPreset->directTransitionMode->getValueDataAsEnum<Preset::TransitionMode>();
+	Preset::TransitionMode defaultTM = currentPreset->defaultTransitionMode->getValueDataAsEnum<Preset::TransitionMode>();
 
 	for (auto& val : props)
 	{
-		if (Parameter* tp = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(val.name.toString())))
+		if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(val.name.toString())))
 		{
-			if (!isControllablePresettable(tp)) continue;
+			if (!isControllablePresettable(tc)) continue;
 			var initTargetValue;
-			initTargetValue.append(tp->value);
+			initTargetValue.append(tc->type == Controllable::TRIGGER ? var() : ((Parameter*)tc)->value);
 			initTargetValue.append(val.value);
 
-			bool canInterpolate = tp->type != Parameter::BOOL && tp->type != Parameter::ENUM && tp->type != Parameter::STRING && tp->type != Parameter::ENUM;
-			int option = getControllablePresetOption(tp, "transition", canInterpolate ? Preset::INTERPOLATE : Preset::DEFAULT);
-			if (option == Preset::DEFAULT) option = tm;
-			initTargetValue.append(option);
-			initTargetMap.set(tp, initTargetValue);
+
+			Preset::TransitionMode tm = defaultTM;
+
+			bool tmOverriden = false;
+			if (currentPreset->transitionMap.contains(tc))
+			{
+				tm = currentPreset->transitionMap[tc];
+				tmOverriden = true;
+			}
+
+			if (!tmOverriden)
+			{
+				tm = (Preset::TransitionMode)(int)getControllablePresetOption(tc, "transition", defaultTM);
+			}
+
+			bool canInterpolate = tc->type != Controllable::TRIGGER && tc->type != Parameter::BOOL && tc->type != Parameter::ENUM && tc->type != Parameter::STRING && tc->type != Parameter::ENUM;
+
+			if (!canInterpolate && tm == Preset::INTERPOLATE) tm = Preset::AT_START;
+
+			initTargetValue.append((int)tm);
+			initTargetMap.set(tc, initTargetValue);
 		}
 	}
 
 	float progression = 0;
 
+	loadProgress->setValue(progression);
 
 	process(0, currentPreset->transitionCurve.getValueAtPosition(0)); //force for at_start changes
 
@@ -347,11 +396,16 @@ void RootPresetManager::run()
 	if (q == Transport::DEFAULT) q = Transport::getInstance()->quantization->getValueDataAsEnum<Transport::Quantization>();
 
 	float totalTime = 0;
+	int numBeatBar = currentPreset->numBeatBarQuantiz->intValue();
 	switch (q)
 	{
-	case Transport::FREE: currentPreset->transitionTime->floatValue(); break;;
-	case Transport::BEAT: totalTime = Transport::getInstance()->getTimeToNextBeat(); break;;
-	case Transport::BAR: totalTime = Transport::getInstance()->getTimeToNextBar(); break;;
+	case Transport::FREE: totalTime = currentPreset->transitionTime->floatValue(); break;;
+	case Transport::BEAT:
+		totalTime = Transport::getInstance()->getTimeToNextBeat() + Transport::getInstance()->getTimeForBeat(numBeatBar);
+		break;
+	case Transport::BAR:
+		totalTime = Transport::getInstance()->getTimeToNextBar() + Transport::getInstance()->getTimeForBar(numBeatBar);
+		break;
 	case Transport::FIRSTLOOP: totalTime = Transport::getInstance()->getTimeToNextFirstLoop(); break;
 	default:
 		jassertfalse;
@@ -365,9 +419,16 @@ void RootPresetManager::run()
 	{
 		double currentTime = Time::getMillisecondCounter() / 1000.0 - timeAtStart;
 		progression = jmin<float>(currentTime / totalTime, 1);
+		loadProgress->setValue(progression);
+
 		float weight = currentPreset->transitionCurve.getValueAtPosition(progression);
 		process(progression, weight);
-		if (progression == 1) return;
+
+		if (progression == 1)
+		{
+			loadProgress->setValue(0);
+			return;
+		}
 		wait(30); //~30fps
 	}
 

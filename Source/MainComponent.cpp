@@ -85,7 +85,8 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 		p->addItem(0x5001, "Save to current (" + presetName + ")", true, isOverride);
 
 		PopupMenu saveToOtherMenu;
-		RootPresetManager::getInstance()->fillPresetMenu(saveToOtherMenu, 0x20000, c);
+		RootPresetManager::getInstance()->fillPresetMenu(saveToOtherMenu, 0x20000, c, true, [](Preset* p, Controllable* c) { return p->hasPresetControllable(c); });
+
 		p->addSubMenu("Save to...", saveToOtherMenu);
 
 		p->addItem(0x5002, "Remove from current (" + presetName + ")", isOverride);
@@ -96,7 +97,7 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 
 		p->addItem(0x5004, "Ignore in current (" + presetName + ")", preset != nullptr, isIgnored);
 		PopupMenu ignoreMenu;
-		RootPresetManager::getInstance()->fillPresetMenu(ignoreMenu, 0x40000, c);
+		RootPresetManager::getInstance()->fillPresetMenu(ignoreMenu, 0x40000, c, false, [](Preset* p, Controllable* c) { return p->ignoredControllables.contains(c); });
 		p->addSubMenu("Ignore in...", ignoreMenu);
 	}
 
@@ -158,7 +159,7 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 		);
 		return true;
 	}
-	else if (result == 0x5004 || (result >= 0x40000 && result < 0x40000))
+	else if (result == 0x5004 || (result >= 0x40000 && result < 0x50000))
 	{
 		Preset* preset = nullptr;
 		if (result == 0x5004) preset = RootPresetManager::getInstance()->currentPreset;

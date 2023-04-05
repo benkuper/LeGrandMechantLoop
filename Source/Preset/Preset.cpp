@@ -28,6 +28,10 @@ Preset::Preset(var params) :
 	Random r;
 	isCurrent = addBoolParameter("Is Current", "If this is the currently loaded preset", false);
 	isCurrent->setControllableFeedbackOnly(true);
+	isCurrent->hideInEditor = true;
+
+	description = addStringParameter("Description", "Description of this preset", "");
+	description->multiline = true;
 
 	setHasCustomColor(true);
 	itemColor->forceSaveValue = true;
@@ -41,11 +45,15 @@ Preset::Preset(var params) :
 	transitionQuantiz = transitionCC.addEnumParameter("Quantization", "Transition quantization for this preset");
 	transitionQuantiz->addOption("Custom", Transport::FREE)->addOption("From Transport", Transport::DEFAULT)->addOption("First Loop", Transport::FIRSTLOOP)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT);
 
+	numBeatBarQuantiz = transitionCC.addIntParameter("Quantiz Extra", "If quantization is set to beat or bar, this is the number of beats or bars to add to the current one for computing transition time", 0, 0);
+	//numBeatBarQuantiz->setEnabled(false);
+
 	transitionTime = transitionCC.addFloatParameter("Transition Time", "Time to transition.", 0, 0);
 	transitionTime->defaultUI = FloatParameter::TIME;
 
-	directTransitionMode = transitionCC.addEnumParameter("Direct Transition Mode", "For Boolean, String, Enum and other non transitionnable parameters.");
-	directTransitionMode->addOption("Change at start", AT_START)->addOption("Change at end", AT_END);
+	defaultTransitionMode = transitionCC.addEnumParameter("Default Transition Mode", "Default transition mode for all parameters. For non interpolable parameters, choosing Interpolate will result in Change at Start");
+	defaultTransitionMode->addOption("Interpolate", INTERPOLATE)->addOption("Change at start", AT_START)->addOption("Change at end", AT_END);
+
 	transitionCurve.addKey(0, 0);
 	transitionCurve.addKey(1, 1);
 	transitionCurve.editorCanBeCollapsed = true;
@@ -251,6 +259,7 @@ void Preset::removeControllableFromDataMap(Controllable* c)
 
 	String add = c->getControlAddress();
 	dataMap.remove(c);
+	transitionMap.remove(c);
 	controllableGhostAddressMap.remove(c);
 	c->removeControllableListener(this);
 	unregisterLinkedInspectable(c);
@@ -288,16 +297,15 @@ void Preset::onContainerTriggerTriggered(Trigger* t)
 	else if (t == loadTrigger) RootPresetManager::getInstance()->setCurrentPreset(this);
 }
 
-void Preset::controllableStateChanged(Controllable* c)
+void Preset::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
 {
-	BaseItem::controllableStateChanged(c);
+	BaseItem::onControllableFeedbackUpdate(cc, c);
 
 	if (c == transitionQuantiz)
 	{
 		Transport::Quantization q = transitionQuantiz->getValueDataAsEnum<Transport::Quantization>();
 		transitionTime->setEnabled(q == Transport::FREE);
-		directTransitionMode->setEnabled(q != Transport::FREE);
-
+		numBeatBarQuantiz->setEnabled(q == Transport::BEAT || q == Transport::BAR);
 	}
 }
 
@@ -334,6 +342,17 @@ var Preset::getJSONData()
 	data.getDynamicObject()->setProperty("values", getPresetValues(false, Array<Controllable*>(), true));
 	data.getDynamicObject()->setProperty("transition", transitionCC.getJSONData());
 
+
+	var transitionOverrideData(new DynamicObject());
+	HashMap<WeakReference<Controllable>, TransitionMode>::Iterator it(transitionMap);
+	while (it.next())
+	{
+		if (it.getKey().wasObjectDeleted()) continue;
+		transitionOverrideData.getDynamicObject()->setProperty(it.getKey()->getControlAddress(), it.getValue());
+	}
+
+	data.getDynamicObject()->setProperty("transitionOverrides", transitionOverrideData);
+
 	var ignoreData;
 	for (auto& c : ignoredControllables) ignoreData.append(c->getControlAddress());
 	data.getDynamicObject()->setProperty("ignores", ignoreData);
@@ -356,6 +375,19 @@ void Preset::loadJSONDataItemInternal(var data)
 			if (Controllable* tp = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
 			{
 				addControllableToDataMap(tp, p.value);
+			}
+		}
+	}
+
+	var transitionData = data["transitionOverrides"];
+	if (transitionData.isObject())
+	{
+		NamedValueSet tData = transitionData.getDynamicObject()->getProperties();
+		for (auto& td : tData)
+		{
+			if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(td.name.toString())))
+			{
+				transitionMap.set(tc, (TransitionMode)(int)td.value);
 			}
 		}
 	}

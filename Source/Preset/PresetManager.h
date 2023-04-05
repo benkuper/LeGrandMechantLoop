@@ -35,11 +35,14 @@ public:
     Trigger* nextPresetTrigger;
     Trigger* previousPresetTrigger;
     WeakReference<ControllableContainer> prevPreset;
+
     Preset* currentPreset;
 
     TargetParameter* presetOnFileLoad;
 
     StringParameter* curPresetName;
+    StringParameter* curPresetDescription;
+    FloatParameter* loadProgress;
 
     //Transition
     
@@ -66,7 +69,7 @@ public:
 
     Array<Preset*> getAllPresets(Preset * parent = nullptr);
 
-    void fillPresetMenu(PopupMenu & menu, int indexOffset, Controllable * targetControllable);
+    void fillPresetMenu(PopupMenu & menu, int indexOffset, Controllable * targetControllable, bool showValue = false,std::function<bool(Preset* p, Controllable*)> tickCheckFunction = nullptr);
     Preset * getPresetForMenuResult(int result);
 
     void processMessage(const OSCMessage& m) override;

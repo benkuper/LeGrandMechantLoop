@@ -10,6 +10,7 @@
 
 #include "Node/NodeIncludes.h"
 #include "Preset/PresetIncludes.h"
+#include "PresetUI.h"
 
 PresetUI::PresetUI(Preset* p) :
 	BaseItemUI(p, NONE, true)
@@ -176,16 +177,21 @@ PresetEditor::~PresetEditor()
 void PresetEditor::resetAndBuild()
 {
 	BaseItemEditor::resetAndBuild();
-	GenericControllableContainerEditor* ve = (GenericControllableContainerEditor*)addEditorUI(&valuesCC, true);
-	for (auto& ce : ve->childEditors)
-	{
-		if (ControllableEditor* cce = dynamic_cast<ControllableEditor*>(ce)) cce->minLabelWidth = 250;
-	}
+	GenericControllableContainerEditor* ve = new GenericControllableContainerEditor(&valuesCC, false, false);
+	ve->customCreateEditorForControllableFunc = [this](ControllableContainer* cc, Controllable* c) { return new PresetValueEditor(this->preset, c, controllableMap[c]); };
+
+	ve->resetAndBuild();
+	childEditors.add(ve);
+	addAndMakeVisible(ve);
 
 	GenericControllableContainerEditor* ie = (GenericControllableContainerEditor*)addEditorUI(&ignoreCC, true);
 	for (auto& ce : ie->childEditors)
 	{
-		if (ControllableEditor* cce = dynamic_cast<ControllableEditor*>(ce)) cce->minLabelWidth = 250;
+		if (ControllableEditor* cce = dynamic_cast<ControllableEditor*>(ce))
+		{
+			cce->ui->setVisible(false);
+			cce->minLabelWidth = 250;
+		}
 	}
 }
 
@@ -325,4 +331,49 @@ void PresetEditor::newMessage(const Parameter::ParameterEvent& e)
 void PresetEditor::resizedInternalContent(Rectangle<int>& r)
 {
 	BaseItemEditor::resizedInternalContent(r);
+}
+
+PresetValueEditor::PresetValueEditor(Preset* p, Controllable* c, Controllable* sourceControllable) :
+	ControllableEditor(c, false),
+	preset(p),
+	sourceControllable(sourceControllable),
+	transitionMode("Transition Mode")
+{
+	minLabelWidth = 320;
+
+	//add +1 to avoid id -1
+	transitionMode.addItem("Default", Preset::DEFAULT + 1);
+	transitionMode.addItem("Interpolate", Preset::INTERPOLATE + 1);
+	transitionMode.addItem("Change At Start", Preset::AT_START + 1);
+	transitionMode.addItem("Change At End", Preset::AT_END + 1);
+
+
+	if (preset->transitionMap.contains(sourceControllable))
+	{
+		transitionMode.setSelectedId(preset->transitionMap[sourceControllable] + 1, dontSendNotification);
+	}
+	else transitionMode.setSelectedId(Preset::DEFAULT + 1, dontSendNotification);
+
+	transitionMode.addListener(this);
+	addAndMakeVisible(&transitionMode);
+}
+
+PresetValueEditor::~PresetValueEditor()
+{
+}
+
+void PresetValueEditor::resizedInternal(Rectangle<int>& r)
+{
+	transitionMode.setBounds(r.removeFromRight(100));
+	r.removeFromRight(2);
+	ControllableEditor::resizedInternal(r);
+}
+
+void PresetValueEditor::comboBoxChanged(ComboBox* cb)
+{
+	if (cb == &transitionMode)
+	{
+		Preset::TransitionMode tm = (Preset::TransitionMode)(transitionMode.getSelectedId() - 1);//remove the +1 offset
+		preset->transitionMap.set(sourceControllable, tm);
+	}
 }
