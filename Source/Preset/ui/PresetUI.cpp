@@ -374,6 +374,7 @@ void PresetValueEditor::comboBoxChanged(ComboBox* cb)
 	if (cb == &transitionMode)
 	{
 		Preset::TransitionMode tm = (Preset::TransitionMode)(transitionMode.getSelectedId() - 1);//remove the +1 offset
-		preset->transitionMap.set(sourceControllable, tm);
+		if(tm == Preset::DEFAULT) preset->transitionMap.remove(sourceControllable);
+		else preset->transitionMap.set(sourceControllable, tm);
 	}
 }

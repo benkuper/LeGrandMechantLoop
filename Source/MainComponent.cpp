@@ -72,16 +72,6 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 		bool isOverride = canBeOverride && preset->overridenControllables.contains(add);
 		bool isIgnored = preset != nullptr ? preset->ignoredControllables.contains(c) : false;
 
-		bool canInterpolate = c->type != Controllable::TRIGGER && c->type != Parameter::BOOL && c->type != Parameter::ENUM && c->type != Parameter::STRING && c->type != Parameter::ENUM;
-		int option = RootPresetManager::getInstance()->getControllablePresetOption(c, "transition", (int)(canInterpolate ? Preset::INTERPOLATE : Preset::DEFAULT));
-		PopupMenu interpMenu;
-		if (canInterpolate) interpMenu.addItem(0x5010, "Interpolate", canInterpolate, option == Preset::INTERPOLATE);
-		interpMenu.addItem(0x5013, "Default", !canInterpolate, option == Preset::DEFAULT);
-
-		interpMenu.addItem(0x5011, "Change at start", true, option == Preset::AT_START);
-		interpMenu.addItem(0x5012, "Chante at end", true, option == Preset::AT_END);
-		p->addSubMenu("Transition Mode", interpMenu);
-
 		p->addItem(0x5001, "Save to current (" + presetName + ")", true, isOverride);
 
 		PopupMenu saveToOtherMenu;
@@ -181,12 +171,6 @@ bool MainComponent::handleControllableMenuResult(ControllableUI* ui, int result)
 
 		}
 
-		return true;
-	}
-	else if (result >= 0x5010 && result <= 0x5013)
-	{
-		int option = result - 0x5010;
-		RootPresetManager::getInstance()->setControllablePresetOption(c, "transition", option);
 		return true;
 	}
 	else if (result >= 0x20000 && result < 0x30000)

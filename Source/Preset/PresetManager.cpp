@@ -363,16 +363,10 @@ void RootPresetManager::run()
 
 			Preset::TransitionMode tm = defaultTM;
 
-			bool tmOverriden = false;
 			if (currentPreset->transitionMap.contains(tc))
 			{
-				tm = currentPreset->transitionMap[tc];
-				tmOverriden = true;
-			}
-
-			if (!tmOverriden)
-			{
-				tm = (Preset::TransitionMode)(int)getControllablePresetOption(tc, "transition", defaultTM);
+				Preset::TransitionMode otm = currentPreset->transitionMap[tc];
+				if (otm != Preset::DEFAULT) tm = otm;
 			}
 
 			bool canInterpolate = tc->type != Controllable::TRIGGER && tc->type != Parameter::BOOL && tc->type != Parameter::ENUM && tc->type != Parameter::STRING && tc->type != Parameter::ENUM;
