@@ -59,13 +59,16 @@ public:
 
 	Preset* preset;
 	Controllable* sourceControllable;
+	TextButton saveBT;
 
 	ComboBox transitionMode;
 
 	void resizedInternal(Rectangle<int> &r) override;
 
 	void comboBoxChanged(ComboBox* cb) override;
-};;
+	void buttonClicked(Button* b) override;
+};
+
 class PresetEditor :
 	public BaseItemEditor,
 	public Parameter::AsyncListener

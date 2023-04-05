@@ -337,6 +337,7 @@ PresetValueEditor::PresetValueEditor(Preset* p, Controllable* c, Controllable* s
 	ControllableEditor(c, false),
 	preset(p),
 	sourceControllable(sourceControllable),
+	saveBT("Save"),
 	transitionMode("Transition Mode")
 {
 	minLabelWidth = 320;
@@ -356,6 +357,9 @@ PresetValueEditor::PresetValueEditor(Preset* p, Controllable* c, Controllable* s
 
 	transitionMode.addListener(this);
 	addAndMakeVisible(&transitionMode);
+
+	saveBT.addListener(this);
+	addAndMakeVisible(&saveBT);
 }
 
 PresetValueEditor::~PresetValueEditor()
@@ -364,6 +368,8 @@ PresetValueEditor::~PresetValueEditor()
 
 void PresetValueEditor::resizedInternal(Rectangle<int>& r)
 {
+	saveBT.setBounds(r.removeFromRight(80));
+	r.removeFromRight(2);
 	transitionMode.setBounds(r.removeFromRight(100));
 	r.removeFromRight(2);
 	ControllableEditor::resizedInternal(r);
@@ -374,7 +380,22 @@ void PresetValueEditor::comboBoxChanged(ComboBox* cb)
 	if (cb == &transitionMode)
 	{
 		Preset::TransitionMode tm = (Preset::TransitionMode)(transitionMode.getSelectedId() - 1);//remove the +1 offset
-		if(tm == Preset::DEFAULT) preset->transitionMap.remove(sourceControllable);
+		if (tm == Preset::DEFAULT) preset->transitionMap.remove(sourceControllable);
 		else preset->transitionMap.set(sourceControllable, tm);
+	}
+}
+
+void PresetValueEditor::buttonClicked(Button* b)
+{
+	if (b == &saveBT)
+	{
+		if (controllable->type != Controllable::TRIGGER)
+		{
+			((Parameter*)controllable.get())->setValue(((Parameter*)sourceControllable)->value);
+		}
+	}
+	else
+	{
+		ControllableEditor::buttonClicked(b);
 	}
 }
