@@ -368,7 +368,7 @@ PresetValueEditor::~PresetValueEditor()
 
 void PresetValueEditor::resizedInternal(Rectangle<int>& r)
 {
-	saveBT.setBounds(r.removeFromRight(80));
+	saveBT.setBounds(r.removeFromRight(50));
 	r.removeFromRight(2);
 	transitionMode.setBounds(r.removeFromRight(100));
 	r.removeFromRight(2);
