@@ -11,10 +11,9 @@
 #include "Node/NodeIncludes.h"
 
 MIDIIONode::MIDIIONode(var params) :
-	Node(getTypeString(), params, true, true, false, false, true, true)
+	Node(getTypeString(), params, false, false, false, false, true, true)
 {
-	setAudioInputs(1, false);
-	setAudioOutputs(2);
+	setMIDIIO(true, true);
 
 	viewUISize->setPoint(200, 100);
 }
