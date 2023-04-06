@@ -242,7 +242,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			((LooperTrack*)cc.get())->clearTrigger->trigger();
 		}
 
-		currentTrackIndex->setValue(1);
+		currentTrackIndex->setValue(1, false, true);
 		if (outControl != nullptr) outControl->resetGainAndActive();
 	}
 	else if (c == playAllTrigger)
