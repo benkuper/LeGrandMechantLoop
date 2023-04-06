@@ -466,8 +466,9 @@ Optional<AudioPlayHead::PositionInfo> Transport::getPosition() const
 
 	result.setBpm(bpm->doubleValue());
 	result.setIsPlaying(isCurrentlyPlaying->boolValue());
-	result.setIsPlaying(isSettingTempo);
+	result.setIsRecording(isSettingTempo);
 
+	result.setBarCount(curBar->intValue());
 
 	double positionOfLastBarStart = (double)(curBar->intValue() * beatsPerBar->intValue());
 	result.setPpqPositionOfLastBarStart(positionOfLastBarStart); // ?? 
@@ -477,6 +478,7 @@ Optional<AudioPlayHead::PositionInfo> Transport::getPosition() const
 	signature.numerator = beatsPerBar->intValue();
 	signature.denominator = beatUnit->intValue();
 	result.setTimeSignature(signature);
+
 
 	result.setTimeInSamples(timeInSamples);
 	result.setTimeInSeconds(getCurrentTime());
