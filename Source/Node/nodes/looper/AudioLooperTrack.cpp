@@ -478,3 +478,11 @@ void AudioLooperTrack::saveSampleFile(File dir)
 	os.release();
 	delete writer;
 }
+
+bool AudioLooperTrack::hasContent(bool includeRecordPhase) const
+{
+	if (!LooperTrack::hasContent(includeRecordPhase)) return false;
+	TrackState s = trackState->getValueDataAsEnum<TrackState>();
+	if (s == PLAYING && antiClickFadeBeforeClear) return false;
+	return true;
+}

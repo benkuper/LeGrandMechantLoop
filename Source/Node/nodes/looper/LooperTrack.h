@@ -96,7 +96,7 @@ public:
 	virtual void saveSampleFile(File f) {}
 
 	//Helpers
-	bool hasContent(bool includeRecordPhase) const;
+	virtual bool hasContent(bool includeRecordPhase) const;
 	bool isRecording(bool includeWillRecord) const;
 	bool isPlaying(bool includeWillPlay) const;
 	bool isWaiting(bool waitingForRecord = true, bool waitingForFinishRecord = true, bool waitingForPlay = true, bool waitingForStop = true) const;

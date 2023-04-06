@@ -189,6 +189,8 @@ public:
 	virtual bool acceptsMidi() const override { return false; }
 	virtual bool producesMidi() const override { return false; }
 
+	virtual void numChannelsChanged() override;
+
 	virtual AudioProcessorEditor* createEditor() override { return nullptr; }
 	virtual bool hasEditor() const override { return false; }
 	virtual int getNumPrograms() override { return 0; }

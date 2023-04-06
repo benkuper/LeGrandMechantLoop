@@ -32,9 +32,11 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	bypassAntiClickCount(anticlickBlocks),
 	nodeNotifier(5)
 {
+	showWarningInUI = true;
+
 	setHasCustomColor(true);
 	itemColor->setDefaultValue(Colours::darkgrey);
-	
+
 	processor = new NodeAudioProcessor(this);
 	processor->setPlayHead(Transport::getInstance());
 
@@ -143,7 +145,7 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 		{
 			for (auto& c : outAudioConnections) c->activityLevel = 0;
 			if (outControl != nullptr) outControl->rms->setValue(0);
-			if(processor->getSampleRate() > 0) midiCollector.reset(processor->getSampleRate());
+			if (processor->getSampleRate() > 0) midiCollector.reset(processor->getSampleRate());
 			updateSustainedNotes();
 		}
 
@@ -395,15 +397,15 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	int numInputs = getNumAudioInputs();
 	int numOutputs = getNumAudioOutputs();
 
-	if (buffer.getNumChannels() < jmax(numInputs, numOutputs))
+	if (buffer.getNumChannels() != jmax(numInputs, numOutputs))
 	{
-		if (Engine::mainEngine->isLoadingFile)
-		{
-			LOGWARNING("Should not be here");
-		}
-		LOGWARNING("Not the same number of channels ! " << buffer.getNumChannels() << " < > " << jmax(numInputs, numOutputs));
+		jassert(!Engine::mainEngine->isLoadingFile);
+
+		setWarningMessage("Not the same number of channels ! " + String(buffer.getNumChannels()) + " < > " + String(jmax(numInputs, numOutputs)), "Channel Mismatch");
 		return;
 	}
+
+	clearWarning("Channel Mismatch");
 
 	bool isEnabled = enabled->boolValue();
 	bool antiClickFinished = bypassAntiClickCount == (isEnabled ? anticlickBlocks : 0);
@@ -537,4 +539,9 @@ void NodeAudioProcessor::resume()
 	suspendCount--;
 	jassert(suspendCount >= 0);
 	if (suspendCount == 0) suspendProcessing(false);
+}
+
+void NodeAudioProcessor::numChannelsChanged()
+{
+	NLOG(node->niceName, "Channels changed : " << getTotalNumInputChannels() << ":" << getTotalNumOutputChannels());
 }

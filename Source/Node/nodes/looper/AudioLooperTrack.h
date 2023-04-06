@@ -50,4 +50,6 @@ public:
 
     virtual void loadSampleFile(File f) override;
     virtual void saveSampleFile(File f) override;
+
+    virtual bool hasContent(bool includeRecordPhase) const override;
 };

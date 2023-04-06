@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Node/NodeIncludes.h"
+
 AudioLooperNode::AudioLooperNode(var params) :
 	LooperNode(getTypeString(), params, AUDIO)
 {
@@ -27,11 +29,11 @@ AudioLooperNode::~AudioLooperNode()
 void AudioLooperNode::initInternal()
 {
 	LooperNode::initInternal();
-	updateOutTracks();
+	updateOutTracks(false);
 	updateRingBuffer();
 }
 
-void AudioLooperNode::updateOutTracks()
+void AudioLooperNode::updateOutTracks(bool updateConfig)
 {
 	TrackOutputMode m = trackOutputMode->getValueDataAsEnum<TrackOutputMode>();
 	StringArray s;
@@ -52,7 +54,7 @@ void AudioLooperNode::updateOutTracks()
 		}
 	}
 
-	setAudioOutputs(s);
+	setAudioOutputs(s, updateConfig);
 }
 
 LooperTrack* AudioLooperNode::createLooperTrack(int index)

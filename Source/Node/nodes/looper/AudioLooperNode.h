@@ -27,7 +27,7 @@ public:
 
     void initInternal() override;
 
-    virtual void updateOutTracks();
+    virtual void updateOutTracks(bool updateConfig = true);
     virtual LooperTrack * createLooperTrack(int index) override;
     virtual void updateRingBuffer();
     virtual int getFadeNumSamples(); //for ring buffer fade

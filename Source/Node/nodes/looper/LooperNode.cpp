@@ -106,7 +106,7 @@ LooperNode::~LooperNode()
 void LooperNode::initInternal()
 {
 	updateLooperTracks();
-	setCurrentTrack(getTrackForIndex(currentTrackIndex->intValue() - 1));
+	currentTrackIndex->setValue(1, false, true);
 }
 
 void LooperNode::updateLooperTracks()
@@ -116,7 +116,6 @@ void LooperNode::updateLooperTracks()
 	while (tracksCC.controllableContainers.size() > numTracks->intValue())
 	{
 		LooperTrack* t = getTrackForIndex(tracksCC.controllableContainers.size() - 1);
-		if (t->isCurrent) setCurrentTrack(nullptr);
 
 		tracksCC.removeChildControllableContainer(t);
 	}
@@ -126,11 +125,15 @@ void LooperNode::updateLooperTracks()
 	{
 		tracksCC.addChildControllableContainer(createLooperTrack(i), true);
 	}
+
+	setCurrentTrackToFirstEmpty();
 }
 
 void LooperNode::setCurrentTrack(LooperTrack* t)
 {
 	if (currentTrack == t) return;
+
+
 
 	if (currentTrack != nullptr)
 	{
@@ -143,6 +146,8 @@ void LooperNode::setCurrentTrack(LooperTrack* t)
 	{
 		currentTrack->isCurrent->setValue(true);
 	}
+
+	currentTrackIndex->setValue(tracksCC.controllableContainers.indexOf(t) + 1);
 
 	LooperTrack::lastManipulatedTrack = currentTrack;
 }
@@ -226,7 +231,10 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			{
 				currentTrackIndex->setValue(currentTrackIndex->intValue() - 1);
 			}
+
 			currentTrack->clearTrigger->trigger();
+
+			setCurrentTrackToFirstEmpty();
 		}
 	}
 	else if (c == clearSectionTrigger || c == clearOtherSectionsTrigger)
