@@ -123,7 +123,6 @@ void Node::init(AudioProcessorGraph* _graph)
 
 	ScopedSuspender sp(processor);
 
-	nodeGraphPtr = graph->addNode(std::unique_ptr<NodeAudioProcessor>(processor), AudioProcessorGraph::NodeID(nodeGraphID));
 
 	initInternal();
 
@@ -134,6 +133,8 @@ void Node::init(AudioProcessorGraph* _graph)
 	else updateAudioOutputs(false);
 
 	updatePlayConfig();
+
+	nodeGraphPtr = graph->addNode(std::unique_ptr<NodeAudioProcessor>(processor), AudioProcessorGraph::NodeID(nodeGraphID));
 
 }
 
@@ -151,8 +152,9 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 
 		if (hasMIDIInput && forceNoteOffOnEnabled->boolValue())
 		{
-			inMidiBuffer.clear();
-			for (int i = 1; i <= 16; i++) inMidiBuffer.addEvent(MidiMessage::allNotesOff(i), 0);
+			//inMidiBuffer.clear();
+			midiCollector.reset(processor->getSampleRate());
+			for (int i = 1; i <= 16; i++) midiCollector.addMessageToQueue(MidiMessage::allNotesOff(i));
 		}
 	}
 	else if (p == numAudioInputs)
@@ -391,8 +393,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 
 	ScopedLock sl(processor->getCallbackLock());
 
-	//MIDI
-	if (midiInterface != nullptr || hasMIDIInput) midiCollector.removeNextBlockOfMessages(inMidiBuffer, buffer.getNumSamples());
+
 
 	int numInputs = getNumAudioInputs();
 	int numOutputs = getNumAudioOutputs();
@@ -407,13 +408,26 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 
 	clearWarning("Channel Mismatch");
 
+	//MIDI
+	if (midiInterface != nullptr && midiInterface->inputDevice != nullptr)
+	{
+		midiMessages.clear();
+		midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
+		if (!midiMessages.isEmpty())
+		{
+			NLOG(niceName, "has midi in buffer here");
+		}
+	}
+
 	bool isEnabled = enabled->boolValue();
 	bool antiClickFinished = bypassAntiClickCount == (isEnabled ? anticlickBlocks : 0);
 	if (antiClickFinished)
 	{
+
 		if (isEnabled)
 		{
-			processBlockInternal(buffer, inMidiBuffer);
+			//midiMessages.addEvents(inMidiBuffer, 0, buffer.getNumSamples(), false);
+			processBlockInternal(buffer, midiMessages);
 			if (outControl != nullptr) outControl->applyGain(buffer);
 		}
 		else
@@ -429,7 +443,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		AudioSampleBuffer b2;
 		b2.makeCopyOf(buffer);
 		processBlockInternal(b1, midiMessages);
-		processBlockBypassed(b2, inMidiBuffer);
+		processBlockBypassed(b2, midiMessages);
 		buffer.clear();
 
 		float curVal = bypassAntiClickCount * 1.0f / anticlickBlocks;
@@ -474,14 +488,14 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	}
 
 	//MIDI
-	if (!inMidiBuffer.isEmpty() && hasMIDIOutput)
-	{
-		for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
-		if (midiInterface != nullptr && midiInterface->outputDevice != nullptr)
-		{
-			for (auto m : inMidiBuffer) midiInterface->sendMessage(m.getMessage());
-		}
-	}
+	//if (!inMidiBuffer.isEmpty() && hasMIDIOutput)
+	//{
+	//	for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
+	//	if (midiInterface != nullptr && midiInterface->outputDevice != nullptr)
+	//	{
+	//		for (auto m : inMidiBuffer) midiInterface->sendMessage(m.getMessage());
+	//	}
+	//}
 
 	inMidiBuffer.clear();
 }
