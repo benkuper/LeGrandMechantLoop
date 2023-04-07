@@ -28,5 +28,5 @@ NodeFactory::NodeFactory()
 
 	defs.add(Definition::createDef<MIDILooperNode>("MIDI", MIDILooperNode::getTypeStringStatic()));
 	defs.add(Definition::createDef<MIDIInputNode>("MIDI", MIDIInputNode::getTypeStringStatic()));
-	//defs.add(Definition::createDef<MIDIOutputNode>("MIDI", MIDIOutputNode::getTypeStringStatic()));
+	defs.add(Definition::createDef<MIDIOutputNode>("MIDI", MIDIOutputNode::getTypeStringStatic()));
 }

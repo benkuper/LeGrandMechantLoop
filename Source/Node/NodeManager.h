@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    NodeManager.h
-    Created: 15 Nov 2020 8:39:59am
-    Author:  bkupe
+	NodeManager.h
+	Created: 15 Nov 2020 8:39:59am
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -19,86 +19,86 @@ class MIDIInputNode;
 class MIDIOutputNode;
 
 class NodeManager :
-    public BaseManager<Node>
+	public BaseManager<Node>
 {
 public:
-    NodeManager(AudioProcessorGraph* graph,
-        AudioProcessorGraph::NodeID audioInputNodeID, AudioProcessorGraph::NodeID audioOutputNodeID,
-        AudioProcessorGraph::NodeID midiInputNodeID, AudioProcessorGraph::NodeID midiOutputNodeID);
-    ~NodeManager();
-    
-    FloatParameter* cpuUsage;
+	NodeManager(AudioProcessorGraph* graph,
+		AudioProcessorGraph::NodeID audioInputNodeID, AudioProcessorGraph::NodeID audioOutputNodeID,
+		AudioProcessorGraph::NodeID midiInputNodeID, AudioProcessorGraph::NodeID midiOutputNodeID);
+	~NodeManager();
 
-    BoolParameter* isPlaying;
+	FloatParameter* cpuUsage;
 
-    ControllableContainer looperControlCC;
-    Trigger* stopAllLoopers;
-    Trigger* playAllLoopers;
-    Trigger* clearAllLoopers;
-    Trigger* tmpMuteAllLoopers;
-    Trigger* clearLastManipTrack;
+	BoolParameter* isPlaying;
 
-    AudioProcessorGraph* graph;
-    AudioProcessorGraph::NodeID audioInputNodeID;
-    AudioProcessorGraph::NodeID audioOutputNodeID;
-    AudioProcessorGraph::NodeID midiInputNodeID;
-    AudioProcessorGraph::NodeID midiOutputNodeID;
+	ControllableContainer looperControlCC;
+	Trigger* stopAllLoopers;
+	Trigger* playAllLoopers;
+	Trigger* clearAllLoopers;
+	Trigger* tmpMuteAllLoopers;
+	Trigger* clearLastManipTrack;
 
-    StringArray audioInputNames;
-    StringArray audioOutputNames;
+	AudioProcessorGraph* graph;
+	AudioProcessorGraph::NodeID audioInputNodeID;
+	AudioProcessorGraph::NodeID audioOutputNodeID;
+	AudioProcessorGraph::NodeID midiInputNodeID;
+	AudioProcessorGraph::NodeID midiOutputNodeID;
 
-    Array<AudioInputNode*> audioInputNodes;
-    Array<AudioOutputNode*> audioOutputNodes;
-    Array<MIDIInputNode*> midiInputNodes;
-    //Array<MIDIOutputNode*> midiOutputNodes;
+	StringArray audioInputNames;
+	StringArray audioOutputNames;
 
-    std::unique_ptr<NodeConnectionManager> connectionManager;
+	Array<AudioInputNode*> audioInputNodes;
+	Array<AudioOutputNode*> audioOutputNodes;
+	Array<MIDIInputNode*> midiInputNodes;
+	Array<MIDIOutputNode*> midiOutputNodes;
 
-    void clear() override;
+	std::unique_ptr<NodeConnectionManager> connectionManager;
 
-    void setAudioInputs(const int& numInputs); //auto naming
-    void setAudioInputs(const StringArray& inputNames);
-    void setAudioOutputs(const int& numOutputs); //auto naming
-    void setAudioOutputs(const StringArray& outputNames);
+	void clear() override;
 
-    void updateAudioInputNode(AudioInputNode * n);
-    void updateAudioOutputNode(AudioOutputNode* n);
-    void updateMIDIInputNode(MIDIInputNode* n);
-    //void updateMIDIOutputNode(MIDIOutputNode*n);
+	void setAudioInputs(const int& numInputs); //auto naming
+	void setAudioInputs(const StringArray& inputNames);
+	void setAudioOutputs(const int& numOutputs); //auto naming
+	void setAudioOutputs(const StringArray& outputNames);
 
-    virtual void addItemInternal(Node* n, var data) override;
-    virtual void removeItemInternal(Node* n) override;
+	void updateAudioInputNode(AudioInputNode* n);
+	void updateAudioOutputNode(AudioOutputNode* n);
+	void updateMIDIInputNode(MIDIInputNode* n);
+	void updateMIDIOutputNode(MIDIOutputNode* n);
 
-    virtual Array<UndoableAction*> getRemoveItemUndoableAction(Node* n) override;
-    virtual Array<UndoableAction*> getRemoveItemsUndoableAction(Array<Node*> n) override;
+	virtual void addItemInternal(Node* n, var data) override;
+	virtual void removeItemInternal(Node* n) override;
 
-    void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
+	virtual Array<UndoableAction*> getRemoveItemUndoableAction(Node* n) override;
+	virtual Array<UndoableAction*> getRemoveItemsUndoableAction(Array<Node*> n) override;
 
-    bool hasPlayingNodes();
-    
-    var getJSONData() override;
-    void loadJSONDataManagerInternal(var data) override;
+	void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
+
+	bool hasPlayingNodes();
+
+	var getJSONData() override;
+	void loadJSONDataManagerInternal(var data) override;
 };
 
 
 class RootNodeManager :
-    public NodeManager,
-    public AudioManager::AudioManagerListener,
-    public EngineListener,
-    public Node::NodeListener
+	public NodeManager,
+	public AudioManager::AudioManagerListener,
+	public EngineListener,
+	public Node::NodeListener
 {
 public:
-    juce_DeclareSingleton(RootNodeManager, true);
-    RootNodeManager();
-    ~RootNodeManager();
+	juce_DeclareSingleton(RootNodeManager, true);
+	RootNodeManager();
+	~RootNodeManager();
 
-    void audioSetupChanged() override;
-    void onContainerParameterChanged(Parameter* p) override;
+	void audioSetupChanged() override;
+	void onContainerParameterChanged(Parameter* p) override;
 
-    void addItemInternal(Node* n, var data) override;
-    void removeItemInternal(Node* n) override;
+	void addItemInternal(Node* n, var data) override;
+	void removeItemInternal(Node* n) override;
 
-    void nodePlayConfigUpdated(Node * n) override;
+	void nodePlayConfigUpdated(Node* n) override;
 
-    void endLoadFile() override;
+	void endLoadFile() override;
 };

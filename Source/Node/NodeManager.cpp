@@ -119,10 +119,10 @@ void NodeManager::updateMIDIInputNode(MIDIInputNode* n)
 	graph->addConnection(AudioProcessorGraph::Connection({ midiInputNodeID, AudioProcessorGraph::midiChannelIndex }, { n->nodeGraphID, AudioProcessorGraph::midiChannelIndex })); //straight 
 }
 
-//void NodeManager::updateMIDIOutputNode(MIDIInputNode* n)
-//{
-//	graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, AudioProcessorGraph::midiChannelIndex }, { midiOutputNodeID, AudioProcessorGraph::midiChannelIndex })); //straight 
-//}
+void NodeManager::updateMIDIOutputNode(MIDIOutputNode* n)
+{
+	graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, AudioProcessorGraph::midiChannelIndex }, { midiOutputNodeID, AudioProcessorGraph::midiChannelIndex })); //straight 
+}
 
 void NodeManager::addItemInternal(Node* n, var data)
 {
@@ -154,6 +154,7 @@ void NodeManager::removeItemInternal(Node* n)
 	if (AudioInputNode* in = dynamic_cast<AudioInputNode*>(n))  audioInputNodes.removeAllInstancesOf(in);
 	else if (AudioOutputNode* on = dynamic_cast<AudioOutputNode*>(n)) audioOutputNodes.removeAllInstancesOf(on);
 	else if (MIDIInputNode* mio = dynamic_cast<MIDIInputNode*>(n)) midiInputNodes.removeAllInstancesOf(mio);
+	else if (MIDIOutputNode* moo = dynamic_cast<MIDIOutputNode*>(n)) midiOutputNodes.removeAllInstancesOf(moo);
 }
 
 Array<UndoableAction*> NodeManager::getRemoveItemUndoableAction(Node* item)
