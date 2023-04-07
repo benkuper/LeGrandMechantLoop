@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-	MIDIIONode.cpp
+	MIDIInputNode.cpp
 	Created: 15 Nov 2020 8:42:29am
 	Author:  bkupe
 
@@ -10,43 +10,44 @@
 
 #include "Node/NodeIncludes.h"
 
-MIDIIONode::MIDIIONode(var params) :
-	Node(getTypeString(), params, false, false, false, false, true, true)
+MIDIInputNode::MIDIInputNode(var params) :
+	Node(getTypeString(), params, false, false, false, false, true, false)
 {
-	setMIDIIO(true, true);
+	setMIDIIO(false, true);
 
 	viewUISize->setPoint(200, 100);
 }
 
-MIDIIONode::~MIDIIONode()
+MIDIInputNode::~MIDIInputNode()
 {
 
 }
 
-void MIDIIONode::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
+void MIDIInputNode::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	//Node::midiMessageReceived(m);
-
-	if (!enabled->boolValue()) return;
-	if (m.getChannel() > 0 && !midiChannels[m.getChannel() - 1]->boolValue()) return;
-
-	if (logIncomingMidi->boolValue())
-	{
-		NLOG(niceName, "Received MIDI : " << m.getDescription());
-	}
-
-	for (auto& c : outMidiConnections) c->destNode->midiMessageReceived(i, m);
-
+	midiMessages.clear();
+	Node::processBlock(buffer, midiMessages);
 }
 
-void MIDIIONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+MIDIOutputNode::MIDIOutputNode(var params) :
+	Node(getTypeString(), params, false, false, false, false, false, true)
 {
-	if (midiInterface != nullptr && midiInterface->outputDevice != nullptr)
-	{
-		for (const auto m : midiMessages)
-		{
-			MidiMessage msg = m.getMessage();
-			midiInterface->sendMessage(msg);
-		}
-	}
+	setMIDIIO(true, false);
+}
+
+MIDIOutputNode::~MIDIOutputNode()
+{
+}
+
+void MIDIOutputNode::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+{
+	Node::processBlock(buffer, midiMessages);
+
+	if (!midiMessages.isEmpty()) return;
+	if (midiInterface == nullptr || midiInterface->outputDevice == nullptr) return;
+	if (!midiInterface->enabled->boolValue()) return;
+	
+	midiInterface->outputDevice->device->sendBlockOfMessagesNow(midiMessages);
+
+	midiMessages.clear();
 }

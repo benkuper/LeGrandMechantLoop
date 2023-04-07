@@ -366,14 +366,6 @@ void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessag
 		{
 			GenericScopedTryLock lock(vstStateLock);
 			if (lock.isLocked()) vst->processBlock(buffer, midiMessages);
-
-			//if (hasMIDIOutput)
-			//{
-			//	if (!inMidiBuffer.isEmpty())
-			//	{
-			//		for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
-			//	}
-			//}
 		}
 
 	}

@@ -12,11 +12,15 @@
 
 juce_ImplementSingleton(RootNodeManager)
 
-NodeManager::NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID) :
+NodeManager::NodeManager(AudioProcessorGraph* graph,
+	AudioProcessorGraph::NodeID audioInputNodeID, AudioProcessorGraph::NodeID audioOutputNodeID,
+	AudioProcessorGraph::NodeID midiInputNodeID, AudioProcessorGraph::NodeID midiOutputNodeID) :
 	BaseManager("Nodes"),
 	graph(graph),
-	inputNodeID(inputNodeID),
-	outputNodeID(outputNodeID),
+	audioInputNodeID(audioInputNodeID),
+	audioOutputNodeID(audioOutputNodeID),
+	midiInputNodeID(midiInputNodeID),
+	midiOutputNodeID(midiOutputNodeID),
 	looperControlCC("Looper Control")
 {
 	managerFactory = NodeFactory::getInstance();
@@ -84,14 +88,14 @@ void NodeManager::updateAudioInputNode(AudioInputNode* n)
 {
 	for (int i = 0; i < n->audioInputNames.size(); i++)
 	{
-		graph->removeConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight channel 
+		graph->removeConnection(AudioProcessorGraph::Connection({ audioInputNodeID, i }, { n->nodeGraphID, i })); //straight channel 
 	}
 
 	n->setAudioOutputs(audioInputNames); //inverse to get good connector names
 
 	for (int i = 0; i < audioInputNames.size(); i++)
 	{
-		graph->addConnection(AudioProcessorGraph::Connection({ inputNodeID, i }, { n->nodeGraphID, i })); //straight 
+		graph->addConnection(AudioProcessorGraph::Connection({ audioInputNodeID, i }, { n->nodeGraphID, i })); //straight 
 	}
 }
 
@@ -99,21 +103,26 @@ void NodeManager::updateAudioOutputNode(AudioOutputNode* n)
 {
 	for (int i = 0; i < n->audioOutputNames.size(); i++)
 	{
-		graph->removeConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight channel 
+		graph->removeConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { audioOutputNodeID, i })); //straight channel 
 	}
 
 	n->setAudioInputs(audioOutputNames); //inverse to get good connector names
 
 	for (int i = 0; i < audioOutputNames.size(); i++)
 	{
-		graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { outputNodeID, i })); //straight 
+		graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { audioOutputNodeID, i })); //straight 
 	}
 }
 
-void NodeManager::updateMIDIIONode(MIDIIONode* n)
+void NodeManager::updateMIDIInputNode(MIDIInputNode* n)
 {
-	graph->addConnection(AudioProcessorGraph::Connection({ inputNodeID, 0 }, { n->nodeGraphID, 0 })); //straight 
+	graph->addConnection(AudioProcessorGraph::Connection({ midiInputNodeID, AudioProcessorGraph::midiChannelIndex }, { n->nodeGraphID, AudioProcessorGraph::midiChannelIndex })); //straight 
 }
+
+//void NodeManager::updateMIDIOutputNode(MIDIInputNode* n)
+//{
+//	graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, AudioProcessorGraph::midiChannelIndex }, { midiOutputNodeID, AudioProcessorGraph::midiChannelIndex })); //straight 
+//}
 
 void NodeManager::addItemInternal(Node* n, var data)
 {
@@ -133,10 +142,10 @@ void NodeManager::addItemInternal(Node* n, var data)
 		audioOutputNodes.add(on);
 		updateAudioOutputNode(on);
 	}
-	else if (MIDIIONode* mio = dynamic_cast<MIDIIONode*>(n))
+	else if (MIDIInputNode* mio = dynamic_cast<MIDIInputNode*>(n))
 	{
-		midiIONodes.add(mio);
-		updateMIDIIONode(mio);
+		midiInputNodes.add(mio);
+		updateMIDIInputNode(mio);
 	}
 }
 
@@ -144,7 +153,7 @@ void NodeManager::removeItemInternal(Node* n)
 {
 	if (AudioInputNode* in = dynamic_cast<AudioInputNode*>(n))  audioInputNodes.removeAllInstancesOf(in);
 	else if (AudioOutputNode* on = dynamic_cast<AudioOutputNode*>(n)) audioOutputNodes.removeAllInstancesOf(on);
-	else if (MIDIIONode* mio = dynamic_cast<MIDIIONode*>(n)) midiIONodes.removeAllInstancesOf(mio);
+	else if (MIDIInputNode* mio = dynamic_cast<MIDIInputNode*>(n)) midiInputNodes.removeAllInstancesOf(mio);
 }
 
 Array<UndoableAction*> NodeManager::getRemoveItemUndoableAction(Node* item)
@@ -242,7 +251,9 @@ void NodeManager::loadJSONDataManagerInternal(var data)
 RootNodeManager::RootNodeManager() :
 	NodeManager(&AudioManager::getInstance()->graph,
 		AudioProcessorGraph::NodeID(AUDIO_GRAPH_INPUT_ID),
-		AudioProcessorGraph::NodeID(AUDIO_GRAPH_OUTPUT_ID))
+		AudioProcessorGraph::NodeID(AUDIO_GRAPH_OUTPUT_ID),
+		AudioProcessorGraph::NodeID(MIDI_GRAPH_INPUT_ID),
+		AudioProcessorGraph::NodeID(MIDI_GRAPH_OUTPUT_ID))
 {
 	AudioManager::getInstance()->addAudioManagerListener(this);
 

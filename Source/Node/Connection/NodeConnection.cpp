@@ -7,6 +7,7 @@
 
   ==============================================================================
 */
+#include "Node/NodeIncludes.h"
 
 NodeConnection::NodeConnection(NodeManager* nodeManager, Node* sourceNode, Node* destNode, ConnectionType ct) :
 	BaseItem("Connection", false, false),
@@ -112,7 +113,7 @@ void NodeConnection::loadJSONDataItemInternal(var data)
 {
 	if (data.hasProperty("sourceNode")) setSourceNode(nodeManager->getItemWithName(data.getProperty("sourceNode", "")));
 	if (data.hasProperty("destNode")) setDestNode(nodeManager->getItemWithName(data.getProperty("destNode", "")));
-	
+
 	loadJSONDataConnectionInternal(data);
 }
 
@@ -160,7 +161,7 @@ void NodeAudioConnection::connectChannels(int sourceChannel, int destChannel)
 
 	if (sourceChannel >= sourceNode->getNumAudioOutputs() || destChannel >= destNode->getNumAudioInputs())
 	{
-		if(isCurrentlyLoadingData)
+		if (isCurrentlyLoadingData)
 		{
 			ghostChannelMap.add({ sourceChannel, destChannel }); //one of the node may not be fully init, keep for later
 		}
@@ -174,9 +175,9 @@ void NodeAudioConnection::connectChannels(int sourceChannel, int destChannel)
 	channelMap.add({ sourceChannel, destChannel });
 	ghostChannelMap.removeAllInstancesOf({ sourceChannel, destChannel });
 
-	nodeManager->graph->addConnection({{sourceNode->nodeGraphID, sourceChannel}, { destNode->nodeGraphID, destChannel } });
+	nodeManager->graph->addConnection({ {sourceNode->nodeGraphID, sourceChannel}, { destNode->nodeGraphID, destChannel } });
 	connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
-	
+
 }
 
 void NodeAudioConnection::disconnectChannels(int sourceChannel, int destChannel, bool updateMap, bool notify)
@@ -304,8 +305,11 @@ void NodeAudioConnection::loadJSONDataConnectionInternal(var data)
 }
 
 NodeMIDIConnection::NodeMIDIConnection(NodeManager* nodeManager, Node* sourceNode, Node* destNode) :
-	NodeConnection(nodeManager, sourceNode, destNode, MIDI)
+	NodeConnection(nodeManager, sourceNode, destNode, MIDI),
+	currentConnection()
 {
+	LOG("Node MIDI Connection");
+	handleNodesUpdated();
 }
 
 NodeMIDIConnection::~NodeMIDIConnection()
@@ -314,12 +318,41 @@ NodeMIDIConnection::~NodeMIDIConnection()
 
 void NodeMIDIConnection::clearItem()
 {
+	clearConnection();
+
 	NodeConnection::clearItem();
 
-	if (destNode != nullptr)
+	//if (destNode != nullptr)
+	//{
+	//	MidiBuffer clearBuffer;
+	//	for (int i = 1; i <= 16; i++) clearBuffer.addEvent(MidiMessage::allNotesOff(i), 1);
+	//	destNode->receiveMIDIFromInput(sourceNode, clearBuffer);
+	//}
+}
+
+void NodeMIDIConnection::clearConnection()
+{
+	if (currentConnection.source.nodeID != AudioProcessorGraph::NodeID(0) && currentConnection.destination.nodeID != AudioProcessorGraph::NodeID(0))
 	{
-		MidiBuffer clearBuffer;
-		for (int i = 1; i <= 16; i++) clearBuffer.addEvent(MidiMessage::allNotesOff(i), 1);
-		destNode->receiveMIDIFromInput(sourceNode, clearBuffer);
+		nodeManager->graph->removeConnection(currentConnection);
+		currentConnection = {};
+	}
+}
+
+void NodeMIDIConnection::handleNodesUpdated()
+{
+	NodeConnection::handleNodesUpdated();
+
+	clearConnection();
+
+	if (sourceNode != nullptr && destNode != nullptr)
+	{
+		LOG("Nodes are connected here !");
+		currentConnection = { { sourceNode->nodeGraphID, AudioProcessorGraph::midiChannelIndex }, { destNode->nodeGraphID, AudioProcessorGraph::midiChannelIndex } };
+		bool result = nodeManager->graph->addConnection(currentConnection);
+		if (!result)
+		{
+			LOGERROR("Error connecting MIDI from " << sourceNode->niceName << " to " << destNode->niceName);
+		}
 	}
 }

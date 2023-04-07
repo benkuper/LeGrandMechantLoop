@@ -119,7 +119,7 @@ public:
 	virtual void updatePlayConfigInternal();
 
 	//MIDI
-	virtual void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer);
+	//virtual void receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer);
 	virtual void midiMessageReceived(MIDIInterface* i, const MidiMessage& m) override;
 	virtual void updateSustainedNotes();
 
@@ -186,8 +186,8 @@ public:
 	virtual void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override { return node->processBlock(buffer, midiMessages); }
 	virtual void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override { return node->processBlockBypassed(buffer, midiMessages); }
 	virtual double getTailLengthSeconds() const override { return 0; }
-	virtual bool acceptsMidi() const override { return false; }
-	virtual bool producesMidi() const override { return false; }
+	virtual bool acceptsMidi() const override { return node->hasMIDIInput; }
+	virtual bool producesMidi() const override { return node->hasMIDIOutput; }
 
 	virtual void numChannelsChanged() override;
 

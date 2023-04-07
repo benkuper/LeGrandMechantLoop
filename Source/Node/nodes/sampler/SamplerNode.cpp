@@ -779,6 +779,11 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 	inMidiBuffer.clear();
 	keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), false);
 
+	if (!midiMessages.isEmpty())
+	{
+		NLOG(niceName, "Sampler has notes");
+	}
+
 	AudioSampleBuffer tmpNoteBuffer(buffer.getNumChannels(), blockSize);
 
 	PlayMode pm = playMode->getValueDataAsEnum<PlayMode>();
@@ -924,12 +929,12 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 		}
 	}
 
-	if (!inMidiBuffer.isEmpty())
-	{
-		for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
-	}
+	//if (!inMidiBuffer.isEmpty())
+	//{
+	//	for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
+	//}
 
-	inMidiBuffer.clear();
+	//inMidiBuffer.clear();
 }
 
 

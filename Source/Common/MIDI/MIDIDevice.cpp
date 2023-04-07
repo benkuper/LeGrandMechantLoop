@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Common/CommonIncludes.h"
+
 MIDIDevice::MIDIDevice(const MidiDeviceInfo& info, Type t) :
 	id(info.identifier),
 	name(info.name),

@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    AudioManager.h
-    Created: 15 Nov 2020 8:44:58am
-    Author:  bkupe
+	AudioManager.h
+	Created: 15 Nov 2020 8:44:58am
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -14,19 +14,22 @@
 
 #define AUDIO_GRAPH_INPUT_ID 1
 #define AUDIO_GRAPH_OUTPUT_ID 2
+#define MIDI_GRAPH_INPUT_ID 3
+#define MIDI_GRAPH_OUTPUT_ID 4
+#define GRAPH_START_ID 5
 
 
 class AudioManager :
-    public ControllableContainer, 
+	public ControllableContainer,
 	public AudioIODeviceCallback,
 	public ChangeListener,
 	public EngineListener
 {
 public:
 	juce_DeclareSingleton(AudioManager, true);
-	
-    AudioManager();
-    ~AudioManager();
+
+	AudioManager();
+	~AudioManager();
 
 	AudioDeviceManager am;
 	AudioProcessorGraph graph;

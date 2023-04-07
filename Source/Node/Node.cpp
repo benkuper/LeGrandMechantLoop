@@ -327,11 +327,11 @@ void Node::updatePlayConfigInternal()
 	processor->setPlayConfigDetails(audioInputNames.size(), audioOutputNames.size(), graph->getSampleRate(), graph->getBlockSize());
 }
 
-void Node::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)
-{
-	if (!enabled->boolValue()) return;
-	inMidiBuffer.addEvents(inputBuffer, 0, processor->getBlockSize(), 0);
-}
+//void Node::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)
+//{
+//	if (!enabled->boolValue()) return;
+//	//inMidiBuffer.addEvents(inputBuffer, 0, processor->getBlockSize(), 0);
+//}
 
 void Node::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 {
@@ -497,7 +497,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	//	}
 	//}
 
-	inMidiBuffer.clear();
+	//inMidiBuffer.clear();
 }
 
 void Node::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)

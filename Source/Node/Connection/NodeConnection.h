@@ -93,5 +93,11 @@ public:
     NodeMIDIConnection(NodeManager* nodeManager = nullptr, Node* sourceNode = nullptr, Node* destNode = nullptr);
     ~NodeMIDIConnection();
 
+    AudioProcessorGraph::Connection currentConnection;
+
     void clearItem() override;
+
+    void clearConnection();
+
+    void handleNodesUpdated() override;
 };

@@ -16,7 +16,7 @@ juce_ImplementSingleton(AudioManager)
 
 AudioManager::AudioManager() :
 	ControllableContainer("Audio Settings"),
-	graphIDIncrement(3)
+	graphIDIncrement(GRAPH_START_ID)
 {
 	am.addAudioCallback(this);
 	am.addChangeListener(this);
@@ -32,9 +32,19 @@ AudioManager::AudioManager() :
 
 
 	std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procIn(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioInputNode));
+
 	std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procOut(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioOutputNode));
+
+	std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> midiIn(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::midiInputNode));
+
+	std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> midiOut(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::midiOutputNode));
+
+
+
 	graph.addNode(std::move(procIn), AudioProcessorGraph::NodeID(AUDIO_GRAPH_INPUT_ID));
 	graph.addNode(std::move(procOut), AudioProcessorGraph::NodeID(AUDIO_GRAPH_OUTPUT_ID));
+	graph.addNode(std::move(midiIn), AudioProcessorGraph::NodeID(MIDI_GRAPH_INPUT_ID));
+	graph.addNode(std::move(midiOut), AudioProcessorGraph::NodeID(MIDI_GRAPH_OUTPUT_ID));
 
 	player.setProcessor(&graph);
 

@@ -15,13 +15,16 @@ class NodeManagerAudioProcessor;
 
 class AudioInputNode;
 class AudioOutputNode;
-class MIDIIONode;
+class MIDIInputNode;
+class MIDIOutputNode;
 
 class NodeManager :
     public BaseManager<Node>
 {
 public:
-    NodeManager(AudioProcessorGraph* graph, AudioProcessorGraph::NodeID inputNodeID, AudioProcessorGraph::NodeID outputNodeID);
+    NodeManager(AudioProcessorGraph* graph,
+        AudioProcessorGraph::NodeID audioInputNodeID, AudioProcessorGraph::NodeID audioOutputNodeID,
+        AudioProcessorGraph::NodeID midiInputNodeID, AudioProcessorGraph::NodeID midiOutputNodeID);
     ~NodeManager();
     
     FloatParameter* cpuUsage;
@@ -36,15 +39,18 @@ public:
     Trigger* clearLastManipTrack;
 
     AudioProcessorGraph* graph;
-    AudioProcessorGraph::NodeID inputNodeID;
-    AudioProcessorGraph::NodeID outputNodeID;
+    AudioProcessorGraph::NodeID audioInputNodeID;
+    AudioProcessorGraph::NodeID audioOutputNodeID;
+    AudioProcessorGraph::NodeID midiInputNodeID;
+    AudioProcessorGraph::NodeID midiOutputNodeID;
 
     StringArray audioInputNames;
     StringArray audioOutputNames;
 
     Array<AudioInputNode*> audioInputNodes;
     Array<AudioOutputNode*> audioOutputNodes;
-    Array<MIDIIONode*> midiIONodes;
+    Array<MIDIInputNode*> midiInputNodes;
+    //Array<MIDIOutputNode*> midiOutputNodes;
 
     std::unique_ptr<NodeConnectionManager> connectionManager;
 
@@ -57,7 +63,8 @@ public:
 
     void updateAudioInputNode(AudioInputNode * n);
     void updateAudioOutputNode(AudioOutputNode* n);
-    void updateMIDIIONode(MIDIIONode *n);
+    void updateMIDIInputNode(MIDIInputNode* n);
+    //void updateMIDIOutputNode(MIDIOutputNode*n);
 
     virtual void addItemInternal(Node* n, var data) override;
     virtual void removeItemInternal(Node* n) override;

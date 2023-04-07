@@ -12,16 +12,26 @@
 
 class VSTParameterContainer;
 
-class MIDIIONode :
+class MIDIInputNode :
 	public Node
 {
 public:
-	MIDIIONode(var params = var());
-	~MIDIIONode();
+	MIDIInputNode(var params = var());
+	~MIDIInputNode();
 
-	void midiMessageReceived(MIDIInterface* i, const MidiMessage& m) override;
+	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
-	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	DECLARE_TYPE("MIDI Input");
+};
 
-	DECLARE_TYPE("MIDI IO");
+class MIDIOutputNode :
+	public Node
+{
+public:
+	MIDIOutputNode(var params = var());
+	~MIDIOutputNode();
+
+	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+
+	DECLARE_TYPE("MIDI Input");
 };

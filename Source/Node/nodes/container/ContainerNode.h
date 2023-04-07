@@ -23,10 +23,14 @@ public:
 
     std::unique_ptr<NodeManager> nodeManager;
     AudioProcessorGraph containerGraph;
-    AudioProcessorGraph::NodeID inputID;
-    AudioProcessorGraph::NodeID outputID;
-    AudioProcessorGraph::AudioGraphIOProcessor* iNode;
-    AudioProcessorGraph::AudioGraphIOProcessor* oNode;
+    AudioProcessorGraph::NodeID audioInputID;
+    AudioProcessorGraph::NodeID audioOutputID;
+    AudioProcessorGraph::NodeID midiInputID;
+    AudioProcessorGraph::NodeID midiOutputID;
+    AudioProcessorGraph::AudioGraphIOProcessor* audioInNode;
+    AudioProcessorGraph::AudioGraphIOProcessor* audioOutNode;
+    AudioProcessorGraph::AudioGraphIOProcessor* midiInNode;
+    AudioProcessorGraph::AudioGraphIOProcessor* midiOutNode;
 
     AudioBuffer<float> graphBuffer;
 
