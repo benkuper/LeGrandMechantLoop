@@ -441,8 +441,8 @@ void SamplerNode::controllableStateChanged(Controllable* c)
 
 void SamplerNode::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 {
-	//Node::midiMessageReceived(i, m);
-	midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
+	Node::midiMessageReceived(i, m);
+	//midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
 }
 
 
@@ -776,8 +776,8 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 	}
 
 	if (!monitor->boolValue()) buffer.clear();
-
-	keyboardState.processNextMidiBuffer(inMidiBuffer, 0, buffer.getNumSamples(), false);
+	inMidiBuffer.clear();
+	keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), false);
 
 	AudioSampleBuffer tmpNoteBuffer(buffer.getNumChannels(), blockSize);
 
