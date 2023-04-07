@@ -27,7 +27,7 @@ namespace BinaryData
     const int            default_lgmllayoutSize = 2487;
 
     extern const char*   icon_png;
-    const int            icon_pngSize = 106933;
+    const int            icon_pngSize = 238059;
 
     extern const char*   link_png;
     const int            link_pngSize = 1731;
