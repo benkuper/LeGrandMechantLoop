@@ -439,12 +439,6 @@ void SamplerNode::controllableStateChanged(Controllable* c)
 	Node::controllableStateChanged(c);
 }
 
-void SamplerNode::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
-{
-	Node::midiMessageReceived(i, m);
-	//midiCollector.addMessageToQueue(m); //ugly hack to have at least events sorted, but sampleNumber should be exact
-}
-
 
 void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
 {
@@ -776,13 +770,7 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 	}
 
 	if (!monitor->boolValue()) buffer.clear();
-	inMidiBuffer.clear();
 	keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), false);
-
-	if (!midiMessages.isEmpty())
-	{
-		NLOG(niceName, "Sampler has notes");
-	}
 
 	AudioSampleBuffer tmpNoteBuffer(buffer.getNumChannels(), blockSize);
 
@@ -928,13 +916,6 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			}
 		}
 	}
-
-	//if (!inMidiBuffer.isEmpty())
-	//{
-	//	for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
-	//}
-
-	//inMidiBuffer.clear();
 }
 
 

@@ -152,7 +152,6 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 
 		if (hasMIDIInput && forceNoteOffOnEnabled->boolValue())
 		{
-			//inMidiBuffer.clear();
 			midiCollector.reset(processor->getSampleRate());
 			for (int i = 1; i <= 16; i++) midiCollector.addMessageToQueue(MidiMessage::allNotesOff(i));
 		}
@@ -327,12 +326,6 @@ void Node::updatePlayConfigInternal()
 	processor->setPlayConfigDetails(audioInputNames.size(), audioOutputNames.size(), graph->getSampleRate(), graph->getBlockSize());
 }
 
-//void Node::receiveMIDIFromInput(Node* n, MidiBuffer& inputBuffer)
-//{
-//	if (!enabled->boolValue()) return;
-//	//inMidiBuffer.addEvents(inputBuffer, 0, processor->getBlockSize(), 0);
-//}
-
 void Node::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 {
 	if (!enabled->boolValue()) return;
@@ -409,15 +402,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	clearWarning("Channel Mismatch");
 
 	//MIDI
-	if (midiInterface != nullptr && midiInterface->inputDevice != nullptr)
-	{
-		midiMessages.clear();
-		midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
-		if (!midiMessages.isEmpty())
-		{
-			NLOG(niceName, "has midi in buffer here");
-		}
-	}
+	midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
 
 	bool isEnabled = enabled->boolValue();
 	bool antiClickFinished = bypassAntiClickCount == (isEnabled ? anticlickBlocks : 0);
@@ -426,7 +411,6 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 
 		if (isEnabled)
 		{
-			//midiMessages.addEvents(inMidiBuffer, 0, buffer.getNumSamples(), false);
 			processBlockInternal(buffer, midiMessages);
 			if (outControl != nullptr) outControl->applyGain(buffer);
 		}
@@ -487,17 +471,6 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 		outAudioConnections[i]->activityLevel = curLevel + (level - curLevel) * .2f;
 	}
 
-	//MIDI
-	//if (!inMidiBuffer.isEmpty() && hasMIDIOutput)
-	//{
-	//	for (auto& c : outMidiConnections) c->destNode->receiveMIDIFromInput(this, inMidiBuffer);
-	//	if (midiInterface != nullptr && midiInterface->outputDevice != nullptr)
-	//	{
-	//		for (auto m : inMidiBuffer) midiInterface->sendMessage(m.getMessage());
-	//	}
-	//}
-
-	//inMidiBuffer.clear();
 }
 
 void Node::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)

@@ -82,22 +82,13 @@ void MIDILooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer
 		((MIDILooperTrack*)tracksCC.controllableContainers[i].get())->processBlock(midiMessages, outBuffer, blockSize);
 	}
 
-	if (!midiMessages.isEmpty())
+	bool clearMessages = true;
+	if (mm == ALWAYS || (mm == RECORDING_ONLY && isOneTrackRecording()))
 	{
-		if (mm == ALWAYS || (mm == RECORDING_ONLY && isOneTrackRecording()))
-		{
-			outBuffer.addEvents(inMidiBuffer, 0, blockSize, 0);
-		}
+		clearMessages = false;
 	}
 
-	midiMessages.clear();
+	if (clearMessages) midiMessages.clear();
 
 	midiMessages.addEvents(outBuffer, 0, buffer.getNumSamples(), 0);
-	//if (!outBuffer.isEmpty())
-	//{
-	//	for (auto& c : outMidiConnections)
-	//	{
-	//		c->destNode->receiveMIDIFromInput(this, outBuffer);
-	//	}
-	//}
 }

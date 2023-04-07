@@ -64,7 +64,6 @@ public:
 	BoolParameter* logIncomingMidi;
 	BoolParameter* forceNoteOffOnEnabled;
 
-	MidiBuffer inMidiBuffer;
 	MidiMessageCollector midiCollector;
 	HashMap<int, int> sustainedNotes; //keep track of sustain
 

@@ -39,15 +39,12 @@ MIDIOutputNode::~MIDIOutputNode()
 {
 }
 
-void MIDIOutputNode::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void MIDIOutputNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	Node::processBlock(buffer, midiMessages);
+	if (midiMessages.isEmpty()) return;
+	if (midiInterface == nullptr) return;
 
-	if (!midiMessages.isEmpty()) return;
-	if (midiInterface == nullptr || midiInterface->outputDevice == nullptr) return;
-	if (!midiInterface->enabled->boolValue()) return;
-	
-	midiInterface->outputDevice->device->sendBlockOfMessagesNow(midiMessages);
+	midiInterface->sendMidiBuffer(midiMessages);
 
 	midiMessages.clear();
 }

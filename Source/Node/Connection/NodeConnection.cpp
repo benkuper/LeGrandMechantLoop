@@ -347,7 +347,6 @@ void NodeMIDIConnection::handleNodesUpdated()
 
 	if (sourceNode != nullptr && destNode != nullptr)
 	{
-		LOG("Nodes are connected here !");
 		currentConnection = { { sourceNode->nodeGraphID, AudioProcessorGraph::midiChannelIndex }, { destNode->nodeGraphID, AudioProcessorGraph::midiChannelIndex } };
 		bool result = nodeManager->graph->addConnection(currentConnection);
 		if (!result)

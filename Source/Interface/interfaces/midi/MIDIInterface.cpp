@@ -10,6 +10,7 @@
 
 #include "Interface/InterfaceIncludes.h"
 #include "Engine/AudioManager.h"
+#include "MIDIInterface.h"
 
 MIDIInterface::MIDIInterface(var params) :
 	Interface(getTypeString(), params),

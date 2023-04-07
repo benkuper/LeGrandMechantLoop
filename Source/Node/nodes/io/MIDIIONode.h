@@ -31,7 +31,7 @@ public:
 	MIDIOutputNode(var params = var());
 	~MIDIOutputNode();
 
-	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
-	DECLARE_TYPE("MIDI Input");
+	DECLARE_TYPE("MIDI Output");
 };
