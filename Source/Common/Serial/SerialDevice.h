@@ -54,7 +54,6 @@ public:
 	virtual ~SerialDeviceInfo() {}
 
 	String deviceID; //This is what we will use to identify the device uniquely, the way it's set depends on the OS
-
 	String port;
 	String description;
 	String uniqueDescription;
@@ -73,7 +72,7 @@ class SerialDevice :
 public:
 	SerialReadThread thread;
 
-	enum PortMode { LINES, DATA255, RAW, COBS };
+	enum PortMode { LINES = 0, DIRECT = 1, DATA255 = 2, RAW = 3, JSON = 4, COBS = 5};
 
 #if SERIALSUPPORT
 	SerialDevice(Serial *port, SerialDeviceInfo * info, PortMode mode = LINES);

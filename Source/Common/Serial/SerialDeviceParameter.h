@@ -23,11 +23,12 @@ public:
 
 	String ghostData;
 	int openBaudRate;
-	int vidFilter;
-	int pidFilter;
+	Array<int> vidFilters;
+	Array<int> pidFilters;
 
 	void setValueInternal(var &value) override;
 
+	void setVIDPIDFilters(Array<int> vidFilters, Array<int> pidFilters);
 	void updatePortList();
 
 	// Inherited via SerialManagerListener

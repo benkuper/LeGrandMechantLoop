@@ -8,12 +8,13 @@
   ==============================================================================
 */
 
+#include "Common/CommonIncludes.h"
+
+
 SerialDeviceParameter::SerialDeviceParameter(const String& name, const String& description, bool enabled) :
 	EnumParameter(name, description, enabled),
 	currentDevice(nullptr),
-	openBaudRate(9600),
-	vidFilter(-1),
-	pidFilter(-1)
+	openBaudRate(9600)
 {
 	SerialManager::getInstance()->addSerialManagerListener(this);
 	updatePortList();
@@ -38,6 +39,13 @@ void SerialDeviceParameter::setValueInternal(var& v)
 	//DBG("current device from setValueInternal : " << (int)currentDevice);
 }
 
+void SerialDeviceParameter::setVIDPIDFilters(Array<int> vidFilters, Array<int> pidFilters)
+{
+	this->vidFilters = vidFilters;
+	this->pidFilters = pidFilters;
+	updatePortList();
+}
+
 void SerialDeviceParameter::updatePortList()
 {
 	//DBG("num ports :" << SerialManager::getInstance()->portInfos.size());
@@ -54,8 +62,9 @@ void SerialDeviceParameter::updatePortList()
 	if (SerialManager::getInstance()->portInfos.size() > 0) addOption("Not connected or disconnected", var(), false);
 	for (auto& p : SerialManager::getInstance()->portInfos)
 	{
-		if (vidFilter != -1 && p->vid != vidFilter) continue;
-		if (pidFilter != -1 && p->pid != pidFilter) continue;
+
+		if (!vidFilters.isEmpty() && !vidFilters.contains(p->vid)) continue;
+		if (!pidFilters.isEmpty() && !pidFilters.contains(p->pid)) continue;
 
 		var v(new DynamicObject());
 		//DBG("Add option : " << p->port << ":" << p->hardwareID);
