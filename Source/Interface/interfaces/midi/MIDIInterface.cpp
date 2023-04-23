@@ -32,14 +32,14 @@ MIDIInterface::MIDIInterface(var params) :
 
 
 	//Script
-	scriptObject.setMethod(sendNoteOnId, &MIDIInterface::sendNoteOnFromScript);
-	scriptObject.setMethod(sendNoteOffId, &MIDIInterface::sendNoteOffFromScript);
-	scriptObject.setMethod(sendCCId, &MIDIInterface::sendCCFromScript);
-	scriptObject.setMethod(sendSysexId, &MIDIInterface::sendSysexFromScript);
-	scriptObject.setMethod(sendProgramChangeId, &MIDIInterface::sendProgramChangeFromScript);
-	scriptObject.setMethod(sendPitchWheelId, &MIDIInterface::sendPitchWheelFromScript);
-	scriptObject.setMethod(sendChannelPressureId, &MIDIInterface::sendChannelPressureFromScript);
-	scriptObject.setMethod(sendAfterTouchId, &MIDIInterface::sendAfterTouchFromScript);
+	scriptObject.getDynamicObject()->setMethod(sendNoteOnId, &MIDIInterface::sendNoteOnFromScript);
+	scriptObject.getDynamicObject()->setMethod(sendNoteOffId, &MIDIInterface::sendNoteOffFromScript);
+	scriptObject.getDynamicObject()->setMethod(sendCCId, &MIDIInterface::sendCCFromScript);
+	scriptObject.getDynamicObject()->setMethod(sendSysexId, &MIDIInterface::sendSysexFromScript);
+	scriptObject.getDynamicObject()->setMethod(sendProgramChangeId, &MIDIInterface::sendProgramChangeFromScript);
+	scriptObject.getDynamicObject()->setMethod(sendPitchWheelId, &MIDIInterface::sendPitchWheelFromScript);
+	scriptObject.getDynamicObject()->setMethod(sendChannelPressureId, &MIDIInterface::sendChannelPressureFromScript);
+	scriptObject.getDynamicObject()->setMethod(sendAfterTouchId, &MIDIInterface::sendAfterTouchFromScript);
 
 	scriptManager->scriptTemplate += LGMLAssetManager::getScriptTemplate("midi");
 }

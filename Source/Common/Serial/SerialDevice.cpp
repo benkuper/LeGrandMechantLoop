@@ -8,7 +8,8 @@
   ==============================================================================
 */
 
-#include "Module/ModuleIncludes.h"
+#include "lib/cobs/cobs.h"
+#include "Common/CommonIncludes.h"
 
 #if SERIALSUPPORT
 SerialDevice::SerialDevice(Serial* _port, SerialDeviceInfo* _info, PortMode _mode) :

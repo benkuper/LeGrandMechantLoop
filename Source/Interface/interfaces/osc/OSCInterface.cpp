@@ -8,6 +8,8 @@
   ==============================================================================
 */
 
+#include "Interface/InterfaceIncludes.h"
+
 OSCInterface::OSCInterface(var params) :
 	Interface(getTypeString(), params),
 	Thread("OSCZeroconf"),
@@ -42,10 +44,10 @@ OSCInterface::OSCInterface(var params) :
 	}
 
 	//Script
-	scriptObject.setMethod("send", OSCInterface::sendOSCFromScript);
-	scriptObject.setMethod("sendTo", OSCInterface::sendOSCToFromScript);
-	scriptObject.setMethod("match", OSCInterface::matchOSCAddrFromScript);
-	scriptObject.setMethod("register", OSCInterface::registerOSCCallbackFromScript);
+	scriptObject.getDynamicObject()->setMethod("send", OSCInterface::sendOSCFromScript);
+	scriptObject.getDynamicObject()->setMethod("sendTo", OSCInterface::sendOSCToFromScript);
+	scriptObject.getDynamicObject()->setMethod("match", OSCInterface::matchOSCAddrFromScript);
+	scriptObject.getDynamicObject()->setMethod("register", OSCInterface::registerOSCCallbackFromScript);
 
 	scriptManager->scriptTemplate += LGMLAssetManager::getScriptTemplate("osc");
 
