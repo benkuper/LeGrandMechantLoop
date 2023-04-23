@@ -49,6 +49,12 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	firstRecVolumeThreshold = recordCC.addFloatParameter("First Rec Threshold", "If enabled, when recording the first track when Transport not playing yet, this will wait for this threshold to be reached to actually start the recording", .3f, 0, 1, false);
 	firstRecVolumeThreshold->canBeDisabledByUser = true;
 
+	retroRecMode = recordCC.addEnumParameter("Retro Rec Mode", "This decides what is the unit to use to do when hitting the Retro Rec trigger.");
+	retroRecMode->addOption("None", RETRO_NONE)->addOption("First Loop", RETRO_FIRSTLOOP)->addOption("Bar", RETRO_BAR)->addOption("Beat", RETRO_BEAT);
+
+	retroRecCount = recordCC.addIntParameter("Retro Rec Count", "Number of bars or beats to record when using the Retro Rec trigger", 1, 1);
+	retroDoubleRecCount = recordCC.addIntParameter("Retro Double Rec Count", "Number of bars or beats to record when hitting the Retro Rec trigger twice before it stores it", 2, 1);
+	retroTripleRecCount = recordCC.addIntParameter("Retro Double Rec Count", "Number of bars or beats to record when hitting the Retro Rec trigger three times before it stores it", 4, 1);
 
 	monitorMode = recordCC.addEnumParameter("Monitor Mode", "How to monitor");
 	monitorMode->addOption("Always", ALWAYS)->addOption("Armed track", ARMED_TRACK)->addOption("When recording", RECORDING_ONLY)->addOption("Off", OFF);
@@ -67,6 +73,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 
 	recTrigger = controlsCC.addTrigger("Rec", "Record to the current track");
+	retroRecTrigger = controlsCC.addTrigger("Retro Rec", "Record the past x beats or bars to the current track");
 	clearCurrentTrigger = controlsCC.addTrigger("Clear", "Clear the current track if not empty, otherwise clear the past one");
 	playAllTrigger = controlsCC.addTrigger("Play All", "Stop all tracks");
 	playCurrentSectionTrigger = controlsCC.addTrigger("Play Current Section", "This will play tracks in current section and stop all others");
@@ -223,6 +230,22 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 
 		}
 	}
+	else if (c == retroRecTrigger)
+	{
+		RetroRecMode rm = retroRecMode->getValueDataAsEnum<RetroRecMode>();
+		if (rm == RETRO_NONE || !Transport::getInstance()->isCurrentlyPlaying->boolValue()) recTrigger->trigger();
+		else
+		{
+			LooperTrack::TrackState ts = currentTrack->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
+			if (currentTrack == nullptr || ts != LooperTrack::RETRO_REC) setCurrentTrackToFirstEmpty();
+
+			if (currentTrack != nullptr)
+			{
+				currentTrack->trackState->setValueWithData(LooperTrack::RETRO_REC);
+				currentTrack->retroRecCount++;
+			}
+		}
+	}
 	else if (c == clearCurrentTrigger)
 	{
 		if (currentTrack != nullptr)
@@ -341,7 +364,6 @@ void LooperNode::bpmChanged()
 	{
 		((AudioLooperTrack*)tracksCC.controllableContainers[i].get())->updateStretch();
 	}
-
 }
 
 void LooperNode::beatChanged(bool isNewBar, bool isFirstLoop)
@@ -495,6 +517,27 @@ Transport::Quantization LooperNode::getFreeFillMode()
 	Transport::Quantization q = freeFillMode->getValueDataAsEnum<Transport::Quantization>();
 	if (q == Transport::DEFAULT) q = getQuantization();
 	return q;
+}
+
+int LooperNode::getRetroBeatMultiplier() const
+{
+	RetroRecMode rm = retroRecMode->getValueDataAsEnum<RetroRecMode>();
+	jassert(rm != RETRO_NONE);
+	if (rm == RETRO_FIRSTLOOP) return Transport::getInstance()->firstLoopBeats->intValue();
+	else if (rm == RETRO_BAR) return Transport::getInstance()->beatsPerBar->intValue();
+	return 1;
+}
+
+int LooperNode::getRetroNumBeats(int retroCount)
+{
+	int num = retroCount == 1 ? retroRecCount->intValue() : (retroCount == 2 ? retroDoubleRecCount->intValue() : retroTripleRecCount->intValue());
+	return num * getRetroBeatMultiplier();
+}
+
+
+int LooperNode::getRetroNumSamples(int retroCount)
+{
+	return Transport::getInstance()->getSamplesForBeat(getRetroNumBeats(retroCount));
 }
 
 var LooperNode::getJSONData()

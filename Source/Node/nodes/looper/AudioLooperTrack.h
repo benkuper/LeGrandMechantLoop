@@ -32,6 +32,7 @@ public:
     bool antiClickFadeBeforePause;
     bool recordOnNextSample;
 
+
      std::unique_ptr<RubberBand::RubberBandStretcher> stretcher;
 
     void setNumChannels(int num);
@@ -45,6 +46,7 @@ public:
 
     void startRecordingInternal() override;
     void finishRecordingAndPlayInternal() override;
+    void retroRecAndPlayInternal() override;
 
     void processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>& outputBuffer, int numMainChannels, bool outputIfRecording);
 

@@ -20,6 +20,7 @@ public:
 
     IntParameter* numChannelsPerTrack;
     std::unique_ptr<RingBuffer<float>> ringBuffer;
+    std::unique_ptr<RingBuffer<float>> retroRingBuffer;
 
     enum TrackOutputMode { MIXED_ONLY, SEPARATE_ONLY, ALL };
     EnumParameter* trackOutputMode;
@@ -30,6 +31,7 @@ public:
     virtual void updateOutTracks(bool updateConfig = true);
     virtual LooperTrack * createLooperTrack(int index) override;
     virtual void updateRingBuffer();
+    virtual void updateRetroRingBuffer();
     virtual int getFadeNumSamples(); //for ring buffer fade
 
     virtual void audioSetupChanged() override;
@@ -39,6 +41,7 @@ public:
     void onContainerParameterChangedInternal(Parameter* p) override;
     void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;
 
+    virtual void bpmChanged() override;
     virtual void playStateChanged(bool isPlaying, bool forceRestart) override;
 
     virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;

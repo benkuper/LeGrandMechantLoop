@@ -10,7 +10,7 @@
 
 #include "Node/NodeIncludes.h"
 
-String LooperTrack::trackStateNames[LooperTrack::STATES_MAX] = { "Idle", "Will Record", "Recording", "Finish Recording", "Playing", "Will Stop", "Stopped", "Will Play" };
+String LooperTrack::trackStateNames[LooperTrack::STATES_MAX] = { "Idle", "Will Record", "Recording", "Finish Recording", "Retro Rec", "Playing", "Will Stop", "Stopped", "Will Play" };
 
 LooperTrack* LooperTrack::lastManipulatedTrack = nullptr;
 
@@ -25,6 +25,7 @@ LooperTrack::LooperTrack(LooperNode* looper, int index) :
 	bufferNumSamples(0),
 	freeRecStartOffset(0),
 	timeAtStateChange(0),
+	retroRecCount(0),
 	finishRecordLock(false),
 	bpmAtRecord(0),
 	globalBeatAtStart(0),
@@ -103,7 +104,7 @@ void LooperTrack::recordOrPlay()
 
 	case WILL_STOP:
 	{
-		trackState->setValueWithData(PLAYING); //was alreayd playing, cancel the will stop and keep playing
+		trackState->setValueWithData(PLAYING); //was already playing, cancel the will stop and keep playing
 	}
 	break;
 
@@ -113,7 +114,6 @@ void LooperTrack::recordOrPlay()
 
 	looper->setCurrentTrack(this);
 }
-
 
 void LooperTrack::stateChanged()
 {
@@ -286,10 +286,31 @@ void LooperTrack::finishRecordingAndPlay()
 	firstPlayAfterRecord = true;
 	curSample = 0; //force here to avoid jumpGhost on rec
 	startPlaying();
-	
+
 	updateStretch(); //reevaluate stretch
 	finishRecordLock = false;
 }
+
+void LooperTrack::retroRecAndPlay()
+{
+	finishRecordLock = true;
+	numBeats = looper->getRetroNumBeats(retroRecCount);
+	bufferNumSamples = looper->getRetroNumSamples(retroRecCount);
+	bpmAtRecord = Transport::getInstance()->bpm->floatValue();
+	numStretchedBeats->setValue(0);
+
+	retroRecAndPlayInternal();
+	
+	firstPlayAfterRecord = true;
+	curSample = 0; //force here to avoid jumpGhost on rec
+
+	retroRecCount = 0;
+	startPlaying();
+
+	updateStretch(); //reevaluate stretch
+	finishRecordLock = false;
+}
+
 
 void LooperTrack::cancelRecording()
 {
@@ -358,6 +379,7 @@ void LooperTrack::handleWaiting()
 	{
 	case WILL_RECORD: startRecording(); break;
 	case FINISH_RECORDING: finishRecordingAndPlay(); break;
+	case RETRO_REC: retroRecAndPlay(); break;
 	case WILL_PLAY: startPlaying(); break;
 	case WILL_STOP: stopPlaying(); break;
 	default: break;
@@ -421,7 +443,7 @@ void LooperTrack::handleBeatChanged(bool isNewBar, bool isFirstLoop)
 	{
 		if (s == IDLE) return;
 
-		if (isRecording(true))
+		if (isRecording(true, true))
 		{
 			Transport::Quantization q = looper->getQuantization();
 			if ((q == Transport::BAR && isNewBar)
@@ -479,7 +501,7 @@ void LooperTrack::updateStretch(bool force)
 	//reset curSample to expected place in non-stretched loop
 	double sampleRel = Transport::getInstance()->getRelativeBarSamples() + loopBar->intValue() * Transport::getInstance()->getBarNumSamples();
 	curSample = Transport::getInstance()->getBlockPerfectNumSamples(sampleRel * bufferNumSamples / stretchedNumSamples);
-	LOG("Update stretch , stretch = " << stretch << ", cur sample : " << curSample);
+	if (stretch != 1) LOG("Update stretch , stretch = " << stretch << ", cur sample : " << curSample);
 }
 
 void LooperTrack::processTrack(int blockSize, bool forcePlaying)
@@ -501,9 +523,9 @@ void LooperTrack::processTrack(int blockSize, bool forcePlaying)
 		if (playQuantization == Transport::FREE)
 		{
 			if (freePlaySample >= bufferNumSamples) freePlaySample = 0;
-            if(firstPlayAfterRecord) freePlaySample += blockSize;
-            curSample = freePlaySample;
-            freePlaySample += blockSize;
+			if (firstPlayAfterRecord) freePlaySample += blockSize;
+			curSample = freePlaySample;
+			freePlaySample += blockSize;
 		}
 		else //bar, beat
 		{
@@ -533,7 +555,7 @@ void LooperTrack::processTrack(int blockSize, bool forcePlaying)
 		}
 
 		loopProgression->setValue(curSample * 1.0f / totalSamples);
-        firstPlayAfterRecord = false;
+		firstPlayAfterRecord = false;
 	}
 }
 
@@ -545,10 +567,10 @@ bool LooperTrack::hasContent(bool includeRecordPhase) const
 	return true;
 }
 
-bool LooperTrack::isRecording(bool includeWillRecord) const
+bool LooperTrack::isRecording(bool includeWillRecord, bool includeRetroRec) const
 {
 	TrackState s = trackState->getValueDataAsEnum<TrackState>();
-	return s == RECORDING || s == FINISH_RECORDING || (includeWillRecord && s == WILL_RECORD);
+	return s == RECORDING || s == FINISH_RECORDING || (includeWillRecord && s == WILL_RECORD) || (includeRetroRec && s == RETRO_REC);
 }
 
 bool LooperTrack::isPlaying(bool includeWillPlay) const
@@ -557,8 +579,8 @@ bool LooperTrack::isPlaying(bool includeWillPlay) const
 	return s == PLAYING || s == WILL_STOP || (includeWillPlay && s == WILL_PLAY);
 }
 
-bool LooperTrack::isWaiting(bool waitingForRecord, bool waitingForFinishRecord, bool waitingForPlay, bool waitingForStop) const
+bool LooperTrack::isWaiting(bool waitingForRecord, bool waitingForFinishRecord, bool waitingForPlay, bool waitingForStop, bool waitingForRetroRec) const
 {
 	TrackState s = trackState->getValueDataAsEnum<TrackState>();
-	return (waitingForRecord && s == WILL_RECORD) || (waitingForFinishRecord && s == FINISH_RECORDING) || (waitingForPlay && s == WILL_PLAY) || (waitingForStop && s == WILL_STOP);
+	return (waitingForRecord && s == WILL_RECORD) || (waitingForFinishRecord && s == FINISH_RECORDING) || (waitingForPlay && s == WILL_PLAY) || (waitingForStop && s == WILL_STOP) || (waitingForRetroRec && s == RETRO_REC);
 }

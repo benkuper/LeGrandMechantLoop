@@ -65,7 +65,26 @@ LooperTrack* AudioLooperNode::createLooperTrack(int index)
 void AudioLooperNode::updateRingBuffer()
 {
 	ScopedSuspender sp(processor);
-	ringBuffer.reset(new RingBuffer<float>(numChannelsPerTrack->intValue(), getFadeNumSamples() * 2)); //double to not have overlapping read and write
+	ringBuffer.reset(new RingBuffer<float>(numChannelsPerTrack->intValue(), getFadeNumSamples())); //fadeNumSamples WAS DOUBLED BEFORE, REMOVED BECAUSE I DON'T UNDERSTAND WHY. ->double to not have overlapping read and write (??)
+	updateRetroRingBuffer();
+}
+
+void AudioLooperNode::updateRetroRingBuffer()
+{
+	ScopedSuspender sp(processor);
+
+	RetroRecMode rm = retroRecMode->getValueDataAsEnum<RetroRecMode>();
+	if (rm == RETRO_NONE)
+	{
+		retroRingBuffer.reset();
+		return;
+	}
+
+	int maxNum = jmax(jmax(retroRecCount->intValue(), retroDoubleRecCount->intValue()), retroTripleRecCount->intValue());
+	int numBeats = maxNum * getRetroBeatMultiplier();
+
+	int numSamples = Transport::getInstance()->getSamplesForBeat(numBeats) + getFadeNumSamples();
+	retroRingBuffer.reset(new RingBuffer<float>(numChannelsPerTrack->intValue(), numSamples));
 }
 
 
@@ -116,20 +135,19 @@ void AudioLooperNode::onControllableFeedbackUpdateInternal(ControllableContainer
 {
 	LooperNode::onControllableFeedbackUpdateInternal(cc, c);
 	if (c == fadeTimeMS) updateRingBuffer();
+	if (c == retroRecMode || c == retroRecCount || c == retroDoubleRecCount || c == retroTripleRecCount) updateRetroRingBuffer();
+}
+
+void AudioLooperNode::bpmChanged()
+{
+	LooperNode::bpmChanged();
+	updateRetroRingBuffer();
 }
 
 void AudioLooperNode::playStateChanged(bool isPlaying, bool forceRestart)
 {
 	LooperNode::playStateChanged(isPlaying, forceRestart);
-
-	//if (!isPlaying)
-	//{
-	//	for (auto& cc : tracksCC.controllableContainers)
-	//	{
-	//		AudioLooperTrack* tc = (AudioLooperTrack*)cc.get();
-	//		tc->antiClickFadeBeforePause = true;
-	//	}
-	//}
+	updateRetroRingBuffer();
 }
 
 void AudioLooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -141,7 +159,8 @@ void AudioLooperNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffe
 	int numMainChannels = tom == SEPARATE_ONLY ? 0 : numChannelsPerTrack->intValue();
 	bool oneIsRecording = isOneTrackRecording();
 
-	if (fadeTimeMS->intValue() > 0 ) ringBuffer->writeSamples(buffer, 0, jmin(buffer.getNumSamples(), ringBuffer->bufferSize));
+	if (fadeTimeMS->intValue() > 0) ringBuffer->writeSamples(buffer, 0, jmin(buffer.getNumSamples(), ringBuffer->bufferSize));
+	if (retroRingBuffer != nullptr) retroRingBuffer->writeSamples(buffer, 0, jmin(buffer.getNumSamples(), retroRingBuffer->bufferSize));
 
 	AudioBuffer<float> tmpBuffer;
 	tmpBuffer.makeCopyOf(buffer);

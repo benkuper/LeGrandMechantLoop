@@ -23,7 +23,7 @@ public:
 
 	static LooperTrack* lastManipulatedTrack;
 
-	enum TrackState { IDLE, WILL_RECORD, RECORDING, FINISH_RECORDING, PLAYING, WILL_STOP, STOPPED, WILL_PLAY, STATES_MAX };
+	enum TrackState { IDLE, WILL_RECORD, RECORDING, FINISH_RECORDING, RETRO_REC, PLAYING, WILL_STOP, STOPPED, WILL_PLAY, STATES_MAX };
 	static String trackStateNames[STATES_MAX];
 
 	EnumParameter* trackState;
@@ -53,6 +53,7 @@ public:
 	int bufferNumSamples;
 	int freeRecStartOffset;
 	double timeAtStateChange;
+	int retroRecCount;
 	bool finishRecordLock;
 
 	float bpmAtRecord;
@@ -74,6 +75,9 @@ public:
 	virtual void startRecordingInternal() {}
 	virtual void finishRecordingAndPlay();
 	virtual void finishRecordingAndPlayInternal() {}
+	virtual void retroRecAndPlay();
+	virtual void retroRecAndPlayInternal() {}
+
 	virtual void cancelRecording();
 	virtual void clearBuffer(bool setIdle = true);
 	virtual void startPlaying();
@@ -97,7 +101,7 @@ public:
 
 	//Helpers
 	virtual bool hasContent(bool includeRecordPhase) const;
-	bool isRecording(bool includeWillRecord) const;
+	bool isRecording(bool includeWillRecord, bool includeRetroRec = false) const;
 	bool isPlaying(bool includeWillPlay) const;
-	bool isWaiting(bool waitingForRecord = true, bool waitingForFinishRecord = true, bool waitingForPlay = true, bool waitingForStop = true) const;
+	bool isWaiting(bool waitingForRecord = true, bool waitingForFinishRecord = true, bool waitingForPlay = true, bool waitingForStop = true, bool waitingForRetroRec = true) const;
 };

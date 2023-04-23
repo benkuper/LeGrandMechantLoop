@@ -90,7 +90,7 @@ void AudioLooperTrack::clearBuffer(bool setIdle)
 
 void AudioLooperTrack::clearTrack()
 {
-	if (antiClickFadeBeforeClear)
+	if (!isPlaying(false) || antiClickFadeBeforeClear)
 	{
 		LooperTrack::clearTrack();
 	}
@@ -162,6 +162,41 @@ void AudioLooperTrack::finishRecordingAndPlayInternal()
 
 	stretch = 1; // reset stretch
 
+}
+
+void AudioLooperTrack::retroRecAndPlayInternal()
+{
+	antiClickFadeBeforeClear = false; //force after rec to avoid clear the track
+
+	updateBufferSize(bufferNumSamples); //update size of buffer, will fill with silence if buffer is larger than what has been recorded
+
+
+	//fade with ring buffer using looper fadeTimeMS
+
+	int fadeNumSamples = audioLooper->getFadeNumSamples();
+	audioLooper->retroRingBuffer->readSamples(buffer, bufferNumSamples, fadeNumSamples);
+
+	if (fadeNumSamples > 0)
+	{
+		preRecBuffer.setSize(buffer.getNumChannels(), fadeNumSamples, false, true);
+		audioLooper->retroRingBuffer->readSamples(preRecBuffer, fadeNumSamples);
+		
+		int cropFadeNumSamples = jmin(bufferNumSamples, fadeNumSamples);
+		int bufferStartSample = bufferNumSamples - cropFadeNumSamples;
+
+		int preRecStartSample = preRecBuffer.getNumSamples() - cropFadeNumSamples;
+
+		buffer.applyGainRamp(bufferStartSample, cropFadeNumSamples, 1, 0);
+
+		for (int i = 0; i < buffer.getNumChannels(); i++)
+		{
+			buffer.addFromWithRamp(i, bufferStartSample, preRecBuffer.getReadPointer(i, preRecStartSample), cropFadeNumSamples, 0, 1);
+		}
+
+		preRecBuffer.clear();
+	}
+
+	stretch = 1; // reset stretch
 }
 
 void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>& outputBuffer, int numMainChannels, bool outputIfRecording)
@@ -261,7 +296,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		if (firstPlayAfterRecord)
 		{
 			prevGain = 0;
-//			firstPlayAfterRecord = false;
+			//			firstPlayAfterRecord = false;
 		}
 		else if (antiClickFadeBeforeClear || antiClickFadeBeforeStop)
 		{
