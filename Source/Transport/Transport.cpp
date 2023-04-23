@@ -133,8 +133,8 @@ void Transport::finishSetTempo(bool startPlaying)
 	{
 		targetNumBeats = beatsPerBar->intValue();
 		int targetRawSamplesPerBeat = floor(setTempoSampleCount / targetNumBeats);
-		float targetSamplesPerBeat = targetRawSamplesPerBeat - targetRawSamplesPerBeat % blockSize;
-		float expectedBPM = 60.0 / getTimeForSamples(targetSamplesPerBeat);
+		double targetSamplesPerBeat = targetRawSamplesPerBeat - targetRawSamplesPerBeat % blockSize;
+		double expectedBPM = 60.0 / getTimeForSamples(targetSamplesPerBeat);
 
 		if (expectedBPM < recQuantizBPMRange->x)
 		{
@@ -163,7 +163,7 @@ void Transport::finishSetTempo(bool startPlaying)
 
 	int rawSamplesPerBeat = floor(setTempoSampleCount / targetNumBeats);
 	numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
-	float targetBPM = 60.0 / getTimeForSamples(numSamplesPerBeat);
+	double targetBPM = 60.0 / getTimeForSamples(numSamplesPerBeat);
 	settingBPMFromTransport = true;
 	bpm->setValue(targetBPM);
 	settingBPMFromTransport = false;
@@ -331,14 +331,14 @@ double Transport::getBeatLength() const
 double Transport::getTimeToNextBar() const
 {
 	double barTime = getTimeForBar(1);
-	double relBarTime = fmodf(currentTime->floatValue(), barTime);
+	double relBarTime = fmodf(currentTime->doubleValue(), barTime);
 	return barTime - relBarTime;
 }
 
 double Transport::getTimeToNextBeat() const
 {
 	double beatTime = getTimeForBeat(1);
-	double relBeatTime = fmodf(currentTime->floatValue(), beatTime);
+	double relBeatTime = fmodf(currentTime->doubleValue(), beatTime);
 	return beatTime - relBeatTime;
 }
 
@@ -472,7 +472,7 @@ Optional<AudioPlayHead::PositionInfo> Transport::getPosition() const
 
 	double positionOfLastBarStart = (double)(curBar->intValue() * beatsPerBar->intValue());
 	result.setPpqPositionOfLastBarStart(positionOfLastBarStart); // ?? 
-	result.setPpqPosition(positionOfLastBarStart + floor(barProgression->floatValue() * beatsPerBar->intValue() * beatUnit->intValue()) / beatUnit->intValue());
+	result.setPpqPosition(positionOfLastBarStart + (barProgression->doubleValue() * beatsPerBar->intValue() * beatUnit->intValue()) / beatUnit->intValue());
 
 	TimeSignature signature;
 	signature.numerator = beatsPerBar->intValue();
