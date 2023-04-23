@@ -63,6 +63,9 @@ void VSTNodeViewUI::buttonClicked(Button* b)
 			if (pluginEditor.get() == nullptr)
 			{
 				pluginEditor.reset(new PluginWindow(node));
+				if(pluginEditorBounds.isEmpty()) pluginEditor->centreWithSize(pluginEditor->getWidth(), pluginEditor->getHeight());
+				else pluginEditor->setBounds(pluginEditorBounds);
+
 				pluginEditor->addPluginWindowListener(this);
 				editHeaderBT->setEnabled(false);
 			}
@@ -76,6 +79,7 @@ void VSTNodeViewUI::buttonClicked(Button* b)
 
 void VSTNodeViewUI::windowClosed()
 {
+	pluginEditorBounds = pluginEditor->getBounds();
 	pluginEditor.reset();
 	editHeaderBT->setEnabled(true);
 }

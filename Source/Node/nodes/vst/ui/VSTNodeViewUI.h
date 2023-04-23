@@ -53,6 +53,8 @@ public:
     std::unique_ptr<TargetParameterUI> midiParamUI;
     std::unique_ptr<VSTPluginParameterUI> pluginUI;
     std::unique_ptr<PluginWindow> pluginEditor;
+
+    Rectangle<int> pluginEditorBounds;
     
     void resizedInternalHeader(Rectangle<int>& r) override;
     void resizedInternalContentNode(Rectangle<int>& r) override;
