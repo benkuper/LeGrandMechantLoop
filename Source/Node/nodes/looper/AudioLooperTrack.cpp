@@ -174,13 +174,13 @@ void AudioLooperTrack::retroRecAndPlayInternal()
 	//fade with ring buffer using looper fadeTimeMS
 
 	int fadeNumSamples = audioLooper->getFadeNumSamples();
-	audioLooper->retroRingBuffer->readSamples(buffer, bufferNumSamples, fadeNumSamples);
+	audioLooper->retroRingBuffer->readSamples(buffer, bufferNumSamples, 0);
 
 	if (fadeNumSamples > 0)
 	{
 		preRecBuffer.setSize(buffer.getNumChannels(), fadeNumSamples, false, true);
-		audioLooper->retroRingBuffer->readSamples(preRecBuffer, fadeNumSamples);
-		
+		audioLooper->retroRingBuffer->readSamples(preRecBuffer, fadeNumSamples, bufferNumSamples);
+
 		int cropFadeNumSamples = jmin(bufferNumSamples, fadeNumSamples);
 		int bufferStartSample = bufferNumSamples - cropFadeNumSamples;
 
