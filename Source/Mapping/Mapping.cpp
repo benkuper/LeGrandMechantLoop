@@ -95,6 +95,7 @@ void Mapping::onExternalParameterValueChanged(Parameter* p)
 
 void Mapping::process(var value)
 {
+	if (!enabled->boolValue()) return;
 	if (dest == nullptr || dest.wasObjectDeleted()) return;
 	if (isSendingFeedback) return;
 
@@ -275,6 +276,8 @@ void MIDIMapping::onContainerParameterChangedInternal(Parameter* p)
 
 void MIDIMapping::noteOnReceived(MIDIInterface*, const int& _channel, const int& pitch, const int& velocity)
 {
+	if (!enabled->boolValue()) return;
+
 	if (learn->boolValue())
 	{
 		type->setValueWithData(NOTE);
@@ -293,6 +296,7 @@ void MIDIMapping::noteOnReceived(MIDIInterface*, const int& _channel, const int&
 
 void MIDIMapping::noteOffReceived(MIDIInterface*, const int& _channel, const int& pitch, const int& velocity)
 {
+	if (!enabled->boolValue()) return;
 	if (type->getValueDataAsEnum<MIDIType>() != NOTE) return;
 	if (channel->intValue() > 0 && _channel != channel->intValue()) return;
 	if (pitch != pitchOrNumber->intValue()) return;
@@ -301,6 +305,7 @@ void MIDIMapping::noteOffReceived(MIDIInterface*, const int& _channel, const int
 
 void MIDIMapping::controlChangeReceived(MIDIInterface*, const int& _channel, const int& number, const int& velocity)
 {
+	if (!enabled->boolValue()) return;
 	if (learn->boolValue())
 	{
 		type->setValueWithData(CC);
@@ -317,6 +322,7 @@ void MIDIMapping::controlChangeReceived(MIDIInterface*, const int& _channel, con
 
 void MIDIMapping::pitchWheelReceived(MIDIInterface*, const int& _channel, const int& value)
 {
+	if (!enabled->boolValue()) return;
 	if (learn->boolValue())
 	{
 		type->setValueWithData(PitchWheel);
@@ -338,6 +344,7 @@ void MIDIMapping::deviceChanged(MIDIInterface*)
 
 void MIDIMapping::managerMidiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 {
+	if (!enabled->boolValue()) return;
 	if (learn->boolValue()) interfaceParam->setValueFromTarget(i);
 	if (m.isNoteOn()) noteOnReceived(i, m.getChannel(), m.getNoteNumber(), m.getVelocity());
 	else if (m.isNoteOff()) noteOffReceived(i, m.getChannel(), m.getNoteNumber(), m.getVelocity());
