@@ -129,7 +129,7 @@ public:
 		int readPosition = (writePosition.get() % bufferSize) - (readSize + offset);
 
 		// If read position goes into negative bounds, loop it around the ring
-		if (readPosition < 0)
+		while (readPosition < 0)
 			readPosition = bufferSize + readPosition;
 
 		for (int i = 0; i < numChannels; ++i)
