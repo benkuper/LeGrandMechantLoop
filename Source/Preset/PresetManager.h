@@ -16,6 +16,8 @@ class PresetManager :
 public:
     PresetManager();
     virtual ~PresetManager();
+
+    Array<Preset*> getAllPresets(bool recursive = true, bool includeDisabled = true, bool includeSkip = true);
 };
 
 class RootPresetManager :
@@ -42,6 +44,9 @@ public:
 
     StringParameter* curPresetName;
     StringParameter* curPresetDescription;
+    StringParameter* nextPresetName;
+    StringParameter* nextPresetDescription;
+
     FloatParameter* loadProgress;
 
     //Transition
@@ -54,8 +59,11 @@ public:
 
     void setCurrentPreset(Preset* p);
     void loadNextPreset(Preset* p, bool recursive);
+    Preset* getNextPreset(Preset* p, bool recursive);
+
     void loadPreviousPreset(Preset* p);
-    void loadLastNestedPresetFor(Preset* p);
+    Preset* getPreviousPreset(Preset* p, bool recursive);
+    //Preset* getLastNestedPresetFor(Preset* p);
     void onContainerTriggerTriggered(Trigger* t) override;
 
     void toggleControllablePresettable(Controllable* c);
@@ -66,8 +74,6 @@ public:
     void removeAllPresetsFor(Controllable * c);
 
     void inspectableDestroyed(Inspectable* i) override;
-
-    Array<Preset*> getAllPresets(Preset * parent = nullptr);
 
     void fillPresetMenu(PopupMenu & menu, int indexOffset, Controllable * targetControllable, bool showValue = false,std::function<bool(Preset* p, Controllable*)> tickCheckFunction = nullptr);
     Preset * getPresetForMenuResult(int result);

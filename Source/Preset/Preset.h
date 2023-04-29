@@ -14,7 +14,8 @@ class PresetManager;
 
 class Preset :
 	public BaseItem,
-	public BaseManager<Preset>::ManagerListener
+	public BaseManager<Preset>::ManagerListener,
+	public EngineListener
 {
 public:
 	Preset(var params = var());
@@ -41,7 +42,7 @@ public:
 	HashMap<WeakReference<Controllable>, var> dataMap;
 	HashMap<WeakReference<Controllable>, TransitionMode> transitionMap;
 	HashMap<WeakReference<Controllable>, String> controllableGhostAddressMap;
-	Array<String> lostParamAddresses;
+	HashMap<String, TransitionMode> lostControllables;
 	HashMap<String, var> addressMap;
 	Array<String> overridenControllables;
 	Array<WeakReference<Controllable>> ignoredControllables;
@@ -63,8 +64,12 @@ public:
 	void removeControllableFromDataMap(Controllable* c);
 	void removeAddressFromDataMap(String address);
 
+	void recoverLostControllables();
+
 	bool isMain(); //check if it's not an override
 	bool hasPresetControllable(Controllable* c);
+
+
 
 	void onContainerTriggerTriggered(Trigger* t) override;
 	void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
@@ -80,6 +85,7 @@ public:
 	void controllableControlAddressChanged(Controllable* c) override;
 
 	void childStructureChanged(ControllableContainer* cc) override;
+	void endLoadFile() override;
 
 	InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> controllables = {}) override;
 

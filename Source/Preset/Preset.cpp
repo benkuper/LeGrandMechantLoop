@@ -85,6 +85,7 @@ Preset::Preset(var params) :
 	highlightLinkedInspectableOnSelect = true;
 
 	Engine::mainEngine->addControllableContainerListener(this);
+	Engine::mainEngine->addEngineListener(this);
 }
 
 Preset::~Preset()
@@ -233,7 +234,7 @@ void Preset::addControllableToDataMap(Controllable* c, var forceValue)
 	dataMap.set(c, val);
 	addressMap.set(add, val);
 	controllableGhostAddressMap.set(c, add);
-	lostParamAddresses.removeAllInstancesOf(add);
+	lostControllables.remove(add);
 	/*if (!isMain()) */overridenControllables.addIfNotAlreadyThere(add);
 
 	c->addControllableListener(this);
@@ -264,21 +265,40 @@ void Preset::removeControllableFromDataMap(Controllable* c)
 	c->removeControllableListener(this);
 	unregisterLinkedInspectable(c);
 	addressMap.remove(add);
-	lostParamAddresses.removeAllInstancesOf(add);
+	lostControllables.remove(add);
 	overridenControllables.removeAllInstancesOf(add);
 }
 
 void Preset::removeAddressFromDataMap(String address)
 {
-	if (Parameter* p = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(address)))
+	if (Controllable* c = Engine::mainEngine->getControllableForAddress(address))
 	{
-		removeControllableFromDataMap(p);
+		removeControllableFromDataMap(c);
 		return;
 	}
 
 	controllableGhostAddressMap.removeValue(address);
 	addressMap.remove(address);
 	/* if (!isMain()) */ overridenControllables.removeAllInstancesOf(address);
+}
+
+void Preset::recoverLostControllables()
+{
+	HashMap<String, TransitionMode> initLostControllables;
+
+	HashMap<String, TransitionMode>::Iterator it(lostControllables);
+	while (it.next()) initLostControllables.set(it.getKey(), it.getValue()); //copy first because recovering changes the initial hashmap
+
+	HashMap<String, TransitionMode>::Iterator lit(initLostControllables);
+	while(lit.next())
+	{
+		String add = lit.getKey();
+		if (Controllable* c = Engine::mainEngine->getControllableForAddress(add))
+		{
+			addControllableToDataMap(c, addressMap.contains(add) ? addressMap[add] : var());
+			transitionMap.set(c, lit.getValue());
+		}
+	}
 }
 
 bool Preset::isMain()
@@ -357,6 +377,11 @@ var Preset::getJSONData()
 	for (auto& c : ignoredControllables) ignoreData.append(c->getControlAddress());
 	data.getDynamicObject()->setProperty("ignores", ignoreData);
 
+	var lostData(new DynamicObject());
+	HashMap<String, TransitionMode>::Iterator lit(lostControllables);
+	while (lit.next()) lostData.getDynamicObject()->setProperty(lit.getKey(), lit.getValue());
+	data.getDynamicObject()->setProperty("lost", lostData);
+
 	return data;
 }
 
@@ -365,6 +390,8 @@ void Preset::loadJSONDataItemInternal(var data)
 	subPresets->loadJSONData(data["subPresets"]);
 	linkedPresetsCC.loadJSONData(data["linkedPresets"], true);
 	transitionCC.loadJSONData(data["transition"], true);
+
+	var transitionData = data["transitionOverrides"];
 
 	var values = data["values"];
 	if (values.isObject())
@@ -376,10 +403,13 @@ void Preset::loadJSONDataItemInternal(var data)
 			{
 				addControllableToDataMap(tp, p.value);
 			}
+			else
+			{
+				lostControllables.set(p.name.toString(), (TransitionMode)(int)transitionData.getProperty(p.name.toString(), TransitionMode::DEFAULT));
+			}
 		}
 	}
 
-	var transitionData = data["transitionOverrides"];
 	if (transitionData.isObject())
 	{
 		NamedValueSet tData = transitionData.getDynamicObject()->getProperties();
@@ -400,39 +430,48 @@ void Preset::loadJSONDataItemInternal(var data)
 			ignoredControllables.add(tc);
 		}
 	}
+
+	var lostData = data.getProperty("lost", var());
+	if (lostData.isObject())
+	{
+		NamedValueSet lData = lostData.getDynamicObject()->getProperties();
+		for (auto& ld : lData)
+		{
+			lostControllables.set(ld.name.toString(), (TransitionMode)(int)ld.value);
+		}
+	}
 }
 
 void Preset::controllableControlAddressChanged(Controllable* c)
 {
 	BaseItem::controllableControlAddressChanged(c);
-	if (Parameter* p = dynamic_cast<Parameter*>(c))
+	bool isAttachedToRoot = ControllableUtil::findParentAs<Engine>(c) != nullptr;
+	if (isAttachedToRoot && dataMap.contains(c)) updateControllableAddress(c);
+	else
 	{
-		bool isAttachedToRoot = ControllableUtil::findParentAs<Engine>(p) != nullptr;
-		if (isAttachedToRoot && dataMap.contains(p)) updateControllableAddress(p);
-		else
+		//got detached, meaning it will be surely removed
+		if (dataMap.contains(c))
 		{
-			//got detached, meaning it will be surely removed
-			if (dataMap.contains(p))
-			{
-				dataMap.remove(p);
-				p->removeControllableListener(this);
-				lostParamAddresses.addIfNotAlreadyThere(controllableGhostAddressMap[p]);
-				controllableGhostAddressMap.remove(p);
-			}
+			dataMap.remove(c);
+			c->removeControllableListener(this);
+			lostControllables.set(controllableGhostAddressMap[c], transitionMap[c]);
+			controllableGhostAddressMap.remove(c);
 		}
 	}
-
 }
 
 void Preset::childStructureChanged(ControllableContainer* cc)
 {
-	for (auto& add : lostParamAddresses)
-	{
-		if (Parameter* p = dynamic_cast<Parameter*>(Engine::mainEngine->getControllableForAddress(add)))
-		{
-			addControllableToDataMap(p, addressMap.contains(add) ? addressMap[add] : var());
-		}
-	}
+	if (cc != Engine::mainEngine) BaseItem::childStructureChanged(cc);
+
+	if (Engine::mainEngine->isLoadingFile) return;
+	recoverLostControllables();
+}
+
+void Preset::endLoadFile()
+{
+	Engine::mainEngine->removeEngineListener(this);
+	recoverLostControllables();
 }
 
 InspectableEditor* Preset::getEditorInternal(bool isRoot, Array<Inspectable*> controllables)

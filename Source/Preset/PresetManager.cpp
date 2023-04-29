@@ -23,6 +23,19 @@ PresetManager::~PresetManager()
 {
 }
 
+Array<Preset*> PresetManager::getAllPresets(bool recursive, bool includeDisabled, bool includeSkip)
+{
+	Array<Preset*> result;
+	for (auto& i : items)
+	{
+		if (!includeDisabled && !i->enabled->boolValue()) continue;
+		if (includeSkip || !i->skipInPrevNext->boolValue()) result.add(i);
+		if (recursive) result.addArray(i->subPresets->getAllPresets(recursive, includeDisabled, includeSkip));
+	}
+
+	return result;
+}
+
 //Root
 RootPresetManager::RootPresetManager() :
 	PresetManager(),
@@ -51,6 +64,13 @@ RootPresetManager::RootPresetManager() :
 	curPresetDescription->multiline = true;
 	curPresetDescription->setControllableFeedbackOnly(true);
 
+	nextPresetName = addStringParameter("Next Preset", "The name of the next preset, for reference", "");
+	nextPresetName->setControllableFeedbackOnly(true);
+
+	nextPresetDescription = addStringParameter("Next Preset Description", "The description of the next preset, for reference", "");
+	nextPresetDescription->multiline = true;
+	nextPresetDescription->setControllableFeedbackOnly(true);
+
 	Engine::mainEngine->addEngineListener(this);
 	OSCRemoteControl::getInstance()->addRemoteControlListener(this);
 }
@@ -74,6 +94,18 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 {
 	//if (currentPreset == p) return; // commented to be able to reload
 
+	if (p != nullptr && !p->enabled) return;
+
+	if (Thread::getCurrentThreadId() == getThreadId()) //calling preset change from a preset transition, need to restart from another thread than this one
+	{
+		MessageManager::getInstance()->callAsync([this, p]()
+			{
+				this->setCurrentPreset(p);
+			});
+
+		return;
+	}
+
 	if (currentPreset != nullptr && !currentPreset->isClearing)
 	{
 		currentPreset->removeInspectableListener(this);
@@ -81,14 +113,8 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 	}
 
 	stopThread(100);
+
 	prevPreset = currentPreset;
-
-	if (p != nullptr && !p->enabled->boolValue())
-	{
-		currentPreset = nullptr;
-		return;
-	}
-
 	currentPreset = p;
 
 	if (currentPreset != nullptr)
@@ -131,67 +157,44 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 
 	curPresetName->setValue(currentPreset != nullptr ? currentPreset->niceName : "");
 	curPresetDescription->setValue(currentPreset != nullptr ? currentPreset->description->stringValue() : "");
+
+	Preset* nextPreset = getNextPreset(currentPreset, true);
+	nextPresetName->setValue(nextPreset != nullptr ? nextPreset->niceName : "");
+	nextPresetDescription->setValue(nextPreset != nullptr ? nextPreset->description->stringValue() : "");
+
 }
 
 void RootPresetManager::loadNextPreset(Preset* p, bool recursive)
 {
-	if (p == nullptr) return;
+	Preset* np = getNextPreset(p, recursive);
+	if (np != nullptr) setCurrentPreset(np);
+}
 
-	if (recursive && p->subPresets->items.size() > 0)
-	{
-		setCurrentPreset(p->subPresets->items.getFirst());
-		return;
-	}
+Preset* RootPresetManager::getNextPreset(Preset* p, bool recursive)
+{
+	if (p == nullptr) return nullptr;
 
-	PresetManager* pm = p != nullptr ? (PresetManager*)p->parentContainer.get() : this;
-	if (pm == nullptr) return;
-	Preset* np = pm->items.indexOf(p) < pm->items.size() - 1 ? pm->items[pm->items.indexOf(p) + 1] : nullptr;
-	if (np != nullptr)
-	{
-		if (np->skipInPrevNext->boolValue() || !np->enabled->boolValue()) loadNextPreset(np, true);
-		else setCurrentPreset(np);
-	}
-	else
-	{
-		Preset* pp = (Preset*)pm->parentContainer.get();
-		if (pp == nullptr) return;
-		loadNextPreset(pp, false);
-	}
+	Array<Preset*> presets = getAllPresets(recursive, false, false);
+	if (p != presets.getLast()) return presets[presets.indexOf(p) + 1];
+	
+	return nullptr;
 }
 
 void RootPresetManager::loadPreviousPreset(Preset* p)
 {
-	PresetManager* pm = p != nullptr ? (PresetManager*)p->parentContainer.get() : this;
-	if (pm == nullptr) return;
-
-	Preset* prevP = pm->items.indexOf(p) > 0 ? pm->items[pm->items.indexOf(p) - 1] : nullptr;
-	if (prevP != nullptr)
-	{
-		loadLastNestedPresetFor(prevP);
-		return;
-	}
-
-	Preset* pp = ControllableUtil::findParentAs<Preset>(p);
-	if (pp != nullptr)
-	{
-		if (pp->skipInPrevNext->boolValue() || !pp->enabled->boolValue()) loadPreviousPreset(pp);
-		else setCurrentPreset(pp);
-	}
+	Preset* pp = getPreviousPreset(p, true);
+	if (pp != nullptr) setCurrentPreset(pp);
 }
 
-void RootPresetManager::loadLastNestedPresetFor(Preset* p)
+
+Preset* RootPresetManager::getPreviousPreset(Preset* p, bool recursive)
 {
-	if (p == nullptr) return;
+	if (p == nullptr) return nullptr;
 
-	PresetManager* pm = p->subPresets.get();
+	Array<Preset*> presets = getAllPresets(recursive, false, false);
+	if (p != presets.getFirst()) return presets[presets.indexOf(p) - 1];
 
-	if (pm->items.size() == 0)
-	{
-		setCurrentPreset(p);
-		return;
-	}
-
-	loadLastNestedPresetFor(pm->items.getLast());
+	return nullptr;
 }
 
 void RootPresetManager::onContainerTriggerTriggered(Trigger* t)
@@ -280,18 +283,6 @@ void RootPresetManager::inspectableDestroyed(Inspectable* i)
 {
 	if (i == currentPreset) setCurrentPreset(nullptr);
 }
-
-Array<Preset*> RootPresetManager::getAllPresets(Preset* parent)
-{
-	PresetManager* pm = parent == nullptr ? RootPresetManager::getInstance() : parent->subPresets.get();
-	Array<Preset*> result;
-	if (parent != nullptr) result.add(parent);
-	for (auto& sp : pm->items) result.addArray(getAllPresets(sp));
-
-	return result;
-}
-
-
 
 void RootPresetManager::fillPresetMenu(PopupMenu& menu, int indexOffset, Controllable* targetControllable, bool showValue, std::function<bool(Preset*, Controllable*)> tickCheckFunction)
 {

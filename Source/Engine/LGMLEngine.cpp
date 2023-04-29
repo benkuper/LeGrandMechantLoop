@@ -91,11 +91,11 @@ var LGMLEngine::getJSONData()
 
 void LGMLEngine::loadJSONDataInternalEngine(var data, ProgressTask* loadingTask)
 {
-    RootNodeManager::getInstance()->loadJSONData(data.getProperty(RootNodeManager::getInstance()->shortName, var()));
     Transport::getInstance()->loadJSONData(data.getProperty(Transport::getInstance()->shortName, var()));
     //MacroManager::getInstance()->loadJSONData(data.getProperty(MacroManager::getInstance()->shortName, var()));
     InterfaceManager::getInstance()->loadJSONData(data.getProperty(InterfaceManager::getInstance()->shortName, var()));
     MappingManager::getInstance()->loadJSONData(data.getProperty(MappingManager::getInstance()->shortName, var()));
+    RootNodeManager::getInstance()->loadJSONData(data.getProperty(RootNodeManager::getInstance()->shortName, var()));
     RootPresetManager::getInstance()->loadJSONData(data.getProperty(RootPresetManager::getInstance()->shortName, var()));
 }
 
