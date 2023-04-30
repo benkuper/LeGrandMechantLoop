@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" jucerFormatVersion="1"
               projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include&#10;../../External/rubberband/include"
-              defines="VST_LOGGING=0&#10;OSC_REMOTE_CONTROL_PORT=44000" version="1.0.1b3"
+              defines="VST_LOGGING=0&#10;OSC_REMOTE_CONTROL_PORT=44000" version="1.0.1b4"
               cppLanguageStandard="17" companyName="Ben Kuper" companyCopyright="Ben Kuper"
               bundleIdentifier="benkuper.LGML" includeBinaryInJuceHeader="1">
   <MAINGROUP id="xIhitl" name="LGML">

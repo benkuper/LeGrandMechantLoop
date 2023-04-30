@@ -54,7 +54,7 @@ namespace ProjectInfo
 {
     const char* const  projectName    = "LGML";
     const char* const  companyName    = "Ben Kuper";
-    const char* const  versionString  = "1.0.1b3";
+    const char* const  versionString  = "1.0.1b4";
     const int          versionNumber  = 0x10001;
 }
 #endif
