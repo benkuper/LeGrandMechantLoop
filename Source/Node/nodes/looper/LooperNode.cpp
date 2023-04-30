@@ -118,6 +118,8 @@ void LooperNode::initInternal()
 
 void LooperNode::updateLooperTracks()
 {
+	currentTrackIndex->setValue(1); //force reset current track when changing num tracks
+
 	ScopedSuspender sp(processor);
 
 	while (tracksCC.controllableContainers.size() > numTracks->intValue())
@@ -139,8 +141,6 @@ void LooperNode::updateLooperTracks()
 void LooperNode::setCurrentTrack(LooperTrack* t)
 {
 	if (currentTrack == t) return;
-
-
 
 	if (currentTrack != nullptr)
 	{

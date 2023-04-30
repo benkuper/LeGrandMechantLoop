@@ -34,6 +34,16 @@ void NodeConnection::setSourceNode(Node* node)
 {
 	if (node == sourceNode) return;
 
+	if (node != nullptr)
+	{
+		if (connectionType == AUDIO)
+		{
+			if (!node->hasAudioOutput) return;
+		}
+		else if (!node->hasMIDIOutput) return;
+	}
+
+
 	if (sourceNode != nullptr)
 	{
 		sourceNode->removeNodeListener(this);
@@ -59,6 +69,16 @@ void NodeConnection::setSourceNode(Node* node)
 void NodeConnection::setDestNode(Node* node)
 {
 	if (node == destNode) return;
+
+	if (node != nullptr)
+	{
+		if (connectionType == AUDIO)
+		{
+			if (!node->hasAudioInput) return;
+		}
+		else if (!node->hasMIDIInput) return;
+	}
+
 	if (destNode != nullptr)
 	{
 		destNode->removeNodeListener(this);

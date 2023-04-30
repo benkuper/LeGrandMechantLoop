@@ -25,7 +25,10 @@ public:
 
     void addConnection(Node * sourceNode, Node * destNode, NodeConnection::ConnectionType connectionType, var channelMapData = var());
     Array<UndoableAction*> getAddConnectionUndoableAction(Node* sourceNode, Node* destNode, NodeConnection::ConnectionType connectionType, var channelMapData = var());
+    
     virtual NodeConnection* getConnectionForSourceAndDest(Node* sourceNode, Node* destNode, NodeConnection::ConnectionType connectionType);
+    virtual Array<NodeConnection*> getInAndOutConnectionsFor(Node* node);
+
     Array<UndoableAction*> getRemoveAllLinkedConnectionsActions(Array<Node*> itemsToRemove);
 
     NodeConnection* addItemFromData(var data, bool addToUndo = true) override;

@@ -41,23 +41,30 @@ public:
     void setSourceConnector(NodeConnector* c);
     void setDestConnector(NodeConnector* c);
 
+    virtual void mouseUp(const MouseEvent& e) override;
+
+    virtual bool isInterestedInDragSource(const SourceDetails& details) override;
+    virtual void itemDragEnter(const SourceDetails& details) override;
+    virtual void itemDragExit(const SourceDetails& details) override;
+    virtual void itemDropped(const SourceDetails& details) override;
+
     void componentMovedOrResized(Component& c, bool, bool) override;
     void componentBeingDeleted(Component& c) override;
 
     void newMessage(const NodeConnection::ConnectionEvent& e) override;
 
-    class Handle :
-        public Component
-    {
-    public:
-        Handle(Colour c);
-        ~Handle() {}
-        Colour color;
-        void paint(Graphics& g) override;
-    };
+    //class Handle :
+    //    public Component
+    //{
+    //public:
+    //    Handle(Colour c);
+    //    ~Handle() {}
+    //    Colour color;
+    //    void paint(Graphics& g) override;
+    //};
 
-    Handle sourceHandle;
-    Handle destHandle;
+    //Handle sourceHandle;
+    //Handle destHandle;
 
     void timerCallback() override;
 };

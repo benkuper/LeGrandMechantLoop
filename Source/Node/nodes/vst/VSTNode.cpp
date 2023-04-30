@@ -143,7 +143,7 @@ void VSTNode::setIOFromVST()
 	{
 		setAudioInputs(2);//2 for basic setup without having to put a vst vst->getTotalNumInputChannels());
 		setAudioOutputs(2);//2 for basic setup without having to put a vst// vst->getTotalNumOutputChannels());
-		setMIDIIO(false, false);
+		setMIDIIO(true, true); //for automatic connection
 	}
 
 }
@@ -375,10 +375,10 @@ void VSTNode::bypassInternal()
 {
 	if (clearBufferOnDisable->boolValue())
 	{
-		if(vst != nullptr)
-        {
-            vst->reset();
-        }
+		if (vst != nullptr)
+		{
+			vst->reset();
+		}
 	}
 }
 

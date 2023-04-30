@@ -35,6 +35,10 @@ public:
     virtual void resizedInternalContent(Rectangle<int>& r) override;
     virtual void resizedInternalContentNode(Rectangle<int>& r) {}
 
+    virtual bool isInterestedInDragSource(const SourceDetails& details) override;
+    virtual void itemDragEnter(const SourceDetails& details) override;
+    virtual void itemDragExit(const SourceDetails& details) override;
+    virtual void itemDropped(const SourceDetails& details) override;
 
     Rectangle<int> getMainBounds() override;
 

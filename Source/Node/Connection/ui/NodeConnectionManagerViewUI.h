@@ -32,7 +32,5 @@ public:
 
     void resized() override; //override to avoid baseManagerUI stuff
 
-    void startCreateConnection(NodeConnector* connector, NodeConnection * connectionToReplace = nullptr);
-    void updateCreateConnection();
-    void endCreateConnection();
+
 };

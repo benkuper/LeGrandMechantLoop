@@ -9,6 +9,7 @@
 */
 
 #include "Node/NodeIncludes.h"
+#include "NodeViewUI.h"
 
 BaseNodeViewUI::BaseNodeViewUI(Node* node) :
 	BaseItemUI(node, Direction::ALL, true)
@@ -21,19 +22,19 @@ BaseNodeViewUI::BaseNodeViewUI(Node* node) :
 	removeChildComponent(itemColorUI.get());
 	itemColorUI.reset();
 	showColorUI = false;
-	
+
 	viewFilterUpdated(); //force refresh
 
 	updateInputConnectors();
 	updateOutputConnectors();
-	
+
 	item->addAsyncNodeListener(this);
 
 }
 
 BaseNodeViewUI::~BaseNodeViewUI()
 {
-	if(!inspectable.wasObjectDeleted()) item->removeAsyncNodeListener(this);
+	if (!inspectable.wasObjectDeleted()) item->removeAsyncNodeListener(this);
 }
 
 void BaseNodeViewUI::updateInputConnectors()
@@ -176,11 +177,73 @@ void BaseNodeViewUI::resizedInternalContent(Rectangle<int>& r)
 	outControlRect = Rectangle<int>(r);
 
 	if (outControlUI != nullptr) outControlUI->setBounds(r.removeFromRight(30).reduced(2));
-	
+
 	r.removeFromRight(2);
 	outControlRect.setLeft(r.getRight());
 
 	resizedInternalContentNode(r);
+}
+
+bool BaseNodeViewUI::isInterestedInDragSource(const SourceDetails& details)
+{
+	if (NodeConnector* nc = dynamic_cast<NodeConnector*>(details.sourceComponent.get()))
+	{
+		if (nc->nodeViewUI == this) return false;
+
+		if (nc->isInput) return nc->connectionType == NodeConnection::AUDIO ? item->hasAudioOutput : item->hasAudioOutput;
+		else return nc->connectionType == NodeConnection::AUDIO ? item->hasAudioInput : item->hasMIDIInput;
+	}
+
+	return BaseItemUI::isInterestedInDragSource(details);
+}
+
+
+void BaseNodeViewUI::itemDragEnter(const SourceDetails& details)
+{
+	if (NodeConnector* nc = dynamic_cast<NodeConnector*>(details.sourceComponent.get()))
+	{
+		if (NodeManagerViewUI* nmui = findParentComponentOfClass<NodeManagerViewUI>())
+		{
+			Component* c = nullptr;
+
+			if (nc->isInput) c = nc->connectionType == NodeConnection::AUDIO ? outAudioConnector.get() : outMIDIConnector.get();
+			else c = nc->connectionType == NodeConnection::AUDIO ? inAudioConnector.get() : inMIDIConnector.get();
+
+			Point<int> p;
+			if (c != nullptr) p = nmui->getLocalPoint(c, c->getLocalBounds().getCentre());
+
+			nmui->forcedDragTargetPos = p;
+		}
+
+		return;
+	}
+	
+	BaseItemUI::itemDragEnter(details);
+}
+
+void BaseNodeViewUI::itemDragExit(const SourceDetails& details)
+{
+	if (NodeConnector* c = dynamic_cast<NodeConnector*>(details.sourceComponent.get()))
+	{
+		if (NodeManagerViewUI* nmui = findParentComponentOfClass<NodeManagerViewUI>()) nmui->forcedDragTargetPos = {};
+		return;
+	}
+
+	BaseItemUI::itemDragExit(details);
+}
+
+void BaseNodeViewUI::itemDropped(const SourceDetails& details)
+{
+	if (NodeConnector* c = dynamic_cast<NodeConnector*>(details.sourceComponent.get()))
+	{
+		NodeConnectionManager* cm = ((NodeManager*)item->parentContainer.get())->connectionManager.get();
+		if (c->isInput) cm->addConnection(item, c->nodeViewUI->item, c->connectionType);
+		else cm->addConnection(c->nodeViewUI->item, item, c->connectionType);
+
+		return;
+	}
+
+	BaseItemUI::itemDropped(details);
 }
 
 Rectangle<int> BaseNodeViewUI::getMainBounds()
