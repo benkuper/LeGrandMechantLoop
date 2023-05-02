@@ -304,9 +304,9 @@ void NodeConnectionViewUI::newMessage(const NodeConnection::ConnectionEvent& e)
 {
 	switch (e.type)
 	{
-	case e.CHANNELS_CONNECTION_CHANGED: repaint(); break;
-	case e.SOURCE_NODE_CHANGED:
-	case e.DEST_NODE_CHANGED:
+	case NodeConnection::ConnectionEvent::CHANNELS_CONNECTION_CHANGED: repaint(); break;
+	case NodeConnection::ConnectionEvent::SOURCE_NODE_CHANGED:
+	case NodeConnection::ConnectionEvent::DEST_NODE_CHANGED:
 	{
 		NodeManagerViewUI* nodeManagerUI = findParentComponentOfClass<NodeManagerViewUI>();
 
