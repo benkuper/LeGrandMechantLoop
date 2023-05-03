@@ -152,8 +152,16 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 
 		if (hasMIDIInput && forceNoteOffOnEnabled->boolValue())
 		{
-			midiCollector.reset(processor->getSampleRate());
-			for (int i = 1; i <= 16; i++) midiCollector.addMessageToQueue(MidiMessage::allNotesOff(i));
+            if(processor->getSampleRate() > 0)
+            {
+                
+                midiCollector.reset(processor->getSampleRate());
+                for (int i = 1; i <= 16; i++)
+                {
+                    MidiMessage m(MidiMessage::allNotesOff(i), 1);
+                    midiCollector.addMessageToQueue(m);
+                }
+            }
 		}
 	}
 	else if (p == numAudioInputs)
@@ -324,6 +332,8 @@ void Node::updatePlayConfig(bool notify)
 void Node::updatePlayConfigInternal()
 {
 	processor->setPlayConfigDetails(audioInputNames.size(), audioOutputNames.size(), graph->getSampleRate(), graph->getBlockSize());
+    
+    if(graph->getSampleRate() > 0) midiCollector.reset(graph->getSampleRate());
 }
 
 void Node::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
@@ -373,7 +383,10 @@ void Node::updateSustainedNotes()
 
 void Node::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
-	if (sampleRate != 0) midiCollector.reset(sampleRate);
+	if (sampleRate != 0)
+    {
+        midiCollector.reset(sampleRate);
+    }
 }
 
 void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -390,19 +403,25 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 
 	int numInputs = getNumAudioInputs();
 	int numOutputs = getNumAudioOutputs();
-
+    
 	if (buffer.getNumChannels() != jmax(numInputs, numOutputs))
 	{
 		jassert(!Engine::mainEngine->isLoadingFile);
 
-		setWarningMessage("Not the same number of channels ! " + String(buffer.getNumChannels()) + " < > " + String(jmax(numInputs, numOutputs)), "Channel Mismatch");
-		return;
-	}
-
-	clearWarning("Channel Mismatch");
-
+        if(!channelMismatch)
+        {
+            setWarningMessage("Not the same number of channels ! " + String(buffer.getNumChannels()) + " < > " + String(jmax(numInputs, numOutputs)), "Channel Mismatch");
+        }
+        channelMismatch = true;
+        return;
+	}else if(channelMismatch)
+    {
+        channelMismatch = false;
+        clearWarning("Channel Mismatch");
+    }
+    
 	//MIDI
-	midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
+    if(hasMIDIInput) midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
 
 	bool isEnabled = enabled->boolValue();
 	bool antiClickFinished = bypassAntiClickCount == (isEnabled ? anticlickBlocks : 0);
