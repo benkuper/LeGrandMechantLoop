@@ -140,7 +140,7 @@ void LooperNode::updateLooperTracks()
 
 void LooperNode::setCurrentTrack(LooperTrack* t)
 {
-	if (currentTrack == t) return;
+	//if (currentTrack == t) return;
 
 	if (currentTrack != nullptr)
 	{
@@ -330,7 +330,10 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	else if (c == clearSamplesTrigger)
 	{
 		clearSamples();
-	}
+	}else if(c == recordingState)
+    {
+        setCurrentTrack(currentTrack);
+    }
 
 
 	else if (LooperTrack* t = c->getParentAs<LooperTrack>())
@@ -477,8 +480,8 @@ LooperTrack* LooperNode::getFirstEmptyTrack()
 void LooperNode::setCurrentTrackToFirstEmpty()
 {
 	LooperTrack* t = getFirstEmptyTrack();
-	if (t == nullptr) currentTrackIndex->setValue(1);
-	else currentTrackIndex->setValue(tracksCC.controllableContainers.indexOf(t) + 1);
+	if (t == nullptr) currentTrackIndex->setValue(1, false, true);
+	else currentTrackIndex->setValue(tracksCC.controllableContainers.indexOf(t) + 1, false, true);
 }
 
 Array<LooperTrack*> LooperNode::getTracksForSection(int targetSection)
