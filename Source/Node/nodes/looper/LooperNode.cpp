@@ -54,7 +54,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 	retroRecCount = recordCC.addIntParameter("Retro Rec Count", "Number of bars or beats to record when using the Retro Rec trigger", 1, 1);
 	retroDoubleRecCount = recordCC.addIntParameter("Retro Double Rec Count", "Number of bars or beats to record when hitting the Retro Rec trigger twice before it stores it", 2, 1);
-	retroTripleRecCount = recordCC.addIntParameter("Retro Double Rec Count", "Number of bars or beats to record when hitting the Retro Rec trigger three times before it stores it", 4, 1);
+	retroTripleRecCount = recordCC.addIntParameter("Retro Triple Rec Count", "Number of bars or beats to record when hitting the Retro Rec trigger three times before it stores it", 4, 1);
 
 	monitorMode = recordCC.addEnumParameter("Monitor Mode", "How to monitor");
 	monitorMode->addOption("Always", ALWAYS)->addOption("Armed track", ARMED_TRACK)->addOption("When recording", RECORDING_ONLY)->addOption("Off", OFF);
