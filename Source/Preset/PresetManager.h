@@ -17,7 +17,7 @@ public:
     PresetManager();
     virtual ~PresetManager();
 
-    Array<Preset*> getAllPresets(bool recursive = true, bool includeDisabled = true, bool includeSkip = true);
+    Array<Preset*> getAllPresets(bool recursive = true, bool includeDisabled = true, bool includeSkipPrev = true, bool includeSkipNext = true);
 };
 
 class RootPresetManager :

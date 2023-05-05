@@ -23,14 +23,15 @@ PresetManager::~PresetManager()
 {
 }
 
-Array<Preset*> PresetManager::getAllPresets(bool recursive, bool includeDisabled, bool includeSkip)
+Array<Preset*> PresetManager::getAllPresets(bool recursive, bool includeDisabled, bool includeSkipPrev, bool includeSkipNext)
 {
 	Array<Preset*> result;
 	for (auto& i : items)
 	{
 		if (!includeDisabled && !i->enabled->boolValue()) continue;
-		if (includeSkip || !i->skipInPrevNext->boolValue()) result.add(i);
-		if (recursive) result.addArray(i->subPresets->getAllPresets(recursive, includeDisabled, includeSkip));
+		if (includeSkipPrev || !i->skipInPrev->boolValue()) result.add(i);
+		if (includeSkipNext || !i->skipInNext->boolValue()) result.add(i);
+		if (recursive) result.addArray(i->subPresets->getAllPresets(recursive, includeDisabled, includeSkipPrev, includeSkipNext));
 	}
 
 	return result;
@@ -174,9 +175,9 @@ Preset* RootPresetManager::getNextPreset(Preset* p, bool recursive)
 {
 	if (p == nullptr) return nullptr;
 
-	Array<Preset*> presets = getAllPresets(recursive, false, false);
+	Array<Preset*> presets = getAllPresets(recursive, false, true, false);
 	if (p != presets.getLast()) return presets[presets.indexOf(p) + 1];
-	
+
 	return nullptr;
 }
 
@@ -191,7 +192,7 @@ Preset* RootPresetManager::getPreviousPreset(Preset* p, bool recursive)
 {
 	if (p == nullptr) return nullptr;
 
-	Array<Preset*> presets = getAllPresets(recursive, false, false);
+	Array<Preset*> presets = getAllPresets(recursive, false, false, true);
 	if (p != presets.getFirst()) return presets[presets.indexOf(p) - 1];
 
 	return nullptr;

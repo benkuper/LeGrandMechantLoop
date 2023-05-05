@@ -299,6 +299,8 @@ void LooperTrack::retroRecAndPlay()
 	bpmAtRecord = Transport::getInstance()->bpm->floatValue();
 	numStretchedBeats->setValue(0);
 
+	playQuantization = looper->getQuantization();
+
 	retroRecAndPlayInternal();
 	
 	firstPlayAfterRecord = true;
@@ -369,6 +371,7 @@ void LooperTrack::clearTrack()
 	clearBuffer();
 	resetGainAndActive();
 	section->setValue(1);
+	retroRecCount = 0;
 }
 
 void LooperTrack::handleWaiting()
@@ -397,7 +400,7 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 	{
 		if (s == STOPPED) trackState->setValueWithData(WILL_PLAY);
 		else if (s == WILL_STOP) trackState->setValueWithData(PLAYING); //meaning it was already playing, cancel the will stop and keep playing
-		looper->setCurrentTrack(this);
+		//looper->setCurrentTrack(this);
 	}
 	else if (t == stopTrigger)
 	{
@@ -408,7 +411,7 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 		}
 		else if (s == PLAYING) trackState->setValueWithData(WILL_STOP);
 		else if (s == WILL_PLAY) trackState->setValueWithData(STOPPED);
-		looper->setCurrentTrack(this);
+		//looper->setCurrentTrack(this);
 
 	}
 	else if (t == clearTrigger)

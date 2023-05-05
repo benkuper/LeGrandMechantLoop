@@ -155,8 +155,6 @@ void LooperNode::setCurrentTrack(LooperTrack* t)
 	}
 
 	currentTrackIndex->setValue(tracksCC.controllableContainers.indexOf(t) + 1);
-
-	LooperTrack::lastManipulatedTrack = currentTrack;
 }
 
 void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
@@ -188,6 +186,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 
 			LooperTrack* t = currentTrack; //may change during the process
 			LooperTrack::TrackState s = t->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
+
 
 			if (s == LooperTrack::WILL_RECORD)
 			{
@@ -225,7 +224,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 
 			if ((newState == LooperTrack::FINISH_RECORDING || t->isPlaying(true)))
 			{
-				currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
+				//currentTrackIndex->setValue(currentTrackIndex->intValue() + 1); 
 			}
 
 		}
@@ -330,10 +329,11 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	else if (c == clearSamplesTrigger)
 	{
 		clearSamples();
-	}else if(c == recordingState)
-    {
-        setCurrentTrack(currentTrack);
-    }
+	}
+	else if (c == recordingState)
+	{
+		setCurrentTrack(currentTrack);
+	}
 
 
 	else if (LooperTrack* t = c->getParentAs<LooperTrack>())
@@ -346,12 +346,15 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			bool isActuallyRecording = isOneTrackRecording(false);
 			LooperTrack::TrackState s = t->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
 
+
 			LooperTrack::TrackState ts;
 
 			if (isActuallyRecording && s == LooperTrack::FINISH_RECORDING) ts = LooperTrack::FINISH_RECORDING;
 			else if (isActuallyRecording) ts = LooperTrack::RECORDING;
 			else if (recordOrWillRecord) ts = LooperTrack::WILL_RECORD;
 			else ts = LooperTrack::IDLE;
+
+			if (t->isPlaying(true) || t->isRecording(true, true)) LooperTrack::lastManipulatedTrack = t;
 
 			recordingState->setValueWithData(ts);
 		}

@@ -27,7 +27,8 @@ public:
 	Trigger* saveTrigger;
 	Trigger* loadTrigger;
 
-	BoolParameter* skipInPrevNext;
+	BoolParameter* skipInPrev;
+	BoolParameter* skipInNext;
 	BoolParameter* noParentOnNearbyLoad;
 
 	EnablingControllableContainer transitionCC;

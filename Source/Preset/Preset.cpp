@@ -39,7 +39,8 @@ Preset::Preset(var params) :
 	saveTrigger = addTrigger("Save", "Save the current state in this preset. If this is a sub-preset, this will only save overriden values");
 	loadTrigger = addTrigger("Load", "Load the values in this preset. It this is a sub-preset, this will fetch all values up to its root preset");
 
-	skipInPrevNext = addBoolParameter("Skip in Prev/Next", "Skip this preset in the next/previous preset actions", false);
+	skipInPrev = addBoolParameter("Skip in Prev", "Skip this preset in the previous preset actions", false);
+	skipInNext = addBoolParameter("Skip in Next", "Skip this preset in the next preset actions", false);
 	noParentOnNearbyLoad = addBoolParameter("No Parent on Nearby Load", "If checked, this will prevent from loading the parent preset when loading this preset from a nearby preset", false);
 
 	transitionQuantiz = transitionCC.addEnumParameter("Quantization", "Transition quantization for this preset");

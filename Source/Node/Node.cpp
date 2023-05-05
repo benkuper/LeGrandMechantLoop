@@ -367,7 +367,10 @@ void Node::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 		sustainedNotes.remove(m.getNoteNumber());
 	}
 
-	if (addToQueue) midiCollector.addMessageToQueue(m);
+	if (addToQueue)
+	{
+		if (processor->getSampleRate() != 0) midiCollector.addMessageToQueue(m);
+	}
 }
 
 void Node::updateSustainedNotes()
