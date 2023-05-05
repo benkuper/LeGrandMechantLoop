@@ -1,4 +1,3 @@
-#include "VSTLinkedParameter.h"
 /*
   ==============================================================================
 
@@ -8,6 +7,8 @@
 
   ==============================================================================
 */
+
+#include "Node/NodeIncludes.h"
 
 // Parameter Link
 VSTParameterLink::VSTParameterLink(AudioProcessorParameter* vstParam, Parameter* param) :
@@ -152,7 +153,7 @@ void VSTParameterContainer::setMaxMacros(int val)
 
 void VSTParameterContainer::addAllParams()
 {
-	const Array<AudioProcessorParameter *> &params = vst->getParameters();
+	const Array<AudioProcessorParameter*>& params = vst->getParameters();
 	for (auto p : params) addVSTParam(p);
 	//fillContainerForVSTParamGroup(this, &vst->getParameterTree(), true);
 }
@@ -168,7 +169,7 @@ void VSTParameterContainer::removeAllParams()
 	queuedNotifier.addMessage(new ContainerAsyncEvent(ContainerAsyncEvent::ControllableContainerNeedsRebuild, this));
 }
 
-VSTParameterLink * VSTParameterContainer::addVSTParam(AudioProcessorParameter* vstP)
+VSTParameterLink* VSTParameterContainer::addVSTParam(AudioProcessorParameter* vstP)
 {
 	if (vstP == nullptr)
 	{
@@ -187,7 +188,7 @@ VSTParameterLink * VSTParameterContainer::addVSTParam(AudioProcessorParameter* v
 	if (idContainerMap.contains(index))
 	{
 		ControllableContainer* cc = idContainerMap[index];
-		VSTParameterLink * pLink = createParameterForVSTParam(vstP);
+		VSTParameterLink* pLink = createParameterForVSTParam(vstP);
 		pLink->setMaxMacros(maxMacros);
 		pLink->param->isRemovableByUser = true;
 		pLink->param->setValue(vstP->getValue());
@@ -223,16 +224,18 @@ void VSTParameterContainer::fillContainerForVSTParamGroup(ControllableContainer*
 	const Array<const AudioProcessorParameterGroup*> groups = group->getSubgroups(false);
 	for (auto& g : groups)
 	{
-		ControllableContainer* childCC = cc->getControllableContainerByName(g->getName());
-		if(childCC == nullptr) childCC = new ControllableContainer(g->getName());
+		String n = g->getName();
+		if (n.isEmpty()) n = "Default";
+		ControllableContainer* childCC = cc->getControllableContainerByName(n);
+		if (childCC == nullptr) childCC = new ControllableContainer(n);
 		fillContainerForVSTParamGroup(childCC, g);
 		cc->addChildControllableContainer(childCC, true);
 	}
 }
 
-VSTParameterLink * VSTParameterContainer::createParameterForVSTParam(AudioProcessorParameter* vstParam)
+VSTParameterLink* VSTParameterContainer::createParameterForVSTParam(AudioProcessorParameter* vstParam)
 {
-	VSTParameterLink * p = nullptr;
+	VSTParameterLink* p = nullptr;
 	if (vstParam->isBoolean()) p = new VSTLinkedBoolParameter(vstParam);
 	else if (vstParam->isDiscrete() && vstParam->getNumSteps() != INT32_MAX)
 	{
@@ -245,7 +248,7 @@ VSTParameterLink * VSTParameterContainer::createParameterForVSTParam(AudioProces
 
 }
 
-void VSTParameterContainer::inspectableDestroyed(Inspectable * i)
+void VSTParameterContainer::inspectableDestroyed(Inspectable* i)
 {
 	if (inspectableIdMap.size() == 0) return;
 	if (inspectableIdMap.contains(i))
@@ -286,7 +289,7 @@ var VSTParameterContainer::getJSONData()
 void VSTParameterContainer::loadJSONData(var data, bool createIfNotThere)
 {
 	if (vst == nullptr) return;
-	const Array<AudioProcessorParameter *> &params = vst->getParameters();
+	const Array<AudioProcessorParameter*>& params = vst->getParameters();
 
 	for (int i = 0; i < data.size(); i++)
 	{
