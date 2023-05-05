@@ -112,6 +112,7 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 
 	ignoreList.addArray(ignoredControllables);
 
+
 	HashMap<WeakReference<Controllable>, var>::Iterator it(dataMap);
 	while (it.next())
 	{
@@ -120,10 +121,18 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 		if (ignoreList.contains(c)) continue;
 
 		String add = c->getControlAddress();
-		if (!data.hasProperty(add)) data.getDynamicObject()->setProperty(add, it.getValue());
+		if (!data.hasProperty(add))
+		{
+			var v;
+			v.append(it.getValue());
+			if(transitionMap.contains(c)) v.append(transitionMap[c]);
+			data.getDynamicObject()->setProperty(add, v);
+		}
 		ignoreList.add(c);
 	}
 
+
+	//Parents and Linked presets
 	Array<Preset*> presetsToInclude;
 	if (includeParents)
 	{
@@ -215,7 +224,7 @@ void Preset::load(bool recursive)
 			if (!RootPresetManager::getInstance()->isControllablePresettable(tc)) continue;
 
 			if (tc->type == Controllable::TRIGGER) ((Trigger*)tc)->trigger();
-			else ((Parameter*)tc)->setValue(p.value);
+			else ((Parameter*)tc)->setValue(p.value[0]);
 
 			numLoaded++;
 		}

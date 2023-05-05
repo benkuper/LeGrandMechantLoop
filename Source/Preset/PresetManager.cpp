@@ -345,19 +345,18 @@ void RootPresetManager::run()
 
 	for (auto& val : props)
 	{
+
 		if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(val.name.toString())))
 		{
 			if (!isControllablePresettable(tc)) continue;
 			var initTargetValue;
 			initTargetValue.append(tc->type == Controllable::TRIGGER ? var() : ((Parameter*)tc)->value);
-			initTargetValue.append(val.value);
-
+			initTargetValue.append(val.value[0]);
 
 			Preset::TransitionMode tm = defaultTM;
-
-			if (currentPreset->transitionMap.contains(tc))
+			if (val.value.size() > 1)
 			{
-				Preset::TransitionMode otm = currentPreset->transitionMap[tc];
+				Preset::TransitionMode otm = (Preset::TransitionMode)(int)val.value[1];
 				if (otm != Preset::DEFAULT) tm = otm;
 			}
 
