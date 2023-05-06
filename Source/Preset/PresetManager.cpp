@@ -29,8 +29,7 @@ Array<Preset*> PresetManager::getAllPresets(bool recursive, bool includeDisabled
 	for (auto& i : items)
 	{
 		if (!includeDisabled && !i->enabled->boolValue()) continue;
-		if (includeSkipPrev || !i->skipInPrev->boolValue()) result.add(i);
-		if (includeSkipNext || !i->skipInNext->boolValue()) result.add(i);
+		if ((includeSkipPrev || !i->skipInPrev->boolValue()) && (includeSkipNext || !i->skipInNext->boolValue())) result.add(i);
 		if (recursive) result.addArray(i->subPresets->getAllPresets(recursive, includeDisabled, includeSkipPrev, includeSkipNext));
 	}
 
@@ -168,7 +167,7 @@ void RootPresetManager::setCurrentPreset(Preset* p)
 void RootPresetManager::loadNextPreset(Preset* p, bool recursive)
 {
 	Preset* np = getNextPreset(p, recursive);
-	if (np != nullptr) setCurrentPreset(np);
+	if (np != nullptr) np->loadTrigger->trigger();
 }
 
 Preset* RootPresetManager::getNextPreset(Preset* p, bool recursive)
@@ -181,10 +180,10 @@ Preset* RootPresetManager::getNextPreset(Preset* p, bool recursive)
 	return nullptr;
 }
 
-void RootPresetManager::loadPreviousPreset(Preset* p)
+void RootPresetManager::loadPreviousPreset(Preset* p, bool recursive)
 {
-	Preset* pp = getPreviousPreset(p, true);
-	if (pp != nullptr) setCurrentPreset(pp);
+	Preset* pp = getPreviousPreset(p, recursive);
+	if (pp != nullptr) pp->loadTrigger->trigger();
 }
 
 
@@ -214,7 +213,7 @@ void RootPresetManager::onContainerTriggerTriggered(Trigger* t)
 	}
 	else if (t == previousPresetTrigger)
 	{
-		loadPreviousPreset(currentPreset);
+		loadPreviousPreset(currentPreset, true);
 	}
 }
 

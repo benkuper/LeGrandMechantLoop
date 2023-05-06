@@ -61,7 +61,7 @@ public:
     void loadNextPreset(Preset* p, bool recursive);
     Preset* getNextPreset(Preset* p, bool recursive);
 
-    void loadPreviousPreset(Preset* p);
+    void loadPreviousPreset(Preset* p, bool recursive);
     Preset* getPreviousPreset(Preset* p, bool recursive);
     //Preset* getLastNestedPresetFor(Preset* p);
     void onContainerTriggerTriggered(Trigger* t) override;
