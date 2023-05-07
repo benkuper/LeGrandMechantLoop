@@ -30,6 +30,7 @@ public:
 	BoolParameter* skipInPrev;
 	BoolParameter* skipInNext;
 	BoolParameter* noParentOnNearbyLoad;
+	BoolParameter* resolveParentTransitions;
 
 	EnablingControllableContainer transitionCC;
 	EnumParameter* transitionQuantiz;

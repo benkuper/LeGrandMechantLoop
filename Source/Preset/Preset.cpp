@@ -42,6 +42,7 @@ Preset::Preset(var params) :
 	skipInPrev = addBoolParameter("Skip in Prev", "Skip this preset in the previous preset actions", false);
 	skipInNext = addBoolParameter("Skip in Next", "Skip this preset in the next preset actions", false);
 	noParentOnNearbyLoad = addBoolParameter("No Parent on Nearby Load", "If checked, this will prevent from loading the parent preset when loading this preset from a nearby preset", false);
+	resolveParentTransitions = addBoolParameter("Resolve Parent Transitions", "If checked, this will force parent preset values with default transition mode to use same-level defaul transition instead of this one.", false);
 
 	transitionQuantiz = transitionCC.addEnumParameter("Quantization", "Transition quantization for this preset");
 	transitionQuantiz->addOption("Custom", Transport::FREE)->addOption("From Transport", Transport::DEFAULT)->addOption("First Loop", Transport::FIRSTLOOP)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT);
@@ -126,7 +127,7 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 			var v;
 			v.append(it.getValue());
 			TransitionMode tm = transitionMap.contains(c) ? transitionMap[c] : TransitionMode::DEFAULT;
-			if (tm == TransitionMode::DEFAULT && resolveTransition) tm = defaultTransitionMode->getValueDataAsEnum<TransitionMode>();
+			if (tm == TransitionMode::DEFAULT && resolveTransition && resolveParentTransitions->boolValue()) tm = defaultTransitionMode->getValueDataAsEnum<TransitionMode>();
 			v.append(tm);
 
 			data.getDynamicObject()->setProperty(add, v);
