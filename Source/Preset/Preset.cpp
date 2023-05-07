@@ -104,11 +104,11 @@ void Preset::clearItem()
 	}
 }
 
-var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList, bool force)
+var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList, bool includeDisabled, bool resolveTransition)
 {
 	var data(new DynamicObject());
 
-	if (!enabled->boolValue() && !force) return data;
+	if (!enabled->boolValue() && !includeDisabled) return data;
 
 	ignoreList.addArray(ignoredControllables);
 
@@ -125,7 +125,10 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 		{
 			var v;
 			v.append(it.getValue());
-			if(transitionMap.contains(c)) v.append(transitionMap[c]);
+			TransitionMode tm = transitionMap.contains(c) ? transitionMap[c] : TransitionMode::DEFAULT;
+			if (tm == TransitionMode::DEFAULT && resolveTransition) tm = defaultTransitionMode->getValueDataAsEnum<TransitionMode>();
+			v.append(tm);
+
 			data.getDynamicObject()->setProperty(add, v);
 		}
 		ignoreList.add(c);
@@ -149,7 +152,7 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 
 	for (auto& p : presetsToInclude)
 	{
-		var pData = p->getPresetValues(true, ignoreList);
+		var pData = p->getPresetValues(true, ignoreList, includeDisabled, resolveTransition);
 
 		NamedValueSet props = pData.getDynamicObject()->getProperties();
 		for (auto& p : props)
@@ -215,7 +218,7 @@ void Preset::save(Controllable* controllable, bool saveAllPresettables, bool noC
 void Preset::load(bool recursive)
 {
 	int numLoaded = 0;
-	var data = getPresetValues(recursive);
+	var data = getPresetValues(recursive, Array<Controllable*>(), false, true);
 	NamedValueSet props = data.getDynamicObject()->getProperties();
 	for (auto& p : props)
 	{
@@ -300,7 +303,7 @@ void Preset::recoverLostControllables()
 	while (it.next()) initLostControllables.set(it.getKey(), it.getValue()); //copy first because recovering changes the initial hashmap
 
 	HashMap<String, TransitionMode>::Iterator lit(initLostControllables);
-	while(lit.next())
+	while (lit.next())
 	{
 		String add = lit.getKey();
 		if (Controllable* c = Engine::mainEngine->getControllableForAddress(add))
@@ -381,7 +384,7 @@ var Preset::getJSONData()
 		transitionOverrideData.getDynamicObject()->setProperty(it.getKey()->getControlAddress(), it.getValue());
 	}
 
-	data.getDynamicObject()->setProperty("transitionOverrides", transitionOverrideData);
+	//data.getDynamicObject()->setProperty("transitionOverrides", transitionOverrideData);
 
 	var ignoreData;
 	for (auto& c : ignoredControllables) ignoreData.append(c->getControlAddress());
@@ -409,9 +412,10 @@ void Preset::loadJSONDataItemInternal(var data)
 		NamedValueSet params = values.getDynamicObject()->getProperties();
 		for (auto& p : params)
 		{
-			if (Controllable* tp = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
+			if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
 			{
-				addControllableToDataMap(tp, p.value);
+				addControllableToDataMap(tc, p.value.isArray() ? p.value[0] : p.value);
+				if (p.value.size() > 1) transitionMap.set(tc, (TransitionMode)(int)p.value[1]);
 			}
 			else
 			{

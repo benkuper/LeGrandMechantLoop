@@ -23,14 +23,20 @@ PresetManager::~PresetManager()
 {
 }
 
-Array<Preset*> PresetManager::getAllPresets(bool recursive, bool includeDisabled, bool includeSkipPrev, bool includeSkipNext)
+Array<Preset*> PresetManager::getAllPresets(bool recursive, bool includeDisabled, bool includeSkipPrev, bool includeSkipNext, Preset* forceIncludePreset)
 {
 	Array<Preset*> result;
 	for (auto& i : items)
 	{
-		if (!includeDisabled && !i->enabled->boolValue()) continue;
-		if ((includeSkipPrev || !i->skipInPrev->boolValue()) && (includeSkipNext || !i->skipInNext->boolValue())) result.add(i);
-		if (recursive) result.addArray(i->subPresets->getAllPresets(recursive, includeDisabled, includeSkipPrev, includeSkipNext));
+		bool addThis = false;
+
+		if (forceIncludePreset != nullptr && i == forceIncludePreset) addThis = true; //only include the force include preset (used for file loading
+		else if (!includeDisabled && !i->enabled->boolValue()) addThis = false;
+		else if ((includeSkipPrev || !i->skipInPrev->boolValue()) && (includeSkipNext || !i->skipInNext->boolValue())) addThis = true;
+
+		if (addThis) result.add(i);
+
+		if (recursive) result.addArray(i->subPresets->getAllPresets(recursive, includeDisabled, includeSkipPrev, includeSkipNext, forceIncludePreset));
 	}
 
 	return result;
@@ -174,7 +180,7 @@ Preset* RootPresetManager::getNextPreset(Preset* p, bool recursive)
 {
 	if (p == nullptr) return nullptr;
 
-	Array<Preset*> presets = getAllPresets(recursive, false, true, false);
+	Array<Preset*> presets = getAllPresets(recursive, false, true, false, p);
 	if (p != presets.getLast()) return presets[presets.indexOf(p) + 1];
 
 	return nullptr;
@@ -191,7 +197,7 @@ Preset* RootPresetManager::getPreviousPreset(Preset* p, bool recursive)
 {
 	if (p == nullptr) return nullptr;
 
-	Array<Preset*> presets = getAllPresets(recursive, false, false, true);
+	Array<Preset*> presets = getAllPresets(recursive, false, false, true, p);
 	if (p != presets.getFirst()) return presets[presets.indexOf(p) - 1];
 
 	return nullptr;
@@ -335,7 +341,7 @@ void RootPresetManager::run()
 		&& prevPreset != nullptr
 		&& prevPreset->parentContainer == currentPreset->parentContainer) recursive = false;
 
-	var targetValues = currentPreset->getPresetValues(recursive);
+	var targetValues = currentPreset->getPresetValues(recursive, Array<Controllable*>(), false, true);
 	NamedValueSet props = targetValues.getDynamicObject()->getProperties();
 
 	initTargetMap.clear();

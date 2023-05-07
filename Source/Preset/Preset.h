@@ -54,7 +54,7 @@ public:
 
 	void clearItem() override;
 
-	var getPresetValues(bool includeParents = true, Array<Controllable*> ignoreList = Array<Controllable*>(), bool force = false);
+	var getPresetValues(bool includeParents = true, Array<Controllable*> ignoreList = Array<Controllable*>(), bool includeDisabled = false, bool resolveTransition = false);
 
 	void saveContainer(ControllableContainer* container, bool recursive);
 	void save(Controllable* controllable = nullptr, bool saveAllPresettables = false, bool noCheck = false);
