@@ -127,7 +127,7 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 			var v;
 			v.append(it.getValue());
 			TransitionMode tm = transitionMap.contains(c) ? transitionMap[c] : TransitionMode::DEFAULT;
-			if (tm == TransitionMode::DEFAULT && resolveTransition && resolveParentTransitions->boolValue()) tm = defaultTransitionMode->getValueDataAsEnum<TransitionMode>();
+			if (tm == TransitionMode::DEFAULT && resolveTransition) tm = defaultTransitionMode->getValueDataAsEnum<TransitionMode>();
 			v.append(tm);
 
 			data.getDynamicObject()->setProperty(add, v);
@@ -219,7 +219,7 @@ void Preset::save(Controllable* controllable, bool saveAllPresettables, bool noC
 void Preset::load(bool recursive)
 {
 	int numLoaded = 0;
-	var data = getPresetValues(recursive, Array<Controllable*>(), false, true);
+	var data = getPresetValues(recursive, Array<Controllable*>(), false, resolveParentTransitions->boolValue());
 	NamedValueSet props = data.getDynamicObject()->getProperties();
 	for (auto& p : props)
 	{

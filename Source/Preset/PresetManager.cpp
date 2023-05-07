@@ -341,7 +341,7 @@ void RootPresetManager::run()
 		&& prevPreset != nullptr
 		&& prevPreset->parentContainer == currentPreset->parentContainer) recursive = false;
 
-	var targetValues = currentPreset->getPresetValues(recursive, Array<Controllable*>(), false, true);
+	var targetValues = currentPreset->getPresetValues(recursive, Array<Controllable*>(), false, currentPreset->resolveParentTransitions->boolValue());
 	NamedValueSet props = targetValues.getDynamicObject()->getProperties();
 
 	initTargetMap.clear();
