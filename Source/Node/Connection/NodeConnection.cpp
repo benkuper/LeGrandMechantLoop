@@ -153,6 +153,32 @@ void NodeAudioConnection::clearItem()
 	clearConnections();
 }
 
+void NodeAudioConnection::setSourceNode(Node* node)
+{
+	//Disconnect old node
+	Array<ChannelMap> tmpMap;
+	tmpMap.addArray(channelMap);
+	clearConnections();
+
+	NodeConnection::setSourceNode(node);
+
+	//Reconnect new one
+	for (auto& m : tmpMap) connectChannels(m.sourceChannel, m.destChannel);
+}
+
+void NodeAudioConnection::setDestNode(Node* node)
+{
+	//Disconnect old node
+	Array<ChannelMap> tmpMap;
+	tmpMap.addArray(channelMap);
+	clearConnections();
+
+	NodeConnection::setDestNode(node);
+
+	//Reconnect new one
+	for (auto& m : tmpMap) connectChannels(m.sourceChannel, m.destChannel);
+}
+
 void NodeAudioConnection::handleNodesUpdated()
 {
 	NodeConnection::handleNodesUpdated();

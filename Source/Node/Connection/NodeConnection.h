@@ -64,6 +64,9 @@ public:
 
     void clearItem() override;
    
+    virtual void setSourceNode(Node* node);
+    virtual void setDestNode(Node* node);
+
     void handleNodesUpdated() override;
 
     void connectChannels(int sourceChannel, int destChannel);
