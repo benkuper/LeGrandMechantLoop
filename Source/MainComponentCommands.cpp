@@ -12,6 +12,7 @@
 #include "MainComponent.h"
 #include "Transport/Transport.h"
 #include "Preset/PresetIncludes.h"
+#include  "Engine/AudioManager.h"
 
 namespace LGMLCommandIDs
 {
@@ -27,6 +28,7 @@ namespace LGMLCommandIDs
 	static const int saveCurrentPreset = 0x61000;
 	static const int loadCurrentPreset = 0x61001;
 
+	static const int editAudioSettings = 0x62001;
 
 	static const int playPauseTransport = 0x501;
 }
@@ -77,6 +79,11 @@ void MainComponent::getCommandInfo(CommandID commandID, ApplicationCommandInfo& 
 		result.addDefaultKeypress(KeyPress::createFromDescription("l").getKeyCode(), ModifierKeys::commandModifier | ModifierKeys::altModifier);
 		break;
 
+	case LGMLCommandIDs::editAudioSettings:
+		result.setInfo("Audio Settings...", "", "File", result.readOnlyInKeyEditor);
+		result.addDefaultKeypress(KeyPress::createFromDescription("l").getKeyCode(), ModifierKeys::commandModifier | ModifierKeys::altModifier);
+		break;
+
 	case LGMLCommandIDs::playPauseTransport:
 		result.setInfo("Play / Pause Transport", "", "Edit", 0);
 		result.addDefaultKeypress(KeyPress::spaceKey, ModifierKeys::noModifiers);
@@ -99,6 +106,7 @@ void MainComponent::getAllCommands(Array<CommandID>& commands) {
 		LGMLCommandIDs::saveCurrentPreset,
 		LGMLCommandIDs::loadCurrentPreset,
 		LGMLCommandIDs::playPauseTransport,
+		LGMLCommandIDs::editAudioSettings,
 		//LGMLCommandIDs::showAbout,
 		//LGMLCommandIDs::showWelcome,
 		LGMLCommandIDs::donate,
@@ -153,6 +161,8 @@ PopupMenu MainComponent::getMenuForIndex(int topLevelMenuIndex, const String& me
 
 void MainComponent::fillFileMenuInternal(PopupMenu& menu)
 {
+	menu.addSeparator();
+	menu.addCommandItem(&getCommandManager(), LGMLCommandIDs::editAudioSettings);
 }
 
 bool MainComponent::perform(const InvocationInfo& info)
@@ -216,6 +226,10 @@ bool MainComponent::perform(const InvocationInfo& info)
 
 	case LGMLCommandIDs::loadCurrentPreset:
 		RootPresetManager::getInstance()->loadCurrentTrigger->trigger();
+		break;
+
+	case LGMLCommandIDs::editAudioSettings:
+		AudioManager::getInstance()->selectThis();
 		break;
 
 		//case LGMLCommandIDs::exitGuide:

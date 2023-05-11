@@ -38,8 +38,8 @@ LGMLEngine::LGMLEngine() :
     addChildControllableContainer(MappingManager::getInstance(), false, 3);
     addChildControllableContainer(InterfaceManager::getInstance(), false, 4);
 
-    ProjectSettings::getInstance()->addChildControllableContainer(AudioManager::getInstance());
     GlobalSettings::getInstance()->addChildControllableContainer(LGMLSettings::getInstance());
+    GlobalSettings::getInstance()->addChildControllableContainer(AudioManager::getInstance());
     GlobalSettings::getInstance()->addChildControllableContainer(VSTManager::getInstance());
 
     cpuUsage = addFloatParameter("Audio CPU Usage", "Audio CPU Usage indicator. /!\\ This is only showing the audio processing, not the UI and other processes !", 0, 0, 100);
@@ -58,6 +58,7 @@ LGMLEngine::~LGMLEngine()
     RootNodeManager::deleteInstance();
     Transport::deleteInstance();
 
+    AudioManager::getInstance()->stop();
     AudioManager::deleteInstance();
     NodeFactory::deleteInstance();
 
@@ -68,7 +69,6 @@ LGMLEngine::~LGMLEngine()
 
 void LGMLEngine::clearInternal()
 {
-    AudioManager::getInstance()->stop();
     RootPresetManager::getInstance()->clear();
     MappingManager::getInstance()->clear();
     InterfaceManager::getInstance()->clear();

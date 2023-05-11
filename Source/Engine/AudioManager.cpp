@@ -17,19 +17,31 @@ juce_ImplementSingleton(AudioManager)
 AudioManager::AudioManager() :
 	ControllableContainer("Audio Settings"),
 	graphIDIncrement(GRAPH_START_ID)
+	//;isSettingUp(false)
 {
+	showWarningInUI = true;
+
 	am.addAudioCallback(this);
 	am.addChangeListener(this);
-	am.initialiseWithDefaultDevices(2, 2);
+	am.initialiseWithDefaultDevices(0, 2);
+
+	AudioDeviceManager::AudioDeviceSetup setup(am.getAudioDeviceSetup());
+	setup.sampleRate = 48000;
+	setup.bufferSize = 128;
+	setup.useDefaultInputChannels = false;
+	setup.useDefaultOutputChannels = true;
+
+	//am.setAudioDeviceSetup(setup, false);
 
 	am.addAudioCallback(&player);
 
 	graph.reset();
 
-	AudioDeviceManager::AudioDeviceSetup setup = am.getAudioDeviceSetup();
+	setup = am.getAudioDeviceSetup();
 	currentSampleRate = setup.sampleRate;
 	currentBufferSize = setup.bufferSize;
 
+	for (auto& d : am.getAvailableDeviceTypes()) d->addListener(this);
 
 	std::unique_ptr<AudioProcessorGraph::AudioGraphIOProcessor> procIn(new AudioProcessorGraph::AudioGraphIOProcessor(AudioProcessorGraph::AudioGraphIOProcessor::audioInputNode));
 
@@ -118,6 +130,25 @@ void AudioManager::audioDeviceIOCallbackWithContext
 	//for (int i = 0; i < jmin(numInputChannels, numOutputChannels); ++i) FloatVectorOperations::copy(outputChannelData[i], inputChannelData[i], numSamples);
 }
 
+void AudioManager::loadAudioConfig()
+{
+	if (lastUserState != nullptr)
+	{
+		String s = am.initialise(0, 2, lastUserState.get(), false);
+		if (s.isNotEmpty())
+		{
+			setWarningMessage("Could not load audio settings: " + s, "device");
+			if (Engine::mainEngine->isLoadingFile) LOGWARNING(getWarningMessage("device"));
+		}
+		else
+		{
+			clearWarning("device");
+		}
+	}
+
+}
+
+
 void AudioManager::audioDeviceAboutToStart(AudioIODevice* device)
 {
 }
@@ -126,8 +157,42 @@ void AudioManager::audioDeviceStopped()
 {
 }
 
+void AudioManager::audioDeviceListChanged()
+{
+	if (targetDeviceName.isNotEmpty() && (am.getCurrentAudioDevice() == nullptr || am.getCurrentAudioDevice()->getName() != targetDeviceName))
+	{
+		bool found = false;
+		for (auto& d : am.getAvailableDeviceTypes())
+		{
+			for (auto& n : d->getDeviceNames())
+			{
+				if (n == targetDeviceName)
+				{
+					found = true;
+					break;
+				}
+			}
+		}
+
+		if (found) loadAudioConfig();
+	}
+}
+
 void AudioManager::changeListenerCallback(ChangeBroadcaster* source)
 {
+	std::unique_ptr<XmlElement> newState = am.createStateXml();
+	if (lastUserState == nullptr || !lastUserState->isEquivalentTo(newState.get(), true))
+	{
+		//LOG("Audio setup changed by user");
+		lastUserState = std::move(newState);
+		targetDeviceName = am.getCurrentAudioDevice() != nullptr ? am.getCurrentAudioDevice()->getName() : "";
+	}
+	else
+	{
+		//LOG("Audio setup changed (no user action)");
+		
+	}
+
 	updateGraph();
 }
 
@@ -174,20 +239,27 @@ var AudioManager::getJSONData()
 	var data = ControllableContainer::getJSONData();
 	std::unique_ptr<XmlElement> xmlData(am.createStateXml());
 	if (xmlData != nullptr)  data.getDynamicObject()->setProperty("audioSettings", xmlData->toString());
+
+	data.getDynamicObject()->setProperty("deviceName", am.getCurrentAudioDevice() != nullptr ? am.getCurrentAudioDevice()->getName() : "");
+	//var audioSetupData(new DynamicObject());
+	//AudioDeviceManager::AudioDeviceSetup setup(am.getAudioDeviceSetup());
+	//audioSetupData.getDynamicObject()->setProperty("inputDeviceName", setup.inputDeviceName);
+	//audioSetupData.getDynamicObject()->setProperty("outputDeviceName", setup.outputDeviceName);
+	//audioSetupData.getDynamicObject()->setProperty("sampleRate", setup.sampleRate);
+	//audioSetupData.getDynamicObject()->setProperty("bufferSize", setup.bufferSize);
+	//data.getDynamicObject()->setProperty("audioSetup", audioSetupData);
 	return data;
 }
 
 void AudioManager::loadJSONDataInternal(var data)
 {
-	if (data.getDynamicObject()->hasProperty("audioSettings"))
-	{
-		std::unique_ptr<XmlElement> elem = XmlDocument::parse(data.getProperty("audioSettings", ""));
-		String result = am.initialise(0, 2, elem.get(), false);
-		if (result.isNotEmpty())
-		{
-			LOGERROR("Error loading audio settings, please check your audio settings in File > Project Settings");
-		}
-	}
+	String xmlState = data.getProperty("audioSettings", "").toString();
+	if (xmlState.isNotEmpty()) lastUserState = XmlDocument::parse(xmlState);
+	loadAudioConfig();
+
+	targetDeviceName = data.getProperty("deviceName", "").toString();
+
+	//if (!checkAudioConfig()) targetAudioSetup = data.getProperty("audioSetup", var());
 }
 
 InspectableEditor* AudioManager::getEditorInternal(bool isRoot, Array<Inspectable*> inspectables)

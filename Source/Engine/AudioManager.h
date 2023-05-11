@@ -22,6 +22,7 @@
 class AudioManager :
 	public ControllableContainer,
 	public AudioIODeviceCallback,
+	public AudioIODeviceType::Listener,
 	public ChangeListener,
 	public EngineListener
 {
@@ -42,9 +43,13 @@ public:
 	int numAudioInputs;
 	int numAudioOutputs;
 
+	std::unique_ptr<XmlElement> lastUserState;
+	String targetDeviceName;
+
 	int getNewGraphID();
 
 	void updateGraph();
+
 
 	virtual void audioDeviceIOCallbackWithContext
 #if RPISAFEMODE
@@ -64,17 +69,13 @@ public:
 			const AudioIODeviceCallbackContext& context) override;
 #endif
 
-	//7.0.3
-	//(const float* const* inputChannelData,
-	//	int numInputChannels,
-	//	float* const* outputChannelData,
-	//	int numOutputChannels,
-	//	int numSamples,
-	//	const AudioIODeviceCallbackContext& context) override;
+
+	virtual void loadAudioConfig();
 
 	virtual void audioDeviceAboutToStart(AudioIODevice* device) override;
 	virtual void audioDeviceStopped() override;
 
+	virtual void audioDeviceListChanged() override;
 	virtual void changeListenerCallback(ChangeBroadcaster* source) override;
 
 	StringArray getInputChannelNames() const;
