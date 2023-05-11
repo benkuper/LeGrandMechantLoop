@@ -49,7 +49,7 @@ ControllableUI* DecibelFloatParameter::createDefaultUI(Array<Controllable*> cont
 
 void DecibelsHelpers::init()
 {
-	
+
 }
 
 float DecibelsHelpers::valueToDecibels(float val)
@@ -110,6 +110,7 @@ VolumeControl::VolumeControl(const String& name, bool hasRMS) :
 	ControllableContainer(name),
 	prevGain(1),
 	rms(nullptr),
+	computeRMS(nullptr),
 	rmsSampleCount(0),
 	rmsMax(0)
 {
@@ -120,6 +121,7 @@ VolumeControl::VolumeControl(const String& name, bool hasRMS) :
 	active = addBoolParameter("Active", "Fast way to mute this", true);
 	if (hasRMS)
 	{
+		computeRMS = addBoolParameter("Compute RMS", "Compute RMS for this", true);
 		rms = new DecibelFloatParameter("RMS", "RMS for this", 0);
 		addParameter(rms);
 		rms->setControllableFeedbackOnly(true);
@@ -164,6 +166,8 @@ void VolumeControl::applyGain(int channel, AudioSampleBuffer& buffer)
 
 void VolumeControl::updateRMS(AudioSampleBuffer& buffer, int channel, int startSample, int numSamples)
 {
+	if (computeRMS != nullptr && !computeRMS->boolValue()) return;
+
 	if (numSamples == -1) numSamples = buffer.getNumSamples();
 
 	if (rms != nullptr)

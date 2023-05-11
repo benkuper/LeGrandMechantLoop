@@ -54,6 +54,7 @@ public:
     DecibelFloatParameter* gain;
     DecibelFloatParameter* rms;
     BoolParameter* active;
+    BoolParameter* computeRMS;
 
     int rmsSampleCount;
     float rmsMax;
