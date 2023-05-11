@@ -14,6 +14,8 @@ SpatItem::SpatItem(const String& name, var params) :
 	BaseItem("Point " + String(index + 1)),
 	index(index)
 {
+	setHasCustomColor(true);
+	if(!Engine::mainEngine->isLoadingFile) itemColor->setColor(Colour::fromHSV(Random().nextFloat(), .8f, .8f, 1));
 	//hideInEditor = true;
 	position = addPoint2DParameter("Position", "Position of this point");
 	position->setBounds(0, 0, 1, 1);

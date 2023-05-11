@@ -26,7 +26,9 @@ SpatNode::SpatNode(var params) :
 
 	spatRadius = layoutCC.addFloatParameter("Radius", "Radius to compute the weights from", .5f, 0, 1);
 	circleRadius = layoutCC.addFloatParameter("Circle Radius", "Radius of the circle if in circle mode", .8f, 0, 2);
-	circleAngle = layoutCC.addFloatParameter("Circle Angle", "Angle of the circle if in cirlce mode", 0, 0, 360);
+	circleAngle = layoutCC.addFloatParameter("Circle Angle", "Angle of the circle if in circle mode", 0, 0, 360);
+	circleArc = layoutCC.addFloatParameter("Circle Arc", "Arc of the circle if in circle mode", 1, -1, 1);
+	firstIsCentered = layoutCC.addBoolParameter("First is Centered", "If checked, the first target will be centered", false);
 
 	AutomationKey* k = fadeCurve.addKey(0, 1);
 	k->easingType->setValueWithData(Easing::BEZIER);
@@ -35,7 +37,7 @@ SpatNode::SpatNode(var params) :
 	fadeCurve.editorIsCollapsed = true;
 	layoutCC.addChildControllableContainer(&fadeCurve);
 
-	
+
 
 	addChildControllableContainer(&layoutCC);
 
@@ -43,6 +45,9 @@ SpatNode::SpatNode(var params) :
 
 	sources.addBaseManagerListener(this);
 	targets.addBaseManagerListener(this);
+
+	sources.selectItemWhenCreated = false;
+	targets.selectItemWhenCreated = false;
 
 	addChildControllableContainer(&sources);
 	addChildControllableContainer(&targets);
@@ -66,12 +71,17 @@ void SpatNode::placeTargets()
 	{
 	case CIRCLE:
 	{
-		int numItems = targets.items.size();
-		for (int i = 0; i < numItems; i++)
-		{
-			float rel = i * 1.0f / numItems;
-			float rad = circleRadius->floatValue();
+		int startIndex = firstIsCentered->boolValue() ? 1 : 0;
 
+
+		float rad = circleRadius->floatValue();
+		float arc = circleArc->floatValue();
+
+		int numItems = targets.items.size();
+		if (numItems > 0 && startIndex == 1) targets.items[0]->position->setPoint(.5f, .5f);
+		for (int i = startIndex; i < numItems; i++)
+		{
+			float rel = (i - startIndex) * arc / (numItems - startIndex);
 			float angle = (circleAngle->floatValue() + rel * 360 + 180) * float_Pi / 180;
 			SpatItem* si = targets.items[i];
 			si->position->setPoint(.5f + cosf(angle) * .5f * rad, .5f + sinf(angle) * .5f * rad);
@@ -91,6 +101,10 @@ void SpatNode::updateRadiuses()
 	for (auto& si : targets.items) si->radius->setValue(spatRadius->floatValue());
 }
 
+void SpatNode::updateWeights()
+{
+}
+
 void SpatNode::updateAudioInputsInternal()
 {
 	Array<Colour> colors;
@@ -103,7 +117,7 @@ void SpatNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, C
 {
 	Node::onControllableFeedbackUpdateInternal(cc, c);
 
-	if (c == spatMode || c == circleRadius || c == circleAngle)
+	if (c == spatMode || c == circleRadius || c == circleAngle || c == circleArc || c == firstIsCentered)
 	{
 		if (c == spatMode)
 		{
@@ -137,9 +151,10 @@ void SpatNode::itemRemoved(SpatSource* s)
 
 void SpatNode::itemAdded(SpatTarget* s)
 {
+	ScopedSuspender sp(processor);
 	s->setIndex(targets.items.indexOf(s) + 1);
 	if (isCurrentlyLoadingData) return;
-	ScopedSuspender sp(processor);
+	updateAudioInputsInternal();
 	setAudioOutputs(targets.items.size());
 }
 
@@ -200,7 +215,7 @@ void SpatNode::processSource(int index, AudioBuffer<float>& sourceBuffer, AudioB
 
 		if (weight > 0) targetBuffer.addFrom(outputIndex, 0, sourceBuffer.getReadPointer(index), numSamples, weight);
 
-		si->weights[index]->setValue(weight);
+		if (index < si->weights.size()) si->weights[index]->setValue(weight);
 	}
 }
 

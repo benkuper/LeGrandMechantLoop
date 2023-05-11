@@ -28,12 +28,17 @@ public:
 	Automation fadeCurve;
 	FloatParameter* circleRadius;
 	FloatParameter* circleAngle;
+	FloatParameter* circleArc;
+	BoolParameter* firstIsCentered;
 
 	BaseManager<SpatSource> sources;
 	BaseManager<SpatTarget> targets;
 
+	Array<float, CriticalSection> weights;
+
 	void placeTargets();
 	void updateRadiuses();
+	void updateWeights();
 
 	void updateAudioInputsInternal() override;
 
