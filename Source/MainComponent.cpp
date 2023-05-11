@@ -207,6 +207,7 @@ LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent* mainComp, LGMLEngine* 
 #if !JUCE_MAC
 	, menuBarComp(mainComp)
 #endif
+	, audioSettingsUI("audioSettings")
 {
 #if !JUCE_MAC
 	addAndMakeVisible(menuBarComp);
@@ -223,10 +224,19 @@ LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent* mainComp, LGMLEngine* 
 
 	addAndMakeVisible(logInUI.get());
 	addAndMakeVisible(logOutUI.get());
+
+	audioSettingsUI.setFont(10);
+	audioSettingsUI.setJustificationType(Justification::centredRight);
+	audioSettingsUI.setText(AudioManager::getInstance()->getCurrentDeviceDescription(), dontSendNotification);
+	addAndMakeVisible(audioSettingsUI);
+
+	AudioManager::getInstance()->addAudioManagerListener(this);
 }
 
 LGMLMenuBarComponent::~LGMLMenuBarComponent()
 {
+	if(AudioManager::getInstanceWithoutCreating() != nullptr)
+		AudioManager::getInstance()->removeAudioManagerListener(this);
 }
 
 void LGMLMenuBarComponent::paint(Graphics& g)
@@ -245,5 +255,14 @@ void LGMLMenuBarComponent::resized()
 	logInUI->setBounds(r.removeFromRight(90).reduced(1)); //overlap but we don't care
 	r.removeFromRight(20);
 	cpuUsageUI->setBounds(r.removeFromRight(200).reduced(2)); //overlap but we don't care
+	r.removeFromRight(8);
+	audioSettingsUI.setBounds(r.removeFromRight(400));
 
+}
+
+void LGMLMenuBarComponent::audioSetupChanged()
+{
+
+	audioSettingsUI.setColour(Label::ColourIds::textColourId, AudioManager::getInstance()->am.getCurrentAudioDevice() != nullptr ? TEXT_COLOR : RED_COLOR);
+	audioSettingsUI.setText(AudioManager::getInstance()->getCurrentDeviceDescription(), dontSendNotification);
 }

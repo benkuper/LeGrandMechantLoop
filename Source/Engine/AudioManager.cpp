@@ -234,6 +234,15 @@ void AudioManager::endLoadFile()
 	graph.suspendProcessing(false);
 }
 
+String AudioManager::getCurrentDeviceDescription()
+{
+	String deviceName = am.getCurrentAudioDevice() != nullptr  ?am.getCurrentAudioDevice()->getName(): (targetDeviceName.isNotEmpty()?"[Disconnected :"+targetDeviceName+"]" : "");
+
+	am.getAudioDeviceSetup();
+
+	return deviceName + " : " + String(currentSampleRate) + "Hz, " + String(currentBufferSize) + " samples";
+}
+
 var AudioManager::getJSONData()
 {
 	var data = ControllableContainer::getJSONData();

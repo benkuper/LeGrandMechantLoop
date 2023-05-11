@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "Engine/AudioManager.h"
 
 //==============================================================================
 /*
@@ -15,7 +16,8 @@ class MainComponent;
 class LGMLEngine;
 
 class LGMLMenuBarComponent :
-    public Component
+    public Component,
+    public AudioManager::AudioManagerListener
 {
 public:
     LGMLMenuBarComponent(MainComponent * mainComp, LGMLEngine * engine);
@@ -28,9 +30,12 @@ public:
     std::unique_ptr<FloatSliderUI> cpuUsageUI;
     std::unique_ptr<BoolToggleUI> logInUI;
     std::unique_ptr<BoolToggleUI> logOutUI;
+    Label audioSettingsUI;
 
     void paint(Graphics& g) override;
     void resized() override;
+
+    void audioSetupChanged() override;
 };
 
 class MainComponent : public OrganicMainContentComponent

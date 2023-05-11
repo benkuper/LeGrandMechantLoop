@@ -86,6 +86,8 @@ public:
 	void startLoadFile() override;
 	void endLoadFile() override;
 
+	String getCurrentDeviceDescription();
+
 	class AudioManagerListener
 	{
 	public:
