@@ -21,11 +21,14 @@ public:
 
 	VSTPluginParameter* pluginParam;
 	BoolParameter* clearBufferOnDisable;
+	FloatParameter* dryWet;
+	BoolParameter* disableOnDry;
 	std::unique_ptr<VSTParameterContainer> vstParamsCC;
 	ControllableContainer macrosCC;
 	IntParameter * numMacros;
 	IntParameter* autoActivateMacroIndex;
 	Point2DParameter* autoActivateRange;
+
 
 	struct VSTPreset
 	{
@@ -43,6 +46,7 @@ public:
 
 	bool antiMacroFeedback;
 	bool isSettingVST; //avoid updating vst's playconfig while setting it
+	float prevWetDry;
 
 	void clearItem() override;
 	
@@ -55,7 +59,7 @@ public:
 	void updatePresetEnum(const String & setPresetName = "");
 	void updateMacros();
 
-	void checkAutoBypassFromMacro();
+	void checkAutoBypass();
 
 	void updatePlayConfigInternal() override;
 

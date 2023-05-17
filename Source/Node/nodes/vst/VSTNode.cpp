@@ -12,10 +12,11 @@
 
 VSTNode::VSTNode(var params) :
 	Node(getTypeString(), params, true, true, true, true, true, true),
-	isSettingVST(false),
 	currentPreset(nullptr),
 	macrosCC("Macros"),
 	antiMacroFeedback(false),
+	isSettingVST(false),
+	prevWetDry(1),
 	vstNotifier(5)
 {
 	numAudioInputs->canBeDisabledByUser = true;
@@ -25,6 +26,9 @@ VSTNode::VSTNode(var params) :
 
 	pluginParam = new VSTPluginParameter("VST", "The VST to use");
 	ControllableContainer::addParameter(pluginParam);
+
+	dryWet = addFloatParameter("Dry Wet", "Wet Dry Ratio. 1 is totally wet, 0 is totally dry", 1, 0, 1);
+	disableOnDry = addBoolParameter("Disable On Dry", "If checked, the VST will be disabled when the wet dry parameter is 0", true);
 
 	clearBufferOnDisable = addBoolParameter("Clear Buffer On Disable", "If checked, this will clear the buffer when the vst is disable. This allows to avoid long reverb staying when re-enabling for instance.", true);
 	presetEnum = addEnumParameter("Preset", "Load a preset");
@@ -204,14 +208,23 @@ void VSTNode::updateMacros()
 		p->isCustomizableByUser = true;
 	}
 
-	autoActivateMacroIndex->setRange(1, numMacros->intValue());
+	autoActivateMacroIndex->setRange(1, jmax(numMacros->intValue(), 2));
 }
 
-void VSTNode::checkAutoBypassFromMacro()
+void VSTNode::checkAutoBypass()
 {
-	if (!autoActivateMacroIndex->enabled || autoActivateMacroIndex->intValue() > macrosCC.controllables.size()) return;
-	float val = ((Parameter*)macrosCC.controllables[autoActivateMacroIndex->intValue() - 1])->floatValue();
-	bool shouldBypass = val >= autoActivateRange->x && val <= autoActivateRange->y;
+	bool shouldBypass = false;
+	if (autoActivateMacroIndex->enabled && autoActivateMacroIndex->intValue() <= macrosCC.controllables.size())
+	{
+		if (Parameter* p = ((Parameter*)macrosCC.controllables[autoActivateMacroIndex->intValue() - 1]))
+		{
+			float val = p->floatValue();
+			shouldBypass |= val >= autoActivateRange->x && val <= autoActivateRange->y;
+		}
+	}
+
+	if (disableOnDry->boolValue()) shouldBypass |= dryWet->floatValue() == 0;
+
 	enabled->setValue(!shouldBypass);
 }
 
@@ -291,7 +304,7 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 	{
 		updateMacros();
 	}
-	else if (p == autoActivateMacroIndex || p == autoActivateRange) checkAutoBypassFromMacro();
+	else if (p == autoActivateMacroIndex || p == autoActivateRange || p == dryWet || p == disableOnDry) checkAutoBypass();
 }
 
 void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
@@ -317,7 +330,7 @@ void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Co
 	else if (cc == &macrosCC)
 	{
 		int index = macrosCC.controllables.indexOf(c);
-		if (autoActivateMacroIndex->enabled && index == autoActivateMacroIndex->intValue() - 1) checkAutoBypassFromMacro();
+		if (autoActivateMacroIndex->enabled && index == autoActivateMacroIndex->intValue() - 1) checkAutoBypass();
 
 		if (vstParamsCC != nullptr)
 		{
@@ -336,7 +349,7 @@ void VSTNode::onControllableStateChanged(Controllable* c)
 	Node::onControllableStateChanged(c);
 	if (c == numAudioInputs || c == numAudioOutputs) setIOFromVST();
 	else if (c == autoActivateMacroIndex) autoActivateRange->setEnabled(autoActivateMacroIndex->enabled);
-	if (c == autoActivateMacroIndex || c == autoActivateRange) checkAutoBypassFromMacro();
+	if (c == autoActivateMacroIndex || c == autoActivateRange) checkAutoBypass();
 }
 
 void VSTNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
@@ -347,7 +360,25 @@ void VSTNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBloc
 
 void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	processVSTBlock(buffer, midiMessages, false);
+	float weight = dryWet->floatValue();
+
+	if (prevWetDry == weight)
+	{
+		if (weight == 1) processVSTBlock(buffer, midiMessages, false);
+		else if (weight == 0) processBlockBypassed(buffer, midiMessages);
+	}
+	else
+	{
+		AudioBuffer<float> vstBuffer(buffer.getNumChannels(), buffer.getNumSamples());
+		vstBuffer.clear();
+		processVSTBlock(vstBuffer, midiMessages, false);
+
+		buffer.applyGainRamp(0, buffer.getNumSamples(), 1 - prevWetDry, 1 - weight);
+
+		for (int c = 0; c < buffer.getNumChannels(); c++) buffer.addFromWithRamp(c, 0, vstBuffer.getReadPointer(c), buffer.getNumSamples(), prevWetDry, weight);
+	}
+
+	prevWetDry = weight;
 
 }
 
