@@ -221,6 +221,7 @@ StringArray AudioManager::getOutputChannelNames() const
 
 void AudioManager::stop()
 {
+	graph.suspendProcessing(true);
 	am.closeAudioDevice();
 }
 

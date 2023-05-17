@@ -51,6 +51,8 @@ LGMLEngine::LGMLEngine() :
 LGMLEngine::~LGMLEngine()
 {
     isClearing = true; 
+    AudioManager::getInstance()->stop();
+
     RootPresetManager::deleteInstance();
     MappingManager::deleteInstance();
     InterfaceManager::deleteInstance();
@@ -58,7 +60,6 @@ LGMLEngine::~LGMLEngine()
     RootNodeManager::deleteInstance();
     Transport::deleteInstance();
 
-    AudioManager::getInstance()->stop();
     AudioManager::deleteInstance();
     NodeFactory::deleteInstance();
 
