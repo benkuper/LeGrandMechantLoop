@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" jucerFormatVersion="1"
-              projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include&#10;../../External/rubberband/include"
-              defines="VST_LOGGING=0&#10;OSC_REMOTE_CONTROL_PORT=44000" version="1.0.1b10"
+              projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/asiodriver&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include&#10;../../External/rubberband/include&#10;../../External/abletonlink/include"
+              defines="VST_LOGGING=0&#10;OSC_REMOTE_CONTROL_PORT=44000" version="1.0.1b11"
               cppLanguageStandard="17" companyName="Ben Kuper" companyCopyright="Ben Kuper"
               bundleIdentifier="benkuper.LGML" includeBinaryInJuceHeader="1">
   <MAINGROUP id="xIhitl" name="LGML">
@@ -458,7 +458,7 @@
                JUCE_IP_AND_PORT_DETECTION="1" JUCE_PLUGINHOST_LADSPA="1" JUCE_PLUGINHOST_LV2="1"/>
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
-            smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_WINDOWS=1">
+            smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_WINDOWS=1&#10;USE_ABLETONLINK=1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/debug"
                        binaryPath="Binaries/Debug"/>
@@ -487,7 +487,7 @@
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="k24oFh" bigIcon="k24oFh"
                externalLibraries="Servus&#10;rubberband" xcodeValidArchs="arm64,x86_64"
                microphonePermissionNeeded="1" customPList="&lt;plist&gt;&#10;&lt;dict&gt;&#10;&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;&#9;&lt;dict&gt;&#10;&#9;&#9;&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;&#10;&#9;&#9;&lt;true/&gt;&#10;&#9;&lt;/dict&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
-               documentExtensions="lgml" extraDefs="JUCE_SUPPORT_CARBON=0&#10;JUCE_COREGRAPHICS_DRAW_ASYNC=1&#10;LINK_PLATFORM_MACOSX=1">
+               documentExtensions="lgml" extraDefs="JUCE_SUPPORT_CARBON=0&#10;JUCE_COREGRAPHICS_DRAW_ASYNC=1&#10;LINK_PLATFORM_MACOSX=1&#10;USE_ABLETONLINK=1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="LGML" headerPath="../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/serial/include"
                        libraryPath="../../External/servus/lib/osx/debug&#10;../../External/rubberband/lib/osx"/>
@@ -521,7 +521,7 @@
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="k24oFh" bigIcon="k24oFh"
                 extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed&#10;-lm"
                 externalLibraries="bluetooth&#10;Servus&#10;rubberband&#10;curl&#10;usb-1.0"
-                extraDefs="LINK_PLATFORM_LINUX=1">
+                extraDefs="LINK_PLATFORM_LINUX=1&#10;USE_ABLETONLINK=1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="LGML" libraryPath="../../External/servus/lib/linux&#10;../../External/rubberband/lib/linux&#10;/usr/lib/x86_64-linux-gnu/"
                        headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"/>
@@ -549,7 +549,7 @@
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2022 targetFolder="Builds/VisualStudio2022_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
-            smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_WINDOWS=1"
+            smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_WINDOWS=1&#10;USE_ABLETONLINK=1"
             extraCompilerFlags="/Zm1000 /bigobj">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/debug"
@@ -581,7 +581,7 @@
     <XCODE_MAC targetFolder="Builds/MacOSX_CI" smallIcon="k24oFh" bigIcon="k24oFh"
                externalLibraries="Servus&#10;rubberband" xcodeValidArchs="arm64,x86_64"
                hardenedRuntimeOptions="com.apple.security.cs.allow-jit" customPList="&lt;plist&gt;&#10;&lt;dict&gt;&#10;&lt;key&gt;NSAppTransportSecurity&lt;/key&gt;&#10;&#9;&lt;dict&gt;&#10;&#9;&#9;&lt;key&gt;NSAllowsArbitraryLoads&lt;/key&gt;&#10;&#9;&#9;&lt;true/&gt;&#10;&#9;&lt;/dict&gt;&#10;&lt;/dict&gt;&#10;&lt;/plist&gt;"
-               microphonePermissionNeeded="1" documentExtensions="lgml" extraDefs="JUCE_SUPPORT_CARBON=0&#10;JUCE_COREGRAPHICS_DRAW_ASYNC=1&#10;LINK_PLATFORM_MACOSX=1">
+               microphonePermissionNeeded="1" documentExtensions="lgml" extraDefs="JUCE_SUPPORT_CARBON=0&#10;JUCE_COREGRAPHICS_DRAW_ASYNC=1&#10;LINK_PLATFORM_MACOSX=1&#10;USE_ABLETONLINK=1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="0" name="Release" osxCompatibility="10.13 SDK" libraryPath="../../External/servus/lib/osx/release&#10;../../External/rubberband/lib/osx"
                        headerPath="../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/serial/include"
@@ -613,7 +613,7 @@
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/Raspberry" extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed&#10;-lm"
                 externalLibraries="bluetooth&#10;Servus&#10;rubberband&#10;curl&#10;usb-1.0&#10;pthread&#10;atomic&#10;stdc++"
-                smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_LINUX=1">
+                smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_LINUX=1&#10;USE_ABLETONLINK=1">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="0" name="Release" headerPath="/usr/include/freetype2&#10;../../External/libusb/include/libusb-1.0"
                        libraryPath="../../External/servus/lib/raspberry&#10;../../External/rubberband/lib/raspberry&#10;/usr/lib/arm-linux-gnueabihf&#10;"
@@ -644,7 +644,7 @@
         <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <LINUX_MAKE targetFolder="Builds/Raspberry64" extraDefs="LINK_PLATFORM_LINUX=1"
+    <LINUX_MAKE targetFolder="Builds/Raspberry64" extraDefs="LINK_PLATFORM_LINUX=1&#10;USE_ABLETONLINK=1"
                 extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed"
                 externalLibraries="bluetooth&#10;Servus&#10;rubberband&#10;curl&#10;usb-1.0&#10;pthread&#10;atomic&#10;stdc++"
                 smallIcon="k24oFh" bigIcon="k24oFh">

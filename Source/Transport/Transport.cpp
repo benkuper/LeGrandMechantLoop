@@ -25,6 +25,8 @@ Transport::Transport() :
 	setTempoSampleCount(0),
 	timeAtStart(0)
 {
+
+
 	bpm = addFloatParameter("BPM", "Current BPM", 120, 10, 900);
 	bpm->defaultUI = FloatParameter::LABEL;
 	//bpm->setControllableFeedbackOnly(true);
@@ -44,6 +46,7 @@ Transport::Transport() :
 	curBar->setControllableFeedbackOnly(true);
 	curBeat->setControllableFeedbackOnly(true);
 
+
 	barProgression = addFloatParameter("Bar Progression", "Relative progression of the current bar", 0, 0, 1);
 	barProgression->setControllableFeedbackOnly(true);
 
@@ -51,7 +54,9 @@ Transport::Transport() :
 	beatProgression->setControllableFeedbackOnly(true);
 
 	firstLoopBeats = addIntParameter("First Loop Beat", "Number of beats that the loop that set the tempo is taking", 1, 1);
-	firstLoopBeats->setControllableFeedbackOnly(true);
+	//firstLoopBeats->setControllableFeedbackOnly(true);
+
+	firstLoopProgression = addFloatParameter("First Loop Progression", "Relative progression of the first loop", 0, 0, 1);
 
 	playTrigger = addTrigger("Play", "Start playing");
 	togglePlayTrigger = addTrigger("Toggle Play", "Toggle between play / stop");
@@ -69,6 +74,26 @@ Transport::Transport() :
 	recQuantizBPMRange->setPoint(50, 190);
 	recQuantizCount = addIntParameter("Manual Quantiz Count", "", 1, 1, 100, false);
 
+	useAbletonLink = addBoolParameter("Enable Ableton Link", "Use Ableton Link. Enabling this will sync to other ableton link clients", false);
+	numLinkClients = addIntParameter("Num Link Clients", "Number of Ableton Link clients", 0, 0);
+
+#if USE_ABLETONLINK
+	link.reset(new ableton::Link{ bpm->floatValue() });
+
+	link->setTempoCallback([this](const double p) {
+		bpm->setValue(p);
+		});
+
+	link->setNumPeersCallback([this](const int p) {
+		numLinkClients->setValue(p);
+		});
+
+	link->setStartStopCallback([this](const int p) {
+		if (p == 0) stop();
+		else if (p == 2) play();
+		});
+
+#endif
 
 	AudioManager::getInstance()->am.addAudioCallback(this);
 
@@ -187,6 +212,9 @@ void Transport::setCurrentTime(int samples)
 	timeInSamples = samples;
 	barProgression->setValue(getRelativeBarSamples() * 1.0 / getBarNumSamples());
 	beatProgression->setValue(getRelativeBeatSamples() * 1.0 / getBeatNumSamples());
+	double relFirstLoopTime = getRelativeFirstLoopTime();
+	double firstLoopTime = getTimeForBeat(firstLoopBeats->intValue());
+	firstLoopProgression->setValue(relFirstLoopTime / firstLoopTime);
 
 	int prevBar = curBar->intValue();
 	int prevBeat = curBeat->intValue();
@@ -231,6 +259,12 @@ void Transport::onContainerParameterChanged(Parameter* p)
 	if (p == isCurrentlyPlaying)
 	{
 		transportListeners.call(&TransportListener::playStateChanged, isCurrentlyPlaying->boolValue(), false);
+
+#if USE_ABLETONLINK
+		auto session = link->captureAppSessionState();
+		session.setIsPlaying(isCurrentlyPlaying->boolValue(), link->clock().micros());
+		link->commitAudioSessionState(session);
+#endif
 	}
 	else if (p == recQuantization)
 	{
@@ -252,7 +286,21 @@ void Transport::onContainerParameterChanged(Parameter* p)
 
 		}
 
+#if USE_ABLETONLINK
+		if (link != nullptr)
+		{
+			auto session = link->captureAppSessionState();
+			session.setTempo(bpm->floatValue(), link->clock().micros());
+			link->commitAudioSessionState(session);
+		}
+#endif
+
 		transportListeners.call(&TransportListener::bpmChanged);
+	}
+
+	else if (p == useAbletonLink)
+	{
+		setupAbletonLink();
 	}
 }
 
@@ -342,6 +390,13 @@ double Transport::getTimeToNextBeat() const
 	return beatTime - relBeatTime;
 }
 
+double Transport::getRelativeFirstLoopTime() const
+{
+	int firstLoopSamples = getSamplesForBeat(firstLoopBeats->intValue());
+	int relFirstLoop = timeInSamples % firstLoopSamples;
+	return getTimeForSamples(relFirstLoop);
+}
+
 double Transport::getTimeToNextFirstLoop() const
 {
 	int flBeats = firstLoopBeats->intValue();
@@ -416,25 +471,48 @@ int Transport::getTotalBeatCount() const
 	return curBar->intValue() * beatsPerBar->intValue() + curBeat->intValue();
 }
 
-void Transport::audioDeviceIOCallbackWithContext
-#if RPISAFEMODE
-(const float** inputChannelData,
-	int numInputChannels,
-	float** outputChannelData,
-	int numOutputChannels,
-	int numSamples,
-	const AudioIODeviceCallbackContext& context)
-#else
-//7.0.3
-(const float* const* inputChannelData,
+void Transport::setupAbletonLink()
+{
+#if USE_ABLETONLINK
+	if (useAbletonLink->boolValue())
+	{
+
+		link->enableStartStopSync(true);
+		link->enable(true);
+
+		jassert(link->isEnabled());
+
+	}
+	else
+	{
+		link->enable(false);
+	}
+#endif
+
+	LOG("Ableton Link is now " << (link->isEnabled() ? "enabled" : "disabled"));
+}
+
+void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
 	int numInputChannels,
 	float* const* outputChannelData,
 	int numOutputChannels,
 	int numSamples,
 	const AudioIODeviceCallbackContext& context)
-#endif
 {
-	if (isCurrentlyPlaying->boolValue())
+
+	if (link->isEnabled() && link->numPeers() > 0)
+	{
+		const auto time = link->clock().micros();
+		//const auto session = link->captureAppSessionState();
+		//const auto beat = session.beatAtTime(time, beatsPerBar->intValue());
+		//const auto phase = session.phaseAtTime(time, beatsPerBar->intValue());
+		//curBeat->setValue(phase);
+		//curBar->setValue(floor(beat / beatsPerBar->intValue()));
+		//beatProgression->setValue(phase / beatsPerBar->intValue());
+
+		setCurrentTime(getSamplesForTime(time.count() / 1e6));
+	}
+	else if (isCurrentlyPlaying->boolValue())
 	{
 		setCurrentTime(timeInSamples + numSamples);
 	}

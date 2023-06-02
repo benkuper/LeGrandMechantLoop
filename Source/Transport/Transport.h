@@ -12,6 +12,14 @@
 
 #include "JuceHeader.h"
 
+#if USE_ABLETONLINK
+#pragma warning(push)
+#pragma warning(disable:4996)
+#include <ableton/Link.hpp>
+#include <ableton/link/HostTimeFilter.hpp>
+#pragma warning(pop)
+#endif
+
 class Transport :
 	public ControllableContainer,
 	public AudioIODeviceCallback,
@@ -43,11 +51,15 @@ public:
 	FloatParameter* barProgression;
 	FloatParameter* beatProgression;
 	IntParameter* firstLoopBeats;
+	FloatParameter* firstLoopProgression;
 
 	Trigger* playTrigger;
 	Trigger* togglePlayTrigger;
 	Trigger* pauseTrigger;
 	Trigger* stopTrigger;
+
+	BoolParameter* useAbletonLink;
+	IntParameter* numLinkClients;
 
 	int sampleRate;
 	int blockSize;
@@ -59,6 +71,10 @@ public:
 	int setTempoSampleCount;
 
 	double timeAtStart;
+
+#if USE_ABLETONLINK
+	std::unique_ptr<ableton::Link> link;
+#endif
 
 	void clear() override; // override here to avoid deleting parameters
 
@@ -95,6 +111,7 @@ public:
 	double getBeatLength() const;
 	double getTimeToNextBar() const;
 	double getTimeToNextBeat() const;
+	double getRelativeFirstLoopTime() const;
 	double getTimeToNextFirstLoop() const;
 	double getTimeForSamples(int samples) const;
 
@@ -110,24 +127,16 @@ public:
 	int getSamplesForTime(double time, bool blockPerfect = true) const;
 	int getTotalBeatCount() const;
 
+	void setupAbletonLink();
+
 	// Inherited via AudioIODeviceCallback
 
-	virtual void
-#if RPISAFEMODE
-		audioDeviceIOCallbackWithContext(const float** inputChannelData,
-			int numInputChannels,
-			float** outputChannelData,
-			int numOutputChannels,
-			int numSamples,
-			const AudioIODeviceCallbackContext& context) override;
-#else
-		audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
+	virtual void audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
 			int numInputChannels,
 			float* const* outputChannelData,
 			int numOutputChannels,
 			int numSamples,
 			const AudioIODeviceCallbackContext& context) override;
-#endif
 
 	virtual void audioDeviceAboutToStart(AudioIODevice* device) override;
 	virtual void audioDeviceStopped() override;
