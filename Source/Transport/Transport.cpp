@@ -54,9 +54,9 @@ Transport::Transport() :
 	beatProgression->setControllableFeedbackOnly(true);
 
 	firstLoopBeats = addIntParameter("First Loop Beat", "Number of beats that the loop that set the tempo is taking", 1, 1);
-	//firstLoopBeats->setControllableFeedbackOnly(true);
 
 	firstLoopProgression = addFloatParameter("First Loop Progression", "Relative progression of the first loop", 0, 0, 1);
+	firstLoopProgression->setControllableFeedbackOnly(true);
 
 	playTrigger = addTrigger("Play", "Start playing");
 	togglePlayTrigger = addTrigger("Toggle Play", "Toggle between play / stop");
