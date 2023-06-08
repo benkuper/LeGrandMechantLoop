@@ -21,7 +21,6 @@ public:
     OwnedArray<AudioFormatReaderSource> ticReaders;
     OwnedArray<AudioTransportSource> ticTransports;
 
-    AudioTransportSource* prevTransport;
     AudioTransportSource* currentTransport;
 
 
