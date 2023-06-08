@@ -136,6 +136,7 @@
 		25C6CFFA3282EB81DB67A6AF /* CoreAudioKit.framework */ /* CoreAudioKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudioKit.framework; path = System/Library/Frameworks/CoreAudioKit.framework; sourceTree = SDKROOT; };
 		27613EF4E999808F2616E3D5 /* SerialManager.h */ /* SerialManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SerialManager.h; path = ../../Source/Common/Serial/SerialManager.h; sourceTree = SOURCE_ROOT; };
 		2A00FB335325AFC037E3C916 /* list_ports_linux.cc */ /* list_ports_linux.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = list_ports_linux.cc; path = ../../Source/Common/Serial/lib/serial/impl/list_ports/list_ports_linux.cc; sourceTree = SOURCE_ROOT; };
+		2BDE56DC2BDA840C819EA381 /* MetronomeNode.cpp */ /* MetronomeNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MetronomeNode.cpp; path = ../../Source/Node/nodes/metronome/MetronomeNode.cpp; sourceTree = SOURCE_ROOT; };
 		2C20037FB72504C4BD9A339D /* NodeManagerUI.cpp */ /* NodeManagerUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NodeManagerUI.cpp; path = ../../Source/Node/ui/NodeManagerUI.cpp; sourceTree = SOURCE_ROOT; };
 		2D135AC85A276C70A2901974 /* InterfaceManagerUI.cpp */ /* InterfaceManagerUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = InterfaceManagerUI.cpp; path = ../../Source/Interface/ui/InterfaceManagerUI.cpp; sourceTree = SOURCE_ROOT; };
 		2F088687C3123C4B2C3EDDEA /* MIDIManager.h */ /* MIDIManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MIDIManager.h; path = ../../Source/Common/MIDI/MIDIManager.h; sourceTree = SOURCE_ROOT; };
@@ -181,6 +182,7 @@
 		4E745442DDAFDF4E04490267 /* include_juce_core.mm */ /* include_juce_core.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_core.mm; path = ../../JuceLibraryCode/include_juce_core.mm; sourceTree = SOURCE_ROOT; };
 		4F1A28AA9EE3359DCD52B0BC /* NodeConnectionManager.cpp */ /* NodeConnectionManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NodeConnectionManager.cpp; path = ../../Source/Node/Connection/NodeConnectionManager.cpp; sourceTree = SOURCE_ROOT; };
 		4FDE5F96C33546CB2F65C53F /* AudioLooperTrack.h */ /* AudioLooperTrack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioLooperTrack.h; path = ../../Source/Node/nodes/looper/AudioLooperTrack.h; sourceTree = SOURCE_ROOT; };
+		5047AB34FCDA6DE4FB4A8273 /* tic1.wav */ /* tic1.wav */ = {isa = PBXFileReference; lastKnownFileType = file.wav; name = tic1.wav; path = ../../Resources/Audio/tic1.wav; sourceTree = SOURCE_ROOT; };
 		529A5C0631E036DD05B9C301 /* Mapping.h */ /* Mapping.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Mapping.h; path = ../../Source/Mapping/Mapping.h; sourceTree = SOURCE_ROOT; };
 		541D76048206926DC8F40671 /* PresetUI.cpp */ /* PresetUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PresetUI.cpp; path = ../../Source/Preset/ui/PresetUI.cpp; sourceTree = SOURCE_ROOT; };
 		55EEAD8AFDD8024BA2524572 /* SpatNodeViewUI.cpp */ /* SpatNodeViewUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SpatNodeViewUI.cpp; path = ../../Source/Node/nodes/spat/ui/SpatNodeViewUI.cpp; sourceTree = SOURCE_ROOT; };
@@ -200,6 +202,7 @@
 		6352599CD8E6D8DB64962308 /* LGMLSettings.cpp */ /* LGMLSettings.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = LGMLSettings.cpp; path = ../../Source/Engine/LGMLSettings.cpp; sourceTree = SOURCE_ROOT; };
 		6451E52FC5624125BFEA57EF /* SamplerNodeUI.cpp */ /* SamplerNodeUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SamplerNodeUI.cpp; path = ../../Source/Node/nodes/sampler/ui/SamplerNodeUI.cpp; sourceTree = SOURCE_ROOT; };
 		659337DA8FE1FC15294DE07C /* MIDIDeviceParameter.h */ /* MIDIDeviceParameter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MIDIDeviceParameter.h; path = ../../Source/Common/MIDI/MIDIDeviceParameter.h; sourceTree = SOURCE_ROOT; };
+		65AA903D213AA7F8E5D2D7AE /* MetronomeNode.h */ /* MetronomeNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MetronomeNode.h; path = ../../Source/Node/nodes/metronome/MetronomeNode.h; sourceTree = SOURCE_ROOT; };
 		66B4B782515353C1F61ED957 /* juce_core */ /* juce_core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_core; path = ../../JUCE/modules/juce_core; sourceTree = SOURCE_ROOT; };
 		66DF5261B98007CD5B748D8F /* PresetManager.h */ /* PresetManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PresetManager.h; path = ../../Source/Preset/PresetManager.h; sourceTree = SOURCE_ROOT; };
 		67038B9140608DAD8B6E6934 /* include_juce_simpleweb.cpp */ /* include_juce_simpleweb.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_juce_simpleweb.cpp; path = ../../JuceLibraryCode/include_juce_simpleweb.cpp; sourceTree = SOURCE_ROOT; };
@@ -240,6 +243,7 @@
 		8B2CB4E39ADD7811904BDFA0 /* NodeUI.cpp */ /* NodeUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NodeUI.cpp; path = ../../Source/Node/ui/NodeUI.cpp; sourceTree = SOURCE_ROOT; };
 		8B4563EC8682DDD1AB5A2F1B /* MTCReceiver.h */ /* MTCReceiver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MTCReceiver.h; path = ../../Source/Common/MIDI/MTCReceiver.h; sourceTree = SOURCE_ROOT; };
 		8B79DFACEA4172A913CEA468 /* AnalysisNode.h */ /* AnalysisNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AnalysisNode.h; path = ../../Source/Node/nodes/analysis/AnalysisNode.h; sourceTree = SOURCE_ROOT; };
+		8BE50ED1C2DCE20D2FC3D7D0 /* tic3.wav */ /* tic3.wav */ = {isa = PBXFileReference; lastKnownFileType = file.wav; name = tic3.wav; path = ../../Resources/Audio/tic3.wav; sourceTree = SOURCE_ROOT; };
 		8C29D7354E42E53340668E47 /* VSTNodeViewUI.cpp */ /* VSTNodeViewUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = VSTNodeViewUI.cpp; path = ../../Source/Node/nodes/vst/ui/VSTNodeViewUI.cpp; sourceTree = SOURCE_ROOT; };
 		8E025BE22DED84DB6430C771 /* Main.cpp */ /* Main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Main.cpp; path = ../../Source/Main.cpp; sourceTree = SOURCE_ROOT; };
 		8E5EA7700A5F6407DCC1AA2E /* FFTAnalyzerEditor.h */ /* FFTAnalyzerEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FFTAnalyzerEditor.h; path = ../../Source/Node/nodes/analysis/ui/FFTAnalyzerEditor.h; sourceTree = SOURCE_ROOT; };
@@ -310,6 +314,7 @@
 		C8B163D1585B4EDB4DCBA97B /* InterfaceManagerUI.h */ /* InterfaceManagerUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = InterfaceManagerUI.h; path = ../../Source/Interface/ui/InterfaceManagerUI.h; sourceTree = SOURCE_ROOT; };
 		C9007E07CD991B1AFB0428A3 /* MacroManagerUI.h */ /* MacroManagerUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MacroManagerUI.h; path = ../../Source/Macro/ui/MacroManagerUI.h; sourceTree = SOURCE_ROOT; };
 		C99B23EE9C37D372FCD5B84D /* SamplerNodeUI.h */ /* SamplerNodeUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SamplerNodeUI.h; path = ../../Source/Node/nodes/sampler/ui/SamplerNodeUI.h; sourceTree = SOURCE_ROOT; };
+		CC09893A13E9FF817F333812 /* tic2.wav */ /* tic2.wav */ = {isa = PBXFileReference; lastKnownFileType = file.wav; name = tic2.wav; path = ../../Resources/Audio/tic2.wav; sourceTree = SOURCE_ROOT; };
 		CC6D02F4097155EF3C88BADC /* MIDILooperTrack.cpp */ /* MIDILooperTrack.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MIDILooperTrack.cpp; path = ../../Source/Node/nodes/looper/MIDILooperTrack.cpp; sourceTree = SOURCE_ROOT; };
 		CDC194B8727EC2780FD680C5 /* Interface.h */ /* Interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Interface.h; path = ../../Source/Interface/Interface.h; sourceTree = SOURCE_ROOT; };
 		CE0C34ADCDA41B7FC8B56509 /* juce_osc */ /* juce_osc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_osc; path = ../../JUCE/modules/juce_osc; sourceTree = SOURCE_ROOT; };
@@ -409,6 +414,7 @@
 		07C7B46FEDC49DC296D12F82 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				4C40287066FFF61D488E4457,
 				D7C14326D0367739888CA0D8,
 				D700123C2B1B7BAA4CE0D72C,
 				A12465D7DF1BFF4A884E0419,
@@ -703,6 +709,16 @@
 			name = Common;
 			sourceTree = "<group>";
 		};
+		4C40287066FFF61D488E4457 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				5047AB34FCDA6DE4FB4A8273,
+				CC09893A13E9FF817F333812,
+				8BE50ED1C2DCE20D2FC3D7D0,
+			);
+			name = Audio;
+			sourceTree = "<group>";
+		};
 		604D1A4C6CC59DD48C38E980 /* spat */ = {
 			isa = PBXGroup;
 			children = (
@@ -826,6 +842,7 @@
 		9BBA54FAAB2B58725091A8EB /* nodes */ = {
 			isa = PBXGroup;
 			children = (
+				FC6765BB204CE51A79837678,
 				D58DBF473F358992045CAE23,
 				17D75982AB8F689285647FF4,
 				739125875A412E22BA1F340A,
@@ -1179,6 +1196,15 @@
 				AD1C8D18394B4D24675432C1,
 			);
 			name = ui;
+			sourceTree = "<group>";
+		};
+		FC6765BB204CE51A79837678 /* metronome */ = {
+			isa = PBXGroup;
+			children = (
+				2BDE56DC2BDA840C819EA381,
+				65AA903D213AA7F8E5D2D7AE,
+			);
+			name = metronome;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

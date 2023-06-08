@@ -7,6 +7,11 @@
               bundleIdentifier="benkuper.LGML" includeBinaryInJuceHeader="1">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
+      <GROUP id="{DA74BE5B-C500-8EEE-F570-47999EAB864B}" name="Audio">
+        <FILE id="UMd41m" name="tic1.wav" compile="0" resource="1" file="Resources/Audio/tic1.wav"/>
+        <FILE id="iblusX" name="tic2.wav" compile="0" resource="1" file="Resources/Audio/tic2.wav"/>
+        <FILE id="zDOtQt" name="tic3.wav" compile="0" resource="1" file="Resources/Audio/tic3.wav"/>
+      </GROUP>
       <GROUP id="{C441433A-B399-F72B-FC41-277E3131829E}" name="Templates">
         <GROUP id="{5EAFB9F7-567D-10F0-0B40-844ADBD0B653}" name="Scripts">
           <FILE id="lCDy6F" name="genericScriptTemplate.js" compile="0" resource="1"
@@ -269,6 +274,11 @@
           <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
         </GROUP>
         <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
+          <GROUP id="{BDA9077B-7771-6C0D-F82C-431E0E58DE9D}" name="metronome">
+            <FILE id="FFn3P1" name="MetronomeNode.cpp" compile="0" resource="0"
+                  file="Source/Node/nodes/metronome/MetronomeNode.cpp"/>
+            <FILE id="Vs3PUR" name="MetronomeNode.h" compile="0" resource="0" file="Source/Node/nodes/metronome/MetronomeNode.h"/>
+          </GROUP>
           <GROUP id="{E4E7F36E-69F0-3BA3-C132-53C8419010E4}" name="analysis">
             <GROUP id="{7776E560-0A28-B240-4A7B-C1C1FB0A518F}" name="libs">
               <GROUP id="{C69C4574-079B-1757-EC76-39D432589968}" name="pitch">

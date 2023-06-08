@@ -2,6 +2,9 @@
 
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Filter Include="LGML\Resources\Audio">
+      <UniqueIdentifier>{D4404FC8-EC60-4618-CCEF-569B9E3C2FB1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Resources\Templates\Scripts">
       <UniqueIdentifier>{E8391476-434C-1DF6-EF43-B37A106EE53D}</UniqueIdentifier>
     </Filter>
@@ -91,6 +94,9 @@
     </Filter>
     <Filter Include="LGML\Source\Node\ui">
       <UniqueIdentifier>{3B1D1023-6B9A-7940-0DE2-650FF8A525A4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Node\nodes\metronome">
+      <UniqueIdentifier>{F47C4F8D-0B0A-16EC-1950-BA76575C6D8C}</UniqueIdentifier>
     </Filter>
     <Filter Include="LGML\Source\Node\nodes\analysis\libs\pitch">
       <UniqueIdentifier>{5933CC9B-1053-DA2E-BE04-5BB5D8D47F52}</UniqueIdentifier>
@@ -1320,6 +1326,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\metronome\MetronomeNode.cpp">
+      <Filter>LGML\Source\Node\nodes\metronome</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\analysis\ui\FFTAnalyzerEditor.cpp">
       <Filter>LGML\Source\Node\nodes\analysis\ui</Filter>
@@ -4880,6 +4889,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\metronome\MetronomeNode.h">
+      <Filter>LGML\Source\Node\nodes\metronome</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\analysis\libs\pitch\PitchDetector.h">
       <Filter>LGML\Source\Node\nodes\analysis\libs\pitch</Filter>
@@ -11540,6 +11552,15 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Resources\Audio\tic1.wav">
+      <Filter>LGML\Resources\Audio</Filter>
+    </None>
+    <None Include="..\..\Resources\Audio\tic2.wav">
+      <Filter>LGML\Resources\Audio</Filter>
+    </None>
+    <None Include="..\..\Resources\Audio\tic3.wav">
+      <Filter>LGML\Resources\Audio</Filter>
+    </None>
     <None Include="..\..\Resources\Templates\Scripts\genericScriptTemplate.js">
       <Filter>LGML\Resources\Templates\Scripts</Filter>
     </None>

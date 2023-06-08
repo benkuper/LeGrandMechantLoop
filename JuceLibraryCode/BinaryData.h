@@ -8,6 +8,15 @@
 
 namespace BinaryData
 {
+    extern const char*   tic1_wav;
+    const int            tic1_wavSize = 7868;
+
+    extern const char*   tic2_wav;
+    const int            tic2_wavSize = 11104;
+
+    extern const char*   tic3_wav;
+    const int            tic3_wavSize = 11104;
+
     extern const char*   genericScriptTemplate_js;
     const int            genericScriptTemplate_jsSize = 4708;
 
@@ -42,7 +51,7 @@ namespace BinaryData
     const int            stop_pngSize = 1978;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 11;
+    const int namedResourceListSize = 14;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

@@ -68,6 +68,8 @@
 #include "nodes/vst/VSTNode.h"
 #include "nodes/vst/VSTRackNode.h"
 
+#include "nodes/metronome/MetronomeNode.h"
+
 //UI
 #include "ui/NodeUI.h"
 #include "ui/NodeManagerUI.h"

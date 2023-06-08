@@ -59,6 +59,8 @@
 #include "nodes/vst/VSTNode.cpp"
 #include "nodes/vst/VSTRackNode.cpp"
 
+#include "nodes/metronome/MetronomeNode.cpp"
+
 #include "nodes/recorder/RecorderNode.cpp"
 
 #include "nodes/analysis/FFTAnalyzer.cpp"

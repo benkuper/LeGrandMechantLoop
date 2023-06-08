@@ -290,6 +290,9 @@
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\metronome\MetronomeNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\analysis\ui\FFTAnalyzerEditor.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -3500,6 +3503,7 @@
     <ClInclude Include="..\..\Source\Node\ui\NodeManagerViewUI.h"/>
     <ClInclude Include="..\..\Source\Node\ui\NodeUI.h"/>
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\metronome\MetronomeNode.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\analysis\libs\pitch\PitchDetector.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\analysis\libs\pitch\PitchMPM.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\analysis\libs\pitch\PitchYIN.h"/>
@@ -5721,6 +5725,9 @@
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h"/>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Resources\Audio\tic1.wav"/>
+    <None Include="..\..\Resources\Audio\tic2.wav"/>
+    <None Include="..\..\Resources\Audio\tic3.wav"/>
     <None Include="..\..\Resources\Templates\Scripts\genericScriptTemplate.js"/>
     <None Include="..\..\Resources\Templates\Scripts\interfaceScriptTemplate.js"/>
     <None Include="..\..\Resources\Templates\Scripts\midiScriptTemplate.js"/>
