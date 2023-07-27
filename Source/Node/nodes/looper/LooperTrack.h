@@ -39,7 +39,6 @@ public:
 	IntParameter* loopBar;
 	FloatParameter* loopProgression;
 	IntParameter* section;
-	IntParameter* numStretchedBeats;
 
 
 	int index;

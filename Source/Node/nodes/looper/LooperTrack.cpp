@@ -68,8 +68,6 @@ LooperTrack::LooperTrack(LooperNode* looper, int index) :
 	loopProgression->defaultHideInRemoteControl = true;
 	loopProgression->hideInRemoteControl = true;
 
-	numStretchedBeats = addIntParameter("Num beats", "The number of beats you want this track to span onto. Keep 0 for auto", 0, 0);
-
 	section = addIntParameter("Section", "The section this track was recorded for. This is for musical structure purpose", 1, 1);
 }
 
@@ -131,7 +129,14 @@ void LooperTrack::stateChanged()
 		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()
 			|| looper->getQuantization() == Transport::FREE)
 		{
-			if (!looper->firstRecVolumeThreshold->enabled) startRecording();
+			if (Transport::getInstance()->useAbletonLink->boolValue() && Transport::getInstance()->numLinkClients->intValue() > 0)
+			{
+				Transport::getInstance()->play();
+			}
+			else
+			{
+				if (!looper->firstRecVolumeThreshold->enabled) startRecording();
+			}
 		}
 	}
 	break;
@@ -277,7 +282,6 @@ void LooperTrack::finishRecordingAndPlay()
 	finishRecordLock = true;
 	bufferNumSamples = numRecordedSamples;
 	bpmAtRecord = Transport::getInstance()->bpm->floatValue();
-	numStretchedBeats->setValue(0);
 
 	finishRecordingAndPlayInternal();
 
@@ -297,12 +301,11 @@ void LooperTrack::retroRecAndPlay()
 	numBeats = looper->getRetroNumBeats(retroRecCount);
 	bufferNumSamples = looper->getRetroNumSamples(retroRecCount);
 	bpmAtRecord = Transport::getInstance()->bpm->floatValue();
-	numStretchedBeats->setValue(0);
 
 	playQuantization = looper->getQuantization();
 
 	retroRecAndPlayInternal();
-	
+
 	firstPlayAfterRecord = true;
 	curSample = 0; //force here to avoid jumpGhost on rec
 
@@ -426,10 +429,6 @@ void LooperTrack::onContainerParameterChanged(Parameter* p)
 	{
 		stateChanged();
 	}
-	else if (p == numStretchedBeats)
-	{
-		updateStretch();
-	}
 }
 void LooperTrack::handleBeatChanged(bool isNewBar, bool isFirstLoop)
 {
@@ -469,8 +468,7 @@ void LooperTrack::handleBeatChanged(bool isNewBar, bool isFirstLoop)
 
 	if (stretch != 1 && stretchSample == -1)
 	{
-		int nBeats = numStretchedBeats->intValue() == 0 ? numBeats : numStretchedBeats->intValue();
-		int relLoopBeat = (Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart) % nBeats;
+		int relLoopBeat = (Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart) % numBeats;
 		if (relLoopBeat == 0) //here set for start storing stretched buffer
 		{
 			stretchSample = 0;
@@ -489,17 +487,16 @@ void LooperTrack::updateStretch(bool force)
 	if (!isPlaying(true) && !force) return;
 
 	double bpm = Transport::getInstance()->bpm->floatValue();
-	stretch = bpmAtRecord / bpm;
+	if (numBeats > 0) stretch = bufferNumSamples * 1.0 / (Transport::getInstance()->getSamplesForBeat(numBeats));
+	else stretch = bpmAtRecord / bpm;
 
-	if (numStretchedBeats->intValue() > 0)
-	{
-		double beatStretch = numBeats * 1.0 / numStretchedBeats->floatValue();
-		stretch /= beatStretch;
+	if (stretch == 0) {
+		LOGERROR("Stretch = 0, can't stretch");
+		return;
 	}
 
-	int nBeats = numStretchedBeats->intValue() == 0 ? numBeats : numStretchedBeats->intValue();
 	stretchSample = -1;
-	stretchedNumSamples = nBeats * Transport::getInstance()->numSamplesPerBeat;
+	stretchedNumSamples = numBeats * Transport::getInstance()->numSamplesPerBeat;
 
 	//reset curSample to expected place in non-stretched loop
 	double sampleRel = Transport::getInstance()->getRelativeBarSamples() + loopBar->intValue() * Transport::getInstance()->getBarNumSamples();
@@ -550,9 +547,8 @@ void LooperTrack::processTrack(int blockSize, bool forcePlaying)
 				}
 			}
 
-			int nBeats = numStretchedBeats->intValue() == 0 ? numBeats : numStretchedBeats->intValue();
 			int curBeat = Transport::getInstance()->getTotalBeatCount() - globalBeatAtStart;
-			int trackBeat = curBeat % nBeats;
+			int trackBeat = curBeat % numBeats;
 			loopBeat->setValue(trackBeat);
 			loopBar->setValue(floor(trackBeat * 1.0f / Transport::getInstance()->beatsPerBar->intValue()));
 		}

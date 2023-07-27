@@ -251,7 +251,10 @@ void Transport::onContainerTriggerTriggered(Trigger* t)
 		else playTrigger->trigger();
 	}
 	else if (t == pauseTrigger) pause();
-	else if (t == stopTrigger) stop();
+	else if (t == stopTrigger)
+	{
+		stop();
+	}
 }
 
 void Transport::onContainerParameterChanged(Parameter* p)
@@ -502,15 +505,21 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 
 	if (link->isEnabled() && link->numPeers() > 0)
 	{
-		const auto time = link->clock().micros();
-		//const auto session = link->captureAppSessionState();
-		//const auto beat = session.beatAtTime(time, beatsPerBar->intValue());
-		//const auto phase = session.phaseAtTime(time, beatsPerBar->intValue());
-		//curBeat->setValue(phase);
-		//curBar->setValue(floor(beat / beatsPerBar->intValue()));
-		//beatProgression->setValue(phase / beatsPerBar->intValue());
+		const int bPerBar = beatsPerBar->intValue();
 
-		setCurrentTime(getSamplesForTime(time.count() / 1e6));
+		const auto time = link->clock().micros();
+		const auto session = link->captureAppSessionState();
+		const auto beat = session.beatAtTime(time, bPerBar);
+		const auto phase = session.phaseAtTime(time, bPerBar);
+
+		int targetBeat = floor(phase);
+		int targetBar = floor(beat / bPerBar);
+		double beatProg = fmod(phase, 1);
+
+		double barP = (targetBeat + beatProg) / bPerBar;
+		long long curSample = (targetBar + barP) * getBarNumSamples();
+		
+		setCurrentTime(curSample);
 	}
 	else if (isCurrentlyPlaying->boolValue())
 	{

@@ -90,7 +90,7 @@ void AudioLooperNode::updateRetroRingBuffer()
 
 int AudioLooperNode::getFadeNumSamples()
 {
-	return Transport::getInstance()->getBlockPerfectNumSamples(fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000);
+	return Transport::getInstance()->getBlockPerfectNumSamples(fadeTimeMS->intValue() * AudioManager::getInstance()->currentSampleRate / 1000, false);
 }
 
 void AudioLooperNode::audioSetupChanged()

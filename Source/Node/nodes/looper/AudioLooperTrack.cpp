@@ -62,7 +62,10 @@ void AudioLooperTrack::updateStretch(bool force)
 		));
 		stretcher->setMaxProcessSize(looper->processor->getBlockSize());
 	}
-	else stretcher->reset();
+	else
+	{
+		//stretcher->reset();
+	}
 
 	stretcher->setTimeRatio(stretch);
 	stretchedBuffer.setSize(numChannels, stretchedNumSamples);
@@ -410,6 +413,8 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 				outputBuffer.addFromWithRamp(trackChannel, 0, targetBuffer->getReadPointer(i, targetSample), blockSize, prevGain, vol);
 			}
 
+
+
 			//rmsVal = jmax(rmsVal, buffer.getMagnitude(i, curReadSample, blockSize));
 		}
 
@@ -456,7 +461,11 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 void AudioLooperTrack::loadSampleFile(File dir)
 {
-	File f = dir.getChildFile(String(index + 1) + ".wav");
+
+	Array<File> files = dir.findChildFiles(File::findFiles, false, String(index + 1) + "*.wav");
+
+	File f = files.isEmpty() ? File() : files[0];
+
 	if (!f.existsAsFile()) return;
 
 	AudioFormatManager format;
@@ -466,8 +475,10 @@ void AudioLooperTrack::loadSampleFile(File dir)
 	auto reader = format.createReaderFor(f);
 	if (reader == nullptr) return;
 
-	buffer.setSize(numChannels, reader->lengthInSamples);
-	reader->read(buffer.getArrayOfWritePointers(), numChannels, 0, reader->lengthInSamples);
+	int fileLength = reader->lengthInSamples;
+	int blockPerfectLength = Transport::getInstance()->getBlockPerfectNumSamples(fileLength);
+	buffer.setSize(numChannels, blockPerfectLength);
+	reader->read(buffer.getArrayOfWritePointers(), numChannels, 0, blockPerfectLength);
 
 	String infos = reader->metadataValues[WavAudioFormat::riffInfoTitle];
 
@@ -476,19 +487,50 @@ void AudioLooperTrack::loadSampleFile(File dir)
 
 	if (infoSplit.size() < 3)
 	{
-		LOGWARNING("This loop file has not been saved by the looper.");
-		return;
+		LOGWARNING("This loop file has not been saved by the looper. Trying my best to make something out of it.");
+
+		StringArray fSplit = StringArray::fromTokens(f.getFileNameWithoutExtension(), "_", "");
+
+		if (fSplit.size() >= 3)
+		{
+			if (fSplit[2] == "bar") playQuantization = Transport::BAR;
+			else if (fSplit[2] == "beat") playQuantization = Transport::BEAT;
+			else if (fSplit[2] == "free") playQuantization = Transport::FREE;
+		}
+		else playQuantization = Transport::BAR;
+
+		if (playQuantization != Transport::FREE)
+		{
+			bpmAtRecord = 0;
+			if (fSplit.size() >= 2)
+			{
+				numBeats = fSplit[1].getIntValue();
+			}
+			else
+			{
+				numBeats = Transport::getInstance()->getBeatForSamples(blockPerfectLength);
+				playQuantization = Transport::BEAT;
+				//numBeats = numBars * Transport::getInstance()->beatsPerBar->intValue();
+			}
+
+		}
+	}
+	else
+	{
+		bpmAtRecord = infoSplit[0].getFloatValue();
+		numBeats = infoSplit[1].getIntValue();
+		playQuantization = (Transport::Quantization)infoSplit[2].getIntValue();
 	}
 
-	bpmAtRecord = infoSplit[0].getFloatValue();
-	numBeats = infoSplit[1].getIntValue();
-	playQuantization = (Transport::Quantization)infoSplit[2].getIntValue();
+
 
 	curSample = 0;
 	bufferNumSamples = buffer.getNumSamples();
 
 	trackState->setValueWithData(TrackState::STOPPED);
 	updateStretch(true);
+
+	antiClickFadeBeforeClear = false;
 
 	NLOG(niceName, "Loaded track, " << numBeats << " beats, bpm : " << bpmAtRecord << ", quantization : " << (int)playQuantization);
 

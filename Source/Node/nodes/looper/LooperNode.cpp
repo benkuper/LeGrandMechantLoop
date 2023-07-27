@@ -348,7 +348,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 
 
 			LooperTrack::TrackState ts;
-
+			 
 			if (isActuallyRecording && s == LooperTrack::FINISH_RECORDING) ts = LooperTrack::FINISH_RECORDING;
 			else if (isActuallyRecording) ts = LooperTrack::RECORDING;
 			else if (recordOrWillRecord) ts = LooperTrack::WILL_RECORD;
