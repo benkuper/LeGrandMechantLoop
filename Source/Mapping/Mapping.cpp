@@ -354,6 +354,7 @@ void MIDIMapping::managerMidiMessageReceived(MIDIInterface* i, const MidiMessage
 
 void MIDIMapping::sendFeedback()
 {
+	if (!enabled->boolValue()) return;
 	if (midiInterface == nullptr) return;
 	if (dest == nullptr) return;
 	if (dest->type == Controllable::TRIGGER) return;
