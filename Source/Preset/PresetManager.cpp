@@ -315,7 +315,7 @@ Preset* RootPresetManager::getPresetForMenuResult(int result)
 	return presets[result];
 }
 
-void RootPresetManager::processMessage(const OSCMessage& m)
+void RootPresetManager::processMessage(const OSCMessage& m, const String& clientId)
 {
 	StringArray addSplit;
 	addSplit.addTokens(m.getAddressPattern().toString(), "/", "");

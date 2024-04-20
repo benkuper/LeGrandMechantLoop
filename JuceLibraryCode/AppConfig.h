@@ -43,7 +43,7 @@
 
 #define JUCE_USE_DARK_SPLASH_SCREEN 1
 
-#define JUCE_PROJUCER_VERSION 0x70005
+#define JUCE_PROJUCER_VERSION 0x7000c
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_juce_audio_basics          1
@@ -63,6 +63,7 @@
 #define JUCE_MODULE_AVAILABLE_juce_organicui             1
 #define JUCE_MODULE_AVAILABLE_juce_osc                   1
 #define JUCE_MODULE_AVAILABLE_juce_simpleweb             1
+#define JUCE_MODULE_AVAILABLE_juce_timeline              1
 
 #define JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED 1
 
@@ -270,6 +271,10 @@
  //#define JUCE_DISABLE_COREGRAPHICS_FONT_SMOOTHING 0
 #endif
 
+#ifndef    JUCE_FLOAT_COLOURS
+ //#define JUCE_FLOAT_COLOURS 0
+#endif
+
 //==============================================================================
 // juce_gui_basics flags:
 
@@ -348,6 +353,17 @@
 
 #ifndef    JUCE_IP_AND_PORT_DETECTION
  #define   JUCE_IP_AND_PORT_DETECTION 1
+#endif
+
+//==============================================================================
+// juce_timeline flags:
+
+#ifndef    TIMELINE_USE_SEQUENCEMANAGER_SINGLETON
+ //#define TIMELINE_USE_SEQUENCEMANAGER_SINGLETON 0
+#endif
+
+#ifndef    TIMELINE_ADD_MENU_ITEMS
+ //#define TIMELINE_ADD_MENU_ITEMS 1
 #endif
 
 //==============================================================================

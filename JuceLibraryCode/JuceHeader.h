@@ -31,6 +31,7 @@
 #include <juce_organicui/juce_organicui.h>
 #include <juce_osc/juce_osc.h>
 #include <juce_simpleweb/juce_simpleweb.h>
+#include <juce_timeline/juce_timeline.h>
 
 #include "BinaryData.h"
 
