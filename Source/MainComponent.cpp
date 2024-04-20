@@ -18,6 +18,7 @@ MainComponent::MainComponent()
 {
 	setSize(800, 600);
 	getCommandManager().registerAllCommandsForTarget(this);
+	getCommandManager().setFirstCommandTarget(this);
 }
 
 MainComponent::~MainComponent()
@@ -36,6 +37,7 @@ void MainComponent::init()
 	//ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Macros", &MacroManagerUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Mappings", &MappingManagerUI::create));
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Interfaces", &InterfaceManagerUI::create));
+	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Sequence Editor", &TimeMachineView::create));
 
 	ControllableUI::drawContourOnInspectableHighlighted = true;
 

@@ -69,6 +69,8 @@
 #include "nodes/vst/VSTRackNode.h"
 
 #include "nodes/metronome/MetronomeNode.h"
+#include "nodes/timeline/LGMLSequence.h"
+#include "nodes/timeline/TimelineNode.h"
 
 //UI
 #include "ui/NodeUI.h"
@@ -108,3 +110,4 @@
 #include "nodes/vst/ui/VSTLinkedParameterUI.h"
 #include "nodes/vst/ui/VSTNodeViewUI.h"
 #include "nodes/vst/ui/VSTRackNodeUI.h"
+

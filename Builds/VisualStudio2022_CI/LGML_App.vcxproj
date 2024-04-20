@@ -290,6 +290,15 @@
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\timeline\ui\SequenceEditor.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\timeline\LGMLSequence.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\timeline\TimelineNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\metronome\MetronomeNode.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -3734,6 +3743,9 @@
     <ClInclude Include="..\..\Source\Node\ui\NodeManagerViewUI.h"/>
     <ClInclude Include="..\..\Source\Node\ui\NodeUI.h"/>
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\timeline\ui\SequenceEditor.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\timeline\LGMLSequence.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\timeline\TimelineNode.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\metronome\MetronomeNode.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\analysis\libs\pitch\PitchDetector.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\analysis\libs\pitch\PitchMPM.h"/>

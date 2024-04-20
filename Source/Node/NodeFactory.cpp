@@ -31,4 +31,7 @@ NodeFactory::NodeFactory()
 	defs.add(Definition::createDef<MIDILooperNode>("MIDI"));
 	defs.add(Definition::createDef<MIDIInputNode>("MIDI"));
 	defs.add(Definition::createDef<MIDIOutputNode>("MIDI"));
+
+	defs.add(Definition::createDef<TimelineNode>("General"));
+
 }

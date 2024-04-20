@@ -95,6 +95,12 @@
     <Filter Include="LGML\Source\Node\ui">
       <UniqueIdentifier>{3B1D1023-6B9A-7940-0DE2-650FF8A525A4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LGML\Source\Node\nodes\timeline\ui">
+      <UniqueIdentifier>{4A1DA3F7-82CC-BFBC-1158-778EFC926F60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LGML\Source\Node\nodes\timeline">
+      <UniqueIdentifier>{8DBBA9A9-AEB8-0D04-B2DC-2AAA38004558}</UniqueIdentifier>
+    </Filter>
     <Filter Include="LGML\Source\Node\nodes\metronome">
       <UniqueIdentifier>{F47C4F8D-0B0A-16EC-1950-BA76575C6D8C}</UniqueIdentifier>
     </Filter>
@@ -1392,6 +1398,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\timeline\ui\SequenceEditor.cpp">
+      <Filter>LGML\Source\Node\nodes\timeline\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\timeline\LGMLSequence.cpp">
+      <Filter>LGML\Source\Node\nodes\timeline</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\timeline\TimelineNode.cpp">
+      <Filter>LGML\Source\Node\nodes\timeline</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\metronome\MetronomeNode.cpp">
       <Filter>LGML\Source\Node\nodes\metronome</Filter>
@@ -5198,6 +5213,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h">
       <Filter>LGML\Source\Node\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\timeline\ui\SequenceEditor.h">
+      <Filter>LGML\Source\Node\nodes\timeline\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\timeline\LGMLSequence.h">
+      <Filter>LGML\Source\Node\nodes\timeline</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\timeline\TimelineNode.h">
+      <Filter>LGML\Source\Node\nodes\timeline</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\metronome\MetronomeNode.h">
       <Filter>LGML\Source\Node\nodes\metronome</Filter>

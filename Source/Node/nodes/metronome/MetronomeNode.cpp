@@ -86,6 +86,7 @@ void MetronomeNode::playStateChanged(bool isPlaying, bool forceRestart)
 
 void MetronomeNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+	buffer.clear();
 	if (currentTransport != nullptr) currentTransport->getNextAudioBlock(AudioSourceChannelInfo(buffer));
 }
 

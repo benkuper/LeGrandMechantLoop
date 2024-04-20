@@ -274,6 +274,20 @@
           <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
         </GROUP>
         <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
+          <GROUP id="{7A48B1B9-D802-0E54-C82A-12DFFCE51A67}" name="timeline">
+            <GROUP id="{335D773A-B103-A617-F6AA-D16142E9D43A}" name="ui">
+              <FILE id="SU0Zr9" name="SequenceEditor.cpp" compile="0" resource="0"
+                    file="Source/Node/nodes/timeline/ui/SequenceEditor.cpp"/>
+              <FILE id="ZdC5Oa" name="SequenceEditor.h" compile="0" resource="0"
+                    file="Source/Node/nodes/timeline/ui/SequenceEditor.h"/>
+            </GROUP>
+            <FILE id="L6C8DF" name="LGMLSequence.cpp" compile="0" resource="0"
+                  file="Source/Node/nodes/timeline/LGMLSequence.cpp"/>
+            <FILE id="OphTUV" name="LGMLSequence.h" compile="0" resource="0" file="Source/Node/nodes/timeline/LGMLSequence.h"/>
+            <FILE id="y1M4ay" name="TimelineNode.cpp" compile="0" resource="0"
+                  file="Source/Node/nodes/timeline/TimelineNode.cpp" xcodeResource="0"/>
+            <FILE id="IW9nWL" name="TimelineNode.h" compile="0" resource="0" file="Source/Node/nodes/timeline/TimelineNode.h"/>
+          </GROUP>
           <GROUP id="{BDA9077B-7771-6C0D-F82C-431E0E58DE9D}" name="metronome">
             <FILE id="FFn3P1" name="MetronomeNode.cpp" compile="0" resource="0"
                   file="Source/Node/nodes/metronome/MetronomeNode.cpp"/>

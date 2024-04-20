@@ -61,6 +61,9 @@
 
 #include "nodes/metronome/MetronomeNode.cpp"
 
+#include "nodes/timeline/LGMLSequence.cpp"
+#include "nodes/timeline/TimelineNode.cpp"
+
 #include "nodes/recorder/RecorderNode.cpp"
 
 #include "nodes/analysis/FFTAnalyzer.cpp"
