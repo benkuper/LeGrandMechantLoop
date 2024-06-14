@@ -41,7 +41,7 @@ public:
     void loadJSONDataItemInternal(var data) override;
     virtual void loadJSONDataConnectionInternal(var data) {}
 
-    DECLARE_ASYNC_EVENT(NodeConnection, Connection, connection, ENUM_LIST(SOURCE_NODE_CHANGED, DEST_NODE_CHANGED, CHANNELS_CONNECTION_CHANGED))
+    DECLARE_ASYNC_EVENT(NodeConnection, Connection, connection, ENUM_LIST(SOURCE_NODE_CHANGED, DEST_NODE_CHANGED, CHANNELS_CONNECTION_CHANGED), EVENT_ITEM_CHECK)
 };
 
 class NodeAudioConnection :

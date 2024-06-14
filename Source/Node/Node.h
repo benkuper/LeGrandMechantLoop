@@ -150,7 +150,7 @@ public:
 	void addNodeListener(NodeListener* newListener) { nodeListeners.add(newListener); }
 	void removeNodeListener(NodeListener* listener) { nodeListeners.remove(listener); }
 
-	DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED, MIDI_INPUT_CHANGED, MIDI_OUTPUT_CHANGED, VIEW_FILTER_UPDATED))
+	DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED, MIDI_INPUT_CHANGED, MIDI_OUTPUT_CHANGED, VIEW_FILTER_UPDATED), EVENT_ITEM_CHECK)
 
 		virtual BaseNodeViewUI* createViewUI();
 

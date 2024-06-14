@@ -422,6 +422,8 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
         channelMismatch = false;
         clearWarning("Channel Mismatch");
     }
+
+	if (inAudioConnections.isEmpty()) buffer.clear();
     
 	//MIDI
     if(hasMIDIInput) midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());

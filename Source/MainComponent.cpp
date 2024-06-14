@@ -17,8 +17,6 @@ ApplicationCommandManager& getCommandManager();
 MainComponent::MainComponent()
 {
 	setSize(800, 600);
-	getCommandManager().registerAllCommandsForTarget(this);
-	getCommandManager().setFirstCommandTarget(this);
 }
 
 MainComponent::~MainComponent()
@@ -40,6 +38,8 @@ void MainComponent::init()
 	ShapeShifterFactory::getInstance()->defs.add(new ShapeShifterDefinition("Sequence Editor", &TimeMachineView::create));
 
 	ControllableUI::drawContourOnInspectableHighlighted = true;
+
+	TimelineAppCommands::useSpaceBarAsPlayPause = false;
 
 	OrganicMainContentComponent::init();
 

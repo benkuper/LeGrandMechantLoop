@@ -50,7 +50,7 @@ public:
 
 	void run() override;
 
-	DECLARE_ASYNC_EVENT(VSTManager, VSTManager, vstManager, ENUM_LIST(PLUGINS_UPDATED))
+	DECLARE_ASYNC_EVENT(VSTManager, VSTManager, vstManager, ENUM_LIST(PLUGINS_UPDATED), EVENT_INSPECTABLE_CHECK)
 
 
 		InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> inspectables = {}) override;

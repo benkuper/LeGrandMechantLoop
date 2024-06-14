@@ -75,7 +75,7 @@ public:
     virtual void parameterValueChanged(int parameterIndex, float newValue) override;
     virtual void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override;
 
-    DECLARE_ASYNC_EVENT(VSTParameterLink, VSTParameterLink, vstParameterLink, { MACRO_UPDATED });
+    DECLARE_ASYNC_EVENT(VSTParameterLink, VSTParameterLink, vstParameterLink, ENUM_LIST(MACRO_UPDATED), EVENT_NO_CHECK);
 
     InspectableEditor * getEditor(bool isRoot);
 };

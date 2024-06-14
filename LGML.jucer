@@ -4,7 +4,7 @@
               projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/asiodriver&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include&#10;../../External/rubberband/include&#10;../../External/abletonlink/include"
               defines="VST_LOGGING=0&#10;OSC_REMOTE_CONTROL_PORT=44000" version="1.0.1b12"
               cppLanguageStandard="17" companyName="Ben Kuper" companyCopyright="Ben Kuper"
-              bundleIdentifier="benkuper.LGML" includeBinaryInJuceHeader="1">
+              bundleIdentifier="benkuper.LGML" companyWebsite="https://benjamin.kuperberg.fr/lgml">
   <MAINGROUP id="xIhitl" name="LGML">
     <GROUP id="{F09CFAAA-C5BF-E568-7F10-7542040E6781}" name="Resources">
       <GROUP id="{DA74BE5B-C500-8EEE-F570-47999EAB864B}" name="Audio">
@@ -483,11 +483,12 @@
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
             smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_WINDOWS=1&#10;USE_ABLETONLINK=1"
-            extraCompilerFlags="/Zm1000 /bigobj">
+            extraCompilerFlags="/Zm1000 /bigobj" extraLinkerFlags="/HEAP:0x200000,0x10000">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/debug"
                        binaryPath="Binaries/Debug"/>
-        <CONFIGURATION isDebug="0" name="Release" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/release"/>
+        <CONFIGURATION isDebug="0" name="Release" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/release"
+                       binaryPath="Binaries"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics"/>
