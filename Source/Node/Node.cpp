@@ -30,6 +30,8 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	viewCC("View"),
 	showOutControl(nullptr),
 	bypassAntiClickCount(anticlickBlocks),
+    channelMismatch(false),
+    clearAudioBufferIfNoConnections(true),
 	nodeNotifier(5)
 {
 	showWarningInUI = true;
@@ -423,7 +425,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
         clearWarning("Channel Mismatch");
     }
 
-	if (inAudioConnections.isEmpty()) buffer.clear();
+	if (clearAudioBufferIfNoConnections && inAudioConnections.isEmpty()) buffer.clear();
     
 	//MIDI
     if(hasMIDIInput) midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());

@@ -18,6 +18,8 @@ IONode::IONode(StringRef name, var params, bool isInput) :
 	ghostNumChannels(-1)
 {
 	viewUISize->setPoint(150, 180);
+    
+    if(isInput) clearAudioBufferIfNoConnections = false;
 
 	channelsCC.saveAndLoadRecursiveData = true;
 	addChildControllableContainer(&channelsCC);

@@ -81,6 +81,8 @@ public:
 	int bypassAntiClickCount; //anti-click on processBlock
     
     bool channelMismatch;
+    
+    bool clearAudioBufferIfNoConnections;
 
 	virtual void init(AudioProcessorGraph* graph);
 	virtual void initInternal() {}
