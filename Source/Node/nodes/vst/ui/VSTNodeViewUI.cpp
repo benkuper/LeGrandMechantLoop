@@ -73,6 +73,10 @@ void VSTNodeViewUI::buttonClicked(Button* b)
 			{
 				//pluginEditor->toFront(true);
 			}
+			
+			pluginEditor->toFront(true);
+			pluginEditor->centreAroundComponent(getTopLevelComponent(), pluginEditor->getWidth(), pluginEditor->getHeight());
+
 		}
 	}
 }
@@ -90,8 +94,8 @@ PluginWindow::PluginWindow(VSTNode* node) :
 	node(node)
 {
 	setVSTEditor(node->vst.get());
-	const Displays::Display* d = Desktop::getInstance().getDisplays().getDisplayForRect(getScreenBounds());
-	if (d != nullptr) setCentrePosition(d->userArea.getCentre());
+	//const Displays::Display* d = Desktop::getInstance().getDisplays().getDisplayForRect(getScreenBounds());
+	//if (d != nullptr) setCentrePosition(d->userArea.getCentre());
 
 	setResizable(true, true);
 	setDraggable(true);
@@ -124,6 +128,10 @@ void PluginWindow::setVSTEditor(AudioPluginInstance* vstInstance)
 		setContentOwned(vstInstance->createEditor(), true);
 		setVisible(true);
 		toFront(true);
+		if (getX() < 0 || getY() < 0)
+		{
+			setTopLeftPosition(50, 50);
+		}
 	}
 	else
 	{

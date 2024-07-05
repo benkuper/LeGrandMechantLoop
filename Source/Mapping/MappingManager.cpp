@@ -9,6 +9,7 @@
 */
 
 #include "MappingManager.h"
+#include "Node/NodeIncludes.h"
 
 juce_ImplementSingleton(MappingManager)
 
@@ -33,6 +34,10 @@ void MappingManager::createMappingForControllable(Controllable* c, const String&
 	Mapping* m = factory.create(type);
 	if (m == nullptr) return;
 	m->destParam->setValueFromTarget(c);
+	String tName = c->niceName;
+	if(Node* n = ControllableUtil::findParentAs<Node>(c)) tName = n->niceName + " - " + tName;
+	m->setNiceName(tName);
+
 	addItem(m);
 }
 

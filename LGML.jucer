@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" jucerFormatVersion="1"
               projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/asiodriver&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include&#10;../../External/rubberband/include&#10;../../External/abletonlink/include"
-              defines="VST_LOGGING=0&#10;OSC_REMOTE_CONTROL_PORT=44000" version="1.0.1b13"
+              defines="VST_LOGGING=0&#10;OSC_REMOTE_CONTROL_PORT=44000" version="1.0.1b14"
               cppLanguageStandard="17" companyName="Ben Kuper" companyCopyright="Ben Kuper"
               bundleIdentifier="benkuper.LGML" companyWebsite="https://benjamin.kuperberg.fr/lgml">
   <MAINGROUP id="xIhitl" name="LGML">
@@ -479,7 +479,8 @@
                JUCE_ALSA="1" JUCE_JACK="1" JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1"
                ORGANICUI_USE_SERVUS="1" JUCE_PLUGINHOST_VST="1" JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS="1"
                JUCE_ENABLE_BROADCAST_BY_DEFAULT="1" JUCE_EXCLUSIVE_BINDING_BY_DEFAULT="1"
-               JUCE_IP_AND_PORT_DETECTION="1" JUCE_PLUGINHOST_LADSPA="1" JUCE_PLUGINHOST_LV2="1"/>
+               JUCE_IP_AND_PORT_DETECTION="1" JUCE_PLUGINHOST_LADSPA="1" JUCE_PLUGINHOST_LV2="1"
+               JUCE_USE_WIN_WEBVIEW2="1"/>
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
             smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_WINDOWS=1&#10;USE_ABLETONLINK=1"

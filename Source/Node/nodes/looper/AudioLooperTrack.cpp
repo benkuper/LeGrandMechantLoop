@@ -218,7 +218,11 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		&& looper->firstRecVolumeThreshold->enabled)
 	{
 		float mag = inputBuffer.getMagnitude(0, blockSize);
-		if (mag >= looper->firstRecVolumeThreshold->floatValue())
+
+		float decibels = Decibels::gainToDecibels(mag, -100.f);
+		float normDecibels = jmap(decibels, -100.f, 6.f, 0.f, 1.f);
+
+		if (normDecibels >= looper->firstRecVolumeThreshold->floatValue())
 		{
 			startRecording();
 			return;

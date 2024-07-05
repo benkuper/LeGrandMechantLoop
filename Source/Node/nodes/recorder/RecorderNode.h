@@ -24,7 +24,12 @@ public:
     
     BoolParameter* autoRecOnPlay;
     BoolParameter* autoStopOnStop;
+    FloatParameter* stopVolumeThreshold;
+    FloatParameter* stopVolumeTime;
     BoolParameter* recSeparateFiles;
+    
+    bool stopOnNextSilence;
+    double timeSinceLastVolumeUnderThreshold;
 
     Trigger* recTrigger;
     BoolParameter* isRecording;
