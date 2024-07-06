@@ -88,6 +88,23 @@ void LooperTrack::recordOrPlay()
 	}
 	break;
 
+	case WILL_RECORD:
+	{
+		if (s == LooperTrack::WILL_RECORD)
+		{
+			LooperNode::DoubleRecMode m = looper->doubleRecMode->getValueDataAsEnum<LooperNode::DoubleRecMode>();
+			if (m == LooperNode::AUTO_STOP_BAR || m == LooperNode::AUTO_STOP_BEAT || m == LooperNode::AUTO_STOP_FIRSTLOOP)
+			{
+				int numBeats = -1;
+				if (m == LooperNode::AUTO_STOP_FIRSTLOOP) numBeats = Transport::getInstance()->firstLoopBeats->intValue();
+				else numBeats = looper->doubleRecVal->intValue() * (m == LooperNode::AUTO_STOP_BAR ? Transport::getInstance()->beatsPerBar->intValue() : 1);
+
+				autoStopRecAfterBeats = numBeats;
+			}
+		}
+	}
+	break;
+
 	case RECORDING:
 	{
 		trackState->setValueWithData(FINISH_RECORDING);

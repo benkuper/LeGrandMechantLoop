@@ -184,48 +184,19 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 				currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
 			}
 
-			LooperTrack* t = currentTrack; //may change during the process
-			LooperTrack::TrackState s = t->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
+			currentTrack->playRecordTrigger->trigger();
 
-
-			if (s == LooperTrack::WILL_RECORD)
-			{
-				DoubleRecMode m = doubleRecMode->getValueDataAsEnum<DoubleRecMode>();
-				if (m == AUTO_STOP_BAR || m == AUTO_STOP_BEAT || m == AUTO_STOP_FIRSTLOOP)
-				{
-					int numBeats = -1;
-					if (m == AUTO_STOP_FIRSTLOOP) numBeats = Transport::getInstance()->firstLoopBeats->intValue();
-					else numBeats = doubleRecVal->intValue() * (m == AUTO_STOP_BAR ? Transport::getInstance()->beatsPerBar->intValue() : 1);
-
-					t->autoStopRecAfterBeats = numBeats;
-				}
-			}
-			else
-			{
-				/*
-				if (s == LooperTrack::FINISH_RECORDING)
-				{
-					while (currentTrack->isPlaying(true) && currentTrackIndex->intValue() < numTracks->intValue())
-					{
-						currentTrackIndex->setValue(currentTrackIndex->intValue() + 1);
-					}
-				}
-				*/
-
-				currentTrack->playRecordTrigger->trigger();
-			}
-
-			LooperTrack::TrackState newState = t->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
+			LooperTrack::TrackState newState = currentTrack->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
 			if (newState == LooperTrack::WILL_RECORD || newState == LooperTrack::RECORDING)
 			{
-				t->section->setValue(section->intValue());
+				currentTrack->section->setValue(section->intValue());
 			}
 
 
-			if ((newState == LooperTrack::FINISH_RECORDING || t->isPlaying(true)))
-			{
+			//if ((newState == LooperTrack::FINISH_RECORDING || currentTrack->isPlaying(true)))
+			//{
 				//currentTrackIndex->setValue(currentTrackIndex->intValue() + 1); 
-			}
+			//}
 
 		}
 	}
