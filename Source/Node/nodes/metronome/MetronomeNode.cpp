@@ -50,7 +50,8 @@ MetronomeNode::~MetronomeNode()
 void MetronomeNode::beatChanged(bool isNewBar, bool isFirstLoopBeat)
 {
 	if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) return;
-
+    if(!enabled->boolValue()) return;
+    
 	int index = isFirstLoopBeat ? 0 : isNewBar ? 1 : 2;
 	currentTransport = ticTransports[index];
 
@@ -68,6 +69,8 @@ void MetronomeNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesP
 
 void MetronomeNode::playStateChanged(bool isPlaying, bool forceRestart)
 {
+    if(!enabled->boolValue()) return;
+    
 	if (!isPlaying)
 	{
 		if (currentTransport != nullptr)
@@ -86,6 +89,9 @@ void MetronomeNode::playStateChanged(bool isPlaying, bool forceRestart)
 
 void MetronomeNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+    if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()) return;
+    if(!enabled->boolValue()) return;
+    
 	buffer.clear();
 	if (currentTransport != nullptr) currentTransport->getNextAudioBlock(AudioSourceChannelInfo(buffer));
 }

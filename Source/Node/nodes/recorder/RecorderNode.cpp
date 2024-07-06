@@ -12,7 +12,8 @@ RecorderNode::RecorderNode(var params) :
 	Node("Recorder", params, true, false, true, false),
 	sampleRate(0),
 	stopOnNextSilence(false),
-	timeSinceLastVolumeUnderThreshold(-1)
+	timeSinceLastVolumeUnderThreshold(-1),
+    timeAtStartRecord(0)
 {
 	recFolder = addFileParameter("Rec Folder", "Folder to record the audio to");
 	recFolder->directoryMode = true;
@@ -27,7 +28,10 @@ RecorderNode::RecorderNode(var params) :
 
 	stopVolumeTime = addFloatParameter("Stop Volume Time", "Time in seconds to wait before stopping recording after the volume is below the threshold", 1, 0, 10);
 	stopVolumeTime->defaultUI = FloatParameter::TIME;
-
+    
+    minRecTime = addFloatParameter("Min Rec Time", "Minimum time to record", 30, 0);
+    minRecTime->defaultUI = FloatParameter::TIME;
+    
 	recSeparateFiles = addBoolParameter("Separate Channels", "If checked, this will record one file per channel", false);
 
 	recTrigger = addTrigger("Rec", "Starts or stops recording depending on the current recording state");
@@ -51,7 +55,7 @@ void RecorderNode::startRecording()
 	if (!enabled->boolValue()) return;
 	if (sampleRate > 0)
 	{
-		Array<File> files;
+        files.clear();
 		if (recSeparateFiles->boolValue())
 		{
 			for (int i = 0; i < getNumAudioInputs(); i++)
@@ -99,7 +103,8 @@ void RecorderNode::startRecording()
 				}
 			}
 		}
-
+        
+        timeAtStartRecord = Time::getMillisecondCounterHiRes() / 1000.0f;
 		stopOnNextSilence = false;
 		isRecording->setValue(true);
 	}
@@ -108,6 +113,7 @@ void RecorderNode::startRecording()
 
 void RecorderNode::stopRecording()
 {
+    
 	// First, clear this pointer to stop the audio callback from using our writer object..
 	{
 		const ScopedLock sl(writerLock);
@@ -118,9 +124,21 @@ void RecorderNode::stopRecording()
 	// take a little time while remaining data gets flushed to disk, so it's best to avoid blocking
 	// the audio callback while this happens.
 	threadedWriters.clear();
+    
+    if(isRecording->boolValue())
+    {
+        NLOG(niceName, "Stop recording");
+        
+        float t = Time::getMillisecondCounterHiRes() / 1000.0f;
+        float recTime = t - timeAtStartRecord;
+        if(recTime < minRecTime->floatValue())
+        {
+            NLOG(niceName, "Recording time too short, deleting records");
+            for(auto& f : files) f.deleteFile();
+        }
+    }
 
-	stopOnNextSilence = false;
-	NLOG(niceName, "Stop recording");
+    stopOnNextSilence = false;
 	isRecording->setValue(false);
 }
 

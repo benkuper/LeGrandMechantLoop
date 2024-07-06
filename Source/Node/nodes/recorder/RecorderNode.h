@@ -26,6 +26,9 @@ public:
     BoolParameter* autoStopOnStop;
     FloatParameter* stopVolumeThreshold;
     FloatParameter* stopVolumeTime;
+    
+    FloatParameter* minRecTime;
+    
     BoolParameter* recSeparateFiles;
     
     bool stopOnNextSilence;
@@ -33,6 +36,9 @@ public:
 
     Trigger* recTrigger;
     BoolParameter* isRecording;
+    
+    Array<File> files;
+    float timeAtStartRecord;
 
     //Recording
     TimeSliceThread backgroundThread{ "Audio Recorder Thread" }; // the thread that will write our audio data to disk
