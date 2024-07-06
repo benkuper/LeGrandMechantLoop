@@ -212,10 +212,16 @@ void SpatNode::processSource(int index, AudioBuffer<float>& sourceBuffer, AudioB
 		float rad = si->radius->floatValue();
 		float relDist = jlimit<float>(0, 1, rad == 0 ? 1 : dist / rad);
 		float weight = fadeCurve.getValueAtPosition(relDist);
+        float prevWeight = index < si->weights.size()?si->weights[index]->floatValue():0;
+//        if(outputIndex == 0) LOG(outputIndex << " : " << prevWeight << " : " << weight);
+        
+		if (weight > 0 && prevWeight > 0) targetBuffer.addFromWithRamp(outputIndex, 0, sourceBuffer.getReadPointer(index), numSamples, prevWeight, weight);
 
-		if (weight > 0) targetBuffer.addFrom(outputIndex, 0, sourceBuffer.getReadPointer(index), numSamples, weight);
-
-		if (index < si->weights.size()) si->weights[index]->setValue(weight);
+		if (index < si->weights.size())
+        {
+//            LOG("set weight");
+            si->weights[index]->setValue(weight);
+        }
 	}
 }
 

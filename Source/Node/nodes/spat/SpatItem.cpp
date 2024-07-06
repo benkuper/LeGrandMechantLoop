@@ -11,8 +11,8 @@
 #include "Node/NodeIncludes.h"
 
 SpatItem::SpatItem(const String& name, var params) :
-	BaseItem("Point " + String(index + 1)),
-	index(index)
+	BaseItem("Point"),
+    index(0)
 {
 	setHasCustomColor(true);
 	if(!Engine::mainEngine->isLoadingFile) itemColor->setColor(Colour::fromHSV(Random().nextFloat(), .8f, .8f, 1));
