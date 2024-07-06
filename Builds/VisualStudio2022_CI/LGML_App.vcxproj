@@ -3415,6 +3415,9 @@
     <ClCompile Include="..\..\Modules\juce_organicui\ui\LookAndFeelOO.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\ui\UITimers.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\undo\UndoMaster.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -5021,6 +5024,7 @@
     <ClInclude Include="..\..\Modules\juce_organicui\ui\Grabber.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\ui\LookAndFeelOO.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\ui\Style.h"/>
+    <ClInclude Include="..\..\Modules\juce_organicui\ui\UITimers.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\undo\UndoMaster.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\updater\AppUpdater.h"/>
     <ClInclude Include="..\..\Modules\juce_organicui\warning\ui\WarningReporterPanel.h"/>
@@ -6091,4 +6095,8 @@
     <ResourceCompile Include=".\resources.rc"/>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets"/>
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\Microsoft.Web.WebView2.1.0.1901.177\build\native\Microsoft.Web.WebView2.targets"
+            Condition="Exists('packages\Microsoft.Web.WebView2.1.0.1901.177\build\native\Microsoft.Web.WebView2.targets')"/>
+  </ImportGroup>
 </Project>
