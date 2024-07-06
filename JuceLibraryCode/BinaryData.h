@@ -18,22 +18,22 @@ namespace BinaryData
     const int            tic3_wavSize = 11104;
 
     extern const char*   genericScriptTemplate_js;
-    const int            genericScriptTemplate_jsSize = 4708;
+    const int            genericScriptTemplate_jsSize = 4774;
 
     extern const char*   interfaceScriptTemplate_js;
-    const int            interfaceScriptTemplate_jsSize = 959;
+    const int            interfaceScriptTemplate_jsSize = 980;
 
     extern const char*   midiScriptTemplate_js;
-    const int            midiScriptTemplate_jsSize = 1789;
+    const int            midiScriptTemplate_jsSize = 1853;
 
     extern const char*   oscScriptTemplate_js;
-    const int            oscScriptTemplate_jsSize = 775;
+    const int            oscScriptTemplate_jsSize = 798;
 
     extern const char*   crash_png;
     const int            crash_pngSize = 78643;
 
     extern const char*   default_lgmllayout;
-    const int            default_lgmllayoutSize = 2487;
+    const int            default_lgmllayoutSize = 2593;
 
     extern const char*   icon_png;
     const int            icon_pngSize = 238059;
