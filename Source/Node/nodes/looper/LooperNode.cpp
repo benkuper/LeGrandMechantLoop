@@ -36,6 +36,9 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	quantization = recordCC.addEnumParameter("Quantization", "The way to know when to stop recording. Default means getting the quantization from the Transport.\nBar/beat means it will stop the recording to fill an round number of bar/beat, even if you stop before. Free means it will stop instantly.");
 	quantization->addOption("Default", Transport::DEFAULT)->addOption("First Loop", Transport::FIRSTLOOP)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Free", Transport::FREE);
 
+	firstRecQuantization = recordCC.addEnumParameter("First Rec Quantization", "This is the quantization to use when recording the first track when the Transport is already playing. This is useful to wait for a bar or a beat to start recording instead of what is set in the Transport first loop.");
+	firstRecQuantization->addOption("From Quantization", Transport::DEFAULT)->addOption("First Loop", Transport::FIRSTLOOP)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Direct", Transport::FREE);
+
 	freeFillMode = recordCC.addEnumParameter("Fill Mode", "In free mode, allows to fill the buffer with empty data to complete a bar or a beat.", getQuantization() == Transport::FREE);
 	freeFillMode->addOption("From Quantization", Transport::DEFAULT)->addOption("First Loop", Transport::FIRSTLOOP)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT)->addOption("Direct", Transport::FREE);
 
@@ -319,7 +322,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 
 
 			LooperTrack::TrackState ts;
-			 
+
 			if (isActuallyRecording && s == LooperTrack::FINISH_RECORDING) ts = LooperTrack::FINISH_RECORDING;
 			else if (isActuallyRecording) ts = LooperTrack::RECORDING;
 			else if (recordOrWillRecord) ts = LooperTrack::WILL_RECORD;
@@ -484,7 +487,17 @@ Array<LooperTrack*> LooperNode::getTracksExceptSection(int targetSection)
 
 Transport::Quantization LooperNode::getQuantization()
 {
+
 	Transport::Quantization q = quantization->getValueDataAsEnum<Transport::Quantization>();
+
+	if (Transport::getInstance()->isCurrentlyPlaying->boolValue())
+	{
+		if (!RootNodeManager::getInstance()->hasPlayingNodes())
+		{
+			Transport::Quantization fq = firstRecQuantization->getValueDataAsEnum<Transport::Quantization>();
+			if (fq != Transport::DEFAULT) q = fq;
+		}
+	}
 	if (q == Transport::DEFAULT) q = Transport::getInstance()->quantization->getValueDataAsEnum<Transport::Quantization>();
 	return q;
 }

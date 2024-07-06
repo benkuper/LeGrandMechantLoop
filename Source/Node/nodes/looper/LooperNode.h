@@ -37,9 +37,18 @@ public:
 	ControllableContainer recordCC;
 	EnumParameter* recordingState;
 	EnumParameter* quantization;
+	EnumParameter* firstRecQuantization;
 	EnumParameter* freeFillMode;
 	IntParameter* fadeTimeMS;
 	IntParameter* playStopFadeMS;
+
+	enum DoubleRecMode { NOTHING, AUTO_STOP_BAR, AUTO_STOP_BEAT, AUTO_STOP_FIRSTLOOP };
+	EnumParameter* doubleRecMode;
+	IntParameter* doubleRecVal;
+	enum TempMuteMode { NEXT_BAR, NEXT_BEAT, NEXT_FIRSTLOOP };
+	EnumParameter* tmpMuteMode;
+	FloatParameter* firstRecVolumeThreshold;
+
 
 	ControllableContainer saveLoadCC;
 	enum SaveLoadMode { NONE, LOAD_ONLY, SAVE_ONLY, AUTO_SAVELOAD, AUTO_NO_OVERWRITE };
@@ -48,13 +57,6 @@ public:
 	Trigger* saveSamplesTrigger;
 	Trigger* loadSamplesTrigger;
 	Trigger* clearSamplesTrigger;
-
-	enum DoubleRecMode { NOTHING, AUTO_STOP_BAR, AUTO_STOP_BEAT, AUTO_STOP_FIRSTLOOP };
-	EnumParameter* doubleRecMode;
-	IntParameter* doubleRecVal;
-	enum TempMuteMode { NEXT_BAR, NEXT_BEAT, NEXT_FIRSTLOOP };
-	EnumParameter* tmpMuteMode;
-	FloatParameter* firstRecVolumeThreshold;
 
 	enum RetroRecMode { RETRO_NONE, RETRO_FIRSTLOOP, RETRO_BEAT, RETRO_BAR };
 	EnumParameter* retroRecMode;
