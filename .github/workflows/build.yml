@@ -24,18 +24,18 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Set Variables
+        id: set_variables
+        uses: ./.github/actions/set-variables
+        with:
+          os: ${{ matrix.arch }}
+
       - name: Checkout JUCE
         uses: actions/checkout@v2
         with:
           repository: benkuper/JUCE
-          ref: develop-local
+          ref:  ${{ env.juce-branch }}
           path: JUCE
-
-      - name: Set Variables
-        id: set_variables
-        uses: ./.github/actions/set-suffix
-        with:
-          os: ${{ matrix.arch }}
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
@@ -108,18 +108,18 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Set Variables
+        id: set_variables
+        uses: ./.github/actions/set-variables
+        with:
+          os: 'osx-${{ matrix.suffix }}'
+
       - name: Checkout JUCE
         uses: actions/checkout@v2
         with:
           repository: benkuper/JUCE
-          ref: develop-local
+          ref:  ${{ env.juce-branch }}
           path: JUCE
-
-      - name: Set Suffix
-        id: set_variables
-        uses: ./.github/actions/set-suffix
-        with:
-          os: 'osx-${{ matrix.suffix }}'
 
       - name: Download Packages 
         run: |
@@ -172,18 +172,18 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Set Variables
+        id: set_variables
+        uses: ./.github/actions/set-variables
+        with:
+          os: 'x64'
+
       - name: Checkout JUCE
         uses: actions/checkout@v2
         with:
           repository: benkuper/JUCE
-          ref: develop-local
+          ref:  ${{ env.juce-branch }}
           path: JUCE
-
-      - name: Set Suffix
-        id: set_variables
-        uses: ./.github/actions/set-suffix
-        with:
-          os: 'x64'
 
       - name: Installing dependencies
         id: install_deps
@@ -267,18 +267,18 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Set Variables
+        id: set_variables
+        uses: ./.github/actions/set-variables
+        with:
+          os: ${{ matrix.arch }}
+
       - name: Checkout JUCE
         uses: actions/checkout@v2
         with:
           repository: benkuper/JUCE
-          ref: develop-local
+          ref:  ${{ env.juce-branch }}
           path: JUCE
-
-      - name: Set Suffix
-        id: set_variables
-        uses: ./.github/actions/set-suffix
-        with:
-          os: ${{ matrix.arch }}
 
       - name: Download and prepare AppImage
         run: |
