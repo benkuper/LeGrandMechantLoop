@@ -30,8 +30,8 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	viewCC("View"),
 	showOutControl(nullptr),
 	bypassAntiClickCount(anticlickBlocks),
-    channelMismatch(false),
-    clearAudioBufferIfNoConnections(true),
+	channelMismatch(false),
+	clearAudioBufferIfNoConnections(true),
 	nodeNotifier(5)
 {
 	showWarningInUI = true;
@@ -154,16 +154,16 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 
 		if (hasMIDIInput && forceNoteOffOnEnabled->boolValue())
 		{
-            if(processor->getSampleRate() > 0)
-            {
-                
-                midiCollector.reset(processor->getSampleRate());
-                for (int i = 1; i <= 16; i++)
-                {
-                    MidiMessage m(MidiMessage::allNotesOff(i), 1);
-                    midiCollector.addMessageToQueue(m);
-                }
-            }
+			if (processor->getSampleRate() > 0)
+			{
+
+				midiCollector.reset(processor->getSampleRate());
+				for (int i = 1; i <= 16; i++)
+				{
+					MidiMessage m(MidiMessage::allNotesOff(i), 1);
+					midiCollector.addMessageToQueue(m);
+				}
+			}
 		}
 	}
 	else if (p == numAudioInputs)
@@ -334,8 +334,8 @@ void Node::updatePlayConfig(bool notify)
 void Node::updatePlayConfigInternal()
 {
 	processor->setPlayConfigDetails(audioInputNames.size(), audioOutputNames.size(), graph->getSampleRate(), graph->getBlockSize());
-    
-    if(graph->getSampleRate() > 0) midiCollector.reset(graph->getSampleRate());
+
+	if (graph->getSampleRate() > 0) midiCollector.reset(graph->getSampleRate());
 }
 
 void Node::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
@@ -389,9 +389,9 @@ void Node::updateSustainedNotes()
 void Node::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
 	if (sampleRate != 0)
-    {
-        midiCollector.reset(sampleRate);
-    }
+	{
+		midiCollector.reset(sampleRate);
+	}
 }
 
 void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -408,27 +408,28 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 
 	int numInputs = getNumAudioInputs();
 	int numOutputs = getNumAudioOutputs();
-    
+
 	if (buffer.getNumChannels() != jmax(numInputs, numOutputs))
 	{
 		jassert(!Engine::mainEngine->isLoadingFile);
 
-        if(!channelMismatch)
-        {
-            setWarningMessage("Not the same number of channels ! " + String(buffer.getNumChannels()) + " < > " + String(jmax(numInputs, numOutputs)), "Channel Mismatch");
-        }
-        channelMismatch = true;
-        return;
-	}else if(channelMismatch)
-    {
-        channelMismatch = false;
-        clearWarning("Channel Mismatch");
-    }
+		if (!channelMismatch)
+		{
+			setWarningMessage("Not the same number of channels ! " + String(buffer.getNumChannels()) + " < > " + String(jmax(numInputs, numOutputs)), "Channel Mismatch");
+		}
+		channelMismatch = true;
+		return;
+	}
+	else if (channelMismatch)
+	{
+		channelMismatch = false;
+		clearWarning("Channel Mismatch");
+	}
 
 	if (clearAudioBufferIfNoConnections && inAudioConnections.isEmpty()) buffer.clear();
-    
+
 	//MIDI
-    if(hasMIDIInput) midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
+	if (hasMIDIInput) midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
 
 	bool isEnabled = enabled->boolValue();
 	bool antiClickFinished = bypassAntiClickCount == (isEnabled ? anticlickBlocks : 0);
@@ -524,6 +525,9 @@ void Node::loadJSONDataItemInternal(var data)
 		viewCC.loadJSONData(data.getProperty("view", var()));
 		if (midiCC != nullptr) midiCC->loadJSONData(data.getProperty("midi", var()));
 	}
+
+	if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
+	if (numAudioOutputs != nullptr && numAudioOutputs->enabled) autoSetNumAudioOutputs();
 }
 
 BaseNodeViewUI* Node::createViewUI()
