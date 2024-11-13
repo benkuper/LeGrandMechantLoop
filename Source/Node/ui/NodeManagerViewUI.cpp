@@ -28,7 +28,7 @@ NodeManagerViewUI::NodeManagerViewUI(NodeManager* manager) :
 
 	removeMouseListener(this);
 	addMouseListener(this, true);
-	setDisableDefaultMouseEvents(true);
+	setDisableInternalMouseEvents(true);
 }
 
 NodeManagerViewUI::~NodeManagerViewUI()

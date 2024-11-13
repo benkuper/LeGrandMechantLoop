@@ -82,7 +82,7 @@ void SamplerMidiKeyboardComponent::drawWhiteNote(int midiNoteNumber, Graphics& g
 		auto fontHeight = jmin(12.0f, getKeyWidth() * 0.9f);
 
 		g.setColour(textColour);
-		g.setFont(Font(fontHeight).withHorizontalScale(0.8f));
+		g.setFont(Font(FontOptions(fontHeight)).withHorizontalScale(0.8f));
 
 		switch (getOrientation())
 		{

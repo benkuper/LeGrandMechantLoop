@@ -28,6 +28,7 @@
 		4B966DEAF7D6B3297885E100 /* MappingUI.cpp */ = {isa = PBXBuildFile; fileRef = DCA2FDB3318047B6B026C615; };
 		4EFDBFD373DED0858C08703B /* Icon.icns */ = {isa = PBXBuildFile; fileRef = 091EEE0FF52DF9B2CE28BCBE; };
 		4FC098D6A99C54CF3788A48C /* OpenGL.framework */ = {isa = PBXBuildFile; fileRef = 237984418F226657BC6FDEB6; };
+		4FD4719E0F0F97FA8759B6E9 /* include_juce_core_CompilationTime.cpp */ = {isa = PBXBuildFile; fileRef = A50D783B496799EEE8B232AA; };
 		51EA34DE5982EB525938CC64 /* MainComponentCommands.cpp */ = {isa = PBXBuildFile; fileRef = 5CD89BBDF3160B85DEE0469B; };
 		54DCA5E7DFA35E8A09445713 /* include_juce_organicui2b.cpp */ = {isa = PBXBuildFile; fileRef = 5757572F2471A7439BA771F5; };
 		572280B4C0DD18A4129DD2EB /* MacroManagerUI.cpp */ = {isa = PBXBuildFile; fileRef = E9997186E1B2132FA6F1167C; };
@@ -38,6 +39,7 @@
 		69F2393E0E6999CFE75E1FE8 /* include_juce_audio_processors_lv2_libs.cpp */ = {isa = PBXBuildFile; fileRef = 159E713540641E74E966E415; };
 		733DD41903EBF2C2F5BB411D /* Accelerate.framework */ = {isa = PBXBuildFile; fileRef = 4E67D17383B701E0FFD53754; };
 		758BEACDE1E0E0155B742151 /* MetalKit.framework */ = {isa = PBXBuildFile; fileRef = C0C56BBE06EF17B366FDACEB; settings = { ATTRIBUTES = (Weak, ); }; };
+		767D5336FC9AA770EE175829 /* include_juce_graphics_Harfbuzz.cpp */ = {isa = PBXBuildFile; fileRef = 2BD341D628AAB2AA51F2FA10; };
 		7AC155A654D74B5167AB4F35 /* include_juce_gui_basics.mm */ = {isa = PBXBuildFile; fileRef = C48A57AB25DBA5C512ACDB2C; };
 		80719916864403CC1F3D5EB8 /* AudioToolbox.framework */ = {isa = PBXBuildFile; fileRef = 3D2CBC346A0DEA15D4CC6D78; };
 		8668D99ED6CE90129C7CBD9B /* include_juce_organicui.cpp */ = {isa = PBXBuildFile; fileRef = 0DA31F87CFF887F48593D7E6; };
@@ -59,6 +61,8 @@
 		B65277C37A57086DD72A7DC9 /* LGMLOutliner.cpp */ = {isa = PBXBuildFile; fileRef = 7F92907908DCA2AAC14D45C5; };
 		B77D7F3C8C472791B2EBCA49 /* TransportUI.cpp */ = {isa = PBXBuildFile; fileRef = CED99BEB7E233872AF13A4C4; };
 		B815C735D399C97D12A77153 /* CoreMIDI.framework */ = {isa = PBXBuildFile; fileRef = D568ABAE4F370BD92BF16787; };
+		BE70DB66C13EB2EFF772A610 /* include_juce_graphics_Sheenbidi.c */ = {isa = PBXBuildFile; fileRef = BBBECA31A786A376FB5E93AC; };
+		BF39931A5F57BEA5968406F1 /* include_juce_javascript.cpp */ = {isa = PBXBuildFile; fileRef = 35E9A2D0D475D1D57407FE44; };
 		C12B0F88DD0B741DEDD4934F /* Main.cpp */ = {isa = PBXBuildFile; fileRef = 8E025BE22DED84DB6430C771; };
 		C3205CDCFF5DECA0284ED584 /* LGMLSettings.cpp */ = {isa = PBXBuildFile; fileRef = 6352599CD8E6D8DB64962308; };
 		C4AB9814673B0D5F9D939C01 /* include_juce_timeline.cpp */ = {isa = PBXBuildFile; fileRef = 4ACE978AE9CC0CC00C427119; };
@@ -147,6 +151,7 @@
 		26A008126EC0D8D88C0B4251 /* SequenceEditor.h */ /* SequenceEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SequenceEditor.h; path = ../../Source/Node/nodes/timeline/ui/SequenceEditor.h; sourceTree = SOURCE_ROOT; };
 		27613EF4E999808F2616E3D5 /* SerialManager.h */ /* SerialManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SerialManager.h; path = ../../Source/Common/Serial/SerialManager.h; sourceTree = SOURCE_ROOT; };
 		2A00FB335325AFC037E3C916 /* list_ports_linux.cc */ /* list_ports_linux.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = list_ports_linux.cc; path = ../../Source/Common/Serial/lib/serial/impl/list_ports/list_ports_linux.cc; sourceTree = SOURCE_ROOT; };
+		2BD341D628AAB2AA51F2FA10 /* include_juce_graphics_Harfbuzz.cpp */ /* include_juce_graphics_Harfbuzz.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_juce_graphics_Harfbuzz.cpp; path = ../../JuceLibraryCode/include_juce_graphics_Harfbuzz.cpp; sourceTree = SOURCE_ROOT; };
 		2BDE56DC2BDA840C819EA381 /* MetronomeNode.cpp */ /* MetronomeNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MetronomeNode.cpp; path = ../../Source/Node/nodes/metronome/MetronomeNode.cpp; sourceTree = SOURCE_ROOT; };
 		2C20037FB72504C4BD9A339D /* NodeManagerUI.cpp */ /* NodeManagerUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NodeManagerUI.cpp; path = ../../Source/Node/ui/NodeManagerUI.cpp; sourceTree = SOURCE_ROOT; };
 		2D135AC85A276C70A2901974 /* InterfaceManagerUI.cpp */ /* InterfaceManagerUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = InterfaceManagerUI.cpp; path = ../../Source/Interface/ui/InterfaceManagerUI.cpp; sourceTree = SOURCE_ROOT; };
@@ -158,6 +163,7 @@
 		34434FF7C39A5117371743F3 /* MIDIInterface.cpp */ /* MIDIInterface.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MIDIInterface.cpp; path = ../../Source/Interface/interfaces/midi/MIDIInterface.cpp; sourceTree = SOURCE_ROOT; };
 		3507D76DD6E7B7A6CEA14CD2 /* InterfaceManager.h */ /* InterfaceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = InterfaceManager.h; path = ../../Source/Interface/InterfaceManager.h; sourceTree = SOURCE_ROOT; };
 		359E621A6871EF9BDCD30FF6 /* MIDIDeviceParameterUI.cpp */ /* MIDIDeviceParameterUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MIDIDeviceParameterUI.cpp; path = ../../Source/Common/MIDI/ui/MIDIDeviceParameterUI.cpp; sourceTree = SOURCE_ROOT; };
+		35E9A2D0D475D1D57407FE44 /* include_juce_javascript.cpp */ /* include_juce_javascript.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_juce_javascript.cpp; path = ../../JuceLibraryCode/include_juce_javascript.cpp; sourceTree = SOURCE_ROOT; };
 		35F2E512694843E8F47287AE /* SamplerNode.cpp */ /* SamplerNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = SamplerNode.cpp; path = ../../Source/Node/nodes/sampler/SamplerNode.cpp; sourceTree = SOURCE_ROOT; };
 		360936F5D85ED0A5D1D9FA46 /* RecorderNode.h */ /* RecorderNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RecorderNode.h; path = ../../Source/Node/nodes/recorder/RecorderNode.h; sourceTree = SOURCE_ROOT; };
 		36A9825F0D2DD9FF84EA17E1 /* VSTNode.cpp */ /* VSTNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = VSTNode.cpp; path = ../../Source/Node/nodes/vst/VSTNode.cpp; sourceTree = SOURCE_ROOT; };
@@ -287,6 +293,7 @@
 		A36547C48B0DFFAC81AEBEFD /* MIDIDeviceChooser.h */ /* MIDIDeviceChooser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MIDIDeviceChooser.h; path = ../../Source/Common/MIDI/ui/MIDIDeviceChooser.h; sourceTree = SOURCE_ROOT; };
 		A3F680CF4082A8D3151384F8 /* juce_opengl */ /* juce_opengl */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_opengl; path = "~/JUCE/modules/juce_opengl"; sourceTree = "<absolute>"; };
 		A4DBBD95E70CB4701AEB5AE9 /* LooperTrack.cpp */ /* LooperTrack.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = LooperTrack.cpp; path = ../../Source/Node/nodes/looper/LooperTrack.cpp; sourceTree = SOURCE_ROOT; };
+		A50D783B496799EEE8B232AA /* include_juce_core_CompilationTime.cpp */ /* include_juce_core_CompilationTime.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_juce_core_CompilationTime.cpp; path = ../../JuceLibraryCode/include_juce_core_CompilationTime.cpp; sourceTree = SOURCE_ROOT; };
 		A5F8A45FE7AE9E352DBDDB27 /* list_ports_win.cc */ /* list_ports_win.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = list_ports_win.cc; path = ../../Source/Common/Serial/lib/serial/impl/list_ports/list_ports_win.cc; sourceTree = SOURCE_ROOT; };
 		A6D9C1B2426EE8972DB8A81B /* MIDIDeviceChooser.cpp */ /* MIDIDeviceChooser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MIDIDeviceChooser.cpp; path = ../../Source/Common/MIDI/ui/MIDIDeviceChooser.cpp; sourceTree = SOURCE_ROOT; };
 		A6DA51CB3FEF4A3449D39603 /* AnalysisNode.cpp */ /* AnalysisNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AnalysisNode.cpp; path = ../../Source/Node/nodes/analysis/AnalysisNode.cpp; sourceTree = SOURCE_ROOT; };
@@ -308,6 +315,7 @@
 		B8D7F037E1CA17E413E823DA /* MixerNode.cpp */ /* MixerNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MixerNode.cpp; path = ../../Source/Node/nodes/mixer/MixerNode.cpp; sourceTree = SOURCE_ROOT; };
 		B9A3D953F44F285AC5202522 /* list_ports_osx.cc */ /* list_ports_osx.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = list_ports_osx.cc; path = ../../Source/Common/Serial/lib/serial/impl/list_ports/list_ports_osx.cc; sourceTree = SOURCE_ROOT; };
 		BB3CEC2114AE9ED824C6BF41 /* AudioManager.h */ /* AudioManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioManager.h; path = ../../Source/Engine/AudioManager.h; sourceTree = SOURCE_ROOT; };
+		BBBECA31A786A376FB5E93AC /* include_juce_graphics_Sheenbidi.c */ /* include_juce_graphics_Sheenbidi.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = include_juce_graphics_Sheenbidi.c; path = ../../JuceLibraryCode/include_juce_graphics_Sheenbidi.c; sourceTree = SOURCE_ROOT; };
 		BE1556843A6B69311B79A4D0 /* VSTNodeViewUI.h */ /* VSTNodeViewUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VSTNodeViewUI.h; path = ../../Source/Node/nodes/vst/ui/VSTNodeViewUI.h; sourceTree = SOURCE_ROOT; };
 		BE191D2B96E7D24AF95BD784 /* RingBuffer.h */ /* RingBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RingBuffer.h; path = ../../Source/Common/RingBuffer.h; sourceTree = SOURCE_ROOT; };
 		BE601C2780679E6F4C0BE6F1 /* MacroParameter.cpp */ /* MacroParameter.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MacroParameter.cpp; path = ../../Source/Macro/MacroParameter.cpp; sourceTree = SOURCE_ROOT; };
@@ -354,6 +362,7 @@
 		DC0C72D88A46EFB892562EEF /* juce_simpleweb */ /* juce_simpleweb */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_simpleweb; path = ../../Modules/juce_simpleweb; sourceTree = SOURCE_ROOT; };
 		DCA2FDB3318047B6B026C615 /* MappingUI.cpp */ /* MappingUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MappingUI.cpp; path = ../../Source/Mapping/ui/MappingUI.cpp; sourceTree = SOURCE_ROOT; };
 		DDDE73BE013ABB74466D9B4F /* include_juce_audio_formats.mm */ /* include_juce_audio_formats.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_formats.mm; path = ../../JuceLibraryCode/include_juce_audio_formats.mm; sourceTree = SOURCE_ROOT; };
+		DE766CB2B3716F1E3E5F586C /* juce_javascript */ /* juce_javascript */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_javascript; path = ../../../JUCE/modules/juce_javascript; sourceTree = SOURCE_ROOT; };
 		E0030CE5FB0E247A4CF27996 /* NodeViewUI.cpp */ /* NodeViewUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NodeViewUI.cpp; path = ../../Source/Node/ui/NodeViewUI.cpp; sourceTree = SOURCE_ROOT; };
 		E1EED57D2228C25B8217CE75 /* MacroManager.h */ /* MacroManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MacroManager.h; path = ../../Source/Macro/MacroManager.h; sourceTree = SOURCE_ROOT; };
 		E282EE4A56F6B3D0E732F78F /* NodeManagerViewUI.cpp */ /* NodeManagerViewUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NodeManagerViewUI.cpp; path = ../../Source/Node/ui/NodeManagerViewUI.cpp; sourceTree = SOURCE_ROOT; };
@@ -698,6 +707,7 @@
 				2230B482E24786737831AFF2,
 				4F3BE5BAD3E28FA7BB28F95B,
 				452D3088C341ED00EF57AE29,
+				DE766CB2B3716F1E3E5F586C,
 				A3F680CF4082A8D3151384F8,
 				1178B25810D021BCD1237144,
 				8F7CD35E7DFEDB300F1565A4,
@@ -972,13 +982,17 @@
 				159E713540641E74E966E415,
 				9C2A390D94243CD049AA35EC,
 				4E745442DDAFDF4E04490267,
+				A50D783B496799EEE8B232AA,
 				24DF21EA81B593918735F6C8,
 				5AD384D4D6F8086C677B641A,
 				24AE3A7A38EA7A306C670367,
 				D94A0DB2F0FE0BCE7C2D2B78,
 				F11E5C9F411D5F4CAA0045B4,
+				2BD341D628AAB2AA51F2FA10,
+				BBBECA31A786A376FB5E93AC,
 				C48A57AB25DBA5C512ACDB2C,
 				BEC21D9389CC84DE2A6A22C6,
+				35E9A2D0D475D1D57407FE44,
 				B50559696E5176264924A111,
 				0DA31F87CFF887F48593D7E6,
 				741145CF557D3323427536E9,
@@ -1375,13 +1389,17 @@
 				69F2393E0E6999CFE75E1FE8,
 				58A42D74DE300825E6EC3644,
 				A960CCA6B39012B32BCA036D,
+				4FD4719E0F0F97FA8759B6E9,
 				E20E9FFCABD35CDD6DFC42F2,
 				F92E79A4600859CB788E9129,
 				E98A4BD933822E93D87F0D38,
 				88FB56C215505318E2CDE324,
 				A88B1580E73C6258C2B09353,
+				767D5336FC9AA770EE175829,
+				BE70DB66C13EB2EFF772A610,
 				7AC155A654D74B5167AB4F35,
 				48DC06C4B7D4BC49FBDD09A7,
+				BF39931A5F57BEA5968406F1,
 				A8C84B5863A9D94C9AB47162,
 				8668D99ED6CE90129C7CBD9B,
 				02CBCC84561EDE752436DEC5,
@@ -1444,6 +1462,7 @@
 					"$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"$(HOME)/JUCE/modules",
+					"$(SRCROOT)/../../../JUCE/modules",
 					"$(SRCROOT)/../../Modules",
 					"$(SRCROOT)/../../External/servus/include",
 					"$(SRCROOT)/../../External/dnssd/include",
@@ -1471,7 +1490,7 @@
 				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/ $(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/asiodriver $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include $(SRCROOT)/../../External/abletonlink/include";
+				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/ $(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(SRCROOT)/../../../JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/asiodriver $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include $(SRCROOT)/../../External/abletonlink/include";
 				OTHER_LDFLAGS = "-lServus -lrubberband -lssl -lcrypto -lz";
 				PRODUCT_BUNDLE_IDENTIFIER = benkuper.LGML;
 				PRODUCT_NAME = "LGML";
@@ -1624,6 +1643,7 @@
 					"$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"$(HOME)/JUCE/modules",
+					"$(SRCROOT)/../../../JUCE/modules",
 					"$(SRCROOT)/../../Modules",
 					"$(SRCROOT)/../../External/servus/include",
 					"$(SRCROOT)/../../External/dnssd/include",
@@ -1650,7 +1670,7 @@
 					"\"../../Modules/juce_simpleweb/libs/MacOSX/${CURRENT_ARCH}\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/ $(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/asiodriver $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include $(SRCROOT)/../../External/abletonlink/include";
+				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/ $(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(SRCROOT)/../../../JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/asiodriver $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include $(SRCROOT)/../../External/abletonlink/include";
 				OTHER_LDFLAGS = "-lServus -lrubberband -lssl -lcrypto -lz";
 				PRODUCT_BUNDLE_IDENTIFIER = benkuper.LGML;
 				PRODUCT_NAME = "LGML";
@@ -1754,6 +1774,7 @@
 					"$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"$(HOME)/JUCE/modules",
+					"$(SRCROOT)/../../../JUCE/modules",
 					"$(SRCROOT)/../../Modules",
 					"$(SRCROOT)/../../External/servus/include",
 					"$(SRCROOT)/../../External/dnssd/include",
@@ -1780,7 +1801,7 @@
 					"\"../../Modules/juce_simpleweb/libs/MacOSX/${CURRENT_ARCH}\"",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/ $(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/asiodriver $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include $(SRCROOT)/../../External/abletonlink/include";
+				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/ $(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(SRCROOT)/../../../JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/asiodriver $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include $(SRCROOT)/../../External/abletonlink/include";
 				OTHER_LDFLAGS = "-lServus -lrubberband -lssl -lcrypto -lz";
 				PRODUCT_BUNDLE_IDENTIFIER = benkuper.LGML;
 				PRODUCT_NAME = "LGML";
@@ -1836,6 +1857,7 @@
 					"$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK",
 					"$(SRCROOT)/../../JuceLibraryCode",
 					"$(HOME)/JUCE/modules",
+					"$(SRCROOT)/../../../JUCE/modules",
 					"$(SRCROOT)/../../Modules",
 					"$(SRCROOT)/../../External/servus/include",
 					"$(SRCROOT)/../../External/dnssd/include",
@@ -1863,7 +1885,7 @@
 				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/ $(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/asiodriver $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include $(SRCROOT)/../../External/abletonlink/include";
+				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 $(HOME)/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/ $(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(SRCROOT)/../../../JUCE/modules $(SRCROOT)/../../Modules $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../Source $(SRCROOT)/../../External/asio $(SRCROOT)/../../External/asiodriver $(SRCROOT)/../../External/servus/include $(SRCROOT)/../../External/dnssd/include $(SRCROOT)/../../External/vst2 $(SRCROOT)/../../External/serial/include $(SRCROOT)/../../External/rubberband/include $(SRCROOT)/../../External/abletonlink/include";
 				OTHER_LDFLAGS = "-lServus -lrubberband -lssl -lcrypto -lz";
 				PRODUCT_BUNDLE_IDENTIFIER = benkuper.LGML;
 				PRODUCT_NAME = "LGML";

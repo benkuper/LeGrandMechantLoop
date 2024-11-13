@@ -20,7 +20,7 @@
 
 // [END_USER_CODE_SECTION]
 
-#define JUCE_PROJUCER_VERSION 0x80000
+#define JUCE_PROJUCER_VERSION 0x80003
 
 //==============================================================================
 #define JUCE_MODULE_AVAILABLE_juce_audio_basics          1
@@ -36,6 +36,7 @@
 #define JUCE_MODULE_AVAILABLE_juce_graphics              1
 #define JUCE_MODULE_AVAILABLE_juce_gui_basics            1
 #define JUCE_MODULE_AVAILABLE_juce_gui_extra             1
+#define JUCE_MODULE_AVAILABLE_juce_javascript            1
 #define JUCE_MODULE_AVAILABLE_juce_opengl                1
 #define JUCE_MODULE_AVAILABLE_juce_organicui             1
 #define JUCE_MODULE_AVAILABLE_juce_osc                   1
@@ -240,16 +241,8 @@
  //#define JUCE_USE_COREIMAGE_LOADER 1
 #endif
 
-#ifndef    JUCE_USE_DIRECTWRITE
- //#define JUCE_USE_DIRECTWRITE 1
-#endif
-
 #ifndef    JUCE_DISABLE_COREGRAPHICS_FONT_SMOOTHING
  //#define JUCE_DISABLE_COREGRAPHICS_FONT_SMOOTHING 0
-#endif
-
-#ifndef    JUCE_FLOAT_COLOURS
- //#define JUCE_FLOAT_COLOURS 0
 #endif
 
 //==============================================================================
@@ -290,6 +283,10 @@
  //#define JUCE_WEB_BROWSER 1
 #endif
 
+#ifndef    JUCE_USE_WIN_WEBVIEW2_WITH_STATIC_LINKING
+ //#define JUCE_USE_WIN_WEBVIEW2_WITH_STATIC_LINKING 0
+#endif
+
 #ifndef    JUCE_USE_WIN_WEBVIEW2
  #define   JUCE_USE_WIN_WEBVIEW2 1
 #endif
@@ -311,6 +308,34 @@
 
 #ifndef    ORGANICUI_USE_WEBSERVER
  #define   ORGANICUI_USE_WEBSERVER 1
+#endif
+
+#ifndef    ORGANICUI_USE_DASHBOARDPANEL
+ //#define ORGANICUI_USE_DASHBOARDPANEL 1
+#endif
+
+#ifndef    ORGANICUI_USE_PARROTPANEL
+ //#define ORGANICUI_USE_PARROTPANEL 1
+#endif
+
+#ifndef    ORGANICUI_USE_DETECTIVEPANEL
+ //#define ORGANICUI_USE_DETECTIVEPANEL 1
+#endif
+
+#ifndef    ORGANICUI_USE_HELPPANEL
+ //#define ORGANICUI_USE_HELPPANEL 1
+#endif
+
+#ifndef    ORGANICUI_USE_LOGGERPANEL
+ //#define ORGANICUI_USE_LOGGERPANEL 1
+#endif
+
+#ifndef    ORGANICUI_USE_WARNINGPANEL
+ //#define ORGANICUI_USE_WARNINGPANEL 1
+#endif
+
+#ifndef    ORGANICUI_USE_OUTLINERPANEL
+ //#define ORGANICUI_USE_OUTLINERPANEL 1
 #endif
 
 //==============================================================================

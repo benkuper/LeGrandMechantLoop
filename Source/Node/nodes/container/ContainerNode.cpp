@@ -9,6 +9,7 @@
 */
 
 #include "Node/NodeIncludes.h"
+#include "ContainerNode.h"
 
 ContainerNode::ContainerNode(var params) :
 	Node(getTypeString(), params, true, true, true),
@@ -80,7 +81,7 @@ void ContainerNode::updateGraph()
 
 void ContainerNode::updateAudioInputsInternal()
 {
-	nodeManager->setAudioInputs(audioInputNames);
+	nodeManager->setAudioInputs(audioInputNames); 
 }
 
 void ContainerNode::updateAudioOutputsInternal()
@@ -126,6 +127,7 @@ void ContainerNode::loadJSONDataItemInternal(var data)
 	Node::loadJSONDataItemInternal(data);
 	updateGraph();
 	nodeManager->loadJSONData(data.getProperty("manager", var()));
+
 }
 
 

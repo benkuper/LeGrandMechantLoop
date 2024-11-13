@@ -38,7 +38,7 @@ PresetUI::PresetUI(Preset* p) :
 
 	highlightLinkedInspectablesOnOver = false;
 
-	setDisableDefaultMouseEvents(true);
+	setDisableInternalMouseEvents(true);
 	bgColor = item->itemColor->getColor();
 }
 

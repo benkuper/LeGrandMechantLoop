@@ -19,7 +19,7 @@ SpatView::SpatView(SpatNode* node) :
 
 	removeMouseListener(this);
 	addMouseListener(this, true);
-	setDisableDefaultMouseEvents(true);
+	setDisableInternalMouseEvents(true);
 }
 
 SpatView::~SpatView()

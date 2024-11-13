@@ -19,7 +19,7 @@ NodeAudioConnectionEditor::NodeAudioConnectionEditor(NodeAudioConnection* connec
     setInterceptsMouseClicks(true, true);
     removeMouseListener(this);
     addMouseListener(this, true);
-    setDisableDefaultMouseEvents(true);
+    setDisableInternalMouseEvents(true);
 }
 
 NodeAudioConnectionEditor::~NodeAudioConnectionEditor()

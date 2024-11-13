@@ -227,7 +227,7 @@ LGMLMenuBarComponent::LGMLMenuBarComponent(MainComponent* mainComp, LGMLEngine* 
 	addAndMakeVisible(logInUI.get());
 	addAndMakeVisible(logOutUI.get());
 
-	audioSettingsUI.setFont(10);
+	audioSettingsUI.setFont(FontOptions(10));
 	audioSettingsUI.setJustificationType(Justification::centredRight);
 	audioSettingsUI.setText(AudioManager::getInstance()->getCurrentDeviceDescription(), dontSendNotification);
 	addAndMakeVisible(audioSettingsUI);

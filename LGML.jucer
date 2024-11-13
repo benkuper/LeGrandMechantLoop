@@ -510,6 +510,7 @@
         <MODULEPATH id="juce_cryptography"/>
         <MODULEPATH id="juce_gui_extra"/>
         <MODULEPATH id="juce_timeline" path="Modules"/>
+        <MODULEPATH id="juce_javascript" path="../JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
     <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="k24oFh" bigIcon="k24oFh"
@@ -545,6 +546,7 @@
         <MODULEPATH id="juce_cryptography"/>
         <MODULEPATH id="juce_gui_extra"/>
         <MODULEPATH id="juce_timeline" path="Modules"/>
+        <MODULEPATH id="juce_javascript" path="../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" smallIcon="k24oFh" bigIcon="k24oFh"
@@ -576,6 +578,7 @@
         <MODULEPATH id="juce_cryptography" path="JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
         <MODULEPATH id="juce_timeline" path="Modules"/>
+        <MODULEPATH id="juce_javascript" path="../JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <VS2022 targetFolder="Builds/VisualStudio2022_CI" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
@@ -607,6 +610,7 @@
         <MODULEPATH id="juce_cryptography" path="JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
         <MODULEPATH id="juce_timeline" path="Modules"/>
+        <MODULEPATH id="juce_javascript" path="../JUCE/modules"/>
       </MODULEPATHS>
     </VS2022>
     <XCODE_MAC targetFolder="Builds/MacOSX_CI" smallIcon="k24oFh" bigIcon="k24oFh"
@@ -641,6 +645,7 @@
         <MODULEPATH id="juce_cryptography" path="JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
         <MODULEPATH id="juce_timeline" path="Modules"/>
+        <MODULEPATH id="juce_javascript" path="../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <LINUX_MAKE targetFolder="Builds/Raspberry" extraLinkerFlags="-Wl,-rpath,&quot;lib&quot;&#10;-Wl,--as-needed&#10;-lm"
@@ -675,6 +680,7 @@
         <MODULEPATH id="juce_cryptography" path="JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
         <MODULEPATH id="juce_timeline" path="Modules"/>
+        <MODULEPATH id="juce_javascript" path="../JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <LINUX_MAKE targetFolder="Builds/Raspberry64" extraDefs="LINK_PLATFORM_LINUX=1&#10;USE_ABLETONLINK=1"
@@ -705,6 +711,7 @@
         <MODULEPATH id="juce_simpleweb" path="Modules"/>
         <MODULEPATH id="juce_gui_extra" path="JUCE/modules"/>
         <MODULEPATH id="juce_timeline" path="Modules"/>
+        <MODULEPATH id="juce_javascript" path="../JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
   </EXPORTFORMATS>
@@ -722,6 +729,7 @@
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_javascript" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_organicui" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_osc" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
