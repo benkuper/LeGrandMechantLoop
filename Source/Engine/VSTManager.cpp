@@ -136,8 +136,8 @@ void VSTManager::updateVSTList()
 
 				for (auto& d : toAdd)
 				{
-					PluginDescription* dd = newDescriptions.removeAndReturn(0);
-					descriptions.add(dd);
+					newDescriptions.removeObject(d, false);
+					descriptions.add(d);
 				}
 			}
 			catch (std::exception e)

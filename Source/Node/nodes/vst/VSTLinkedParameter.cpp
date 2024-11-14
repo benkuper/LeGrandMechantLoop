@@ -73,7 +73,7 @@ void VSTParameterLink::parameterValueChanged(int parameterIndex, float newValue)
 void VSTParameterLink::parameterGestureChanged(int parameterIndex, bool gestureIsStarting)
 {
 	if (gestureIsStarting) valueAtGestureStart = vstParam->getValue();
-	else param->setUndoableValue(valueAtGestureStart, vstParam->getValue());
+	else param->setUndoableValue(vstParam->getValue(), false);
 }
 
 InspectableEditor* VSTParameterLink::getEditor(bool isRoot)
