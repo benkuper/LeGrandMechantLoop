@@ -36,6 +36,18 @@ VSTManager::VSTManager() :
 	userCanAddControllables = true;
 	userAddControllablesFilters.add(FileParameter::getTypeStringStatic());
 
+	// Add common VST folders depending on platform
+#if JUCE_WINDOWS
+	addFileParameter("Path", "VST Path", "C:\\Program Files\\Common Files\\VST3")->canBeDisabledByUser = true;
+#elif JUCE_MAC
+	addFileParameter("Path", "VST Path", "/Library/Audio/Plug-Ins/VST3")->canBeDisabledByUser = true;
+	addFileParameter("Path", "VST Path", "~/Library/Audio/Plug-Ins/VST3")->canBeDisabledByUser = true;
+#elif JUCE_LINUX
+	addFileParameter("Path", "VST Path", "~/.vst")->canBeDisabledByUser = true;
+	addFileParameter("Path", "VST Path", "/usr/lib/vst")->canBeDisabledByUser = true;
+	addFileParameter("Path", "VST Path", "/usr/local/lib/vst")->canBeDisabledByUser = true;
+#endif
+
 	updateVSTFormats();
 }
 
@@ -103,7 +115,30 @@ void VSTManager::updateVSTList()
 			try
 			{
 				LOG("Scanning " + fp + "...");
-				f->findAllTypesForFile(descriptions, fp);
+
+				OwnedArray<PluginDescription> newDescriptions;
+				f->findAllTypesForFile(newDescriptions, fp);
+
+				Array<PluginDescription*> toAdd;
+				for (auto& d : newDescriptions)
+				{
+					if (d->uniqueId == 0) continue;
+					for (auto& dd : descriptions)
+					{
+						if (dd->fileOrIdentifier == d->fileOrIdentifier || dd->uniqueId == d->uniqueId)
+						{
+							DBG("Duplicate plugin found : " << d->name << " (" << d->pluginFormatName << ")");
+							continue;
+						}
+					}
+					toAdd.add(d);
+				}
+
+				for (auto& d : toAdd)
+				{
+					PluginDescription* dd = newDescriptions.removeAndReturn(0);
+					descriptions.add(dd);
+				}
 			}
 			catch (std::exception e)
 			{
@@ -114,6 +149,8 @@ void VSTManager::updateVSTList()
 
 	DescriptionSorter sorter;
 	descriptions.sort(sorter, true);
+
+
 
 	String s = "Found plugins :";
 	for (auto& d : descriptions)
@@ -204,7 +241,11 @@ void VSTManager::onContainerTriggerTriggered(Trigger* t)
 {
 	if (t == rescan)
 	{
+#if ASYNC_VST_LOADING
+		startThread();
+#else
 		updateVSTList();
+#endif
 	}
 }
 

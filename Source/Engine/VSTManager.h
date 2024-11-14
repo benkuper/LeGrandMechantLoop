@@ -12,6 +12,13 @@
 
 #include "JuceHeader.h"
 
+
+#if JUCE_WINDOWS
+#define ASYNC_VST_LOADING 0
+#else
+#define ASYNC_VST_LOADING 1
+#endif
+
 class VSTManager :
 	public ControllableContainer,
 	public Thread
@@ -53,7 +60,7 @@ public:
 	DECLARE_ASYNC_EVENT(VSTManager, VSTManager, vstManager, ENUM_LIST(PLUGINS_UPDATED), EVENT_INSPECTABLE_CHECK)
 
 
-		InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> inspectables = {}) override;
+	InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> inspectables = {}) override;
 };
 
 class VSTPluginParameterUI;
