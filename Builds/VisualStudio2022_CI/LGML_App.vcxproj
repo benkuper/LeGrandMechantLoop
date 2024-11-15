@@ -65,7 +65,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sratom;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\serd;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lv2;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK;..\..\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\..\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/asiodriver;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;../../External/rubberband/include;../../External/abletonlink/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sratom;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\serd;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lv2;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK;..\..\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/asiodriver;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;../../External/rubberband/include;../../External/abletonlink/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;VST_LOGGING=0;OSC_REMOTE_CONTROL_PORT=44000;LINK_PLATFORM_WINDOWS=1;USE_ABLETONLINK=1;JUCER_VS2022_78B14C07=1;JUCE_APP_VERSION=1.1.0b1;JUCE_APP_VERSION_HEX=0x10100;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -80,7 +80,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sratom;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\serd;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lv2;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK;..\..\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\..\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/asiodriver;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;../../External/rubberband/include;../../External/abletonlink/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sratom;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\serd;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lv2;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK;..\..\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/asiodriver;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;../../External/rubberband/include;../../External/abletonlink/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;DEBUG;_DEBUG;VST_LOGGING=0;OSC_REMOTE_CONTROL_PORT=44000;LINK_PLATFORM_WINDOWS=1;USE_ABLETONLINK=1;JUCER_VS2022_78B14C07=1;JUCE_APP_VERSION=1.1.0b1;JUCE_APP_VERSION_HEX=0x10100;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
@@ -114,7 +114,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sratom;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\serd;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lv2;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK;..\..\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\..\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/asiodriver;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;../../External/rubberband/include;../../External/abletonlink/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sratom;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\serd;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lv2;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK;..\..\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/asiodriver;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;../../External/rubberband/include;../../External/abletonlink/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;VST_LOGGING=0;OSC_REMOTE_CONTROL_PORT=44000;LINK_PLATFORM_WINDOWS=1;USE_ABLETONLINK=1;JUCER_VS2022_78B14C07=1;JUCE_APP_VERSION=1.1.0b1;JUCE_APP_VERSION_HEX=0x10100;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -129,7 +129,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sratom;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\serd;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lv2;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK;..\..\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\..\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/asiodriver;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;../../External/rubberband/include;../../External/abletonlink/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sratom;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord\src;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\serd;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lv2;..\..\JUCE\modules\juce_audio_processors\format_types\LV2_SDK;..\..\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;..\..\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/asiodriver;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;../../External/rubberband/include;../../External/abletonlink/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;VST_LOGGING=0;OSC_REMOTE_CONTROL_PORT=44000;LINK_PLATFORM_WINDOWS=1;USE_ABLETONLINK=1;JUCER_VS2022_78B14C07=1;JUCE_APP_VERSION=1.1.0b1;JUCE_APP_VERSION_HEX=0x10100;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
@@ -3193,19 +3193,19 @@
     <ClCompile Include="..\..\JUCE\modules\juce_gui_extra\juce_gui_extra.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_Javascript_test.cpp">
+    <ClCompile Include="..\..\JUCE\modules\juce_javascript\javascript\juce_Javascript_test.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JavascriptEngine.cpp">
+    <ClCompile Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JavascriptEngine.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JSCursor.cpp">
+    <ClCompile Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JSCursor.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JSObject.cpp">
+    <ClCompile Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JSObject.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\JUCE\modules\juce_javascript\juce_javascript.cpp">
+    <ClCompile Include="..\..\JUCE\modules\juce_javascript\juce_javascript.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\JUCE\modules\juce_opengl\opengl\juce_gl.cpp">
@@ -5522,21 +5522,21 @@
     <ClInclude Include="..\..\JUCE\modules\juce_gui_extra\misc\juce_WebControlRelays.h"/>
     <ClInclude Include="..\..\JUCE\modules\juce_gui_extra\native\juce_NSViewFrameWatcher_mac.h"/>
     <ClInclude Include="..\..\..\JUCE\modules\juce_gui_extra\juce_gui_extra.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\containers\choc_Value.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\javascript\choc_javascript.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\javascript\choc_javascript_QuickJS.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\math\choc_MathHelpers.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\platform\choc_Assert.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\platform\choc_DisableAllWarnings.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\platform\choc_ReenableAllWarnings.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\text\choc_FloatToString.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\text\choc_JSON.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\text\choc_StringUtilities.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\text\choc_UTF8.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\detail\juce_QuickJSHelpers.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JavascriptEngine.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JSCursor.h"/>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JSObject.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\containers\choc_Value.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\javascript\choc_javascript.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\javascript\choc_javascript_QuickJS.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\math\choc_MathHelpers.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\platform\choc_Assert.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\platform\choc_DisableAllWarnings.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\platform\choc_ReenableAllWarnings.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\text\choc_FloatToString.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\text\choc_JSON.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\text\choc_StringUtilities.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\text\choc_UTF8.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\detail\juce_QuickJSHelpers.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JavascriptEngine.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JSCursor.h"/>
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JSObject.h"/>
     <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\juce_javascript.h"/>
     <ClInclude Include="..\..\JUCE\modules\juce_opengl\geometry\juce_Draggable3DOrientation.h"/>
     <ClInclude Include="..\..\JUCE\modules\juce_opengl\geometry\juce_Matrix3D.h"/>
@@ -6820,7 +6820,7 @@
     <None Include="..\..\JUCE\modules\juce_graphics\image_formats\jpglib\changes to libjpeg for JUCE.txt"/>
     <None Include="..\..\JUCE\modules\juce_graphics\image_formats\pnglib\libpng_readme.txt"/>
     <None Include="..\..\JUCE\modules\juce_graphics\unicode\sheenbidi\JUCE_CHANGES.txt"/>
-    <None Include="..\..\..\JUCE\modules\juce_javascript\choc\LICENSE.md"/>
+    <None Include="..\..\JUCE\modules\juce_javascript\choc\LICENSE.md"/>
     <None Include="..\..\Modules\juce_organicui\resources\organicui_resources\JuceLibraryCode\ReadMe.txt"/>
     <None Include="..\..\Modules\juce_organicui\README.md"/>
     <None Include="..\..\Modules\juce_simpleweb\asio\README.md"/>

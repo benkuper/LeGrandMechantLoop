@@ -4558,19 +4558,19 @@
     <ClCompile Include="..\..\JUCE\modules\juce_gui_extra\juce_gui_extra.mm">
       <Filter>JUCE Modules\juce_gui_extra</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_Javascript_test.cpp">
+    <ClCompile Include="..\..\JUCE\modules\juce_javascript\javascript\juce_Javascript_test.cpp">
       <Filter>JUCE Modules\juce_javascript\javascript</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JavascriptEngine.cpp">
+    <ClCompile Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JavascriptEngine.cpp">
       <Filter>JUCE Modules\juce_javascript\javascript</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JSCursor.cpp">
+    <ClCompile Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JSCursor.cpp">
       <Filter>JUCE Modules\juce_javascript\javascript</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JSObject.cpp">
+    <ClCompile Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JSObject.cpp">
       <Filter>JUCE Modules\juce_javascript\javascript</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\JUCE\modules\juce_javascript\juce_javascript.cpp">
+    <ClCompile Include="..\..\JUCE\modules\juce_javascript\juce_javascript.cpp">
       <Filter>JUCE Modules\juce_javascript</Filter>
     </ClCompile>
     <ClCompile Include="..\..\JUCE\modules\juce_opengl\opengl\juce_gl.cpp">
@@ -9867,49 +9867,49 @@
     <ClInclude Include="..\..\..\JUCE\modules\juce_gui_extra\juce_gui_extra.h">
       <Filter>JUCE Modules\juce_gui_extra</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\containers\choc_Value.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\containers\choc_Value.h">
       <Filter>JUCE Modules\juce_javascript\choc\containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\javascript\choc_javascript.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\javascript\choc_javascript.h">
       <Filter>JUCE Modules\juce_javascript\choc\javascript</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\javascript\choc_javascript_QuickJS.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\javascript\choc_javascript_QuickJS.h">
       <Filter>JUCE Modules\juce_javascript\choc\javascript</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\math\choc_MathHelpers.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\math\choc_MathHelpers.h">
       <Filter>JUCE Modules\juce_javascript\choc\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\platform\choc_Assert.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\platform\choc_Assert.h">
       <Filter>JUCE Modules\juce_javascript\choc\platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\platform\choc_DisableAllWarnings.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\platform\choc_DisableAllWarnings.h">
       <Filter>JUCE Modules\juce_javascript\choc\platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\platform\choc_ReenableAllWarnings.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\platform\choc_ReenableAllWarnings.h">
       <Filter>JUCE Modules\juce_javascript\choc\platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\text\choc_FloatToString.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\text\choc_FloatToString.h">
       <Filter>JUCE Modules\juce_javascript\choc\text</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\text\choc_JSON.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\text\choc_JSON.h">
       <Filter>JUCE Modules\juce_javascript\choc\text</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\text\choc_StringUtilities.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\text\choc_StringUtilities.h">
       <Filter>JUCE Modules\juce_javascript\choc\text</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\choc\text\choc_UTF8.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\choc\text\choc_UTF8.h">
       <Filter>JUCE Modules\juce_javascript\choc\text</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\detail\juce_QuickJSHelpers.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\detail\juce_QuickJSHelpers.h">
       <Filter>JUCE Modules\juce_javascript\detail</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JavascriptEngine.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JavascriptEngine.h">
       <Filter>JUCE Modules\juce_javascript\javascript</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JSCursor.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JSCursor.h">
       <Filter>JUCE Modules\juce_javascript\javascript</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\javascript\juce_JSObject.h">
+    <ClInclude Include="..\..\JUCE\modules\juce_javascript\javascript\juce_JSObject.h">
       <Filter>JUCE Modules\juce_javascript\javascript</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\JUCE\modules\juce_javascript\juce_javascript.h">
@@ -13757,7 +13757,7 @@
     <None Include="..\..\JUCE\modules\juce_graphics\unicode\sheenbidi\JUCE_CHANGES.txt">
       <Filter>JUCE Modules\juce_graphics\unicode\sheenbidi</Filter>
     </None>
-    <None Include="..\..\..\JUCE\modules\juce_javascript\choc\LICENSE.md">
+    <None Include="..\..\JUCE\modules\juce_javascript\choc\LICENSE.md">
       <Filter>JUCE Modules\juce_javascript\choc</Filter>
     </None>
     <None Include="..\..\Modules\juce_organicui\resources\organicui_resources\JuceLibraryCode\ReadMe.txt">

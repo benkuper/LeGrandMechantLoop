@@ -55,6 +55,7 @@ VSTManager::~VSTManager()
 {
 	idDescriptionMap.clear();
 	descriptions.clear();
+	formatManager.reset();
 }
 
 void VSTManager::updateVSTFormats()
