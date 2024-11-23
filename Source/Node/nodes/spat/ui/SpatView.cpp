@@ -138,7 +138,7 @@ void SpatView::mouseUp(const MouseEvent& e)
 			if (node->spatMode->getValueDataAsEnum<SpatNode::SpatMode>() != SpatNode::FREE) return;
 		}
 
-		si->item->position->setUndoablePoint(si->posAtMouseDown, si->item->position->getPoint());
+		si->item->position->setUndoablePoint(si->item->position->getPoint(), false, true);
 	}
 }
 
