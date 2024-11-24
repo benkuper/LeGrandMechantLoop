@@ -40,6 +40,14 @@ public:
 	VSTPreset* currentPreset;
 
 	EnumParameter* presetEnum;
+	ControllableContainer presetsCC;
+	StringParameter* newPresetName;
+	Trigger* addPreset;
+	Trigger* savePreset;
+	Trigger* deletePreset;
+	Trigger* reloadPreset;
+	Trigger* updatePresetName;
+
 	std::unique_ptr<AudioPluginInstance> vst;
 
 	SpinLock vstStateLock;
@@ -57,6 +65,8 @@ public:
 	void setVSTState(const String& data);
 
 	void updatePresetEnum(const String & setPresetName = "");
+	void createNewPreset(const String& presetName);
+	String getUniquePresetName(const String& name);
 	void updateMacros();
 
 	void checkAutoBypass();

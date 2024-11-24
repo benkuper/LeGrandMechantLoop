@@ -9,6 +9,7 @@
 */
 
 #include "Node/NodeIncludes.h"
+#include "VSTNode.h"
 
 VSTNode::VSTNode(var params) :
 	Node(getTypeString(), params, true, true, true, true, true, true),
@@ -17,7 +18,8 @@ VSTNode::VSTNode(var params) :
 	antiMacroFeedback(false),
 	isSettingVST(false),
 	prevWetDry(1),
-	vstNotifier(5)
+	vstNotifier(5),
+	presetsCC("Preset Control")
 {
 	numAudioInputs->canBeDisabledByUser = true;
 	numAudioInputs->setEnabled(false);
@@ -32,6 +34,13 @@ VSTNode::VSTNode(var params) :
 
 	clearBufferOnDisable = addBoolParameter("Clear Buffer On Disable", "If checked, this will clear the buffer when the vst is disable. This allows to avoid long reverb staying when re-enabling for instance.", true);
 	presetEnum = addEnumParameter("Preset", "Load a preset");
+	reloadPreset = presetsCC.addTrigger("Reload Preset", "Reload the current preset");
+	addPreset = presetsCC.addTrigger("Add Preset", "Add a new preset");
+	savePreset = presetsCC.addTrigger("Save Preset", "Save the current state as a preset");
+	newPresetName = presetsCC.addStringParameter("New Preset Name", "Name for the new preset when triggering add preset", "New Preset");
+	updatePresetName = presetsCC.addTrigger("Update Preset Name", "Update the name of the current preset");
+	deletePreset = presetsCC.addTrigger("Delete Preset", "Delete the current preset");
+	addChildControllableContainer(&presetsCC);
 	numMacros = addIntParameter("Num Macros", "Choose the number of macros you want for this VST", 0, 0);
 	autoActivateMacroIndex = addIntParameter("Auto Bypass Macro", "Index of the macro that automatically bypasses the VST if value is in the range", 1, 1, 1, false);
 	autoActivateMacroIndex->canBeDisabledByUser = true;
@@ -110,7 +119,6 @@ void VSTNode::setupVST(PluginDescription* description)
 		if (vst != nullptr)
 		{
 			vst->setPlayHead(Transport::getInstance());
-
 		}
 
 		setIOFromVST();
@@ -120,7 +128,10 @@ void VSTNode::setupVST(PluginDescription* description)
 			vstParamsCC.reset(new VSTParameterContainer(vst.get()));
 			vstParamsCC->setMaxMacros(numMacros->intValue());
 			addChildControllableContainer(vstParamsCC.get());
+
+			if (niceName == "VST") setNiceName(description->name);
 		}
+
 	}
 
 	isSettingVST = false;
@@ -186,11 +197,30 @@ void VSTNode::updatePresetEnum(const String& setPresetName)
 	presetEnum->clearOptions();
 	presetEnum->addOption("None", 0, false);
 	for (int i = 0; i < presets.size(); i++) presetEnum->addOption(presets[i]->name, i + 1);
-	presetEnum->addOption("Save Current", 1000);
-	presetEnum->addOption("Add New", 1001);
-	presetEnum->addOption("Delete current", 1002);
 
 	presetEnum->setValueWithKey(nameToChoose);
+}
+
+void VSTNode::createNewPreset(const String& presetName)
+{
+	String uniquePresetName = getUniquePresetName(presetName);
+	presets.add(new VSTPreset({ uniquePresetName, getVSTState() }));
+	updatePresetEnum(uniquePresetName);
+}
+
+String VSTNode::getUniquePresetName(const String& name)
+{
+	String uniqueName = name;
+	int i = 1;
+	StringArray presetNames;
+	for (auto& p : presets) presetNames.add(p->name);
+	while (presetNames.contains(uniqueName))
+	{
+		uniqueName = name + " " + String(i);
+		i++;
+	}
+
+	return uniqueName;
 }
 
 void VSTNode::updateMacros()
@@ -254,43 +284,7 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 	else if (p == presetEnum)
 	{
 		int d = presetEnum->getValueData();
-		if (d == 1000)
-		{
-			if (currentPreset != nullptr)
-			{
-				currentPreset->data = getVSTState();
-			}
-
-			presetEnum->setValueWithKey(currentPreset != nullptr ? currentPreset->name : "None");
-		}
-		else if (d == 1001)
-		{
-			AlertWindow* nameWindow(new AlertWindow("Add a preset", "Set the name for the new preset", AlertWindow::AlertIconType::NoIcon));
-
-			nameWindow->addTextEditor("name", "New preset", "Name");
-			nameWindow->addButton("OK", 1, KeyPress(KeyPress::returnKey));
-			nameWindow->addButton("Cancel", 0, KeyPress(KeyPress::escapeKey));
-
-			nameWindow->enterModalState(true, ModalCallbackFunction::create([=](int result)
-				{
-					if (result)
-					{
-						String pName = nameWindow->getTextEditorContents("name");
-						presets.add(new VSTPreset({ pName, getVSTState() }));
-						updatePresetEnum(pName);
-
-					}
-
-					delete nameWindow;
-				}));
-		}
-		else if (d == 1002)
-		{
-			presets.removeObject(currentPreset);
-			currentPreset = nullptr;
-			updatePresetEnum();
-		}
-		else if (d == 0)
+		if (d == 0)
 		{
 			currentPreset = nullptr;
 		}
@@ -341,6 +335,66 @@ void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Co
 			}
 		}
 
+	}
+	else if (c == savePreset)
+	{
+		if (currentPreset != nullptr)
+		{
+			currentPreset->data = getVSTState();
+		}
+
+		presetEnum->setValueWithKey(currentPreset != nullptr ? currentPreset->name : "None");
+	}
+	else if (c == addPreset)
+	{
+		String newPName = newPresetName->stringValue();
+		if (newPName.isEmpty())
+		{
+			AlertWindow* nameWindow(new AlertWindow("Add a preset", "Set the name for the new preset", AlertWindow::AlertIconType::NoIcon));
+
+			nameWindow->addTextEditor("name", "New preset", "Name");
+			nameWindow->addButton("OK", 1, KeyPress(KeyPress::returnKey));
+			nameWindow->addButton("Cancel", 0, KeyPress(KeyPress::escapeKey));
+
+			nameWindow->enterModalState(true, ModalCallbackFunction::create([=](int result)
+				{
+					if (result)
+					{
+						createNewPreset(nameWindow->getTextEditorContents("name"));
+					}
+
+					delete nameWindow;
+				}));
+		}
+		else
+		{
+			createNewPreset(newPName);
+		}
+	}
+	else if (c == deletePreset)
+	{
+		presets.removeObject(currentPreset);
+		currentPreset = nullptr;
+		updatePresetEnum();
+	}
+	else if (c == reloadPreset)
+	{
+		if (currentPreset != nullptr)
+		{
+			setVSTState(currentPreset->data);
+		}
+	}
+	else if (c == updatePresetName)
+	{
+		if (currentPreset != nullptr)
+		{
+			String newName = newPresetName->stringValue();
+			if (newName.isNotEmpty())
+			{
+				currentPreset->name = getUniquePresetName(newName);
+				updatePresetEnum(currentPreset->name);
+			}
+		}
 	}
 }
 
