@@ -31,6 +31,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	showOutControl(nullptr),
 	bypassAntiClickCount(anticlickBlocks),
 	channelMismatch(false),
+	forceNoteOffOnEnabled(nullptr),
 	clearAudioBufferIfNoConnections(true),
 	nodeNotifier(5)
 {
@@ -152,7 +153,7 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 			updateSustainedNotes();
 		}
 
-		if (hasMIDIInput && forceNoteOffOnEnabled->boolValue())
+		if (hasMIDIInput && (forceNoteOffOnEnabled != nullptr && forceNoteOffOnEnabled->boolValue()))
 		{
 			if (processor->getSampleRate() > 0)
 			{

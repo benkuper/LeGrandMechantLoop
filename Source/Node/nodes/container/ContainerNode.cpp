@@ -12,7 +12,7 @@
 #include "ContainerNode.h"
 
 ContainerNode::ContainerNode(var params) :
-	Node(getTypeString(), params, true, true, true),
+	Node(getTypeString(), params, true, true, true, true, true, true),
 	audioInputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),
 	audioOutputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),
 	midiInputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),
