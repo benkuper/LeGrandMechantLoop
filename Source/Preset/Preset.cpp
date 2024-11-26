@@ -69,14 +69,14 @@ Preset::Preset(var params) :
 	linkedPresetsCC.userCanAddControllables = true;
 	linkedPresetsCC.userAddControllablesFilters.add(TargetParameter::getTypeStringStatic());
 	linkedPresetsCC.customUserCreateControllableFunc = [this](ControllableContainer* cc)
-	{
-		TargetParameter* p = cc->addTargetParameter("Preset 1", "Linked preset to load values from", RootPresetManager::getInstance());
-		p->targetType = TargetParameter::CONTAINER;
-		p->saveValueOnly = false;
-		p->canBeDisabledByUser = true;
-		p->isRemovableByUser = true;
-		p->typesFilter.add(Preset::getTypeStringStatic());
-	};
+		{
+			TargetParameter* p = cc->addTargetParameter("Preset 1", "Linked preset to load values from", RootPresetManager::getInstance());
+			p->targetType = TargetParameter::CONTAINER;
+			p->saveValueOnly = false;
+			p->canBeDisabledByUser = true;
+			p->isRemovableByUser = true;
+			p->typesFilter.add(Preset::getTypeStringStatic());
+		};
 
 	addChildControllableContainer(&linkedPresetsCC);
 
@@ -299,19 +299,20 @@ void Preset::removeAddressFromDataMap(String address)
 
 void Preset::recoverLostControllables()
 {
-	HashMap<String, TransitionMode> initLostControllables;
+	HashMap<String, var> initLostControllables;
 
-	HashMap<String, TransitionMode>::Iterator it(lostControllables);
+	HashMap<String, var>::Iterator it(lostControllables);
 	while (it.next()) initLostControllables.set(it.getKey(), it.getValue()); //copy first because recovering changes the initial hashmap
 
-	HashMap<String, TransitionMode>::Iterator lit(initLostControllables);
+	HashMap<String, var>::Iterator lit(initLostControllables);
 	while (lit.next())
 	{
 		String add = lit.getKey();
 		if (Controllable* c = Engine::mainEngine->getControllableForAddress(add))
 		{
-			addControllableToDataMap(c, addressMap.contains(add) ? addressMap[add] : var());
-			transitionMap.set(c, lit.getValue());
+			var lostVal = lit.getValue();
+			addControllableToDataMap(c, lostVal[0]);
+			transitionMap.set(c, (TransitionMode)(int)lostVal[1]);
 		}
 	}
 }
@@ -393,7 +394,7 @@ var Preset::getJSONData()
 	data.getDynamicObject()->setProperty("ignores", ignoreData);
 
 	var lostData(new DynamicObject());
-	HashMap<String, TransitionMode>::Iterator lit(lostControllables);
+	HashMap<String, var>::Iterator lit(lostControllables);
 	while (lit.next()) lostData.getDynamicObject()->setProperty(lit.getKey(), lit.getValue());
 	data.getDynamicObject()->setProperty("lost", lostData);
 
@@ -421,7 +422,7 @@ void Preset::loadJSONDataItemInternal(var data)
 			}
 			else
 			{
-				lostControllables.set(p.name.toString(), (TransitionMode)(int)transitionData.getProperty(p.name.toString(), TransitionMode::DEFAULT));
+				lostControllables.set(p.name.toString(), p.value);
 			}
 		}
 	}
@@ -453,7 +454,7 @@ void Preset::loadJSONDataItemInternal(var data)
 		NamedValueSet lData = lostData.getDynamicObject()->getProperties();
 		for (auto& ld : lData)
 		{
-			lostControllables.set(ld.name.toString(), (TransitionMode)(int)ld.value);
+			lostControllables.set(ld.name.toString(), ld.value);
 		}
 	}
 }
@@ -468,9 +469,15 @@ void Preset::controllableControlAddressChanged(Controllable* c)
 		//got detached, meaning it will be surely removed
 		if (dataMap.contains(c))
 		{
-			dataMap.remove(c);
 			c->removeControllableListener(this);
-			lostControllables.set(controllableGhostAddressMap[c], transitionMap[c]);
+
+			var lostVal;
+			lostVal.append(dataMap[c]);
+			lostVal.append(transitionMap[c]);
+
+			dataMap.remove(c);
+
+			lostControllables.set(controllableGhostAddressMap[c], lostVal);
 			controllableGhostAddressMap.remove(c);
 		}
 	}

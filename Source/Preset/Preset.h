@@ -44,7 +44,7 @@ public:
 	HashMap<WeakReference<Controllable>, var> dataMap;
 	HashMap<WeakReference<Controllable>, TransitionMode> transitionMap;
 	HashMap<WeakReference<Controllable>, String> controllableGhostAddressMap;
-	HashMap<String, TransitionMode> lostControllables;
+	HashMap<String, var> lostControllables;
 	HashMap<String, var> addressMap;
 	Array<String> overridenControllables;
 	Array<WeakReference<Controllable>> ignoredControllables;
