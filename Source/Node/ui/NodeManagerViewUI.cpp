@@ -28,9 +28,8 @@ NodeManagerViewUI::NodeManagerViewUI(NodeManager* manager) :
 
 	setShowTools(true);
 
-	removeMouseListener(this);
-	addMouseListener(this, true);
 	setDisableInternalMouseEvents(true);
+	addMouseListener(this, true);
 }
 
 NodeManagerViewUI::~NodeManagerViewUI()
@@ -70,7 +69,7 @@ void NodeManagerViewUI::addItemUIInternal(BaseNodeViewUI* ui)
 
 void NodeManagerViewUI::mouseDown(const MouseEvent& e)
 {
-	BaseManagerViewUI::mouseDown(e);
+	if(e.originalComponent == this) BaseManagerViewUI::mouseDown(e);
 }
 
 void NodeManagerViewUI::mouseDrag(const MouseEvent& e)
@@ -88,15 +87,15 @@ void NodeManagerViewUI::mouseDrag(const MouseEvent& e)
 		return;
 	}
 
-	BaseManagerViewUI::mouseDrag(e);
+	if(e.originalComponent == this) BaseManagerViewUI::mouseDrag(e);
 }
 
 void NodeManagerViewUI::mouseUp(const MouseEvent& e)
 {
+	if (e.originalComponent == this) BaseManagerViewUI::mouseUp(e);
 	draggingConnector = nullptr;
 	forcedDragTargetPos = {};
 	repaint();
-	BaseManagerViewUI::mouseUp(e);
 }
 
 void NodeManagerViewUI::paintOverChildren(Graphics& g)
