@@ -43,6 +43,7 @@
 
 #include "nodes/router/AudioRouterNode.cpp"
 #include "nodes/router/ui/AudioRouterNodeUI.cpp"
+#include "nodes/patchbay/PatchBayNode.cpp"
 
 #include "nodes/sampler/SamplerNode.cpp"
 #include "nodes/sampler/ui/SamplerNodeUI.cpp"

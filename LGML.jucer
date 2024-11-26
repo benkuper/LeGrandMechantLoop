@@ -274,6 +274,11 @@
           <FILE id="jS6LEA" name="NodeViewUI.h" compile="0" resource="0" file="Source/Node/ui/NodeViewUI.h"/>
         </GROUP>
         <GROUP id="{AA864923-FBAA-C9CF-6485-D090A55570BF}" name="nodes">
+          <GROUP id="{81A41325-CB46-8462-E89B-ADFEB43595AC}" name="patchbay">
+            <FILE id="x461fe" name="PatchBayNode.cpp" compile="0" resource="0"
+                  file="Source/Node/nodes/patchbay/PatchBayNode.cpp"/>
+            <FILE id="C7XjNq" name="PatchBayNode.h" compile="0" resource="0" file="Source/Node/nodes/patchbay/PatchBayNode.h"/>
+          </GROUP>
           <GROUP id="{7A48B1B9-D802-0E54-C82A-12DFFCE51A67}" name="timeline">
             <GROUP id="{335D773A-B103-A617-F6AA-D16142E9D43A}" name="ui">
               <FILE id="SU0Zr9" name="SequenceEditor.cpp" compile="0" resource="0"

@@ -291,6 +291,9 @@
     <ClCompile Include="..\..\Source\Node\ui\NodeViewUI.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\patchbay\PatchBayNode.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\timeline\ui\SequenceEditor.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
@@ -4137,6 +4140,7 @@
     <ClInclude Include="..\..\Source\Node\ui\NodeManagerViewUI.h"/>
     <ClInclude Include="..\..\Source\Node\ui\NodeUI.h"/>
     <ClInclude Include="..\..\Source\Node\ui\NodeViewUI.h"/>
+    <ClInclude Include="..\..\Source\Node\nodes\patchbay\PatchBayNode.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\timeline\ui\SequenceEditor.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\timeline\LGMLSequence.h"/>
     <ClInclude Include="..\..\Source\Node\nodes\timeline\TimelineNode.h"/>

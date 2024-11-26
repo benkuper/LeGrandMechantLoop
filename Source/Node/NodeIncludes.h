@@ -57,6 +57,7 @@
 
 #include "nodes/mixer/MixerNode.h"
 #include "nodes/router/AudioRouterNode.h"
+#include "nodes/patchbay/PatchBayNode.h"
 
 #include "nodes/sampler/SamplerNode.h"
 

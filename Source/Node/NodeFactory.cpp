@@ -24,6 +24,7 @@ NodeFactory::NodeFactory()
 	defs.add(Definition::createDef<MixerNode>("Audio"));
 	defs.add(Definition::createDef<SpatNode>("Audio"));
 	defs.add(Definition::createDef<AudioRouterNode>("Audio"));
+	defs.add(Definition::createDef<PatchBayNode>("Audio"));
 	defs.add(Definition::createDef<RecorderNode>("Audio"));
 	defs.add(Definition::createDef<AnalysisNode>("Audio"));
 	defs.add(Definition::createDef<MetronomeNode>("Audio"));

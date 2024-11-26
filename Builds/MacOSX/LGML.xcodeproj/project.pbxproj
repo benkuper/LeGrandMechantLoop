@@ -93,6 +93,7 @@
 		00572176DF83C52AE2388993 /* MIDIDeviceParameterUI.h */ /* MIDIDeviceParameterUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MIDIDeviceParameterUI.h; path = ../../Source/Common/MIDI/ui/MIDIDeviceParameterUI.h; sourceTree = SOURCE_ROOT; };
 		00691923FD0FEF27E71438CD /* WebKit.framework */ /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		00A2F0B94E896892BD218107 /* AudioUIHelpers.h */ /* AudioUIHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioUIHelpers.h; path = ../../Source/Common/AudioUIHelpers.h; sourceTree = SOURCE_ROOT; };
+		00B337D3B199679AE88366AE /* PatchBayNode.cpp */ /* PatchBayNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PatchBayNode.cpp; path = ../../Source/Node/nodes/patchbay/PatchBayNode.cpp; sourceTree = SOURCE_ROOT; };
 		02B90458F9B842DB3B4F71E4 /* RecorderNode.cpp */ /* RecorderNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = RecorderNode.cpp; path = ../../Source/Node/nodes/recorder/RecorderNode.cpp; sourceTree = SOURCE_ROOT; };
 		030848E425B59E04EC0D9FF5 /* CoreAudio.framework */ /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		0308B7F96EC28E4DC49F0E9C /* OSCInterface.h */ /* OSCInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OSCInterface.h; path = ../../Source/Interface/interfaces/osc/OSCInterface.h; sourceTree = SOURCE_ROOT; };
@@ -312,6 +313,7 @@
 		B30F2415969EE8E840E91EF5 /* InterfaceIncludes.cpp */ /* InterfaceIncludes.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = InterfaceIncludes.cpp; path = ../../Source/Interface/InterfaceIncludes.cpp; sourceTree = SOURCE_ROOT; };
 		B3AA1093E61438C4D5B58128 /* NodeManagerUI.h */ /* NodeManagerUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NodeManagerUI.h; path = ../../Source/Node/ui/NodeManagerUI.h; sourceTree = SOURCE_ROOT; };
 		B50559696E5176264924A111 /* include_juce_opengl.mm */ /* include_juce_opengl.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_opengl.mm; path = ../../JuceLibraryCode/include_juce_opengl.mm; sourceTree = SOURCE_ROOT; };
+		B58F8455264ED686951404E6 /* PatchBayNode.h */ /* PatchBayNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PatchBayNode.h; path = ../../Source/Node/nodes/patchbay/PatchBayNode.h; sourceTree = SOURCE_ROOT; };
 		B8D7F037E1CA17E413E823DA /* MixerNode.cpp */ /* MixerNode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MixerNode.cpp; path = ../../Source/Node/nodes/mixer/MixerNode.cpp; sourceTree = SOURCE_ROOT; };
 		B9A3D953F44F285AC5202522 /* list_ports_osx.cc */ /* list_ports_osx.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = list_ports_osx.cc; path = ../../Source/Common/Serial/lib/serial/impl/list_ports/list_ports_osx.cc; sourceTree = SOURCE_ROOT; };
 		BB3CEC2114AE9ED824C6BF41 /* AudioManager.h */ /* AudioManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioManager.h; path = ../../Source/Engine/AudioManager.h; sourceTree = SOURCE_ROOT; };
@@ -858,6 +860,15 @@
 			name = mixer;
 			sourceTree = "<group>";
 		};
+		8C1E5A3F8CABA1FB93D0BF72 /* patchbay */ = {
+			isa = PBXGroup;
+			children = (
+				00B337D3B199679AE88366AE,
+				B58F8455264ED686951404E6,
+			);
+			name = patchbay;
+			sourceTree = "<group>";
+		};
 		923C61D6DAB9196F0E96013D /* ui */ = {
 			isa = PBXGroup;
 			children = (
@@ -870,6 +881,7 @@
 		9BBA54FAAB2B58725091A8EB /* nodes */ = {
 			isa = PBXGroup;
 			children = (
+				8C1E5A3F8CABA1FB93D0BF72,
 				D4EAEB02503F83A3EC7A966F,
 				FC6765BB204CE51A79837678,
 				D58DBF473F358992045CAE23,
