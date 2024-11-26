@@ -53,9 +53,9 @@ Transport::Transport() :
 	beatProgression = addFloatParameter("Beat Progression", "Relative progression of the current beat", 0, 0, 1);
 	beatProgression->setControllableFeedbackOnly(true);
 
-	firstLoopBeats = addIntParameter("First Loop Beat", "Number of beats that the loop that set the tempo is taking", 1, 1);
+	firstLoopBeats = addIntParameter("First Loop Beat", "Number of beats that the loop that set the tempo is taking", 16, 1);
 
-	firstLoopProgression = addFloatParameter("First Loop Progression", "Relative progression of the first loop", 16, 1, 128);
+	firstLoopProgression = addFloatParameter("First Loop Progression", "Relative progression of the first loop", 0, 0, 1);
 	firstLoopProgression->setControllableFeedbackOnly(true);
 
 	playTrigger = addTrigger("Play", "Start playing");
