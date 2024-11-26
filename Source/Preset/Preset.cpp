@@ -61,6 +61,7 @@ Preset::Preset(var params) :
 	transitionCurve.editorCanBeCollapsed = true;
 	transitionCurve.editorIsCollapsed = true;
 	transitionCC.enabled->setDefaultValue(false);
+	transitionCC.saveAndLoadRecursiveData = true;
 	transitionCC.addChildControllableContainer(&transitionCurve);
 
 	addChildControllableContainer(&transitionCC);
