@@ -1,3 +1,4 @@
+#include "IONodeViewUI.h"
 /*
   ==============================================================================
 
@@ -30,6 +31,18 @@ void IONodeViewUI::nodeOutputsChanged()
     if(node->isInput) updateUI();
 }
 
+void IONodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
+{
+    NodeViewUI::controllableFeedbackUpdateInternal(c);
+
+	if (c->parentContainer == &node->uiVisibilityCC)
+	{
+		updateUI();
+	}
+}
+
+
+
 void IONodeViewUI::updateUI()
 {
     for (auto& i : channelsUI)
@@ -44,6 +57,11 @@ void IONodeViewUI::updateUI()
 
     for (int i = 0; i < numChannels; i++)
     {
+        if (BoolParameter* bp = dynamic_cast<BoolParameter*>(node->uiVisibilityCC.controllables[i]))
+        {
+            if (!bp->boolValue()) continue;
+        }
+
         VolumeControlUI* channelUI = new VolumeControlUI((VolumeControl*)node->channelsCC.controllableContainers[i].get(), true, String(i+1));
         if (i >= realNumChannels)
         {

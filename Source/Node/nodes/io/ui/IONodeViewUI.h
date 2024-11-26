@@ -22,6 +22,8 @@ public:
     void nodeInputsChanged() override;
     void nodeOutputsChanged() override;
 
+    void controllableFeedbackUpdateInternal(Controllable* c) override;
+
     void updateUI();
 
     void resizedInternalContentNode(Rectangle<int> &r) override;

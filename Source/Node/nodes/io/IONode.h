@@ -22,6 +22,8 @@ public:
 	var channelsGhostData;
 	bool isRoot;
 
+	ControllableContainer uiVisibilityCC;
+
 	int realNumInputs;
 	int realNumOutputs;
 

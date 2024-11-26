@@ -10,19 +10,23 @@
 
 IONode::IONode(StringRef name, var params, bool isInput) :
 	Node(name, params, !isInput, isInput),
-    isInput(isInput),
+	isInput(isInput),
 	channelsCC("Channels"),
 	isRoot(false),
 	realNumInputs(0),
 	realNumOutputs(0),
-	ghostNumChannels(-1)
+	ghostNumChannels(-1),
+	uiVisibilityCC("UI Vibility")
 {
 	viewUISize->setPoint(150, 180);
-    
-    if(isInput) clearAudioBufferIfNoConnections = false;
+
+	if (isInput) clearAudioBufferIfNoConnections = false;
 
 	channelsCC.saveAndLoadRecursiveData = true;
 	addChildControllableContainer(&channelsCC);
+
+	viewCC.addChildControllableContainer(&uiVisibilityCC);
+
 }
 
 void IONode::setIsRoot(bool value)
@@ -79,6 +83,27 @@ void IONode::setAudioInputs(const StringArray& inputNames, bool updateConfig)
 		actualInputNames.add(i < inputNames.size() ? inputNames[i] : "Output " + String(i + 1));
 	}
 
+	if (!isInput)
+	{
+		while (uiVisibilityCC.controllables.size() > actualInputNames.size())
+		{
+			uiVisibilityCC.removeControllable(uiVisibilityCC.controllables.getLast());
+		}
+
+		for (int i = 0; i < uiVisibilityCC.controllables.size(); i++)
+		{
+			BoolParameter* p = (BoolParameter*)uiVisibilityCC.controllables[i];
+			p->setNiceName(actualInputNames[i]);
+		}
+
+		while (uiVisibilityCC.controllables.size() < actualInputNames.size())
+		{
+			BoolParameter* p = new BoolParameter(actualInputNames[uiVisibilityCC.controllables.size()], "Show this in UI", true);
+			uiVisibilityCC.addControllable(p);
+		}
+	}
+
+
 	Node::setAudioInputs(actualInputNames, updateConfig);
 }
 
@@ -96,6 +121,26 @@ void IONode::setAudioOutputs(const StringArray& outputNames, bool updateConfig)
 	for (int i = 0; i < numAudioOutputs->intValue(); i++)
 	{
 		actualOutputNames.add(i < outputNames.size() ? outputNames[i] : "Input " + String(i + 1));
+	}
+
+	if (isInput)
+	{
+		while (uiVisibilityCC.controllables.size() > actualOutputNames.size())
+		{
+			uiVisibilityCC.removeControllable(uiVisibilityCC.controllables.getLast());
+		}
+
+		for (int i = 0; i < uiVisibilityCC.controllables.size(); i++)
+		{
+			BoolParameter* p = (BoolParameter*)uiVisibilityCC.controllables[i];
+			p->setNiceName(actualOutputNames[i]);
+		}
+
+		while (uiVisibilityCC.controllables.size() < actualOutputNames.size())
+		{
+			BoolParameter* p = new BoolParameter(actualOutputNames[uiVisibilityCC.controllables.size()], "Show this in UI", true);
+			uiVisibilityCC.addControllable(p);
+		}
 	}
 
 	Node::setAudioOutputs(actualOutputNames, updateConfig);
@@ -137,7 +182,7 @@ void IONode::updateIO()
 		int index = channelsCC.controllableContainers.size();
 		String s = String(index + 1);// names[index];
 
-		VolumeControl * channel = new VolumeControl(s, true);
+		VolumeControl* channel = new VolumeControl(s, true);
 		channelsCC.addChildControllableContainer(channel, true);
 		if (index < channelsGhostData.size()) channel->loadJSONData(channelsGhostData[index]);
 	}
@@ -147,7 +192,7 @@ void IONode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMe
 {
 	for (int i = 0; i < channelsCC.controllableContainers.size() && i < buffer.getNumChannels(); i++)
 	{
-		VolumeControl* chan = (VolumeControl *)channelsCC.controllableContainers[i].get();
+		VolumeControl* chan = (VolumeControl*)channelsCC.controllableContainers[i].get();
 
 		if (chan->rms == nullptr || chan->gain == nullptr) return;
 
