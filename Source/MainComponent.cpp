@@ -83,7 +83,7 @@ void MainComponent::addControllableMenuItems(ControllableUI* ui, PopupMenu* p)
 
 		p->addItem(0x5002, "Remove from current (" + presetName + ")", isOverride);
 		PopupMenu removeFromMenu;
-		RootPresetManager::getInstance()->fillPresetMenu(removeFromMenu, 0x30000, c);
+		RootPresetManager::getInstance()->fillPresetMenu(removeFromMenu, 0x30000, c, true, [](Preset* p, Controllable* c) { return p->hasPresetControllable(c); });
 		p->addSubMenu("Remove from...", removeFromMenu);
 		p->addItem(0x5003, "Remove from all");
 
