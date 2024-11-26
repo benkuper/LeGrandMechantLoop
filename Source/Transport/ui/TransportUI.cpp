@@ -44,6 +44,11 @@ TransportUI::TransportUI(StringRef name) :
 	curBeatUI->showLabel = false;
 	addAndMakeVisible(curBeatUI.get());
 
+	firstLoopProgUI.reset(transport->firstLoopProgression->createSlider());
+	firstLoopProgUI->showLabel = false;
+	firstLoopProgUI->showValue = false;
+	addAndMakeVisible(firstLoopProgUI.get());
+
 	addAndMakeVisible(barViz);
 
 	transport->addAsyncContainerListener(this);
@@ -63,6 +68,9 @@ void TransportUI::resized()
 	curBarUI->setBounds(barR.removeFromRight(30).reduced(2));
 	barViz.setBounds(barR.reduced(4));
 
+
+
+
 	Rectangle<int> tr = r.removeFromBottom(20);
 	playBT->setBounds(tr.removeFromLeft(tr.getHeight()).reduced(2));
 	stopBT->setBounds(tr.removeFromLeft(tr.getHeight()).reduced(2));
@@ -73,7 +81,7 @@ void TransportUI::resized()
 
 	Rectangle<int> qr = r.removeFromTop(20);
 	quantizUI->setBounds(qr.removeFromRight(140).reduced(2));
-
+	firstLoopProgUI->setBounds(qr.reduced(4));
 }
 
 void TransportUI::mouseDown(const MouseEvent& e)

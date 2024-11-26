@@ -32,6 +32,7 @@ public:
 
     std::unique_ptr<IntParameterLabelUI> curBarUI;
     std::unique_ptr<IntParameterLabelUI> curBeatUI;
+	std::unique_ptr<FloatSliderUI> firstLoopProgUI;
 
     class BeatViz :
         public Component
