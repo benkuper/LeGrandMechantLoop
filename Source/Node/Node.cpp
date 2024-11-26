@@ -61,6 +61,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 		{
 			numAudioInputs = addIntParameter("Audio Inputs", "Number of audio inputs for this node", 2, 0, 64);
 			customInputNamesCC.reset(new ControllableContainer("Custom Input Names"));
+			customInputNamesCC->editorIsCollapsed = true;
 			customIONamesCC->addChildControllableContainer(customInputNamesCC.get());
 		}
 
@@ -68,14 +69,16 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 		{
 			numAudioOutputs = addIntParameter("Audio Outputs", "Number of audio outputs for this node", 2, 0, 64);
 			customOutputNamesCC.reset(new ControllableContainer("Custom Output Names"));
+			customOutputNamesCC->editorIsCollapsed = true;
 			customIONamesCC->addChildControllableContainer(customOutputNamesCC.get());
 		}
 
 		customIONamesCC->includeInRecursiveSave = false;
 		customIONamesCC->saveAndLoadRecursiveData = true;
+		customIONamesCC->editorIsCollapsed = true;
 		addChildControllableContainer(customIONamesCC.get());
 
-		if(!Engine::mainEngine->isLoadingFile) updateIONamesCC();
+		if (!Engine::mainEngine->isLoadingFile) updateIONamesCC();
 	}
 
 	if (useOutControl)
@@ -308,32 +311,45 @@ void Node::updateIONamesCC()
 {
 	if (customInputNamesCC != nullptr)
 	{
-		int numParams = numAudioInputs->intValue();
-		while (customInputNamesCC->controllables.size() < numParams)
+		if (numAudioInputs->enabled)
 		{
-			customInputNamesCC->addStringParameter("Input " + String(customInputNamesCC->controllables.size() + 1), "Custom name for input " + String(customInputNamesCC->controllables.size() + 1), "");
-		}
+			int numParams = numAudioInputs->intValue();
+			while (customInputNamesCC->controllables.size() < numParams)
+			{
+				customInputNamesCC->addStringParameter("Input " + String(customInputNamesCC->controllables.size() + 1), "Custom name for input " + String(customInputNamesCC->controllables.size() + 1), "");
+			}
 
-		while (customInputNamesCC->controllables.size() > numParams)
+			while (customInputNamesCC->controllables.size() > numParams)
+			{
+				customInputNamesCC->removeControllable(customInputNamesCC->controllables.getLast());
+			}
+		}
+		else
 		{
-			customInputNamesCC->removeControllable(customInputNamesCC->controllables.getLast());
+			customInputNamesCC->clear();
 		}
 	}
 
 	//same for output
 	if (customOutputNamesCC != nullptr)
 	{
-		int numParams = numAudioOutputs->intValue();
-		while (customOutputNamesCC->controllables.size() < numParams)
+		if (numAudioOutputs->enabled)
 		{
-			customOutputNamesCC->addStringParameter("Output " + String(customOutputNamesCC->controllables.size() + 1), "Custom name for output " + String(customOutputNamesCC->controllables.size() + 1), "");
-		}
+			int numParams = numAudioOutputs->intValue();
+			while (customOutputNamesCC->controllables.size() < numParams)
+			{
+				customOutputNamesCC->addStringParameter("Output " + String(customOutputNamesCC->controllables.size() + 1), "Custom name for output " + String(customOutputNamesCC->controllables.size() + 1), "");
+			}
 
-		while (customOutputNamesCC->controllables.size() > numParams)
+			while (customOutputNamesCC->controllables.size() > numParams)
+			{
+				customOutputNamesCC->removeControllable(customOutputNamesCC->controllables.getLast());
+			}
+		}
+		else
 		{
-			customOutputNamesCC->removeControllable(customOutputNamesCC->controllables.getLast());
+			customOutputNamesCC->clear();
 		}
-
 	}
 }
 
@@ -622,7 +638,7 @@ var Node::getJSONData()
 		bool hasCustomInputNames = false;
 		bool hasCustomOutputNames = false;
 
-		if (numAudioInputs != nullptr)
+		if (numAudioInputs != nullptr && numAudioInputs->enabled)
 		{
 			for (int i = 0; i < numAudioInputs->intValue(); i++)
 			{
@@ -641,7 +657,7 @@ var Node::getJSONData()
 			}
 		}
 
-		if (numAudioOutputs != nullptr)
+		if (numAudioOutputs != nullptr && numAudioOutputs->enabled)
 		{
 			for (int i = 0; i < numAudioOutputs->intValue(); i++)
 			{
