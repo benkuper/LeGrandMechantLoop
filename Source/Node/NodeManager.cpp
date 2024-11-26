@@ -9,6 +9,7 @@
 */
 
 #include "Node/NodeIncludes.h"
+#include "NodeManager.h"
 
 juce_ImplementSingleton(RootNodeManager)
 
@@ -36,6 +37,12 @@ NodeManager::NodeManager(AudioProcessorGraph* graph,
 	clearAllLoopers = looperControlCC.addTrigger("Clear All Loopers", "This will clear all loopers");
 	tmpMuteAllLoopers = looperControlCC.addTrigger("Temp Mute All Loopers", "This will temporary mute all loopers");
 	clearLastManipTrack = looperControlCC.addTrigger("Clear Last Manip Track", "This will clear the last manipulated track, in any looper");
+	currentLooperEnum = looperControlCC.addEnumParameter("Current Looper", "This is the current looper selected in the UI");
+	recCurrentLooper = looperControlCC.addTrigger("Rec Current Looper", "This will record the current looper");
+	retroRecCurrentLooper = looperControlCC.addTrigger("Retro Rec Current Looper", "This will retro record the current looper");
+	playAllCurrentLooper = looperControlCC.addTrigger("Play All Current Looper", "This will play all tracks of the current looper");
+	stopAllCurrentLooper = looperControlCC.addTrigger("Stop All Current Looper", "This will stop all tracks of the current looper");
+	clearAllCurrentLooper = looperControlCC.addTrigger("Clear All Current Looper", "This will clear all tracks of the current looper");
 	addChildControllableContainer(&looperControlCC);
 
 	connectionManager.reset(new NodeConnectionManager(this));
@@ -147,6 +154,7 @@ void NodeManager::addItemInternal(Node* n, var data)
 		midiInputNodes.add(mio);
 		updateMIDIInputNode(mio);
 	}
+	else if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) updateLooperList();
 }
 
 void NodeManager::removeItemInternal(Node* n)
@@ -155,6 +163,7 @@ void NodeManager::removeItemInternal(Node* n)
 	else if (AudioOutputNode* on = dynamic_cast<AudioOutputNode*>(n)) audioOutputNodes.removeAllInstancesOf(on);
 	else if (MIDIInputNode* mio = dynamic_cast<MIDIInputNode*>(n)) midiInputNodes.removeAllInstancesOf(mio);
 	else if (MIDIOutputNode* moo = dynamic_cast<MIDIOutputNode*>(n)) midiOutputNodes.removeAllInstancesOf(moo);
+	else if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) updateLooperList();
 }
 
 Array<UndoableAction*> NodeManager::getRemoveItemUndoableAction(Node* item)
@@ -218,11 +227,64 @@ void NodeManager::onControllableFeedbackUpdate(ControllableContainer* cc, Contro
 	}
 	else if (c == clearLastManipTrack)
 	{
-		if (LooperTrack* t = LooperTrack::lastManipulatedTrack)
+		if (LooperTrack* t = LooperTrack::lastManipulatedTracks.getLast())
 		{
 			if (containsControllable(t->clearTrigger)) t->clearTrigger->trigger();
 		}
+		LooperTrack::lastManipulatedTracks.removeLast();
 	}
+	else if (c == currentLooperEnum)
+	{
+
+	}
+	else if (c == recCurrentLooper)
+	{
+		if (LooperNode* looper = dynamic_cast<LooperNode*>(getItemWithName(currentLooperEnum->getValue())))
+		{
+			looper->recTrigger->trigger();
+		}
+	}
+	else if (c == retroRecCurrentLooper)
+	{
+		if (LooperNode* looper = dynamic_cast<LooperNode*>(getItemWithName(currentLooperEnum->getValue())))
+		{
+			looper->retroRecTrigger->trigger();
+		}
+	}
+	else if (c == playAllCurrentLooper)
+	{
+		if (LooperNode* looper = dynamic_cast<LooperNode*>(getItemWithName(currentLooperEnum->getValue())))
+		{
+			looper->playAllTrigger->trigger();
+		}
+	}
+	else if (c == stopAllCurrentLooper)
+	{
+		if (LooperNode* looper = dynamic_cast<LooperNode*>(getItemWithName(currentLooperEnum->getValue())))
+		{
+			looper->stopAllTrigger->trigger();
+		}
+	}
+	else if (c == clearAllCurrentLooper)
+	{
+		if (LooperNode* looper = dynamic_cast<LooperNode*>(getItemWithName(currentLooperEnum->getValue())))
+		{
+			looper->clearAllTrigger->trigger();
+		}
+	}
+}
+
+void NodeManager::updateLooperList()
+{
+	Array<EnumParameter::EnumValue*> looperOptions;
+	Array<LooperNode*> loopers = getItemsWithType<LooperNode>();
+	for (auto& i : loopers) looperOptions.add(new EnumParameter::EnumValue(i->niceName, i->shortName));
+	currentLooperEnum->setOptions(looperOptions);
+}
+
+void NodeManager::setCurrentLooper(LooperNode* n)
+{
+	currentLooperEnum->setValueWithKey(n->niceName);
 }
 
 bool NodeManager::hasPlayingNodes()
@@ -244,6 +306,13 @@ void NodeManager::loadJSONDataManagerInternal(var data)
 	BaseManager::loadJSONDataManagerInternal(data);
 	looperControlCC.loadJSONData(data.getProperty(looperControlCC.shortName, var()));
 	connectionManager->loadJSONData(data.getProperty(connectionManager->shortName, var()));
+}
+
+void NodeManager::afterLoadJSONDataInternal()
+{
+	BaseManager::afterLoadJSONDataInternal();
+	updateLooperList();
+
 }
 
 

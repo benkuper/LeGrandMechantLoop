@@ -21,7 +21,7 @@ public:
 
 	LooperNode* looper; //to get the ringbuffer
 
-	static LooperTrack* lastManipulatedTrack;
+	static juce::Array<LooperTrack*> lastManipulatedTracks;
 
 	enum TrackState { IDLE, WILL_RECORD, RECORDING, FINISH_RECORDING, RETRO_REC, PLAYING, WILL_STOP, STOPPED, WILL_PLAY, STATES_MAX };
 	static String trackStateNames[STATES_MAX];

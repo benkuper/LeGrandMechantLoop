@@ -328,7 +328,12 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			else if (recordOrWillRecord) ts = LooperTrack::WILL_RECORD;
 			else ts = LooperTrack::IDLE;
 
-			if (t->isPlaying(true) || t->isRecording(true, true)) LooperTrack::lastManipulatedTrack = t;
+			if (t->isPlaying(true) || t->isRecording(true, true))
+			{
+				if (!LooperTrack::lastManipulatedTracks.contains(t)) LooperTrack::lastManipulatedTracks.add(t);
+
+				if (NodeManager* nm = dynamic_cast<NodeManager*>(parentContainer.get())) nm->setCurrentLooper(this);
+			}
 
 			recordingState->setValueWithData(ts);
 		}

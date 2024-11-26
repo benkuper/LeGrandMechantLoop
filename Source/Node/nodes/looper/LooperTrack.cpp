@@ -12,7 +12,7 @@
 
 String LooperTrack::trackStateNames[LooperTrack::STATES_MAX] = { "Idle", "Will Record", "Recording", "Finish Recording", "Retro Rec", "Playing", "Will Stop", "Stopped", "Will Play" };
 
-LooperTrack* LooperTrack::lastManipulatedTrack = nullptr;
+Array<LooperTrack*> LooperTrack::lastManipulatedTracks = Array<LooperTrack*>();
 
 LooperTrack::LooperTrack(LooperNode* looper, int index) :
 	VolumeControl(String(index + 1), false),

@@ -17,6 +17,7 @@ class AudioInputNode;
 class AudioOutputNode;
 class MIDIInputNode;
 class MIDIOutputNode;
+class LooperNode;
 
 class NodeManager :
 	public BaseManager<Node>
@@ -37,6 +38,13 @@ public:
 	Trigger* clearAllLoopers;
 	Trigger* tmpMuteAllLoopers;
 	Trigger* clearLastManipTrack;
+	EnumParameter* currentLooperEnum;
+	Trigger* recCurrentLooper;
+	Trigger* retroRecCurrentLooper;
+	Trigger* playAllCurrentLooper;
+	Trigger* stopAllCurrentLooper;
+	Trigger* clearAllCurrentLooper;
+
 
 	AudioProcessorGraph* graph;
 	AudioProcessorGraph::NodeID audioInputNodeID;
@@ -74,10 +82,14 @@ public:
 
 	void onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c) override;
 
+	void updateLooperList();
+	void setCurrentLooper(LooperNode* n);
+
 	bool hasPlayingNodes();
 
 	var getJSONData() override;
 	void loadJSONDataManagerInternal(var data) override;
+	void afterLoadJSONDataInternal() override;
 };
 
 
