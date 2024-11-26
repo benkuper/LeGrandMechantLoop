@@ -26,6 +26,8 @@ NodeManagerViewUI::NodeManagerViewUI(NodeManager* manager) :
 
 	updatePositionOnDragMove = true;
 
+	setShowTools(true);
+
 	removeMouseListener(this);
 	addMouseListener(this, true);
 	setDisableInternalMouseEvents(true);
