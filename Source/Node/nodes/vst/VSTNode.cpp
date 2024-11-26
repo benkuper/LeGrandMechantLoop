@@ -22,8 +22,11 @@ VSTNode::VSTNode(var params) :
 	presetsCC("Preset Control")
 {
 	numAudioInputs->canBeDisabledByUser = true;
+	numAudioInputs->setRange(1, 64);
 	numAudioInputs->setEnabled(false);
+
 	numAudioOutputs->canBeDisabledByUser = true;
+	numAudioOutputs->setRange(1, 64);
 	numAudioOutputs->setEnabled(false);
 
 	pluginParam = new VSTPluginParameter("VST", "The VST to use");
