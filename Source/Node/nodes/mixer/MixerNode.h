@@ -75,8 +75,7 @@ public:
 	void loadJSONDataItemInternal(var data) override;
 	void afterLoadJSONDataInternal() override;
 
-	String getTypeString() const override { return getTypeStringStatic(); }
-	static const String getTypeStringStatic() { return "Mixer"; }
+	DECLARE_TYPE("Mixer");
 
 	BaseNodeViewUI* createViewUI() override;
 };

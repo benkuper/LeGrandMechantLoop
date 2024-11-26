@@ -168,8 +168,7 @@ public:
 	//void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
 
-	String getTypeString() const override { return getTypeStringStatic(); }
-	static const String getTypeStringStatic() { return "Sampler"; }
+	DECLARE_TYPE("Sampler");
 
 	BaseNodeViewUI* createViewUI() override;
 

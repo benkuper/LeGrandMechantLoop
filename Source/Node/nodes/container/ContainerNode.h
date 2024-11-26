@@ -56,8 +56,7 @@ public:
     var getJSONData() override;
     void loadJSONDataItemInternal(var data) override;
 
-    String getTypeString() const override { return getTypeStringStatic(); }
-    static const String getTypeStringStatic() { return "Container"; }
+    DECLARE_TYPE("Container");
 
     BaseNodeViewUI* createViewUI() override;
 };

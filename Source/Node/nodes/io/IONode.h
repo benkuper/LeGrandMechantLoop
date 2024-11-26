@@ -51,8 +51,7 @@ class AudioInputNode :
 public:
 	AudioInputNode(var params = var()) : IONode(getTypeString(), params, true) {}
 
-	String getTypeString() const override { return getTypeStringStatic(); }
-	static const String getTypeStringStatic() { return "Audio In"; }
+	DECLARE_TYPE("Audio In");
 
 	void updatePlayConfigInternal() override;
 };
@@ -63,8 +62,7 @@ class AudioOutputNode :
 public:
 	AudioOutputNode(var params = var()) : IONode(getTypeString(), params, false) {}
 	
-	String getTypeString() const override { return getTypeStringStatic(); }
-	static const String getTypeStringStatic() { return "Audio Out"; }
+	DECLARE_TYPE("Audio Out");
 
 	void updatePlayConfigInternal() override;
 };

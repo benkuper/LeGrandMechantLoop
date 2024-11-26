@@ -37,6 +37,5 @@ public:
 
     virtual void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
     
-    String getTypeString() const override { return getTypeStringStatic(); }
-    static String getTypeStringStatic() { return "MIDI Looper"; }
+    DECLARE_TYPE("MIDI Looper");
 };

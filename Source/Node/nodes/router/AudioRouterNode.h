@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    AudioRouterNode.h
-    Created: 4 Dec 2020 11:55:34am
-    Author:  bkupe
+	AudioRouterNode.h
+	Created: 4 Dec 2020 11:55:34am
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -11,37 +11,36 @@
 #pragma once
 
 class AudioRouterNode :
-    public Node
+	public Node
 {
 public:
-    AudioRouterNode(var params = var());
-    ~AudioRouterNode();
+	AudioRouterNode(var params = var());
+	~AudioRouterNode();
 
-    IntParameter* numChannelsPerGroup;
-    
-    IntParameter * currentInput;
-    IntParameter * currentOutput;
-    IntParameter * transitionMS;
+	IntParameter* numChannelsPerGroup;
 
-    int previousInput;
-    int previousOutput;
+	IntParameter* currentInput;
+	IntParameter* currentOutput;
+	IntParameter* transitionMS;
 
-    uint32 timeAtTransition;
+	int previousInput;
+	int previousOutput;
 
-    AudioBuffer<float> tmpBuffer;
+	uint32 timeAtTransition;
 
-    void autoSetNumAudioInputs() override;
-    void autoSetNumAudioOutputs() override;
+	AudioBuffer<float> tmpBuffer;
 
-    void updateAudioInputsInternal() override;
-    void updateAudioOutputsInternal() override;
-    
-    void onContainerParameterChangedInternal(Parameter* p) override;
+	void autoSetNumAudioInputs() override;
+	void autoSetNumAudioOutputs() override;
 
-    void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
-    
-    String getTypeString() const override { return getTypeStringStatic(); }
-    static const String getTypeStringStatic() { return "Audio Router"; }
+	void updateAudioInputsInternal() override;
+	void updateAudioOutputsInternal() override;
 
-    BaseNodeViewUI* createViewUI() override;
+	void onContainerParameterChangedInternal(Parameter* p) override;
+
+	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+
+	DECLARE_TYPE("Audio Router");
+
+	BaseNodeViewUI* createViewUI() override;
 };

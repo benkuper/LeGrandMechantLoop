@@ -88,8 +88,7 @@ public:
 	var getJSONData() override;
 	void loadJSONDataItemInternal(var data) override;
 
-	String getTypeString() const override { return getTypeStringStatic(); }
-	static const String getTypeStringStatic() { return "VST"; }
+	DECLARE_TYPE("VST")
 
 	BaseNodeViewUI* createViewUI() override;
 

@@ -62,6 +62,5 @@ public:
     void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
-    String getTypeString() const override { return getTypeStringStatic(); }
-    static const String getTypeStringStatic() { return "Audio Recorder"; }
+    DECLARE_TYPE("Audio Recorder");
 };
