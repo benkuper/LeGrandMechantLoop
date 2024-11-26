@@ -702,7 +702,7 @@ void Node::loadJSONDataItemInternal(var data)
 	if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
 	if (numAudioOutputs != nullptr && numAudioOutputs->enabled) autoSetNumAudioOutputs();
 
-	if (customIONamesCC != nullptr && data.hasProperty("customIONames"))
+	if (customIONamesCC != nullptr)
 	{
 		updateIONamesCC();
 
