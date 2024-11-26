@@ -43,6 +43,10 @@ public:
 	StringArray audioInputNames;
 	StringArray audioOutputNames;
 
+	std::unique_ptr<ControllableContainer> customIONamesCC;
+	std::unique_ptr<ControllableContainer> customInputNamesCC;
+	std::unique_ptr<ControllableContainer> customOutputNamesCC;
+
 	bool hasAudioInput; //defines if this processor is supposed to get input, even if the number of channels is zero
 	bool hasAudioOutput; //defines if this processor is supposed to provide output, even if the number of channels is zero
 	bool hasMIDIInput;
@@ -79,10 +83,10 @@ public:
 
 	const int anticlickBlocks = 10; //number of blocks to do the transition
 	int bypassAntiClickCount; //anti-click on processBlock
-    
-    bool channelMismatch;
-    
-    bool clearAudioBufferIfNoConnections;
+
+	bool channelMismatch;
+
+	bool clearAudioBufferIfNoConnections;
 
 	virtual void init(AudioProcessorGraph* graph);
 	virtual void initInternal() {}
@@ -96,6 +100,8 @@ public:
 	virtual void setAudioOutputs(const StringArray& outputNames, bool updateConfig = true);
 	virtual void autoSetNumAudioInputs(); //if userCanSetIO
 	virtual void autoSetNumAudioOutputs(); //if userCanSetIO
+
+	void updateIONamesCC();
 
 	//helpers
 	int getNumAudioInputs() const { return audioInputNames.size(); }
@@ -136,6 +142,7 @@ public:
 
 	virtual var getJSONData() override;
 	virtual void loadJSONDataItemInternal(var data) override;
+	virtual void afterLoadJSONDataInternal() override;
 
 	class NodeListener
 	{
@@ -154,7 +161,7 @@ public:
 
 	DECLARE_ASYNC_EVENT(Node, Node, node, ENUM_LIST(INPUTS_CHANGED, OUTPUTS_CHANGED, MIDI_INPUT_CHANGED, MIDI_OUTPUT_CHANGED, VIEW_FILTER_UPDATED), EVENT_ITEM_CHECK)
 
-		virtual BaseNodeViewUI* createViewUI();
+	virtual BaseNodeViewUI* createViewUI();
 
 	WeakReference<Node>::Master masterReference;
 };

@@ -55,15 +55,27 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 
 	if (userCanSetIO)
 	{
+		customIONamesCC.reset(new ControllableContainer("Custom IO Names"));
+
 		if (hasAudioInput)
 		{
-			numAudioInputs = addIntParameter("Audio Inputs", "Number of audio inputs for this node", 2, 0, 32);
+			numAudioInputs = addIntParameter("Audio Inputs", "Number of audio inputs for this node", 2, 0, 64);
+			customInputNamesCC.reset(new ControllableContainer("Custom Input Names"));
+			customIONamesCC->addChildControllableContainer(customInputNamesCC.get());
 		}
 
 		if (hasAudioOutput)
 		{
-			numAudioOutputs = addIntParameter("Audio Outputs", "Number of audio outputs for this node", 2, 0, 32);
+			numAudioOutputs = addIntParameter("Audio Outputs", "Number of audio outputs for this node", 2, 0, 64);
+			customOutputNamesCC.reset(new ControllableContainer("Custom Output Names"));
+			customIONamesCC->addChildControllableContainer(customOutputNamesCC.get());
 		}
+
+		customIONamesCC->includeInRecursiveSave = false;
+		customIONamesCC->saveAndLoadRecursiveData = true;
+		addChildControllableContainer(customIONamesCC.get());
+
+		if(!Engine::mainEngine->isLoadingFile) updateIONamesCC();
 	}
 
 	if (useOutControl)
@@ -103,7 +115,6 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 
 		setMIDIIO(canHaveMidiDeviceIn, canHaveMidiDeviceOut);
 	}
-
 }
 
 Node::~Node()
@@ -169,10 +180,12 @@ void Node::onContainerParameterChangedInternal(Parameter* p)
 	}
 	else if (p == numAudioInputs)
 	{
+		updateIONamesCC();
 		if (numAudioInputs->enabled) autoSetNumAudioInputs();
 	}
 	else if (p == numAudioOutputs)
 	{
+		updateIONamesCC();
 		if (numAudioOutputs->enabled) autoSetNumAudioOutputs();
 	}
 }
@@ -191,6 +204,14 @@ void Node::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Contr
 	else if (c == pedalSustain || c == forceSustain)
 	{
 		if (!forceSustain->boolValue()) updateSustainedNotes();
+	}
+	else if (c->parentContainer == customInputNamesCC.get())
+	{
+		autoSetNumAudioInputs();
+	}
+	else if (c->parentContainer == customOutputNamesCC.get())
+	{
+		autoSetNumAudioOutputs();
 	}
 }
 
@@ -233,13 +254,89 @@ void Node::setAudioOutputs(const StringArray& outputNames, bool updateConfig)
 
 void Node::autoSetNumAudioInputs()
 {
-	setAudioInputs(numAudioInputs->intValue());
+	if (isCurrentlyLoadingData) return;
+
+	if (customInputNamesCC == nullptr)
+	{
+		setAudioInputs(numAudioInputs->intValue());
+		return;
+	}
+
+	StringArray names;
+	for (int i = 0; i < numAudioInputs->intValue(); i++)
+	{
+		if (customInputNamesCC->controllables.size() > i)
+		{
+			String s = dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->stringValue();
+			names.add(s.isNotEmpty() ? s : "Input " + String(i + 1));
+		}
+		else
+		{
+			names.add("Input " + String(i + 1));
+		}
+	}
+	setAudioInputs(names);
 }
 
 void Node::autoSetNumAudioOutputs()
 {
-	setAudioOutputs(numAudioOutputs->intValue());
+	if (isCurrentlyLoadingData) return;
+
+	if (customOutputNamesCC == nullptr)
+	{
+		setAudioOutputs(numAudioOutputs->intValue());
+		return;
+	}
+
+	StringArray names;
+	for (int i = 0; i < numAudioOutputs->intValue(); i++)
+	{
+		if (customOutputNamesCC->controllables.size() > i)
+		{
+			String s = dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->stringValue();
+			names.add(s.isNotEmpty() ? s : "Output " + String(i + 1));
+		}
+		else
+		{
+			names.add("Output " + String(i + 1));
+		}
+	}
+	setAudioOutputs(names);
 }
+
+void Node::updateIONamesCC()
+{
+	if (customInputNamesCC != nullptr)
+	{
+		int numParams = numAudioInputs->intValue();
+		while (customInputNamesCC->controllables.size() < numParams)
+		{
+			customInputNamesCC->addStringParameter("Input " + String(customInputNamesCC->controllables.size() + 1), "Custom name for input " + String(customInputNamesCC->controllables.size() + 1), "");
+		}
+
+		while (customInputNamesCC->controllables.size() > numParams)
+		{
+			customInputNamesCC->removeControllable(customInputNamesCC->controllables.getLast());
+		}
+	}
+
+	//same for output
+	if (customOutputNamesCC != nullptr)
+	{
+		int numParams = numAudioOutputs->intValue();
+		while (customOutputNamesCC->controllables.size() < numParams)
+		{
+			customOutputNamesCC->addStringParameter("Output " + String(customOutputNamesCC->controllables.size() + 1), "Custom name for output " + String(customOutputNamesCC->controllables.size() + 1), "");
+		}
+
+		while (customOutputNamesCC->controllables.size() > numParams)
+		{
+			customOutputNamesCC->removeControllable(customOutputNamesCC->controllables.getLast());
+		}
+
+	}
+}
+
 void Node::updateAudioInputs(bool updateConfig)
 {
 	ScopedSuspender sp(processor);
@@ -515,6 +612,43 @@ var Node::getJSONData()
 		data.getDynamicObject()->setProperty("view", viewCC.getJSONData());
 		if (midiCC != nullptr) data.getDynamicObject()->setProperty("midi", midiCC->getJSONData());
 	}
+
+	if (customIONamesCC != nullptr)
+	{
+		var customNamesData(new DynamicObject());
+		var customInputNamesData(new DynamicObject());
+		var customOutputNamesData(new DynamicObject());
+
+		bool hasCustomInputNames = false;
+		bool hasCustomOutputNames = false;
+		for (int i = 0; i < numAudioInputs->intValue(); i++)
+		{
+			String s = dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->stringValue();
+			if (s.isNotEmpty())
+			{
+				customInputNamesData.getDynamicObject()->setProperty(String(i), s);
+				hasCustomInputNames = true;
+			}
+		}
+
+		for (int i = 0; i < numAudioOutputs->intValue(); i++)
+		{
+			String s = dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->stringValue();
+			if (s.isNotEmpty())
+			{
+				customOutputNamesData.getDynamicObject()->setProperty(String(i), s);
+				hasCustomOutputNames = true;
+			}
+		}
+
+		if (hasCustomInputNames || hasCustomOutputNames)
+		{
+
+			if (hasCustomInputNames) customNamesData.getDynamicObject()->setProperty("input", customInputNamesData);
+			if (hasCustomOutputNames) customNamesData.getDynamicObject()->setProperty("output", customOutputNamesData);
+			data.getDynamicObject()->setProperty("customIONames", customNamesData);
+		}
+	}
 	return data;
 }
 
@@ -525,8 +659,47 @@ void Node::loadJSONDataItemInternal(var data)
 		if (outControl != nullptr) outControl->loadJSONData(data.getProperty("out", var()));
 		viewCC.loadJSONData(data.getProperty("view", var()));
 		if (midiCC != nullptr) midiCC->loadJSONData(data.getProperty("midi", var()));
+
+
+
 	}
 
+	if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
+	if (numAudioOutputs != nullptr && numAudioOutputs->enabled) autoSetNumAudioOutputs();
+
+	if (customIONamesCC != nullptr && data.hasProperty("customIONames"))
+	{
+		updateIONamesCC();
+
+		var customNamesData = data.getProperty("customIONames", var());
+		if (customNamesData.hasProperty("input"))
+		{
+			var customInputNamesData = customNamesData.getProperty("input", var());
+			for (int i = 0; i < numAudioInputs->intValue(); i++)
+			{
+				if (customInputNamesData.hasProperty(String(i)))
+				{
+					dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->setValue(customInputNamesData.getProperty(String(i), var()).toString());
+				}
+			}
+		}
+
+		if (customNamesData.hasProperty("output"))
+		{
+			var customOutputNamesData = customNamesData.getProperty("output", var());
+			for (int i = 0; i < numAudioOutputs->intValue(); i++)
+			{
+				if (customOutputNamesData.hasProperty(String(i)))
+				{
+					dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->setValue(customOutputNamesData.getProperty(String(i), var()).toString());
+				}
+			}
+		}
+	}
+}
+
+void Node::afterLoadJSONDataInternal()
+{
 	if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
 	if (numAudioOutputs != nullptr && numAudioOutputs->enabled) autoSetNumAudioOutputs();
 }
