@@ -621,23 +621,42 @@ var Node::getJSONData()
 
 		bool hasCustomInputNames = false;
 		bool hasCustomOutputNames = false;
-		for (int i = 0; i < numAudioInputs->intValue(); i++)
+
+		if (numAudioInputs != nullptr)
 		{
-			String s = dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->stringValue();
-			if (s.isNotEmpty())
+			for (int i = 0; i < numAudioInputs->intValue(); i++)
 			{
-				customInputNamesData.getDynamicObject()->setProperty(String(i), s);
-				hasCustomInputNames = true;
+				if (customInputNamesCC->controllables.size() <= i)
+				{
+					NLOGWARNING(niceName, "Custom input names CC does not have enough controllables !");
+					break;
+				}
+
+				String s = dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->stringValue();
+				if (s.isNotEmpty())
+				{
+					customInputNamesData.getDynamicObject()->setProperty(String(i), s);
+					hasCustomInputNames = true;
+				}
 			}
 		}
 
-		for (int i = 0; i < numAudioOutputs->intValue(); i++)
+		if (numAudioOutputs != nullptr)
 		{
-			String s = dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->stringValue();
-			if (s.isNotEmpty())
+			for (int i = 0; i < numAudioOutputs->intValue(); i++)
 			{
-				customOutputNamesData.getDynamicObject()->setProperty(String(i), s);
-				hasCustomOutputNames = true;
+				if (customOutputNamesCC->controllables.size() <= i)
+				{
+					NLOGWARNING(niceName, "Custom input names CC does not have enough controllables !");
+					break;
+				}
+
+				String s = dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->stringValue();
+				if (s.isNotEmpty())
+				{
+					customOutputNamesData.getDynamicObject()->setProperty(String(i), s);
+					hasCustomOutputNames = true;
+				}
 			}
 		}
 
