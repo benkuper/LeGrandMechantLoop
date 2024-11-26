@@ -121,6 +121,7 @@ void LooperNode::initInternal()
 
 void LooperNode::updateLooperTracks()
 {
+
 	currentTrackIndex->setValue(1); //force reset current track when changing num tracks
 
 	ScopedSuspender sp(processor);
@@ -128,7 +129,8 @@ void LooperNode::updateLooperTracks()
 	while (tracksCC.controllableContainers.size() > numTracks->intValue())
 	{
 		LooperTrack* t = getTrackForIndex(tracksCC.controllableContainers.size() - 1);
-
+		LooperTrack::lastManipulatedTracks.removeAllInstancesOf(t);
+		lastManipulatedTracks.removeAllInstancesOf(t);
 		tracksCC.removeChildControllableContainer(t);
 	}
 
@@ -221,17 +223,30 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	}
 	else if (c == clearCurrentTrigger)
 	{
-		if (currentTrack != nullptr)
+		//if (currentTrack != nullptr)
+		//{
+		//	while (!currentTrack->hasContent(true) && currentTrackIndex->intValue() > 1)
+		//	{
+		//		currentTrackIndex->setValue(currentTrackIndex->intValue() - 1);
+		//	}
+
+		//	currentTrack->clearTrigger->trigger();
+
+		//	lastManipulatedTracks.removeAllInstancesOf(currentTrack);
+		//	LooperTrack::lastManipulatedTracks.removeAllInstancesOf(currentTrack);
+
+		//	setCurrentTrackToFirstEmpty();
+		//}
+
+		if (LooperTrack* t = lastManipulatedTracks.getLast())
 		{
-			while (!currentTrack->hasContent(true) && currentTrackIndex->intValue() > 1)
-			{
-				currentTrackIndex->setValue(currentTrackIndex->intValue() - 1);
-			}
-
-			currentTrack->clearTrigger->trigger();
-
-			setCurrentTrackToFirstEmpty();
+			t->clearTrigger->trigger();
+			lastManipulatedTracks.removeAllInstancesOf(t);
+			LooperTrack::lastManipulatedTracks.removeAllInstancesOf(t);
 		}
+		else if (currentTrack != nullptr) currentTrack->clearTrigger->trigger();
+
+		setCurrentTrackToFirstEmpty();
 	}
 	else if (c == clearSectionTrigger || c == clearOtherSectionsTrigger)
 	{
@@ -332,6 +347,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			{
 				if (!LooperTrack::lastManipulatedTracks.contains(t)) LooperTrack::lastManipulatedTracks.add(t);
 
+				if (!lastManipulatedTracks.contains(t)) lastManipulatedTracks.add(t);
 				if (NodeManager* nm = dynamic_cast<NodeManager*>(parentContainer.get())) nm->setCurrentLooper(this);
 			}
 

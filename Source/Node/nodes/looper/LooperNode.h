@@ -90,6 +90,9 @@ public:
 	//tmp mute
 	Array<LooperTrack*> tmpMuteTracks;
 
+	//track manip history
+	Array<LooperTrack*> lastManipulatedTracks;
+
 	virtual void initInternal() override;
 
 	virtual void updateLooperTracks();
