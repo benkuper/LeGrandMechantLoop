@@ -46,6 +46,17 @@ public:
 	Trigger* clearAllCurrentLooper;
 
 
+	ControllableContainer presetsCC;
+	EnumParameter* presetEnum;
+	StringParameter* newPresetName;
+	Trigger* addPreset;
+	Trigger* savePreset;
+	Trigger* deletePreset;
+	Trigger* reloadPreset;
+	Trigger* updatePresetName;
+	var presets;
+
+
 	AudioProcessorGraph* graph;
 	AudioProcessorGraph::NodeID audioInputNodeID;
 	AudioProcessorGraph::NodeID audioOutputNodeID;
@@ -86,6 +97,9 @@ public:
 	void setCurrentLooper(LooperNode* n);
 
 	bool hasPlayingNodes();
+
+	void updatePresetEnum();
+	void loadCurrentPreset();
 
 	var getJSONData() override;
 	void loadJSONDataManagerInternal(var data) override;

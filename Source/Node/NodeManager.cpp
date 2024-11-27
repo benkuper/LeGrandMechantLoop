@@ -22,7 +22,8 @@ NodeManager::NodeManager(AudioProcessorGraph* graph,
 	audioOutputNodeID(audioOutputNodeID),
 	midiInputNodeID(midiInputNodeID),
 	midiOutputNodeID(midiOutputNodeID),
-	looperControlCC("Looper Control")
+	looperControlCC("Looper Control"),
+	presetsCC("Connection Presets")
 {
 	managerFactory = NodeFactory::getInstance();
 
@@ -49,6 +50,18 @@ NodeManager::NodeManager(AudioProcessorGraph* graph,
 	connectionManager->hideInRemoteControl = true;
 	connectionManager->defaultHideInRemoteControl = true;
 	addChildControllableContainer(connectionManager.get());
+
+
+	presetEnum = presetsCC.addEnumParameter("Presets", "Patch configurations");
+	reloadPreset = presetsCC.addTrigger("Reload Preset", "Reload the current preset");
+	addPreset = presetsCC.addTrigger("Add Preset", "Add a new preset");
+	savePreset = presetsCC.addTrigger("Save Preset", "Save the current state as a preset");
+	newPresetName = presetsCC.addStringParameter("New Preset Name", "Name for the new preset when triggering add preset", "New Preset");
+	updatePresetName = presetsCC.addTrigger("Update Preset Name", "Update the name of the current preset");
+	deletePreset = presetsCC.addTrigger("Delete Preset", "Delete the current preset");
+	addChildControllableContainer(&presetsCC);
+
+	presets = var(new DynamicObject());
 }
 
 
@@ -272,6 +285,56 @@ void NodeManager::onControllableFeedbackUpdate(ControllableContainer* cc, Contro
 			looper->clearAllTrigger->trigger();
 		}
 	}
+
+
+
+	if (cc == &presetsCC)
+	{
+		if (c == presetEnum)
+		{
+			loadCurrentPreset();
+		}
+		else if (c == reloadPreset)
+		{
+			loadCurrentPreset();
+		}
+		else if (c == addPreset)
+		{
+			String s = newPresetName->stringValue();
+			if (s.isEmpty()) s = "New preset";
+			String uniqueName = s;
+			int i = 1;
+			while (presets.hasProperty(uniqueName))
+			{
+				uniqueName = s + " " + String(i);
+				i++;
+			}
+			presets.getDynamicObject()->setProperty(uniqueName, connectionManager->getJSONData());
+			updatePresetEnum();
+			presetEnum->setValueWithKey(uniqueName);
+		}
+		else if (c == savePreset)
+		{
+			if (presetEnum->getValueKey().isNotEmpty())
+			{
+				presets.getDynamicObject()->setProperty(presetEnum->getValueKey(), connectionManager->getJSONData());
+				presetEnum->setValueWithKey(presetEnum->getValueKey());
+			}
+		}
+		else if (c == updatePresetName)
+		{
+			presets.getDynamicObject()->setProperty(newPresetName->stringValue(), presets.getProperty(presetEnum->getValueKey(), var()));
+			presets.getDynamicObject()->removeProperty(presetEnum->getValueKey());
+			updatePresetEnum();
+			presetEnum->setValueWithKey(newPresetName->stringValue());
+		}
+		else if (c == deletePreset)
+		{
+			//delete preset
+			presets.getDynamicObject()->removeProperty(presetEnum->getValueKey());
+			updatePresetEnum();
+		}
+	}
 }
 
 void NodeManager::updateLooperList()
@@ -292,6 +355,36 @@ bool NodeManager::hasPlayingNodes()
 	for (auto& i : items) if (i->isNodePlaying->boolValue()) return true;
 	return false;
 }
+
+void NodeManager::updatePresetEnum()
+{
+	Array<EnumParameter::EnumValue*> options;
+	options.add(new EnumParameter::EnumValue("None", var()));
+	NamedValueSet& nvSet = presets.getDynamicObject()->getProperties();
+	for (auto& nv : nvSet) options.add(new EnumParameter::EnumValue(nv.name.toString(), nv.name.toString()));
+	presetEnum->setOptions(options);
+}
+
+void NodeManager::loadCurrentPreset()
+{
+	if (presetEnum->getValue().isVoid())
+	{
+		connectionManager->clear();
+	}
+	else
+	{
+		var data = presets.getProperty(presetEnum->getValue().toString(), var());
+		if (data.isVoid())
+		{
+			NLOGWARNING(niceName, "No data in preset " << presetEnum->getValue().toString());
+		}
+		else
+		{
+			connectionManager->loadJSONData(data);
+		}
+	}
+}
+
 
 var NodeManager::getJSONData()
 {
