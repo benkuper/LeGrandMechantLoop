@@ -150,8 +150,9 @@ void BaseNodeViewUI::resized()
 	BaseItemUI::resized();
 
 	int w = 10;
-	Rectangle<int> inR = getLocalBounds().removeFromLeft(w).reduced(0, 10);
-	Rectangle<int> outR = getLocalBounds().removeFromRight(w).reduced(0, 10);
+	bool miniMode = item->miniMode->boolValue();
+	Rectangle<int> inR = getLocalBounds().removeFromLeft(w).reduced(0, miniMode ? 2 : 10);
+	Rectangle<int> outR = getLocalBounds().removeFromRight(w).reduced(0, miniMode ? 2 : 10);
 
 	if (inAudioConnector != nullptr)
 	{
@@ -217,7 +218,7 @@ void BaseNodeViewUI::itemDragEnter(const SourceDetails& details)
 
 		return;
 	}
-	
+
 	BaseItemUI::itemDragEnter(details);
 }
 
