@@ -25,6 +25,7 @@ NodeManager::NodeManager(AudioProcessorGraph* graph,
 	looperControlCC("Looper Control"),
 	presetsCC("Connection Presets")
 {
+
 	managerFactory = NodeFactory::getInstance();
 
 	comparator.compareFunc = [](Node* n1, Node* n2) { return n1->niceName.compare(n2->niceName); };
@@ -62,6 +63,9 @@ NodeManager::NodeManager(AudioProcessorGraph* graph,
 	addChildControllableContainer(&presetsCC);
 
 	presets = var(new DynamicObject());
+
+	setHasGridOptions(true);
+
 }
 
 
