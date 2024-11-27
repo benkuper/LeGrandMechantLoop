@@ -155,9 +155,7 @@ public:
 		virtual void playStateChanged(bool isPlaying, bool forceRestart) {}
 	};
 
-	ListenerList<TransportListener> transportListeners;
-	void addTransportListener(TransportListener* newListener) { transportListeners.add(newListener); }
-	void removeTransportListener(TransportListener* listener) { transportListeners.remove(listener); }
+	DECLARE_INSPECTACLE_SAFE_LISTENER(Transport, transport)
 
 	//DECLARE_ASYNC_EVENT(Transport, Transport, transport, ENUM_LIST(TIME_SIGNATURE_CHANGED, BPM_CHANGED))
 };
