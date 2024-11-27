@@ -96,6 +96,11 @@ void PresetUI::resizedInternalHeader(Rectangle<int>& r)
 	addBT->setBounds(r.removeFromRight(r.getHeight()));
 	//colorUI->setBounds(r.removeFromRight(r.getHeight()).reduced(1));
 	loadUI->setBounds(r.removeFromRight(80));
+	if (previewLinkedUI != nullptr)
+	{
+		r.removeFromRight(2);
+		previewLinkedUI->setBounds(r.removeFromRight(100));
+	}
 }
 
 void PresetUI::resizedInternalContent(Rectangle<int>& r)
@@ -105,7 +110,6 @@ void PresetUI::resizedInternalContent(Rectangle<int>& r)
 		r.setHeight(jmax(1, pmui->getHeight()));
 		pmui->setBounds(r);
 	}
-
 }
 
 void PresetUI::itemUIAdded(PresetUI* ui)
@@ -157,6 +161,56 @@ void PresetUI::buttonClicked(Button* b)
 	if (b == addBT.get())
 	{
 		pmui->manager->addItem();
+	}
+}
+
+void PresetUI::setPreviewUI(Controllable* c)
+{
+	if (previewLinkedUI != nullptr)
+	{
+		if (previewLinkedUI->controllable == c) return;
+		removeChildComponent(previewLinkedUI.get());
+		previewLinkedUI.reset();
+		previewLinked.reset();
+	}
+
+	if (c != nullptr)
+	{
+		Controllable* pc = nullptr;
+		if (c->type == Controllable::TRIGGER) pc = new Trigger(c->niceName, "Preset for this trigger");
+		else
+		{
+			Parameter* p = ControllableFactory::createParameterFrom(c, false, false);
+			if (item->dataMap.contains(c)) p->setValue(item->dataMap[c]);
+			pc = p;
+		}
+
+		previewLinked.reset(pc);
+		previewLinkedUI.reset(previewLinked->createDefaultUI());
+		previewLinkedUI->showLabel = false;
+		addAndMakeVisible(previewLinkedUI.get());
+	}
+
+	resized();
+}
+
+void PresetUI::newMessage(const Inspectable::InspectableEvent& e)
+{
+	InspectableContentComponent::newMessage(e);
+
+	if (e.type == Inspectable::InspectableEvent::HIGHLIGHT_CHANGED)
+	{
+		if (item->isHighlighted)
+		{
+			if (Controllable* c = dynamic_cast<Controllable*>(e.source))
+			{
+				setPreviewUI(c);
+			}
+		}
+		else
+		{
+			setPreviewUI(nullptr);
+		}
 	}
 }
 

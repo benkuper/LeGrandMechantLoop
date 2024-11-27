@@ -25,6 +25,9 @@ public:
 	//std::unique_ptr<ColorParameterUI> colorUI;
 	std::unique_ptr<TriggerButtonUI> loadUI;
 
+	std::unique_ptr<ControllableUI> previewLinkedUI;
+	std::unique_ptr<Controllable> previewLinked;
+
 	void paintOverChildren(Graphics& g) override;
 
 	void mouseEnter(const MouseEvent& e) override;
@@ -46,6 +49,10 @@ public:
 	void controllableFeedbackUpdateInternal(Controllable* c) override;
 
 	void buttonClicked(Button* b) override;
+
+	void setPreviewUI(Controllable* c);
+
+	void newMessage(const Inspectable::InspectableEvent& e) override;
 };
 
 
