@@ -20,10 +20,12 @@ VSTNodeViewUI::VSTNodeViewUI(VSTNode* n) :
 
 
 	pluginUI.reset(new VSTPluginParameterUI(n->pluginParam));
-	addAndMakeVisible(pluginUI.get());
+	addChildComponent(pluginUI.get());
+	pluginUI->setVisible(n->showPluginParam->boolValue());
 
 	midiParamUI.reset(node->midiInterfaceParam->createTargetUI());
-	addAndMakeVisible(midiParamUI.get());
+	addChildComponent(midiParamUI.get());
+	midiParamUI->setVisible(n->showMidiDevice->boolValue());
 
 	contentComponents.add(pluginUI.get());
 	contentComponents.add(midiParamUI.get());
@@ -43,15 +45,21 @@ void VSTNodeViewUI::resizedInternalHeader(Rectangle<int>& r)
 
 void VSTNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 {
-	pluginUI->setBounds(r.removeFromTop(20).reduced(1));
-	r.removeFromTop(4);
+	if (pluginUI->isVisible())
+	{
+		pluginUI->setBounds(r.removeFromTop(20).reduced(1));
+		r.removeFromTop(4);
+	}
 
-	midiParamUI->setBounds(r.removeFromTop(20).reduced(1));
-
-	r.removeFromTop(4);
+	if (midiParamUI->isVisible())
+	{
+		midiParamUI->setBounds(r.removeFromTop(20).reduced(1));
+		r.removeFromTop(4);
+	}
 
 	for (auto& m : macroUIs)
 	{
+		if (!m->isVisible()) continue;
 		m->setBounds(r.removeFromTop(20).reduced(1));
 		r.removeFromTop(2);
 	}
@@ -91,17 +99,29 @@ void VSTNodeViewUI::buttonClicked(Button* b)
 	}
 }
 
+void VSTNodeViewUI::viewFilterUpdated()
+{
+	pluginUI->setVisible(node->showPluginParam->boolValue());
+	midiParamUI->setVisible(node->showMidiDevice->boolValue());
+	rebuildMacroUIs();
+	NodeViewUI::viewFilterUpdated();
+}
+
 void VSTNodeViewUI::rebuildMacroUIs()
 {
 	for (auto& m : macroUIs) contentComponents.removeAllInstancesOf(m);
 
 	macroUIs.clear();
-	for (auto& c : node->macrosCC.controllables)
-	{
-		macroUIs.add(c->createDefaultUI());
-		addAndMakeVisible(macroUIs.getLast());
-		contentComponents.add(macroUIs.getLast());
 
+	if (node->showMacros->boolValue())
+	{
+		for (auto& c : node->macrosCC.controllables)
+		{
+			macroUIs.add(c->createDefaultUI());
+			addAndMakeVisible(macroUIs.getLast());
+			contentComponents.add(macroUIs.getLast());
+
+		}
 	}
 
 	resized();

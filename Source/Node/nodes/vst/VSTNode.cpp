@@ -54,6 +54,10 @@ VSTNode::VSTNode(var params) :
 	addChildControllableContainer(&macrosCC);
 
 
+	showPluginParam = viewCC.addBoolParameter("Show VST Menu", "Show the VST selection menu", true);
+	showMidiDevice = viewCC.addBoolParameter("Show MIDI Device", "Show the MIDI device selection menu", true);
+	showMacros = viewCC.addBoolParameter("Show Macros", "Show the macros", true);
+
 	setIOFromVST(); //force nothing
 
 	viewUISize->setPoint(200, 150);

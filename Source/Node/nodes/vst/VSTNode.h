@@ -29,6 +29,10 @@ public:
 	IntParameter* autoActivateMacroIndex;
 	Point2DParameter* autoActivateRange;
 
+	BoolParameter* showPluginParam;
+	BoolParameter* showMidiDevice;
+	BoolParameter* showMacros;
+
 
 	struct VSTPreset
 	{
