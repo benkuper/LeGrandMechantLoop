@@ -390,7 +390,11 @@ var Preset::getJSONData()
 	//data.getDynamicObject()->setProperty("transitionOverrides", transitionOverrideData);
 
 	var ignoreData;
-	for (auto& c : ignoredControllables) ignoreData.append(c->getControlAddress());
+	for (auto& c : ignoredControllables)
+	{
+		if (c == nullptr || c.wasObjectDeleted()) continue;
+		ignoreData.append(c->getControlAddress());
+	}
 	data.getDynamicObject()->setProperty("ignores", ignoreData);
 
 	var lostData(new DynamicObject());
