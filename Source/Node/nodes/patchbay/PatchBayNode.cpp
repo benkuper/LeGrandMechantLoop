@@ -51,7 +51,7 @@ void PatchBayNode::loadCurrentPreset()
 	}
 	else
 	{
-		var data = presets.getProperty(presetEnum->getValue().toString(),var());
+		var data = presets.getProperty(presetEnum->getValue().toString(), var());
 		if (data.isVoid())
 		{
 			NLOGWARNING(niceName, "No data in preset " << presetEnum->getValue().toString());
@@ -118,7 +118,7 @@ void PatchBayNode::onControllableFeedbackUpdateInternal(ControllableContainer* c
 		}
 		else if (c == updatePresetName)
 		{
-			presets.getDynamicObject()->setProperty(presetEnum->getValueKey(), newPresetName->stringValue());
+			presets.getDynamicObject()->setProperty(newPresetName->stringValue(), presets.getProperty(presetEnum->getValueKey(),var()));
 			presets.getDynamicObject()->removeProperty(presetEnum->getValueKey());
 			updatePresetEnum();
 			presetEnum->setValueWithKey(newPresetName->stringValue());
