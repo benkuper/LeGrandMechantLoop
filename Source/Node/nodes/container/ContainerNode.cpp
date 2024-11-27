@@ -125,9 +125,16 @@ var ContainerNode::getJSONData()
 void ContainerNode::loadJSONDataItemInternal(var data)
 {
 	Node::loadJSONDataItemInternal(data);
-	updateGraph();
 	nodeManager->loadJSONData(data.getProperty("manager", var()));
 
+}
+
+void ContainerNode::afterLoadJSONDataInternal()
+{
+	Node::afterLoadJSONDataInternal();
+	updateGraph();
+	updateAudioInputs();
+	updateAudioOutputs();
 }
 
 

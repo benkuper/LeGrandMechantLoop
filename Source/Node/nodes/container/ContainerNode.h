@@ -55,6 +55,7 @@ public:
     
     var getJSONData() override;
     void loadJSONDataItemInternal(var data) override;
+	void afterLoadJSONDataInternal() override;
 
     DECLARE_TYPE("Container");
 
