@@ -139,7 +139,7 @@ void BaseNodeViewUI::paintOverChildren(Graphics& g)
 	{
 		if (inAudioConnector != nullptr && outAudioConnector != nullptr)
 		{
-			g.setColour(BLUE_COLOR);
+			g.setColour(BLUE_COLOR.withAlpha(.2f));
 			g.drawLine(Line<int>(inAudioConnector->getBounds().getCentre(), outAudioConnector->getBounds().getCentre()).toFloat(), 2);
 		}
 	}

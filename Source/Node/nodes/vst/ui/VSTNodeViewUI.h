@@ -22,12 +22,15 @@ public:
     VSTNode* node;
     std::unique_ptr<AudioProcessorEditor> editor;
 
+
+
     void setVSTEditor(AudioPluginInstance * vstInstance);
     void userTriedToCloseWindow() override;
     void closeButtonPressed() override;
     void resized() override;
 
     void newMessage(const VSTNode::VSTEvent& e) override;
+   
 
     class PluginWindowListener
     {
@@ -55,11 +58,15 @@ public:
     std::unique_ptr<PluginWindow> pluginEditor;
 
     Rectangle<int> pluginEditorBounds;
+    OwnedArray<ControllableUI> macroUIs;
+
     
     void resizedInternalHeader(Rectangle<int>& r) override;
     void resizedInternalContentNode(Rectangle<int>& r) override;
     void controllableFeedbackUpdateInternal(Controllable* c) override;
     void buttonClicked(Button* b) override;
+
+    void rebuildMacroUIs();
 
     void windowClosed() override;
 };

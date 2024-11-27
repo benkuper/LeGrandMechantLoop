@@ -27,6 +27,8 @@ VSTNodeViewUI::VSTNodeViewUI(VSTNode* n) :
 
 	contentComponents.add(pluginUI.get());
 	contentComponents.add(midiParamUI.get());
+
+	rebuildMacroUIs();
 }
 
 VSTNodeViewUI::~VSTNodeViewUI()
@@ -45,12 +47,20 @@ void VSTNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 	r.removeFromTop(4);
 
 	midiParamUI->setBounds(r.removeFromTop(20).reduced(1));
+
+	r.removeFromTop(4);
+
+	for (auto& m : macroUIs)
+	{
+		m->setBounds(r.removeFromTop(20).reduced(1));
+		r.removeFromTop(2);
+	}
 }
 
 void VSTNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
 	NodeViewUI::controllableFeedbackUpdateInternal(c);
-	// if (c == node->pluginParam) updateVSTEditor();
+	if (c == node->numMacros) rebuildMacroUIs();
 }
 
 void VSTNodeViewUI::buttonClicked(Button* b)
@@ -63,17 +73,17 @@ void VSTNodeViewUI::buttonClicked(Button* b)
 			if (pluginEditor.get() == nullptr)
 			{
 				pluginEditor.reset(new PluginWindow(node));
-				if(pluginEditorBounds.isEmpty()) pluginEditor->centreWithSize(pluginEditor->getWidth(), pluginEditor->getHeight());
+				if (pluginEditorBounds.isEmpty()) pluginEditor->centreWithSize(pluginEditor->getWidth(), pluginEditor->getHeight());
 				else pluginEditor->setBounds(pluginEditorBounds);
 
 				pluginEditor->addPluginWindowListener(this);
-				editHeaderBT->setEnabled(false);
+				//editHeaderBT->setEnabled(false);
 			}
 			else
 			{
 				//pluginEditor->toFront(true);
 			}
-			
+
 			pluginEditor->toFront(true);
 			pluginEditor->centreAroundComponent(getTopLevelComponent(), pluginEditor->getWidth(), pluginEditor->getHeight());
 
@@ -81,11 +91,28 @@ void VSTNodeViewUI::buttonClicked(Button* b)
 	}
 }
 
+void VSTNodeViewUI::rebuildMacroUIs()
+{
+	for (auto& m : macroUIs) contentComponents.removeAllInstancesOf(m);
+
+	macroUIs.clear();
+	for (auto& c : node->macrosCC.controllables)
+	{
+		macroUIs.add(c->createDefaultUI());
+		addAndMakeVisible(macroUIs.getLast());
+		contentComponents.add(macroUIs.getLast());
+
+	}
+
+	resized();
+
+}
+
 void VSTNodeViewUI::windowClosed()
 {
 	pluginEditorBounds = pluginEditor->getBounds();
 	pluginEditor.reset();
-	editHeaderBT->setEnabled(true);
+	//editHeaderBT->setEnabled(true);
 }
 
 PluginWindow::PluginWindow(VSTNode* node) :
