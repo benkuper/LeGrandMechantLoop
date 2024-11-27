@@ -779,7 +779,7 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 	for (int i = 0; i < 128; i++)
 	{
 		SamplerNote* s = samplerNotes[i];
-
+		if (s == nullptr) continue;
 		NoteState st = s->state->getValueDataAsEnum<NoteState>();
 		if (st == EMPTY || st == RECORDING || st == PROCESSING) continue;
 
