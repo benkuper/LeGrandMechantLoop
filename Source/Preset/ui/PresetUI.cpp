@@ -91,9 +91,9 @@ void PresetUI::mouseExit(const MouseEvent& e)
 
 void PresetUI::mouseDown(const MouseEvent& e)
 {
-	if (e.eventComponent == this)
+	BaseItemUI::mouseDown(e);
+	if (e.eventComponent == this || e.eventComponent == &itemLabel)
 	{
-		BaseItemUI::mouseDown(e);
 		if (e.mods.isLeftButtonDown() && e.mods.isAltDown()) item->loadTrigger->trigger();
 	}
 }
