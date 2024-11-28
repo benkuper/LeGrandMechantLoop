@@ -108,10 +108,6 @@ Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool ad
 	return addItems(itemsToAdd, data, addToUndo);
 }
 
-void NodeConnectionManager::loadJSONDataInternal(var data)
-{
-	nodeManager->graph-
-}
 
 void NodeConnectionManager::afterLoadJSONDataInternal()
 {
