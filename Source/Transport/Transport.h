@@ -75,8 +75,11 @@ public:
 
 	double timeAtStart;
 
+
+
 #if USE_ABLETONLINK
 	std::unique_ptr<ableton::Link> link;
+	bool checkLinkOnNextAudioCallback;
 #endif
 
 	void clear() override; // override here to avoid deleting parameters

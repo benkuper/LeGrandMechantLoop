@@ -24,6 +24,9 @@ Transport::Transport() :
 	isSettingTempo(false),
 	setTempoSampleCount(0),
 	timeAtStart(0)
+#if USE_ABLETONLINK
+	, checkLinkOnNextAudioCallback(false)
+#endif
 {
 
 
@@ -240,6 +243,13 @@ void Transport::setCurrentTime(int samples)
 		bool firstLoop = getTotalBeatCount() % firstLoopBeats->intValue() == 0;
 		transportListeners.call(&TransportListener::beatChanged, barChanged, firstLoop);
 	}
+
+#if USE_ABLETONLINK
+	if (barChanged && weakLink->boolValue())
+	{
+		checkLinkOnNextAudioCallback = true;
+	}
+#endif
 }
 
 void Transport::gotoBar(int bar)
@@ -521,7 +531,8 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 {
 	if (isCurrentlyPlaying->boolValue())
 	{
-		if (link->isEnabled() && link->numPeers() > 0)
+#if USE_ABLETONLINK
+		if (link->isEnabled() && link->numPeers() > 0 && (!weakLink->boolValue() || checkLinkOnNextAudioCallback))
 		{
 			const int bPerBar = beatsPerBar->intValue();
 
@@ -552,11 +563,15 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 					setCurrentTime(linkSample);
 				}
 			}
+			setCurrentTime(timeInSamples + numSamples);
 		}
 		else
 		{
 			setCurrentTime(timeInSamples + numSamples);
 		}
+#else
+		setCurrentTime(timeInSamples + numSamples);
+#endif
 	}
 	else if (isSettingTempo)
 	{
