@@ -1,25 +1,51 @@
+#include "NodeConnectionEditor.h"
 /*
   ==============================================================================
 
-    NodeAudioConnectionEditor.cpp
-    Created: 16 Nov 2020 10:01:11am
-    Author:  bkupe
+	NodeAudioConnectionEditor.cpp
+	Created: 16 Nov 2020 10:01:11am
+	Author:  bkupe
 
   ==============================================================================
 */
 
 NodeAudioConnectionEditor::NodeAudioConnectionEditor(NodeAudioConnection* connection, bool isRoot) :
-    BaseItemEditor(connection, isRoot),
-    connection(connection),
-    tmpCreateSlot(nullptr)
+	BaseItemEditor(connection, isRoot),
+	connection(connection),
+	tmpCreateSlot(nullptr),
+	removeAllConnectionsBT("Remove All"),
+	connectAllParallelBT("Parallel"),
+	connectSameNameBT("Same Name"),
+	offInByPlusOneBT("In +1"),
+	offInByMinusOneBT("In -1"),
+	offOutByPlusOneBT("Out +1"),
+	offOutByMinusOneBT("Out -1")
 {
-    buildSlots();
-    buildConnections();
+	buildSlots();
+	buildConnections();
 
-    setInterceptsMouseClicks(true, true);
-    removeMouseListener(this);
-    addMouseListener(this, true);
-    setDisableInternalMouseEvents(true);
+	setInterceptsMouseClicks(true, true);
+	removeMouseListener(this);
+	addMouseListener(this, true);
+	setDisableInternalMouseEvents(true);
+
+	addAndMakeVisible(removeAllConnectionsBT);
+	addAndMakeVisible(connectAllParallelBT);
+	addAndMakeVisible(connectSameNameBT);
+	addAndMakeVisible(offInByPlusOneBT);
+	addAndMakeVisible(offInByMinusOneBT);
+	addAndMakeVisible(offOutByPlusOneBT);
+	addAndMakeVisible(offOutByMinusOneBT);
+
+	removeAllConnectionsBT.addListener(this);
+	connectAllParallelBT.addListener(this);
+	connectSameNameBT.addListener(this);
+	offInByPlusOneBT.addListener(this);
+	offInByMinusOneBT.addListener(this);
+	offOutByPlusOneBT.addListener(this);
+	offOutByMinusOneBT.addListener(this);
+
+
 }
 
 NodeAudioConnectionEditor::~NodeAudioConnectionEditor()
@@ -29,304 +55,333 @@ NodeAudioConnectionEditor::~NodeAudioConnectionEditor()
 
 void NodeAudioConnectionEditor::resizedInternalContent(Rectangle<int>& r)
 {
-    const int slotHeight = 30;
-    const int maxSlots = jmax(sourceSlots.size(), destSlots.size());
-    int th = maxSlots * slotHeight;
-    slotsRect = r.withHeight(th);
-    r.setY(slotsRect.getBottom());
+	toolsRect = r.removeFromTop(30).reduced(4);
+	removeAllConnectionsBT.setBounds(toolsRect.removeFromLeft(50));
+	connectAllParallelBT.setBounds(toolsRect.removeFromLeft(50));
+	connectSameNameBT.setBounds(toolsRect.removeFromLeft(50));
+	offInByPlusOneBT.setBounds(toolsRect.removeFromLeft(50));
+	offInByMinusOneBT.setBounds(toolsRect.removeFromLeft(50));
+	offOutByPlusOneBT.setBounds(toolsRect.removeFromLeft(50));
+	offOutByMinusOneBT.setBounds(toolsRect.removeFromLeft(50));
 
 
-    for (int i = 0; i < maxSlots; i++)
-    {
-        Rectangle<int> sr = slotsRect.removeFromTop(slotHeight);
-        int tw = sr.getWidth() / 3;
-        if (i < sourceSlots.size()) sourceSlots[i]->setBounds(sr.removeFromLeft(jlimit(30, 200, tw)));
-        if (i < destSlots.size()) destSlots[i]->setBounds(sr.removeFromRight(jlimit(30, 200, tw)));
-    }
+	const int slotHeight = 30;
+	const int maxSlots = jmax(sourceSlots.size(), destSlots.size());
+	int th = maxSlots * slotHeight;
+	slotsRect = r.withHeight(th);
+	r.setY(slotsRect.getBottom());
 
-    for (auto& c : connections) c->updateBounds();
+
+	for (int i = 0; i < maxSlots; i++)
+	{
+		Rectangle<int> sr = slotsRect.removeFromTop(slotHeight);
+		int tw = sr.getWidth() / 3;
+		if (i < sourceSlots.size()) sourceSlots[i]->setBounds(sr.removeFromLeft(jlimit(30, 200, tw)));
+		if (i < destSlots.size()) destSlots[i]->setBounds(sr.removeFromRight(jlimit(30, 200, tw)));
+	}
+
+	for (auto& c : connections) c->updateBounds();
 }
 
 void NodeAudioConnectionEditor::mouseDown(const MouseEvent& e)
 {
-    if (ChannelConnection* c = dynamic_cast<ChannelConnection*>(e.originalComponent))
-    {
-        if (e.mods.isRightButtonDown())
-        {
-            PopupMenu p;
-            p.addItem(1, "Disconnect");
+	if (ChannelConnection* c = dynamic_cast<ChannelConnection*>(e.originalComponent))
+	{
+		if (e.mods.isRightButtonDown())
+		{
+			PopupMenu p;
+			p.addItem(1, "Disconnect");
 
-            p.showMenuAsync(PopupMenu::Options().withDeletionCheck(*this), [=](int result)
-                {
-                    switch (result)
-                    {
-                    case 1: removeConnection(c);  break;
-                    }
-                });
-        }
-        else if (e.mods.isLeftButtonDown() && e.mods.isCommandDown())
-        {
-            removeConnection(c);
-        }
-    }
-    else if (ChannelSlot* s = dynamic_cast<ChannelSlot*> (e.originalComponent))
-    {
-        startCreateConnection(s);
-    }
-    else if (e.eventComponent == this)
-    {
-        BaseItemEditor::mouseDown(e);
-    }
+			p.showMenuAsync(PopupMenu::Options().withDeletionCheck(*this), [=](int result)
+				{
+					switch (result)
+					{
+					case 1: removeConnection(c);  break;
+					}
+				});
+		}
+		else if (e.mods.isLeftButtonDown() && e.mods.isCommandDown())
+		{
+			removeConnection(c);
+		}
+	}
+	else if (ChannelSlot* s = dynamic_cast<ChannelSlot*> (e.originalComponent))
+	{
+		startCreateConnection(s);
+	}
+	else if (e.eventComponent == this)
+	{
+		BaseItemEditor::mouseDown(e);
+	}
 }
 
 void NodeAudioConnectionEditor::mouseDoubleClick(const MouseEvent& e)
 {
-    if (ChannelConnection* c = dynamic_cast<ChannelConnection*>(e.originalComponent))
-    {
-        if (e.mods.isLeftButtonDown())
-        {
-            removeConnection(c);
-        }
-    }
+	if (ChannelConnection* c = dynamic_cast<ChannelConnection*>(e.originalComponent))
+	{
+		if (e.mods.isLeftButtonDown())
+		{
+			removeConnection(c);
+		}
+	}
 }
 
 void NodeAudioConnectionEditor::mouseDrag(const MouseEvent& e)
 {
-    if (ChannelSlot* s = dynamic_cast<ChannelSlot*> (e.originalComponent))
-    {
-        updateCreateConnection();
-    }
-    else if (e.eventComponent == this)
-    {
-        BaseItemEditor::mouseDrag(e);
-    }
+	if (ChannelSlot* s = dynamic_cast<ChannelSlot*> (e.originalComponent))
+	{
+		updateCreateConnection();
+	}
+	else if (e.eventComponent == this)
+	{
+		BaseItemEditor::mouseDrag(e);
+	}
 }
 
 void NodeAudioConnectionEditor::mouseUp(const MouseEvent& e)
 {
-    if (ChannelSlot* s = dynamic_cast<ChannelSlot*> (e.originalComponent))
-    {
-        endCreateConnection();
-    }
-    else if (e.eventComponent == this)
-    {
-        BaseItemEditor::mouseUp(e);
-    }
+	if (ChannelSlot* s = dynamic_cast<ChannelSlot*> (e.originalComponent))
+	{
+		endCreateConnection();
+	}
+	else if (e.eventComponent == this)
+	{
+		BaseItemEditor::mouseUp(e);
+	}
 }
 
 void NodeAudioConnectionEditor::clearSlots()
 {
-    for (auto& c : sourceSlots) removeChildComponent(c);
-    for (auto& c : destSlots) removeChildComponent(c);
+	for (auto& c : sourceSlots) removeChildComponent(c);
+	for (auto& c : destSlots) removeChildComponent(c);
 
-    sourceSlots.clear();
-    destSlots.clear();
+	sourceSlots.clear();
+	destSlots.clear();
 }
 
 void NodeAudioConnectionEditor::buildSlots()
 {
-    jassert(connection->sourceNode != nullptr && connection->destNode != nullptr);
+	jassert(connection->sourceNode != nullptr && connection->destNode != nullptr);
 
-    clearSlots();
+	clearSlots();
 
-    int numOutputs = connection->sourceNode->getNumAudioOutputs();
-    int numInputs = connection->destNode->getNumAudioInputs();
+	int numOutputs = connection->sourceNode->getNumAudioOutputs();
+	int numInputs = connection->destNode->getNumAudioInputs();
 
-    for (int i = 0; i < numOutputs; i++)
-    {
-        ChannelSlot* s = new ChannelSlot(connection->sourceNode->audioOutputNames[i], i, true);
-        sourceSlots.add(s);
-        addAndMakeVisible(s);
-    }
+	for (int i = 0; i < numOutputs; i++)
+	{
+		ChannelSlot* s = new ChannelSlot(connection->sourceNode->audioOutputNames[i], i, true);
+		sourceSlots.add(s);
+		addAndMakeVisible(s);
+	}
 
-    for (int i = 0; i < numInputs; i++)
-    {
-        ChannelSlot* s = new ChannelSlot(connection->destNode->audioInputNames[i], i, false);
-        destSlots.add(s);
-        addAndMakeVisible(s);
-    }
+	for (int i = 0; i < numInputs; i++)
+	{
+		ChannelSlot* s = new ChannelSlot(connection->destNode->audioInputNames[i], i, false);
+		destSlots.add(s);
+		addAndMakeVisible(s);
+	}
 }
 
 void NodeAudioConnectionEditor::clearConnections()
 {
-    for (auto& c : connections) removeChildComponent(c);
-    connections.clear();
+	for (auto& c : connections) removeChildComponent(c);
+	connections.clear();
 }
 
 void NodeAudioConnectionEditor::buildConnections(bool resizeAfter)
 {
-    clearConnections();
-    for (auto& co : connection->channelMap)
-    {
-        ChannelConnection* c = new ChannelConnection(sourceSlots[co.sourceChannel], destSlots[co.destChannel]);
-        addAndMakeVisible(c);
-        connections.add(c);
-    }
+	clearConnections();
+	for (auto& co : connection->channelMap)
+	{
+		ChannelConnection* c = new ChannelConnection(sourceSlots[co.sourceChannel], destSlots[co.destChannel]);
+		addAndMakeVisible(c);
+		connections.add(c);
+	}
 
-    if (resizeAfter) resized();
+	if (resizeAfter) resized();
 }
 
 void NodeAudioConnectionEditor::startCreateConnection(ChannelSlot* startSlot)
 {
-    tmpCreateConnection.reset(new ChannelConnection(startSlot->isSource ? startSlot : nullptr, startSlot->isSource ? nullptr : startSlot));
-    tmpCreateSlot = startSlot;
+	tmpCreateConnection.reset(new ChannelConnection(startSlot->isSource ? startSlot : nullptr, startSlot->isSource ? nullptr : startSlot));
+	tmpCreateSlot = startSlot;
 
-    addAndMakeVisible(tmpCreateConnection.get());
-    tmpCreateConnection->updateBounds();
+	addAndMakeVisible(tmpCreateConnection.get());
+	tmpCreateConnection->updateBounds();
 }
 
 void NodeAudioConnectionEditor::updateCreateConnection()
 {
-    if (tmpCreateConnection == nullptr)  return;
-    ChannelSlot* s = getCandidateSlotAtMousePos();
+	if (tmpCreateConnection == nullptr)  return;
+	ChannelSlot* s = getCandidateSlotAtMousePos();
 
-    if (tmpCreateSlot->isSource) tmpCreateConnection->destSlot = s;
-    else tmpCreateConnection->sourceSlot = s;
+	if (tmpCreateSlot->isSource) tmpCreateConnection->destSlot = s;
+	else tmpCreateConnection->sourceSlot = s;
 
-    tmpCreateConnection->updateBounds();
+	tmpCreateConnection->updateBounds();
 }
 
 void NodeAudioConnectionEditor::endCreateConnection()
 {
-    if (tmpCreateConnection != nullptr && tmpCreateConnection->sourceSlot != nullptr && tmpCreateConnection->destSlot != nullptr)
-    {
-        addConnection(tmpCreateConnection->sourceSlot, tmpCreateConnection->destSlot);
-    }
+	if (tmpCreateConnection != nullptr && tmpCreateConnection->sourceSlot != nullptr && tmpCreateConnection->destSlot != nullptr)
+	{
+		addConnection(tmpCreateConnection->sourceSlot, tmpCreateConnection->destSlot);
+	}
 
-    removeChildComponent(tmpCreateConnection.get());
-    tmpCreateConnection.reset();
-    tmpCreateSlot = nullptr;
+	removeChildComponent(tmpCreateConnection.get());
+	tmpCreateConnection.reset();
+	tmpCreateSlot = nullptr;
 }
 
 NodeAudioConnectionEditor::ChannelSlot* NodeAudioConnectionEditor::getCandidateSlotAtMousePos()
 {
-    if (tmpCreateSlot == nullptr) return nullptr;
+	if (tmpCreateSlot == nullptr) return nullptr;
 
-    Point<int> pos = getMouseXYRelative();
+	Point<int> pos = getMouseXYRelative();
 
-    OwnedArray<ChannelSlot>* slotArray = tmpCreateSlot->isSource ? &destSlots : &sourceSlots;
-    for (auto& s : *slotArray)
-    {
-        if (s->getBounds().contains(pos)) return s;
-    }
-    return nullptr;
+	OwnedArray<ChannelSlot>* slotArray = tmpCreateSlot->isSource ? &destSlots : &sourceSlots;
+	for (auto& s : *slotArray)
+	{
+		if (s->getBounds().contains(pos)) return s;
+	}
+	return nullptr;
 }
 
 
 void NodeAudioConnectionEditor::addConnection(ChannelSlot* source, ChannelSlot* dest)
 {
-    if (checkConnectionExists(source, dest))
-    {
-        LOGWARNING("Connection already exists, not creating");
-        return;
-    }
+	if (checkConnectionExists(source, dest))
+	{
+		LOGWARNING("Connection already exists, not creating");
+		return;
+	}
 
-    //if (ChannelConnection* c = getConnectionWithDest(dest))  removeConnection(c, false);
+	//if (ChannelConnection* c = getConnectionWithDest(dest))  removeConnection(c, false);
 
-    connection->connectChannels(source->channel, dest->channel);
+	connection->connectChannels(source->channel, dest->channel);
 
-    buildConnections();
+	buildConnections();
 }
 
 void NodeAudioConnectionEditor::removeConnection(ChannelConnection* c, bool rebuild)
 {
-    connection->disconnectChannels(c->sourceSlot->channel, c->destSlot->channel);
+	connection->disconnectChannels(c->sourceSlot->channel, c->destSlot->channel);
 
-    if (rebuild)  buildConnections();
+	if (rebuild)  buildConnections();
 }
 
 NodeAudioConnectionEditor::ChannelConnection* NodeAudioConnectionEditor::getConnectionWithDest(ChannelSlot* dest)
 {
-    for (auto& c : connections) if (c->destSlot == dest) return c;
-    return nullptr;
+	for (auto& c : connections) if (c->destSlot == dest) return c;
+	return nullptr;
 }
 
 bool NodeAudioConnectionEditor::checkConnectionExists(ChannelSlot* source, ChannelSlot* dest)
 {
-    if (ChannelConnection* c = getConnectionWithDest(dest)) return c->sourceSlot == source;
-    return false;
+	if (ChannelConnection* c = getConnectionWithDest(dest)) return c->sourceSlot == source;
+	return false;
+}
+
+void NodeAudioConnectionEditor::buttonClicked(Button* b)
+{
+
+	if (b == &removeAllConnectionsBT) connection->clearConnections();
+	else if (b == &connectAllParallelBT) connection->createDefaultConnections(NodeAudioConnection::PARALLEL);
+	else if (b == &connectSameNameBT) connection->createDefaultConnections(NodeAudioConnection::SAME_NAME);
+	else if (b == &offInByPlusOneBT) connection->offsetChannels(true, 1);
+	else if (b == &offInByMinusOneBT) connection->offsetChannels(true, -1);
+	else if (b == &offOutByPlusOneBT) connection->offsetChannels(false, 1);
+	else if (b == &offOutByMinusOneBT) connection->offsetChannels(false, -1);
+	else
+	{
+		BaseItemEditor::buttonClicked(b);
+		return;
+	}
+
+	buildConnections();
 }
 
 
 NodeAudioConnectionEditor::ChannelSlot::ChannelSlot(const String& channelName, int channel, bool isSource) :
-    Component(channelName),
-    channel(channel),
-    isSource(isSource)
+	Component(channelName),
+	channel(channel),
+	isSource(isSource)
 {
-    setRepaintsOnMouseActivity(true);
+	setRepaintsOnMouseActivity(true);
 }
 
 
 void NodeAudioConnectionEditor::ChannelSlot::resized()
 {
-    labelRect = getLocalBounds();
-    slotRect = isSource ? labelRect.removeFromRight(getHeight()) : labelRect.removeFromLeft(getHeight());
+	labelRect = getLocalBounds();
+	slotRect = isSource ? labelRect.removeFromRight(getHeight()) : labelRect.removeFromLeft(getHeight());
 }
 
 void NodeAudioConnectionEditor::ChannelSlot::paint(Graphics& g)
 {
-    g.setColour(TEXT_COLOR.darker(.3f));
-    g.drawText(getName(), labelRect.toFloat().reduced(2), isSource ? Justification::centredRight : Justification::centredLeft);
+	g.setColour(TEXT_COLOR.darker(.3f));
+	g.drawText(getName(), labelRect.toFloat().reduced(2), isSource ? Justification::centredRight : Justification::centredLeft);
 
-    Colour c = isMouseOverOrDragging() ? HIGHLIGHT_COLOR : TEXT_COLOR;
-    g.setColour(c);
-    g.fillEllipse(slotRect.withSizeKeepingCentre(8, 8).toFloat());
+	Colour c = isMouseOverOrDragging() ? HIGHLIGHT_COLOR : TEXT_COLOR;
+	g.setColour(c);
+	g.fillEllipse(slotRect.withSizeKeepingCentre(8, 8).toFloat());
 }
 
 bool NodeAudioConnectionEditor::ChannelSlot::hitTest(int x, int y)
 {
-    return slotRect.contains(x, y);
+	return slotRect.contains(x, y);
 }
 
 NodeAudioConnectionEditor::ChannelConnection::ChannelConnection(ChannelSlot* sourceSlot, ChannelSlot* destSlot) :
-    sourceSlot(sourceSlot),
-    destSlot(destSlot)
+	sourceSlot(sourceSlot),
+	destSlot(destSlot)
 {
-    updateBounds();
-    setRepaintsOnMouseActivity(true);
+	updateBounds();
+	setRepaintsOnMouseActivity(true);
 }
 
 void NodeAudioConnectionEditor::ChannelConnection::updateBounds()
 {
-    if ((sourceSlot == nullptr && destSlot == nullptr) || getParentComponent() == nullptr) return;
+	if ((sourceSlot == nullptr && destSlot == nullptr) || getParentComponent() == nullptr) return;
 
-    Rectangle<float> mouseR = Rectangle<int>(0, 0, 10, 10).withCentre(getParentComponent()->getMouseXYRelative()).toFloat();
-    Rectangle<float> sourceR = sourceSlot == nullptr ? mouseR : getParentComponent()->getLocalArea(sourceSlot, sourceSlot->slotRect.toFloat());
-    Rectangle<float> destR = destSlot == nullptr ? mouseR : getParentComponent()->getLocalArea(destSlot, destSlot->slotRect.toFloat());
+	Rectangle<float> mouseR = Rectangle<int>(0, 0, 10, 10).withCentre(getParentComponent()->getMouseXYRelative()).toFloat();
+	Rectangle<float> sourceR = sourceSlot == nullptr ? mouseR : getParentComponent()->getLocalArea(sourceSlot, sourceSlot->slotRect.toFloat());
+	Rectangle<float> destR = destSlot == nullptr ? mouseR : getParentComponent()->getLocalArea(destSlot, destSlot->slotRect.toFloat());
 
-    Rectangle<int> r = sourceR.getUnion(destR).expanded(10).toNearestInt();
-    setBounds(r);
-    buildPath();
-    resized();
+	Rectangle<int> r = sourceR.getUnion(destR).expanded(10).toNearestInt();
+	setBounds(r);
+	buildPath();
+	resized();
 }
 
 void NodeAudioConnectionEditor::ChannelConnection::resized()
 {
-    buildPath();
+	buildPath();
 }
 
 void NodeAudioConnectionEditor::ChannelConnection::paint(Graphics& g)
 {
-    Colour c = (sourceSlot == nullptr || destSlot == nullptr) ? YELLOW_COLOR : TEXT_COLOR;
-    if (isMouseOverOrDragging()) c = c.brighter();
-    g.setColour(c);
-    g.strokePath(path, PathStrokeType(isMouseOverOrDragging() ? 3 : 1));
+	Colour c = (sourceSlot == nullptr || destSlot == nullptr) ? YELLOW_COLOR : TEXT_COLOR;
+	if (isMouseOverOrDragging()) c = c.brighter();
+	g.setColour(c);
+	g.strokePath(path, PathStrokeType(isMouseOverOrDragging() ? 3 : 1));
 }
 
 bool NodeAudioConnectionEditor::ChannelConnection::hitTest(int x, int y)
 {
-    return hitPath.contains(x, y);
+	return hitPath.contains(x, y);
 }
 
 void NodeAudioConnectionEditor::ChannelConnection::buildPath()
 {
-    Point<float> mouseP = Rectangle<int>(0, 0, 10, 10).withCentre(getMouseXYRelative()).getCentre().toFloat();
-    Point<float> sourceP = sourceSlot == nullptr ? mouseP : getLocalPoint(sourceSlot, sourceSlot->slotRect.getCentre()).toFloat();
-    Point<float> destP = destSlot == nullptr ? mouseP : getLocalPoint(destSlot, destSlot->slotRect.getCentre()).toFloat();
+	Point<float> mouseP = Rectangle<int>(0, 0, 10, 10).withCentre(getMouseXYRelative()).getCentre().toFloat();
+	Point<float> sourceP = sourceSlot == nullptr ? mouseP : getLocalPoint(sourceSlot, sourceSlot->slotRect.getCentre()).toFloat();
+	Point<float> destP = destSlot == nullptr ? mouseP : getLocalPoint(destSlot, destSlot->slotRect.getCentre()).toFloat();
 
-    path.clear();
-    path.startNewSubPath(sourceP);
-    path.cubicTo(sourceP.translated(60, 0), destP.translated(-60, 0), destP);
+	path.clear();
+	path.startNewSubPath(sourceP);
+	path.cubicTo(sourceP.translated(60, 0), destP.translated(-60, 0), destP);
 
-    hitPath = PathHelpers::buildHitPath(&path);
+	hitPath = PathHelpers::buildHitPath(&path);
 }

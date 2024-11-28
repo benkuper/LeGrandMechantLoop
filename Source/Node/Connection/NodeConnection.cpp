@@ -8,6 +8,7 @@
   ==============================================================================
 */
 #include "Node/NodeIncludes.h"
+#include "NodeConnection.h"
 
 NodeConnection::NodeConnection(NodeManager* nodeManager, Node* sourceNode, Node* destNode, ConnectionType ct) :
 	BaseItem("Connection", false, false),
@@ -205,7 +206,7 @@ void NodeAudioConnection::connectChannels(int sourceChannel, int destChannel)
 	}
 
 
-	if (sourceChannel >= sourceNode->getNumAudioOutputs() || destChannel >= destNode->getNumAudioInputs())
+	if (sourceChannel >= sourceNode->getNumAudioOutputs() || destChannel >= destNode->getNumAudioInputs() || sourceChannel < 0 || destChannel < 0)
 	{
 		if (isCurrentlyLoadingData)
 		{
@@ -235,13 +236,28 @@ void NodeAudioConnection::disconnectChannels(int sourceChannel, int destChannel,
 	if (notify) connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
 }
 
-void NodeAudioConnection::createDefaultConnections()
+void NodeAudioConnection::createDefaultConnections(DefaultConnectionMode mode)
 {
 	if (sourceNode == nullptr || destNode == nullptr) return;
 
 	clearConnections();
-	int defaultConnections = jmin(sourceNode->getNumAudioOutputs(), destNode->getNumAudioInputs());
-	for (int i = 0; i < defaultConnections; i++) connectChannels(i, i);
+	if (mode == PARALLEL)
+	{
+		int defaultConnections = jmin(sourceNode->getNumAudioOutputs(), destNode->getNumAudioInputs());
+		for (int i = 0; i < defaultConnections; i++) connectChannels(i, i);
+	}
+	else if (mode == SAME_NAME)
+	{
+		for (int i = 0; i < sourceNode->getNumAudioOutputs(); i++)
+		{
+			String sourceName = sourceNode->audioOutputNames[i];
+			for (int j = 0; j < destNode->getNumAudioInputs(); j++)
+			{
+				String destName = destNode->audioInputNames[j];
+				if (sourceName == destName) connectChannels(i, j);
+			}
+		}
+	}
 }
 
 void NodeAudioConnection::clearConnections()
@@ -249,6 +265,22 @@ void NodeAudioConnection::clearConnections()
 	for (auto& c : channelMap) disconnectChannels(c.sourceChannel, c.destChannel, false, false);
 	channelMap.clear();
 	connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
+}
+
+void NodeAudioConnection::offsetChannels(bool input, int offset, bool notify)
+{
+	Array<ChannelMap> tmpMap;
+	tmpMap.addArray(channelMap);
+	clearConnections();
+
+	for (auto& m : tmpMap)
+	{
+		if (!input) connectChannels(m.sourceChannel, m.destChannel + offset);
+		else connectChannels(m.sourceChannel + offset, m.destChannel);
+	}
+
+	if (notify) connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
+
 }
 
 void NodeAudioConnection::updateConnections()

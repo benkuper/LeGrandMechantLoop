@@ -61,6 +61,7 @@ public:
     Array<ChannelMap> channelMap;
     Array<ChannelMap> ghostChannelMap;
 
+    enum DefaultConnectionMode { PARALLEL, SAME_NAME };
 
     void clearItem() override;
    
@@ -71,8 +72,10 @@ public:
 
     void connectChannels(int sourceChannel, int destChannel);
     void disconnectChannels(int sourceChannel, int destChannel, bool updateMap = true, bool notify = true);
-    void createDefaultConnections();
+	void createDefaultConnections(DefaultConnectionMode mode = PARALLEL);
     void clearConnections();
+
+	void offsetChannels(bool input, int offset, bool notify = true);
 
     void updateConnections();
 

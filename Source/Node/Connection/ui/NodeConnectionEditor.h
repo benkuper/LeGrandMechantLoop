@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    NodeConnectionEditor.h
-    Created: 16 Nov 2020 10:01:11am
-    Author:  bkupe
+	NodeConnectionEditor.h
+	Created: 16 Nov 2020 10:01:11am
+	Author:  bkupe
 
   ==============================================================================
 */
@@ -11,82 +11,93 @@
 #pragma once
 
 class NodeAudioConnectionEditor :
-    public BaseItemEditor
+	public BaseItemEditor
 {
 public:
-    NodeAudioConnectionEditor(NodeAudioConnection* connection, bool isRoot);
-    ~NodeAudioConnectionEditor();
+	NodeAudioConnectionEditor(NodeAudioConnection* connection, bool isRoot);
+	~NodeAudioConnectionEditor();
 
-    NodeAudioConnection* connection;
-    Rectangle<int> slotsRect;
+	NodeAudioConnection* connection;
+	Rectangle<int> slotsRect;
 
-    void resizedInternalContent(Rectangle<int> &r) override;
+	Rectangle<int> toolsRect;
+	TextButton removeAllConnectionsBT;
+	TextButton connectAllParallelBT;
+	TextButton connectSameNameBT;
+	TextButton offInByPlusOneBT;
+	TextButton offInByMinusOneBT;
+	TextButton offOutByPlusOneBT;
+	TextButton offOutByMinusOneBT;
 
-    void mouseDown(const MouseEvent& e) override;
-    void mouseDoubleClick(const MouseEvent& e) override;
-    void mouseDrag(const MouseEvent& e) override;
-    void mouseUp(const MouseEvent& e) override;
+	void resizedInternalContent(Rectangle<int>& r) override;
 
-    class ChannelSlot :
-        public Component
-    {
-    public:
-        ChannelSlot(const String &channelName, int channel, bool isSource);
-        ~ChannelSlot() {}
+	void mouseDown(const MouseEvent& e) override;
+	void mouseDoubleClick(const MouseEvent& e) override;
+	void mouseDrag(const MouseEvent& e) override;
+	void mouseUp(const MouseEvent& e) override;
 
-        int channel;
-        bool isSource;
-        Rectangle<int> slotRect;
-        Rectangle<int> labelRect;
+	class ChannelSlot :
+		public Component
+	{
+	public:
+		ChannelSlot(const String& channelName, int channel, bool isSource);
+		~ChannelSlot() {}
 
-        void resized() override;
-        void paint(Graphics& g) override;
-        bool hitTest(int x, int y) override;
-    };
+		int channel;
+		bool isSource;
+		Rectangle<int> slotRect;
+		Rectangle<int> labelRect;
 
-    class ChannelConnection :
-        public Component
-    {
-    public:
-        ChannelConnection(ChannelSlot* sourceSlot, ChannelSlot* destSlot);
-        ~ChannelConnection() {}
+		void resized() override;
+		void paint(Graphics& g) override;
+		bool hitTest(int x, int y) override;
+	};
 
-        ChannelSlot* sourceSlot;
-        ChannelSlot* destSlot;
+	class ChannelConnection :
+		public Component
+	{
+	public:
+		ChannelConnection(ChannelSlot* sourceSlot, ChannelSlot* destSlot);
+		~ChannelConnection() {}
 
-        Path path;
-        Path hitPath;
+		ChannelSlot* sourceSlot;
+		ChannelSlot* destSlot;
 
-        void updateBounds();
-        void resized() override;
-        void paint(Graphics& g) override;
-        bool hitTest(int x, int y) override;
+		Path path;
+		Path hitPath;
 
-        void buildPath();
+		void updateBounds();
+		void resized() override;
+		void paint(Graphics& g) override;
+		bool hitTest(int x, int y) override;
 
-    };
-    OwnedArray<ChannelSlot> sourceSlots;
-    OwnedArray<ChannelSlot> destSlots;
-    OwnedArray<ChannelConnection> connections;
-    std::unique_ptr<ChannelConnection> tmpCreateConnection;
-    ChannelSlot* tmpCreateSlot;
+		void buildPath();
 
-    void clearSlots();
-    void buildSlots();
-    void clearConnections();
-    void buildConnections(bool resizeAfter = true);
+	};
+	OwnedArray<ChannelSlot> sourceSlots;
+	OwnedArray<ChannelSlot> destSlots;
+	OwnedArray<ChannelConnection> connections;
+	std::unique_ptr<ChannelConnection> tmpCreateConnection;
+	ChannelSlot* tmpCreateSlot;
 
-    void startCreateConnection(ChannelSlot * startSlot);
-    void updateCreateConnection();
-    void endCreateConnection();
+	void clearSlots();
+	void buildSlots();
+	void clearConnections();
+	void buildConnections(bool resizeAfter = true);
 
-    ChannelSlot* getCandidateSlotAtMousePos();
+	void startCreateConnection(ChannelSlot* startSlot);
+	void updateCreateConnection();
+	void endCreateConnection();
 
-    void addConnection(ChannelSlot* source, ChannelSlot* dest);
-    void removeConnection(ChannelConnection* c, bool rebuild = true);
+	ChannelSlot* getCandidateSlotAtMousePos();
 
-    ChannelConnection* getConnectionWithDest(ChannelSlot* dest);
-    bool checkConnectionExists(ChannelSlot* source, ChannelSlot* dest);
+	void addConnection(ChannelSlot* source, ChannelSlot* dest);
+	void removeConnection(ChannelConnection* c, bool rebuild = true);
 
+	ChannelConnection* getConnectionWithDest(ChannelSlot* dest);
+	bool checkConnectionExists(ChannelSlot* source, ChannelSlot* dest);
+
+
+	void buttonClicked(Button* b) override;
 
 };
