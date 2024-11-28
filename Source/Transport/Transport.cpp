@@ -534,6 +534,7 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 #if USE_ABLETONLINK
 		if (link->isEnabled() && link->numPeers() > 0 && (!weakLink->boolValue() || checkLinkOnNextAudioCallback))
 		{
+			checkLinkOnNextAudioCallback = false;
 			const int bPerBar = beatsPerBar->intValue();
 
 			const auto time = link->clock().micros();
