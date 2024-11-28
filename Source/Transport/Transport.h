@@ -59,6 +59,9 @@ public:
 	Trigger* stopTrigger;
 
 	BoolParameter* useAbletonLink;
+	BoolParameter* linkSyncStartStop;
+	BoolParameter* resetLinkTimeOnPlay;
+	BoolParameter* weakLink;
 	IntParameter* numLinkClients;
 
 	int sampleRate;

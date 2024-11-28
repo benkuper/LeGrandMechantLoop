@@ -146,14 +146,14 @@ void LooperTrack::stateChanged()
 		if (!Transport::getInstance()->isCurrentlyPlaying->boolValue()
 			|| looper->getQuantization() == Transport::FREE)
 		{
-			if (Transport::getInstance()->useAbletonLink->boolValue() && Transport::getInstance()->numLinkClients->intValue() > 0)
-			{
-				Transport::getInstance()->play();
-			}
-			else
-			{
+			//if (Transport::getInstance()->useAbletonLink->boolValue() && Transport::getInstance()->numLinkClients->intValue() > 0)
+			//{
+			//	Transport::getInstance()->play();
+			//}
+			//else
+			//{
 				if (!looper->firstRecVolumeThreshold->enabled) startRecording();
-			}
+			//}
 		}
 	}
 	break;

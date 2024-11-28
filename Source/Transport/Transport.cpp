@@ -75,6 +75,9 @@ Transport::Transport() :
 	recQuantizCount = addIntParameter("Manual Quantiz Count", "", 1, 1, 100, false);
 
 	useAbletonLink = addBoolParameter("Enable Ableton Link", "Use Ableton Link. Enabling this will sync to other ableton link clients", false);
+	linkSyncStartStop = addBoolParameter("Link Sync Start Stop", "Sync start stop with other Ableton Link clients", true);
+	resetLinkTimeOnPlay = addBoolParameter("Reset Link Time On Play", "Reset Link time when playing", true);
+	weakLink = addBoolParameter("Weak Link", "Use weak link mode", false);
 	numLinkClients = addIntParameter("Num Link Clients", "Number of Ableton Link clients", 0, 0);
 
 #if USE_ABLETONLINK
@@ -89,8 +92,9 @@ Transport::Transport() :
 		});
 
 	link->setStartStopCallback([this](const int p) {
+		if (!linkSyncStartStop->boolValue()) return;
 		if (p == 0) stop();
-		else if (p == 2) play();
+		else if (p == 1 || p == 2) play();
 		});
 
 #endif
@@ -199,7 +203,13 @@ void Transport::finishSetTempo(bool startPlaying)
 	firstLoopBeats->setValue(targetNumBeats);
 	curBar->setValue(0);
 	curBeat->setValue(0);
-
+	if (useAbletonLink->boolValue() && resetLinkTimeOnPlay->boolValue() && link->numPeers() > 0)
+	{
+		auto session = link->captureAppSessionState();
+		session.forceBeatAtTime(0, link->clock().micros(), targetNumBeats);
+		session.setTempo(bpm->doubleValue(), link->clock().micros());
+		link->commitAppSessionState(session);
+	}
 
 	transportListeners.call(&TransportListener::beatNumSamplesChanged);
 
@@ -264,9 +274,12 @@ void Transport::onContainerParameterChanged(Parameter* p)
 		transportListeners.call(&TransportListener::playStateChanged, isCurrentlyPlaying->boolValue(), false);
 
 #if USE_ABLETONLINK
-		auto session = link->captureAppSessionState();
-		session.setIsPlaying(isCurrentlyPlaying->boolValue(), link->clock().micros());
-		link->commitAudioSessionState(session);
+		if (linkSyncStartStop->boolValue())
+		{
+			auto session = link->captureAppSessionState();
+			session.setIsPlaying(isCurrentlyPlaying->boolValue(), link->clock().micros());
+			link->commitAudioSessionState(session);
+		}
 #endif
 	}
 	else if (p == recQuantization)
@@ -304,6 +317,10 @@ void Transport::onContainerParameterChanged(Parameter* p)
 	else if (p == useAbletonLink)
 	{
 		setupAbletonLink();
+	}
+	else if (p == linkSyncStartStop)
+	{
+		if (useAbletonLink->boolValue()) link->enableStartStopSync(linkSyncStartStop->boolValue());
 	}
 }
 
@@ -480,7 +497,7 @@ void Transport::setupAbletonLink()
 	if (useAbletonLink->boolValue())
 	{
 
-		link->enableStartStopSync(true);
+		link->enableStartStopSync(linkSyncStartStop->boolValue());
 		link->enable(true);
 
 		jassert(link->isEnabled());
@@ -502,28 +519,44 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 	int numSamples,
 	const AudioIODeviceCallbackContext& context)
 {
-
-	if (link->isEnabled() && link->numPeers() > 0)
+	if (isCurrentlyPlaying->boolValue())
 	{
-		const int bPerBar = beatsPerBar->intValue();
+		if (link->isEnabled() && link->numPeers() > 0)
+		{
+			const int bPerBar = beatsPerBar->intValue();
 
-		const auto time = link->clock().micros();
-		const auto session = link->captureAppSessionState();
-		const auto beat = session.beatAtTime(time, bPerBar);
-		const auto phase = session.phaseAtTime(time, bPerBar);
+			const auto time = link->clock().micros();
+			const auto session = link->captureAppSessionState();
+			const auto beat = session.beatAtTime(time, bPerBar);
+			const auto phase = session.phaseAtTime(time, bPerBar);
 
-		int targetBeat = floor(phase);
-		int targetBar = floor(beat / bPerBar);
-		double beatProg = fmod(phase, 1);
+			int targetBeat = floor(phase);
+			int targetBar = floor(beat / bPerBar);
+			double beatProg = fmod(phase, 1);
 
-		double barP = (targetBeat + beatProg) / bPerBar;
-		long long curSample = (targetBar + barP) * getBarNumSamples();
+			double barP = (targetBeat + beatProg) / bPerBar;
+			long long curSample = (targetBar + barP) * getBarNumSamples();
 
-		setCurrentTime(curSample);
-	}
-	else if (isCurrentlyPlaying->boolValue())
-	{
-		setCurrentTime(timeInSamples + numSamples);
+			long long linkSample = curSample;
+			if (isCurrentlyPlaying->boolValue())
+			{
+				long long transportSample = timeInSamples + numSamples;
+				if (abs(transportSample - linkSample) > numSamples && weakLink->boolValue())
+				{
+					LOGWARNING("Ableton Link and Transport samples diverge, resync with link ! " << linkSample << " <> " << transportSample);
+					transportSample = linkSample;
+					setCurrentTime(transportSample);
+				}
+				else
+				{
+					setCurrentTime(linkSample);
+				}
+			}
+		}
+		else
+		{
+			setCurrentTime(timeInSamples + numSamples);
+		}
 	}
 	else if (isSettingTempo)
 	{
