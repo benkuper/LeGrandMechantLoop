@@ -112,14 +112,14 @@ void NodeManager::updateAudioInputNode(AudioInputNode* n)
 {
 	for (int i = 0; i < n->audioInputNames.size(); i++)
 	{
-		graph->removeConnection(AudioProcessorGraph::Connection({ audioInputNodeID, i }, { n->nodeGraphID, i })); //straight channel 
+		graph->removeConnection(AudioProcessorGraph::Connection({ audioInputNodeID, i }, { n->nodeGraphID, i }), AudioProcessorGraph::UpdateKind::async); //straight channel 
 	}
 
 	n->setAudioOutputs(audioInputNames); //inverse to get good connector names
 
 	for (int i = 0; i < audioInputNames.size(); i++)
 	{
-		graph->addConnection(AudioProcessorGraph::Connection({ audioInputNodeID, i }, { n->nodeGraphID, i })); //straight 
+		graph->addConnection(AudioProcessorGraph::Connection({ audioInputNodeID, i }, { n->nodeGraphID, i }), AudioProcessorGraph::UpdateKind::async); //straight 
 	}
 }
 
@@ -127,25 +127,25 @@ void NodeManager::updateAudioOutputNode(AudioOutputNode* n)
 {
 	for (int i = 0; i < n->audioOutputNames.size(); i++)
 	{
-		graph->removeConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { audioOutputNodeID, i })); //straight channel 
+		graph->removeConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { audioOutputNodeID, i }), AudioProcessorGraph::UpdateKind::async); //straight channel 
 	}
 
 	n->setAudioInputs(audioOutputNames); //inverse to get good connector names
 
 	for (int i = 0; i < audioOutputNames.size(); i++)
 	{
-		graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { audioOutputNodeID, i })); //straight 
+		graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, i }, { audioOutputNodeID, i }), AudioProcessorGraph::UpdateKind::async); //straight 
 	}
 }
 
 void NodeManager::updateMIDIInputNode(MIDIInputNode* n)
 {
-	graph->addConnection(AudioProcessorGraph::Connection({ midiInputNodeID, AudioProcessorGraph::midiChannelIndex }, { n->nodeGraphID, AudioProcessorGraph::midiChannelIndex })); //straight 
+	graph->addConnection(AudioProcessorGraph::Connection({ midiInputNodeID, AudioProcessorGraph::midiChannelIndex }, { n->nodeGraphID, AudioProcessorGraph::midiChannelIndex }), AudioProcessorGraph::UpdateKind::async); //straight 
 }
 
 void NodeManager::updateMIDIOutputNode(MIDIOutputNode* n)
 {
-	graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, AudioProcessorGraph::midiChannelIndex }, { midiOutputNodeID, AudioProcessorGraph::midiChannelIndex })); //straight 
+	graph->addConnection(AudioProcessorGraph::Connection({ n->nodeGraphID, AudioProcessorGraph::midiChannelIndex }, { midiOutputNodeID, AudioProcessorGraph::midiChannelIndex }), AudioProcessorGraph::UpdateKind::async); //straight 
 }
 
 void NodeManager::addItemInternal(Node* n, var data)

@@ -151,7 +151,7 @@ void Node::init(AudioProcessorGraph* _graph)
 
 	updatePlayConfig();
 
-	nodeGraphPtr = graph->addNode(std::unique_ptr<NodeAudioProcessor>(processor), AudioProcessorGraph::NodeID(nodeGraphID));
+	nodeGraphPtr = graph->addNode(std::unique_ptr<NodeAudioProcessor>(processor), AudioProcessorGraph::NodeID(nodeGraphID), AudioProcessorGraph::UpdateKind::async);
 
 }
 

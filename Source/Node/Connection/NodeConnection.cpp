@@ -222,7 +222,7 @@ void NodeAudioConnection::connectChannels(int sourceChannel, int destChannel)
 	channelMap.add({ sourceChannel, destChannel });
 	ghostChannelMap.removeAllInstancesOf({ sourceChannel, destChannel });
 
-	nodeManager->graph->addConnection({ {sourceNode->nodeGraphID, sourceChannel}, { destNode->nodeGraphID, destChannel } });
+	nodeManager->graph->addConnection({ {sourceNode->nodeGraphID, sourceChannel}, { destNode->nodeGraphID, destChannel } }, juce::AudioProcessorGraph::UpdateKind::async);
 	connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
 
 }
@@ -232,7 +232,7 @@ void NodeAudioConnection::disconnectChannels(int sourceChannel, int destChannel,
 	jassert(sourceNode != nullptr && destNode != nullptr);
 	if (updateMap) channelMap.removeAllInstancesOf({ sourceChannel, destChannel });
 
-	nodeManager->graph->removeConnection({ {sourceNode->nodeGraphID, sourceChannel}, { destNode->nodeGraphID, destChannel } });
+	nodeManager->graph->removeConnection({ {sourceNode->nodeGraphID, sourceChannel}, { destNode->nodeGraphID, destChannel } }, AudioProcessorGraph::UpdateKind::async);
 	if (notify) connectionNotifier.addMessage(new ConnectionEvent(ConnectionEvent::CHANNELS_CONNECTION_CHANGED, this));
 }
 
@@ -412,7 +412,7 @@ void NodeMIDIConnection::clearConnection()
 {
 	if (currentConnection.source.nodeID != AudioProcessorGraph::NodeID(0) && currentConnection.destination.nodeID != AudioProcessorGraph::NodeID(0))
 	{
-		nodeManager->graph->removeConnection(currentConnection);
+		nodeManager->graph->removeConnection(currentConnection, AudioProcessorGraph::UpdateKind::async);
 		currentConnection = {};
 	}
 }
@@ -426,7 +426,7 @@ void NodeMIDIConnection::handleNodesUpdated()
 	if (sourceNode != nullptr && destNode != nullptr)
 	{
 		currentConnection = { { sourceNode->nodeGraphID, AudioProcessorGraph::midiChannelIndex }, { destNode->nodeGraphID, AudioProcessorGraph::midiChannelIndex } };
-		bool result = nodeManager->graph->addConnection(currentConnection);
+		bool result = nodeManager->graph->addConnection(currentConnection, AudioProcessorGraph::UpdateKind::async);
 		if (!result)
 		{
 			LOGERROR("Error connecting MIDI from " << sourceNode->niceName << " to " << destNode->niceName);
