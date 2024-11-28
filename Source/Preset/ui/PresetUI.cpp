@@ -59,7 +59,7 @@ void PresetUI::paintOverChildren(Graphics& g)
 void PresetUI::mouseEnter(const MouseEvent& e)
 {
 	BaseItemUI::mouseEnter(e);
-	if (e.eventComponent == this)
+	if (e.eventComponent == this || e.eventComponent == &itemLabel)
 	{
 		inspectable->highlightLinkedInspectables(true);
 		for (auto& linked : inspectable->linkedInspectables)
@@ -76,7 +76,7 @@ void PresetUI::mouseEnter(const MouseEvent& e)
 void PresetUI::mouseExit(const MouseEvent& e)
 {
 	BaseItemUI::mouseExit(e);
-	if (e.eventComponent == this)
+	if (e.eventComponent == this || e.eventComponent == &itemLabel)
 	{
 		inspectable->highlightLinkedInspectables(false);
 		for (auto& linked : inspectable->linkedInspectables)
