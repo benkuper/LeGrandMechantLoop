@@ -13,7 +13,8 @@
 class VSTParameterContainer;
 
 class VSTNode :
-	public Node
+	public Node,
+	public AudioManager::AudioManagerListener
 {
 public:
 	VSTNode(var params = var());
@@ -76,6 +77,8 @@ public:
 	void checkAutoBypass();
 
 	void updatePlayConfigInternal() override;
+
+	void audioSetupChanged() override;
 
 	void onContainerParameterChangedInternal(Parameter* p) override;
 	void onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c) override;

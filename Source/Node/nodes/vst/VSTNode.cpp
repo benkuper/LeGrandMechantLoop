@@ -61,6 +61,8 @@ VSTNode::VSTNode(var params) :
 	setIOFromVST(); //force nothing
 
 	viewUISize->setPoint(200, 150);
+
+	AudioManager::getInstance()->addAudioManagerListener(this);
 }
 
 VSTNode::~VSTNode()
@@ -71,6 +73,7 @@ void VSTNode::clearItem()
 {
 	Node::clearItem();
 	setupVST(nullptr);
+	if (AudioManager::getInstanceWithoutCreating()) AudioManager::getInstance()->removeAudioManagerListener(this);
 }
 
 
@@ -280,6 +283,11 @@ void VSTNode::updatePlayConfigInternal()
 
 		}
 	}
+}
+
+void VSTNode::audioSetupChanged()
+{
+	updatePlayConfig(false);
 }
 
 void VSTNode::onContainerParameterChangedInternal(Parameter* p)
