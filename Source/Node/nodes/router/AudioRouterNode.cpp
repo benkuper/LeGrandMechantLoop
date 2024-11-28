@@ -27,8 +27,11 @@ AudioRouterNode::~AudioRouterNode()
 {
 }
 
-void AudioRouterNode::autoSetNumAudioInputs()
+void AudioRouterNode::autoSetNumAudioInputs(bool force)
 {
+
+	if (isCurrentlyLoadingData && !force) return;
+
     StringArray inputNames;
     for (int i = 0; i < numAudioInputs->intValue(); i++)
     {
@@ -41,8 +44,10 @@ void AudioRouterNode::autoSetNumAudioInputs()
     setAudioInputs(inputNames);
 }
 
-void AudioRouterNode::autoSetNumAudioOutputs()
+void AudioRouterNode::autoSetNumAudioOutputs(bool force)
 {
+    if (isCurrentlyLoadingData && !force) return;
+
     StringArray outputNames;
 
     for (int i = 0; i < numAudioOutputs->intValue(); i++)

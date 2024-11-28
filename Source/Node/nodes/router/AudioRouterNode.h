@@ -30,8 +30,8 @@ public:
 
 	AudioBuffer<float> tmpBuffer;
 
-	void autoSetNumAudioInputs() override;
-	void autoSetNumAudioOutputs() override;
+	void autoSetNumAudioInputs(bool force = false) override;
+	void autoSetNumAudioOutputs(bool force = false) override;
 
 	void updateAudioInputsInternal() override;
 	void updateAudioOutputsInternal() override;

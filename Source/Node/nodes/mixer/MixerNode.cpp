@@ -125,8 +125,8 @@ var MixerNode::getJSONData()
 void MixerNode::loadJSONDataItemInternal(var data)
 {
 	Node::loadJSONDataItemInternal(data);
-	autoSetNumAudioOutputs();
-	autoSetNumAudioInputs();
+	autoSetNumAudioOutputs(true);
+	autoSetNumAudioInputs(true);
 
 	var inData = data.getProperty("items", var());
 	var outData = data.getProperty("mainOuts", var());

@@ -61,7 +61,7 @@ public:
 	BoolParameter* showItemActives;
 
 	AudioBuffer<float> tmpBuffer;
-	
+
 	void updateAudioInputsInternal() override;
 	void updateAudioOutputsInternal() override;
 

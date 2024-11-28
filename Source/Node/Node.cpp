@@ -255,9 +255,9 @@ void Node::setAudioOutputs(const StringArray& outputNames, bool updateConfig)
 	nodeNotifier.addMessage(new NodeEvent(NodeEvent::OUTPUTS_CHANGED, this));
 }
 
-void Node::autoSetNumAudioInputs()
+void Node::autoSetNumAudioInputs(bool force)
 {
-	if (isCurrentlyLoadingData) return;
+	if (isCurrentlyLoadingData && !force) return;
 
 	if (customInputNamesCC == nullptr)
 	{
@@ -281,9 +281,9 @@ void Node::autoSetNumAudioInputs()
 	setAudioInputs(names);
 }
 
-void Node::autoSetNumAudioOutputs()
+void Node::autoSetNumAudioOutputs(bool force)
 {
-	if (isCurrentlyLoadingData) return;
+	if (isCurrentlyLoadingData && !force) return;
 
 	if (customOutputNamesCC == nullptr)
 	{

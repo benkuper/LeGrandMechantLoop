@@ -98,8 +98,8 @@ public:
 	virtual void setAudioInputs(const StringArray& inputNames, bool updateConfig = true);
 	virtual void setAudioOutputs(const int& numOutputs, bool updateConfig = true); //auto naming
 	virtual void setAudioOutputs(const StringArray& outputNames, bool updateConfig = true);
-	virtual void autoSetNumAudioInputs(); //if userCanSetIO
-	virtual void autoSetNumAudioOutputs(); //if userCanSetIO
+	virtual void autoSetNumAudioInputs(bool force = false); //if userCanSetIO
+	virtual void autoSetNumAudioOutputs(bool force = false); //if userCanSetIO
 
 	void updateIONamesCC();
 
