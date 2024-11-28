@@ -16,7 +16,7 @@
 #if JUCE_WINDOWS
 #define ASYNC_VST_LOADING 0
 #else
-#define ASYNC_VST_LOADING 1
+#define ASYNC_VST_LOADING 0
 #endif
 
 class VSTManager :
