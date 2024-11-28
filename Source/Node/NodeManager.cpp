@@ -409,13 +409,13 @@ void NodeManager::loadJSONDataManagerInternal(var data)
 	looperControlCC.loadJSONData(data.getProperty(looperControlCC.shortName, var()));
 	presets = data.getProperty("connectionPresetData", var());
 	presetsCC.loadJSONData(data.getProperty(presetsCC.shortName, var()));
-	updatePresetEnum();
 	connectionManager->loadJSONData(data.getProperty(connectionManager->shortName, var()));
 }
 
 void NodeManager::afterLoadJSONDataInternal()
 {
 	BaseManager::afterLoadJSONDataInternal();
+	updatePresetEnum();
 	updateLooperList();
 
 }
