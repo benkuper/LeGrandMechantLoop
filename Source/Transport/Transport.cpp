@@ -526,7 +526,7 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 			const int bPerBar = beatsPerBar->intValue();
 
 			const auto time = link->clock().micros();
-			const auto session = link->captureAppSessionState();
+			const auto session = link->captureAudioSessionState();
 			const auto beat = session.beatAtTime(time, bPerBar);
 			const auto phase = session.phaseAtTime(time, bPerBar);
 
