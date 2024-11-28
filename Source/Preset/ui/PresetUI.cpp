@@ -59,13 +59,34 @@ void PresetUI::paintOverChildren(Graphics& g)
 void PresetUI::mouseEnter(const MouseEvent& e)
 {
 	BaseItemUI::mouseEnter(e);
-	if (e.eventComponent == this) inspectable->highlightLinkedInspectables(true);
+	if (e.eventComponent == this)
+	{
+		inspectable->highlightLinkedInspectables(true);
+		for (auto& linked : inspectable->linkedInspectables)
+		{
+			if (Controllable* c = dynamic_cast<Controllable*>(linked.get()))
+			{
+				if (item->dataMap.contains(c)) c->setPreviewValue(item->dataMap[c]);
+			}
+		}
+
+	}
 }
 
 void PresetUI::mouseExit(const MouseEvent& e)
 {
 	BaseItemUI::mouseExit(e);
-	if (e.eventComponent == this) inspectable->highlightLinkedInspectables(false);
+	if (e.eventComponent == this)
+	{
+		inspectable->highlightLinkedInspectables(false);
+		for (auto& linked : inspectable->linkedInspectables)
+		{
+			if (Controllable* c = dynamic_cast<Controllable*>(linked.get()))
+			{
+				c->setPreviewValue(var());
+			}
+		}
+	}
 }
 
 void PresetUI::mouseDown(const MouseEvent& e)

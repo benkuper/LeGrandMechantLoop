@@ -48,7 +48,9 @@ void DecibelSliderUI::drawBG(Graphics& g)
 
 String DecibelSliderUI::getValueText() const
 {
-	return parameter->floatValue() == 0 ? "-inf" : String::formatted("%.1f", decibelParam->decibels);
+	float valueToShow = parameter->previewValue.isVoid() ? parameter->floatValue() : parameter->previewValue;
+	float decibelsToShow = parameter->previewValue.isVoid() ? decibelParam->decibels : DecibelsHelpers::valueToDecibels(parameter->previewValue);
+	return valueToShow == 0 ? "-inf" : String::formatted("%.1f", decibelsToShow);
 }
 
 

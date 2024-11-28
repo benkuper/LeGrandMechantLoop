@@ -9,6 +9,7 @@
 */
 
 #include "Common/CommonIncludes.h"
+#include "AudioHelpers.h"
 
 Point<float> DecibelsHelpers::start = Point<float>(-100, 0);
 Point<float> DecibelsHelpers::mid1 = Point<float>(-42, .14f);
@@ -38,7 +39,6 @@ void DecibelFloatParameter::setValueInternal(var& val)
 	decibels = DecibelsHelpers::valueToDecibels(value);
 	gain = DecibelsHelpers::valueToGain(value);
 }
-
 
 ControllableUI* DecibelFloatParameter::createDefaultUI(Array<Controllable*> controllables)
 {
