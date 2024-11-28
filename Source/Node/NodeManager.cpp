@@ -363,8 +363,13 @@ bool NodeManager::hasPlayingNodes()
 void NodeManager::updatePresetEnum()
 {
 	if (isCurrentlyLoadingData) return;
+
+	if (presets.isVoid()) presets = var(new DynamicObject()); //safety
+
 	Array<EnumParameter::EnumValue*> options;
 	options.add(new EnumParameter::EnumValue("None", var()));
+
+
 	NamedValueSet& nvSet = presets.getDynamicObject()->getProperties();
 	for (auto& nv : nvSet) options.add(new EnumParameter::EnumValue(nv.name.toString(), nv.name.toString()));
 	presetEnum->setOptions(options);
@@ -407,7 +412,7 @@ void NodeManager::loadJSONDataManagerInternal(var data)
 {
 	BaseManager::loadJSONDataManagerInternal(data);
 	looperControlCC.loadJSONData(data.getProperty(looperControlCC.shortName, var()));
-	presets = data.getProperty("connectionPresetData", var());
+	presets = data.getProperty("connectionPresetData", var(new DynamicObject()));
 	presetsCC.loadJSONData(data.getProperty(presetsCC.shortName, var()));
 	connectionManager->loadJSONData(data.getProperty(connectionManager->shortName, var()));
 }
