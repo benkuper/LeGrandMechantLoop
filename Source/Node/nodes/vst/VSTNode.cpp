@@ -289,7 +289,7 @@ void VSTNode::audioSetupChanged()
 {
 	if (!Engine::mainEngine->isLoadingFile)
 	{
-		vst->setRateAndBufferSizeDetails(processor->getSampleRate(), processor->getBlockSize());
+		if (vst != nullptr && processor != nullptr) vst->setRateAndBufferSizeDetails(processor->getSampleRate(), processor->getBlockSize());
 	}
 }
 

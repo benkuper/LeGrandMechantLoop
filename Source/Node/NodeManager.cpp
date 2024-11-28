@@ -462,7 +462,7 @@ void RootNodeManager::onContainerParameterChanged(Parameter* p)
 
 	if (p == isPlaying)
 	{
-		if (!isPlaying->boolValue())
+		if (!isPlaying->boolValue() && Transport::getInstance()->autoStopOnLastNodeStop->boolValue())
 		{
 			Transport::getInstance()->stopTrigger->trigger();
 		}

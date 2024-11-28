@@ -65,6 +65,7 @@ Transport::Transport() :
 	togglePlayTrigger = addTrigger("Toggle Play", "Toggle between play / stop");
 	pauseTrigger = addTrigger("Pause", "Stops playing but keeps the current time");
 	stopTrigger = addTrigger("Stop", "Stops playing and resets current time");
+	autoStopOnLastNodeStop = addBoolParameter("Nodes Auto Stop", "Stop playing when the last playing node stops", true);
 
 	quantization = addEnumParameter("Quantization", "Default quantization for nodes.");
 	quantization->addOption("First Loop", FIRSTLOOP)->addOption("Bar", BAR)->addOption("Beat", BEAT)->addOption("Free", FREE);
@@ -87,6 +88,7 @@ Transport::Transport() :
 	link.reset(new ableton::Link{ bpm->floatValue() });
 
 	link->setTempoCallback([this](const double p) {
+		DBG("received bpm " << (double)p << " <> " << (double)bpm->value << " / " << (int)(p == (double)bpm->value));
 		bpm->setValue(p);
 		});
 
@@ -300,6 +302,7 @@ void Transport::onContainerParameterChanged(Parameter* p)
 	}
 	else if (p == bpm)
 	{
+		//LOG("BPM Changed " << bpm->floatValue());
 		if (!settingBPMFromTransport)
 		{
 			double barRel = curBar->intValue() + (getRelativeBarSamples() * 1.0 / getBarNumSamples()); //before set new samplesPerBeat
@@ -308,19 +311,19 @@ void Transport::onContainerParameterChanged(Parameter* p)
 			numSamplesPerBeat = rawSamplesPerBeat - rawSamplesPerBeat % blockSize;
 
 			timeInSamples = getBlockPerfectNumSamples(getBarNumSamples() * barRel); //after set new samplesPerBeat
-
-
 		}
+		else
+		{
 
 #if USE_ABLETONLINK
-		if (link != nullptr)
-		{
-			auto session = link->captureAppSessionState();
-			session.setTempo(bpm->floatValue(), link->clock().micros());
-			link->commitAudioSessionState(session);
-		}
+			if (link != nullptr)
+			{
+				auto session = link->captureAppSessionState();
+				session.setTempo(bpm->floatValue(), link->clock().micros());
+				link->commitAudioSessionState(session);
+			}
 #endif
-
+		}
 		transportListeners.call(&TransportListener::bpmChanged);
 	}
 
@@ -532,7 +535,7 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 	if (isCurrentlyPlaying->boolValue())
 	{
 #if USE_ABLETONLINK
-		if (link->isEnabled() && link->numPeers() > 0 && (!weakLink->boolValue() || checkLinkOnNextAudioCallback))
+		if (link->isEnabled() && link->numPeers() > 0 && !weakLink->boolValue())
 		{
 			checkLinkOnNextAudioCallback = false;
 			const int bPerBar = beatsPerBar->intValue();
@@ -564,7 +567,6 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 					setCurrentTime(linkSample);
 				}
 			}
-			setCurrentTime(timeInSamples + numSamples);
 		}
 		else
 		{

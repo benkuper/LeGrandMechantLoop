@@ -57,6 +57,7 @@ public:
 	Trigger* togglePlayTrigger;
 	Trigger* pauseTrigger;
 	Trigger* stopTrigger;
+	BoolParameter* autoStopOnLastNodeStop;
 
 	BoolParameter* useAbletonLink;
 	BoolParameter* linkSyncStartStop;
