@@ -16,6 +16,7 @@ VSTNode::VSTNode(var params) :
 	currentPreset(nullptr),
 	macrosCC("Macros"),
 	antiMacroFeedback(false),
+	vst(nullptr),
 	isSettingVST(false),
 	prevWetDry(1),
 	vstNotifier(5),
@@ -272,7 +273,7 @@ void VSTNode::updatePlayConfigInternal()
 {
 	Node::updatePlayConfigInternal();
 
-	if (vst != nullptr && !isSettingVST)
+	if (vst != nullptr && !isSettingVST && processor != nullptr)
 	{
 		//int sampleRate = processor->getSampleRate() != 0 ? processor->getSampleRate() : Transport::getInstance()->sampleRate;
 		//int blockSize = processor->getBlockSize() != 0 ? processor->getBlockSize() : Transport::getInstance()->blockSize;
@@ -280,14 +281,16 @@ void VSTNode::updatePlayConfigInternal()
 		{
 			vst->setRateAndBufferSizeDetails(processor->getSampleRate(), processor->getBlockSize());
 			vst->prepareToPlay(processor->getSampleRate(), processor->getBlockSize());
-
 		}
 	}
 }
 
 void VSTNode::audioSetupChanged()
 {
-	updatePlayConfig(false);
+	if (!Engine::mainEngine->isLoadingFile)
+	{
+		vst->setRateAndBufferSizeDetails(processor->getSampleRate(), processor->getBlockSize());
+	}
 }
 
 void VSTNode::onContainerParameterChangedInternal(Parameter* p)
