@@ -358,6 +358,8 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 
 void LooperNode::bpmChanged()
 {
+	if (Engine::mainEngine->isLoadingFile) return;
+
 	prepareToPlay(Transport::getInstance()->sampleRate, Transport::getInstance()->blockSize);
 
 	ScopedSuspender sp(processor);
