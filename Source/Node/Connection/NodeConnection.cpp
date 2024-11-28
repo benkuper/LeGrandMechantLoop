@@ -205,6 +205,7 @@ void NodeAudioConnection::connectChannels(int sourceChannel, int destChannel)
 		else jassertfalse;
 	}
 
+	if (connectionExists(sourceChannel, destChannel)) return;
 
 	if (sourceChannel >= sourceNode->getNumAudioOutputs() || destChannel >= destNode->getNumAudioInputs() || sourceChannel < 0 || destChannel < 0)
 	{
@@ -218,6 +219,7 @@ void NodeAudioConnection::connectChannels(int sourceChannel, int destChannel)
 		}
 		return;
 	}
+
 
 	channelMap.add({ sourceChannel, destChannel });
 	ghostChannelMap.removeAllInstancesOf({ sourceChannel, destChannel });
@@ -283,6 +285,12 @@ void NodeAudioConnection::offsetChannels(bool input, int offset, bool notify)
 
 }
 
+bool NodeAudioConnection::connectionExists(int sourceChannel, int destChannel)
+{
+	for (auto& c : channelMap) if (c.sourceChannel == sourceChannel && c.destChannel == destChannel) return true;
+	return false;
+}
+
 void NodeAudioConnection::updateConnections()
 {
 	Array<ChannelMap> toRemove;
@@ -332,9 +340,34 @@ var NodeAudioConnection::getChannelMapData()
 
 void NodeAudioConnection::loadChannelMapData(var data)
 {
-	if (!data.isVoid()) clearConnections();
+	if (data.isVoid()) return;
+
+	//check existing connections
+	Array<ChannelMap> toRemove;
+	for (auto& c : channelMap)
+	{
+		bool found = false;
+		for (int i = 0; i < data.size(); i++)
+		{
+			if (c.sourceChannel == (int)data[i][0] && c.destChannel == (int)data[i][1])
+			{
+				found = true;
+				break;
+			}
+		}
+		if (!found) toRemove.add(c);
+	}
+
+	for (auto& r : toRemove)
+	{
+		//NLOG(niceName, "Disconnect channel " << r.sourceChannel << " > " << r.destChannel);
+		disconnectChannels(r.sourceChannel, r.destChannel, true, false);
+	}
+
+	//add new connections
 	for (int i = 0; i < data.size(); i++)
 	{
+		//NLOG(niceName, "Connect channel " << (int)data[i][0] << " > " << (int)data[i][1]);
 		connectChannels(data[i][0], data[i][1]);
 	}
 }

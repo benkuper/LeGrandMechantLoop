@@ -109,6 +109,62 @@ Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool ad
 }
 
 
+void NodeConnectionManager::loadJSONDataInternal(var data)
+{
+	if (Engine::mainEngine->isLoadingFile || data.isVoid())
+	{
+		BaseManager::loadJSONDataInternal(data);
+		return;
+	}
+
+	Array<NodeConnection*> connectionsToAdd;
+	Array<NodeConnection*> newConnections;
+
+	var itemsData = data.getProperty("items", var());
+
+
+	for (int i = 0; i < itemsData.size(); i++)
+	{
+		var iData = itemsData[i];
+		NodeConnection::ConnectionType t = (NodeConnection::ConnectionType)(int)(iData.getProperty("connectionType", NodeConnection::AUDIO));
+		Node* sourceNode = nodeManager->getItemWithName(iData.getProperty("sourceNode", ""));
+		Node* destNode = nodeManager->getItemWithName(iData.getProperty("destNode", ""));
+
+		if (sourceNode && destNode)
+		{
+			NodeConnection* c = getConnectionForSourceAndDest(sourceNode, destNode, t);
+			if (c != nullptr)
+			{
+				// Reconfigure existing connection if needed
+				if (t == NodeConnection::AUDIO && iData.hasProperty("channels"))
+				{
+					var channelMapData = iData.getProperty("channels", var());
+					static_cast<NodeAudioConnection*>(c)->loadChannelMapData(channelMapData);
+				}
+			}
+			else
+			{
+				// Add new connection
+				NodeConnection* c = createConnectionForType(t);
+				c->loadJSONData(iData);
+				connectionsToAdd.add(c);
+			}
+
+			newConnections.add(c);
+		}
+	}
+
+	// Add new connections
+	Array<NodeConnection*> toRemove;
+	for (auto& c : items) if (!newConnections.contains(c)) toRemove.add(c);
+
+
+	//NLOG(niceName, "Removing " << toRemove.size() << " connections");
+	removeItems(toRemove, false);
+	//NLOG(niceName, "Adding " << connectionsToAdd.size() << " connections");
+	addItems(connectionsToAdd, var(), false);
+}
+
 void NodeConnectionManager::afterLoadJSONDataInternal()
 {
 	BaseManager::afterLoadJSONDataInternal();

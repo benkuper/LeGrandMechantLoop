@@ -77,6 +77,8 @@ public:
 
 	void offsetChannels(bool input, int offset, bool notify = true);
 
+	bool connectionExists(int sourceChannel, int destChannel);
+
     void updateConnections();
 
     void audioInputsChanged(Node* n) override;

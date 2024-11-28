@@ -18,6 +18,7 @@ NodeManager::NodeManager(AudioProcessorGraph* graph,
 	AudioProcessorGraph::NodeID midiInputNodeID, AudioProcessorGraph::NodeID midiOutputNodeID) :
 	BaseManager("Nodes"),
 	graph(graph),
+	cpuUsage(nullptr),
 	audioInputNodeID(audioInputNodeID),
 	audioOutputNodeID(audioOutputNodeID),
 	midiInputNodeID(midiInputNodeID),
