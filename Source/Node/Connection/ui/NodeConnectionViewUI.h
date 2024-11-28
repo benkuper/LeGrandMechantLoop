@@ -42,6 +42,7 @@ public:
     void setDestConnector(NodeConnector* c);
 
     virtual void mouseUp(const MouseEvent& e) override;
+	virtual void mouseDoubleClick(const MouseEvent& e) override;
 
     virtual bool isInterestedInDragSource(const SourceDetails& details) override;
     virtual void itemDragEnter(const SourceDetails& details) override;

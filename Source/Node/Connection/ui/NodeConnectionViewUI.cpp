@@ -10,6 +10,7 @@
 
 #include "Engine/LGMLSettings.h"
 #include "Node/NodeIncludes.h"
+#include "NodeConnectionViewUI.h"
 
 NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConnector* _sourceConnector, NodeConnector* _destConnector) :
 	BaseItemMinimalUI(connection),
@@ -223,6 +224,11 @@ void NodeConnectionViewUI::mouseUp(const MouseEvent& e)
 				}
 			});
 	}
+}
+
+void NodeConnectionViewUI::mouseDoubleClick(const MouseEvent& e)
+{
+	item->remove();
 }
 
 bool NodeConnectionViewUI::isInterestedInDragSource(const SourceDetails& details)
