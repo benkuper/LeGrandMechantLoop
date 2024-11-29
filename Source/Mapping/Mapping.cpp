@@ -16,7 +16,8 @@ Mapping::Mapping(var params) :
 	BaseItem("Mapping"),
 	prevVal(false),
 	isSendingFeedback(false),
-	isProcessing(false)
+	isProcessing(false),
+	isValid(false)
 {
 	destParam = addTargetParameter("Target", "Target parameter to change");
 	destParam->typesFilter.add(FloatParameter::getTypeStringStatic());
@@ -33,6 +34,13 @@ Mapping::Mapping(var params) :
 
 	boolBehaviour = addEnumParameter("Boolean Behaviour", "How to behave when setting a boolean. \"Non-zero\" means any positive, non-zero value will be treated as TRUE.\
  \n\"One\" means that only values from 1 and up will be treated as TRUE", false);
+
+	validationTime = addFloatParameter("Validation Time", "Time to wait before validating the mapping", 0, 0, 10);
+	validationTime->defaultUI = FloatParameter::TIME;
+	invalidationTime = addFloatParameter("Invalidation Time", "Time to wait before invalidating the mapping", 0, 0, 10);
+	invalidationTime->defaultUI = FloatParameter::TIME;
+
+
 	boolBehaviour->addOption("Non-Zero", NONZERO)->addOption("One", ONE)->addOption("Default", DEFAULT);
 	boolToggle = addBoolParameter("Toggle Mode", "If checked, boolean values will be used with a toggle", false, false);
 
@@ -88,7 +96,7 @@ void Mapping::onExternalParameterValueChanged(Parameter* p)
 			sendFeedback();
 			isSendingFeedback = false;
 		}
-		
+
 	}
 }
 
@@ -98,6 +106,62 @@ void Mapping::process(var value)
 	if (!enabled->boolValue()) return;
 	if (dest == nullptr || dest.wasObjectDeleted()) return;
 	if (isSendingFeedback) return;
+
+
+	bool shouldBeValid = (float)value > 0;
+	LOG("is Valid / should be valid " << (int)isValid << " / " << (int)shouldBeValid);
+
+	if (shouldBeValid != isValid)
+	{
+		if (shouldBeValid)
+		{
+			if (validationTime->floatValue() > 0)
+			{
+				validProcessValue = value;
+				if (!isTimerRunning())
+				{
+					LOG("Start validatiion timer");
+					startTimer(validationTime->floatValue() * 1000);
+				}
+				return;
+			}
+		}
+		else
+		{
+			if (invalidationTime->floatValue() > 0)
+			{
+				validProcessValue = value;
+				if (!isTimerRunning())
+				{
+					LOG("Start invalidation timer");
+					startTimer(invalidationTime->floatValue() * 1000);
+				}
+				return;
+			}
+		}
+	}
+	else
+	{
+		if (isValid)
+		{
+			if (invalidationTime->floatValue() > 0)
+			{
+				LOG("Stop timer");
+				stopTimer();
+				return;
+			}
+		}
+		else
+		{
+			if (validationTime->floatValue() > 0)
+			{
+				stopTimer();
+				return;
+			}
+		}
+	}
+
+	isValid = shouldBeValid;
 
 	isProcessing = true;
 	float val = value.isInt() ? (float)(int)value : (float)value;
@@ -140,6 +204,14 @@ void Mapping::process(var value)
 	}
 	isProcessing = false;
 }
+
+void Mapping::timerCallback()
+{
+	stopTimer();
+	isValid = !isValid;
+	process(validProcessValue);
+}
+
 
 
 GenericMapping::GenericMapping(var params) :
@@ -351,6 +423,7 @@ void MIDIMapping::managerMidiMessageReceived(MIDIInterface* i, const MidiMessage
 	else if (m.isController()) controlChangeReceived(i, m.getChannel(), m.getControllerNumber(), m.getControllerValue());
 	else if (m.isPitchWheel()) pitchWheelReceived(i, m.getChannel(), m.getPitchWheelValue());
 }
+
 
 void MIDIMapping::sendFeedback()
 {

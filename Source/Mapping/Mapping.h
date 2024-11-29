@@ -15,7 +15,8 @@
 #include "Interface/InterfaceIncludes.h"
 
 class Mapping :
-	public BaseItem
+	public BaseItem,
+	public Timer
 {
 public:
 	Mapping(var params = var());
@@ -38,6 +39,11 @@ public:
 	bool isProcessing;
 	bool isSendingFeedback;
 
+	FloatParameter* validationTime;
+	FloatParameter* invalidationTime;
+	bool isValid;
+	var validProcessValue;
+
 	WeakReference<Controllable> dest;
 
 	void setDest(Controllable* c);
@@ -49,6 +55,8 @@ public:
 	virtual void sendFeedback() {}
 
 	virtual void process(var value);
+
+	void timerCallback() override;
 };
 
 class GenericMapping :
@@ -99,10 +107,13 @@ public:
 	MIDIInterface* midiInterface;
 	IntParameter* channel;
 
+
 	enum MIDIType { NOTE, CC, PitchWheel };
 	EnumParameter* type;
 	IntParameter* pitchOrNumber;
 	BoolParameter* learn;
+
+	
 
 	void setMIDIInterface(MIDIInterface* d);
 	void onContainerParameterChangedInternal(Parameter* p) override;
@@ -116,7 +127,6 @@ public:
 	void pitchWheelReceived(MIDIInterface*, const int& channel, const int& value) override;
 
 	void managerMidiMessageReceived(MIDIInterface*, const MidiMessage& m) override;
-
 
 	DECLARE_TYPE("MIDI");
 
