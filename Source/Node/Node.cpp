@@ -563,11 +563,17 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	}
 	else
 	{
+
 		AudioSampleBuffer b1;
-		if (bypassAntiClickCount == 0)
+		if (isEnabled && bypassAntiClickCount == 0)
 		{
 			b1.setSize(buffer.getNumChannels(), buffer.getNumSamples(), false, true, true);
 			for (int i = 0; i < buffer.getNumChannels(); i++) buffer.copyFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), 0, 1);
+		}
+		else if (!isEnabled && bypassAntiClickCount <= 2)
+		{
+			b1.setSize(buffer.getNumChannels(), buffer.getNumSamples(), false, true, true);
+			for (int i = 0; i < buffer.getNumChannels(); i++) buffer.copyFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), bypassAntiClickCount - 1, 0);
 		}
 		else
 		{
