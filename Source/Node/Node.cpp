@@ -564,7 +564,16 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	else
 	{
 		AudioSampleBuffer b1;
-		b1.makeCopyOf(buffer);
+		if (bypassAntiClickCount == 0)
+		{
+			b1.setSize(buffer.getNumChannels(), buffer.getNumSamples(), false, true, true);
+			for (int i = 0; i < buffer.getNumChannels(); i++) buffer.copyFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), 0, 1);
+		}
+		else
+		{
+			b1.makeCopyOf(buffer);
+		}
+
 		AudioSampleBuffer b2;
 		b2.makeCopyOf(buffer);
 		processBlockInternal(b1, midiMessages);
