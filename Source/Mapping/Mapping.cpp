@@ -110,7 +110,6 @@ void Mapping::process(var value)
 
 
 	bool shouldBeValid = (float)value > 0;
-	LOG("is Valid / should be valid " << (int)isValid << " / " << (int)shouldBeValid);
 
 	if (shouldBeValid != isValid)
 	{
@@ -121,7 +120,6 @@ void Mapping::process(var value)
 				validProcessValue = value;
 				if (!isTimerRunning())
 				{
-					LOG("Start validatiion timer");
 					startTimer(validationTime->floatValue() * 1000);
 				}
 				return;
@@ -134,7 +132,6 @@ void Mapping::process(var value)
 				validProcessValue = value;
 				if (!isTimerRunning())
 				{
-					LOG("Start invalidation timer");
 					startTimer(invalidationTime->floatValue() * 1000);
 				}
 				return;
@@ -147,7 +144,6 @@ void Mapping::process(var value)
 		{
 			if (invalidationTime->floatValue() > 0)
 			{
-				LOG("Stop timer");
 				stopTimer();
 				return;
 			}
