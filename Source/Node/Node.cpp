@@ -53,6 +53,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
 	isNodePlaying->defaultHideInRemoteControl = true;
 	isNodePlaying->hideInEditor = true;
 
+
 	if (userCanSetIO)
 	{
 		customIONamesCC.reset(new ControllableContainer("Custom IO Names"));
@@ -565,21 +566,7 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 	{
 
 		AudioSampleBuffer b1;
-		if (isEnabled && bypassAntiClickCount == 0)
-		{
-			b1.setSize(buffer.getNumChannels(), buffer.getNumSamples(), false, true, true);
-			for (int i = 0; i < buffer.getNumChannels(); i++) buffer.copyFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), 0, 1);
-		}
-		else if (!isEnabled && bypassAntiClickCount <= 2)
-		{
-			b1.setSize(buffer.getNumChannels(), buffer.getNumSamples(), false, true, true);
-			for (int i = 0; i < buffer.getNumChannels(); i++) buffer.copyFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), bypassAntiClickCount - 1, 0);
-		}
-		else
-		{
-			b1.makeCopyOf(buffer);
-		}
-
+		b1.makeCopyOf(buffer);
 		AudioSampleBuffer b2;
 		b2.makeCopyOf(buffer);
 		processBlockInternal(b1, midiMessages);

@@ -80,7 +80,7 @@ public:
 	BoolParameter* showOutControl;
 
 	MIDIInterface* midiInterface;
-
+	
 	const int anticlickBlocks = 10; //number of blocks to do the transition
 	int bypassAntiClickCount; //anti-click on processBlock
 

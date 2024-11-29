@@ -36,7 +36,8 @@ VSTNode::VSTNode(var params) :
 	dryWet = addFloatParameter("Dry Wet", "Wet Dry Ratio. 1 is totally wet, 0 is totally dry", 1, 0, 1);
 	disableOnDry = addBoolParameter("Disable On Dry", "If checked, the VST will be disabled when the wet dry parameter is 0", true);
 
-	clearBufferOnDisable = addBoolParameter("Clear Buffer On Disable", "If checked, this will clear the buffer when the vst is disable. This allows to avoid long reverb staying when re-enabling for instance.", true);
+	clearBufferOnDisable = addBoolParameter("Clear Buffer On Disable", "If checked, this will clear the buffer when the node is disable. This allows to avoid long reverb staying when re-enabling for instance.", true);
+	clearBufferOnEnable = addBoolParameter("Clear Buffer On Enable", "If checked, this will clear the buffer when the node just got enabled. This allows to allows VSTs that don't process when disable to still be cleared.", false);
 	presetEnum = addEnumParameter("Preset", "Load a preset");
 	reloadPreset = presetsCC.addTrigger("Reload Preset", "Reload the current preset");
 	addPreset = presetsCC.addTrigger("Add Preset", "Add a new preset");
@@ -432,6 +433,8 @@ void VSTNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBloc
 
 void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+	if (bypassAntiClickCount == 0 && clearBufferOnEnable->boolValue() && vst != nullptr) vst->reset();
+
 	float weight = dryWet->floatValue();
 
 	if (prevWetDry == weight)

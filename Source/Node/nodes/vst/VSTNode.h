@@ -22,11 +22,12 @@ public:
 
 	VSTPluginParameter* pluginParam;
 	BoolParameter* clearBufferOnDisable;
+	BoolParameter* clearBufferOnEnable;
 	FloatParameter* dryWet;
 	BoolParameter* disableOnDry;
 	std::unique_ptr<VSTParameterContainer> vstParamsCC;
 	ControllableContainer macrosCC;
-	IntParameter * numMacros;
+	IntParameter* numMacros;
 	IntParameter* autoActivateMacroIndex;
 	Point2DParameter* autoActivateRange;
 
@@ -62,14 +63,14 @@ public:
 	float prevWetDry;
 
 	void clearItem() override;
-	
+
 	void setupVST(PluginDescription* description);
 	void setIOFromVST();
 
 	String getVSTState();
 	void setVSTState(const String& data);
 
-	void updatePresetEnum(const String & setPresetName = "");
+	void updatePresetEnum(const String& setPresetName = "");
 	void createNewPreset(const String& presetName);
 	String getUniquePresetName(const String& name);
 	void updateMacros();
@@ -88,7 +89,7 @@ public:
 	void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
-	void processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer &midiMessages, bool bypassed);
+	void processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages, bool bypassed);
 
 	void bypassInternal() override;
 
