@@ -26,6 +26,7 @@ public:
 
 	Trigger* saveTrigger;
 	Trigger* loadTrigger;
+	Trigger* sideLoadTrigger;
 
 	BoolParameter* skipInPrev;
 	BoolParameter* skipInNext;
@@ -36,13 +37,14 @@ public:
 	EnumParameter* transitionQuantiz;
 	IntParameter* numBeatBarQuantiz;
 	FloatParameter* transitionTime;
-	enum TransitionMode { INTERPOLATE, AT_START, AT_END, DEFAULT };
+	enum TransitionMode { INTERPOLATE, AT_START, AT_END, DEFAULT, AT_PERCENT };
 	EnumParameter* defaultTransitionMode;
 	Automation transitionCurve;
 
 	//overriding
 	HashMap<WeakReference<Controllable>, var> dataMap;
 	HashMap<WeakReference<Controllable>, TransitionMode> transitionMap;
+	HashMap<WeakReference<Controllable>, float> transitionPercentMap;
 	HashMap<WeakReference<Controllable>, String> controllableGhostAddressMap;
 	HashMap<String, var> lostControllables;
 	HashMap<String, var> addressMap;

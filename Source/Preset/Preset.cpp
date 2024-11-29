@@ -10,6 +10,7 @@
 
 #include "Preset/PresetIncludes.h"
 #include "Transport/Transport.h"
+#include "Preset.h"
 
 Preset::Preset(var params) :
 	BaseItem(getTypeString()),
@@ -38,6 +39,7 @@ Preset::Preset(var params) :
 
 	saveTrigger = addTrigger("Save", "Save the current state in this preset. If this is a sub-preset, this will only save overriden values");
 	loadTrigger = addTrigger("Load", "Load the values in this preset. It this is a sub-preset, this will fetch all values up to its root preset");
+	sideLoadTrigger = addTrigger("Side Load", "Load the values in this preset without setting it as the current preset");
 
 	skipInPrev = addBoolParameter("Skip in Prev", "Skip this preset in the previous preset actions", false);
 	skipInNext = addBoolParameter("Skip in Next", "Skip this preset in the next preset actions", false);
@@ -54,7 +56,7 @@ Preset::Preset(var params) :
 	transitionTime->defaultUI = FloatParameter::TIME;
 
 	defaultTransitionMode = transitionCC.addEnumParameter("Default Transition Mode", "Default transition mode for all parameters. For non interpolable parameters, choosing Interpolate will result in Change at Start");
-	defaultTransitionMode->addOption("Interpolate", INTERPOLATE)->addOption("Change at start", AT_START)->addOption("Change at end", AT_END);
+	defaultTransitionMode->addOption("Interpolate", INTERPOLATE)->addOption("Change at start", AT_START)->addOption("Change at end", AT_END)->addOption("Change at %", AT_PERCENT);
 
 	transitionCurve.addKey(0, 0);
 	transitionCurve.addKey(1, 1);
@@ -130,6 +132,8 @@ var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList
 			TransitionMode tm = transitionMap.contains(c) ? transitionMap[c] : TransitionMode::DEFAULT;
 			if (tm == TransitionMode::DEFAULT && resolveTransition) tm = defaultTransitionMode->getValueDataAsEnum<TransitionMode>();
 			v.append(tm);
+
+			v.append(transitionMap.contains(c) ? transitionPercentMap[c] : 0);
 
 			data.getDynamicObject()->setProperty(add, v);
 		}
@@ -276,6 +280,7 @@ void Preset::removeControllableFromDataMap(Controllable* c)
 	String add = c->getControlAddress();
 	dataMap.remove(c);
 	transitionMap.remove(c);
+	transitionPercentMap.remove(c);
 	controllableGhostAddressMap.remove(c);
 	c->removeControllableListener(this);
 	unregisterLinkedInspectable(c);
@@ -313,6 +318,7 @@ void Preset::recoverLostControllables()
 			var lostVal = lit.getValue();
 			addControllableToDataMap(c, lostVal[0]);
 			transitionMap.set(c, (TransitionMode)(int)lostVal[1]);
+			if (lostVal.size() > 2) transitionPercentMap.set(c, (float)lostVal[2]);
 		}
 	}
 }
@@ -331,6 +337,7 @@ void Preset::onContainerTriggerTriggered(Trigger* t)
 {
 	if (t == saveTrigger) save();
 	else if (t == loadTrigger) RootPresetManager::getInstance()->setCurrentPreset(this);
+	else if (t == sideLoadTrigger) load(true);
 }
 
 void Preset::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
@@ -378,17 +385,6 @@ var Preset::getJSONData()
 	data.getDynamicObject()->setProperty("values", getPresetValues(false, Array<Controllable*>(), true));
 	data.getDynamicObject()->setProperty("transition", transitionCC.getJSONData());
 
-
-	var transitionOverrideData(new DynamicObject());
-	HashMap<WeakReference<Controllable>, TransitionMode>::Iterator it(transitionMap);
-	while (it.next())
-	{
-		if (it.getKey().wasObjectDeleted()) continue;
-		transitionOverrideData.getDynamicObject()->setProperty(it.getKey()->getControlAddress(), it.getValue());
-	}
-
-	//data.getDynamicObject()->setProperty("transitionOverrides", transitionOverrideData);
-
 	var ignoreData;
 	for (auto& c : ignoredControllables)
 	{
@@ -411,7 +407,6 @@ void Preset::loadJSONDataItemInternal(var data)
 	linkedPresetsCC.loadJSONData(data["linkedPresets"], true);
 	transitionCC.loadJSONData(data["transition"], true);
 
-	var transitionData = data["transitionOverrides"];
 
 	var values = data["values"];
 	if (values.isObject())
@@ -423,22 +418,11 @@ void Preset::loadJSONDataItemInternal(var data)
 			{
 				addControllableToDataMap(tc, p.value.isArray() ? p.value[0] : p.value);
 				if (p.value.size() > 1) transitionMap.set(tc, (TransitionMode)(int)p.value[1]);
+				if (p.value.size() > 2) transitionPercentMap.set(tc, (float)p.value[2]);
 			}
 			else
 			{
 				lostControllables.set(p.name.toString(), p.value);
-			}
-		}
-	}
-
-	if (transitionData.isObject())
-	{
-		NamedValueSet tData = transitionData.getDynamicObject()->getProperties();
-		for (auto& td : tData)
-		{
-			if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(td.name.toString())))
-			{
-				transitionMap.set(tc, (TransitionMode)(int)td.value);
 			}
 		}
 	}
@@ -478,7 +462,7 @@ void Preset::controllableControlAddressChanged(Controllable* c)
 			var lostVal;
 			lostVal.append(dataMap[c]);
 			lostVal.append(transitionMap[c]);
-
+			if (transitionPercentMap.contains(c)) lostVal.append(transitionPercentMap[c]);
 			dataMap.remove(c);
 
 			lostControllables.set(controllableGhostAddressMap[c], lostVal);

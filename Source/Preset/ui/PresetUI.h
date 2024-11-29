@@ -58,7 +58,8 @@ public:
 
 class PresetValueEditor :
 	public ControllableEditor,
-	public ComboBox::Listener
+	public ComboBox::Listener,
+	public Parameter::AsyncListener
 {
 public:
 	PresetValueEditor(Preset* p, Controllable* c, Controllable* sourceControllable);
@@ -69,11 +70,15 @@ public:
 	TextButton saveBT;
 
 	ComboBox transitionMode;
+	FloatParameter transitionPercent;
+	std::unique_ptr<FloatSliderUI> transitionPercentUI;
 
 	void resizedInternal(Rectangle<int> &r) override;
 
 	void comboBoxChanged(ComboBox* cb) override;
 	void buttonClicked(Button* b) override;
+
+	void newMessage(const Parameter::ParameterEvent& e) override;
 };
 
 class PresetEditor :

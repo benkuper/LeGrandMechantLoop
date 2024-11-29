@@ -370,6 +370,8 @@ void RootPresetManager::run()
 			if (!canInterpolate && tm == Preset::INTERPOLATE) tm = Preset::AT_START;
 
 			initTargetValue.append((int)tm);
+			initTargetValue.append(val.value.size() > 2 ? val.value[2] : 0);
+			initTargetValue.append(false); //has processed flag
 			initTargetMap.set(tc, initTargetValue);
 		}
 	}
@@ -434,17 +436,27 @@ void RootPresetManager::process(float progression, float weight)
 		Controllable* c = it.getKey().get();
 
 		Preset::TransitionMode itm = (Preset::TransitionMode)(int)it.getValue()[2];
+
+		if (itm == Preset::AT_PERCENT)
+		{
+			bool hasProcessed = it.getValue()[4];
+			if (hasProcessed) continue;
+			float targetPercent = it.getValue()[3];
+			if (progression < targetPercent) continue;
+			it.getValue()[4] = true;
+		}
+
 		if ((itm == Preset::AT_START && progression != 0) || (itm == Preset::AT_END && progression != 1)) continue;
 
 
 		if (c->type == Controllable::TRIGGER)
 		{
-			if (itm == Preset::AT_START || itm == Preset::AT_END) ((Trigger*)c)->trigger();
+			if (itm == Preset::AT_START || itm == Preset::AT_END || itm == Preset::AT_PERCENT) ((Trigger*)c)->trigger();
 		}
 		else
 		{
 			Parameter* p = (Parameter*)c;
-			if (itm == Preset::AT_START || itm == Preset::AT_END) p->setValue(it.getValue()[1]);
+			if (itm == Preset::AT_START || itm == Preset::AT_END || itm == Preset::AT_PERCENT) p->setValue(it.getValue()[1]);
 			else
 			{
 				if (p->isComplex())

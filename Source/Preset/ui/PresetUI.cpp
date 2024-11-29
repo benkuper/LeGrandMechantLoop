@@ -413,7 +413,8 @@ PresetValueEditor::PresetValueEditor(Preset* p, Controllable* c, Controllable* s
 	preset(p),
 	sourceControllable(sourceControllable),
 	saveBT("Save"),
-	transitionMode("Transition Mode")
+	transitionMode("Transition Mode"),
+	transitionPercent("Transition Percent", "Transition Percent", 0, 0, 1)
 {
 	minLabelWidth = 320;
 
@@ -422,16 +423,26 @@ PresetValueEditor::PresetValueEditor(Preset* p, Controllable* c, Controllable* s
 	transitionMode.addItem("Interpolate", Preset::INTERPOLATE + 1);
 	transitionMode.addItem("Change At Start", Preset::AT_START + 1);
 	transitionMode.addItem("Change At End", Preset::AT_END + 1);
+	transitionMode.addItem("Change At Percent", Preset::AT_PERCENT + 1);
 
+	transitionPercent.setValue(preset->transitionPercentMap.contains(sourceControllable) ? preset->transitionPercentMap[sourceControllable] : 0);
+	transitionPercentUI.reset(transitionPercent.createSlider());
+	transitionPercentUI->showLabel = false;
 
+	Preset::TransitionMode tm = Preset::DEFAULT;
 	if (preset->transitionMap.contains(sourceControllable))
 	{
-		transitionMode.setSelectedId(preset->transitionMap[sourceControllable] + 1, dontSendNotification);
+		tm = preset->transitionMap[sourceControllable];
+		transitionMode.setSelectedId(tm + 1, dontSendNotification);
 	}
 	else transitionMode.setSelectedId(Preset::DEFAULT + 1, dontSendNotification);
 
 	transitionMode.addListener(this);
 	addAndMakeVisible(&transitionMode);
+
+	addChildComponent(transitionPercentUI.get());
+	transitionPercentUI->setVisible(tm == Preset::AT_PERCENT);
+	transitionPercent.addAsyncParameterListener(this);
 
 	saveBT.addListener(this);
 	addAndMakeVisible(&saveBT);
@@ -445,6 +456,13 @@ void PresetValueEditor::resizedInternal(Rectangle<int>& r)
 {
 	saveBT.setBounds(r.removeFromRight(50));
 	r.removeFromRight(2);
+
+	if (transitionPercentUI->isVisible())
+	{
+		transitionPercentUI->setBounds(r.removeFromRight(100));
+		r.removeFromRight(2);
+	}
+
 	transitionMode.setBounds(r.removeFromRight(100));
 	r.removeFromRight(2);
 	ControllableEditor::resizedInternal(r);
@@ -457,7 +475,11 @@ void PresetValueEditor::comboBoxChanged(ComboBox* cb)
 		Preset::TransitionMode tm = (Preset::TransitionMode)(transitionMode.getSelectedId() - 1);//remove the +1 offset
 		if (tm == Preset::DEFAULT) preset->transitionMap.remove(sourceControllable);
 		else preset->transitionMap.set(sourceControllable, tm);
+
+		transitionPercentUI->setVisible(tm == Preset::AT_PERCENT);
 	}
+
+	resized();
 }
 
 void PresetValueEditor::buttonClicked(Button* b)
@@ -472,5 +494,16 @@ void PresetValueEditor::buttonClicked(Button* b)
 	else
 	{
 		ControllableEditor::buttonClicked(b);
+	}
+}
+
+void PresetValueEditor::newMessage(const Parameter::ParameterEvent& e)
+{
+	if (e.type == Parameter::ParameterEvent::VALUE_CHANGED)
+	{
+		if (e.parameter == &transitionPercent)
+		{
+			preset->transitionPercentMap.set(sourceControllable, e.parameter->value);
+		}
 	}
 }
