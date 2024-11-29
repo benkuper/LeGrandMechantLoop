@@ -29,6 +29,7 @@ public:
 	EnumParameter* trackState;
 
 	Trigger* playRecordTrigger;
+	Trigger* retroRecTrigger;
 	Trigger* playTrigger;
 	Trigger* stopTrigger;
 	Trigger* clearTrigger;

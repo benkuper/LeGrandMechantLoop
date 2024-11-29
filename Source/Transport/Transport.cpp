@@ -208,6 +208,12 @@ void Transport::finishSetTempo(bool startPlaying)
 	firstLoopBeats->setValue(targetNumBeats);
 	curBar->setValue(0);
 	curBeat->setValue(0);
+	
+
+	transportListeners.call(&TransportListener::beatNumSamplesChanged);
+
+	if (startPlaying) playTrigger->trigger();
+
 	if (useAbletonLink->boolValue() && resetLinkTimeOnPlay->boolValue() && link->numPeers() > 0)
 	{
 		auto session = link->captureAppSessionState();
@@ -215,10 +221,6 @@ void Transport::finishSetTempo(bool startPlaying)
 		session.setTempo(bpm->doubleValue(), link->clock().micros());
 		link->commitAppSessionState(session);
 	}
-
-	transportListeners.call(&TransportListener::beatNumSamplesChanged);
-
-	if (startPlaying) playTrigger->trigger();
 }
 
 void Transport::setCurrentTime(int samples)

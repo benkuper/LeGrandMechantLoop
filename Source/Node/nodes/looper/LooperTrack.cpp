@@ -49,6 +49,7 @@ LooperTrack::LooperTrack(LooperNode* looper, int index) :
 	trackState->setControllableFeedbackOnly(true);
 
 	playRecordTrigger = addTrigger("Record", "If empty, this will start recording. If recording, this will stop recording and start playing. If already recorded, this will start playing");
+	retroRecTrigger = addTrigger("Retro Rec", "If empty, this will start recording the previous loop and play it. If already recording, this will cancel the recording. If playing, this will cancel the playing");
 	playTrigger = addTrigger("Play", "If empty, this will do nothing. If something is already recording, this will start playing.");
 	stopTrigger = addTrigger("Stop", "If recording, this will cancel the recording. If playing, this will stop the track but will keep the recorded content");
 	clearTrigger = addTrigger("Clear", "If recording, this will cancel the recording. If playing, this will clear the track of the recorded content");
@@ -152,7 +153,7 @@ void LooperTrack::stateChanged()
 			//}
 			//else
 			//{
-				if (!looper->firstRecVolumeThreshold->enabled) startRecording();
+			if (!looper->firstRecVolumeThreshold->enabled) startRecording();
 			//}
 		}
 	}
@@ -415,6 +416,18 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 	if (t == playRecordTrigger)
 	{
 		recordOrPlay();
+	}
+	else if (t == retroRecTrigger)
+	{
+		if (looper->retroRecMode->getValueDataAsEnum<LooperNode::RetroRecMode>() == LooperNode::RETRO_NONE)
+		{
+			recordOrPlay();
+		}
+		else
+		{
+			trackState->setValueWithData(LooperTrack::RETRO_REC);
+			retroRecCount++;
+		}
 	}
 	else if (t == playTrigger)
 	{

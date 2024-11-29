@@ -214,11 +214,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			LooperTrack::TrackState ts = currentTrack->trackState->getValueDataAsEnum<LooperTrack::TrackState>();
 			if (currentTrack == nullptr || ts != LooperTrack::RETRO_REC) setCurrentTrackToFirstEmpty();
 
-			if (currentTrack != nullptr)
-			{
-				currentTrack->trackState->setValueWithData(LooperTrack::RETRO_REC);
-				currentTrack->retroRecCount++;
-			}
+			if (currentTrack != nullptr) currentTrack->retroRecTrigger->trigger();
 		}
 	}
 	else if (c == clearCurrentTrigger)
@@ -235,7 +231,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 		//	lastManipulatedTracks.removeAllInstancesOf(currentTrack);
 		//	LooperTrack::lastManipulatedTracks.removeAllInstancesOf(currentTrack);
 
-		//	setCurrentTrackToFirstEmpty();
+			//setCurrentTrackToFirstEmpty();
 		//}
 
 		if (LooperTrack* t = lastManipulatedTracks.getLast())
@@ -352,6 +348,8 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 			}
 
 			recordingState->setValueWithData(ts);
+
+			if (ts == LooperTrack::IDLE) setCurrentTrackToFirstEmpty();
 		}
 	}
 }
