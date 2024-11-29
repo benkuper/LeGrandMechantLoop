@@ -23,6 +23,7 @@ Mapping::Mapping(var params) :
 	destParam->typesFilter.add(FloatParameter::getTypeStringStatic());
 	destParam->typesFilter.add(IntParameter::getTypeStringStatic());
 	destParam->typesFilter.add(BoolParameter::getTypeStringStatic());
+	destParam->typesFilter.add(EnumParameter::getTypeStringStatic());
 	destParam->typesFilter.add(Trigger::getTypeStringStatic());
 
 	inputRange = addPoint2DParameter("Input Range", "Working range to process the input with");
@@ -173,6 +174,13 @@ void Mapping::process(var value)
 	if (dest->type == Controllable::TRIGGER)
 	{
 		if (destVal > 0) ((Trigger*)dest.get())->trigger();
+	}
+	else if (dest->type == Controllable::ENUM)
+	{
+		EnumParameter* ep = (EnumParameter*)dest.get();
+		StringArray sa = ep->getAllKeys();
+		int i = jlimit(0, sa.size() - 1, roundToInt(destVal));
+		ep->setValueWithKey(sa[i]);
 	}
 	else
 	{
