@@ -370,7 +370,7 @@ void RootPresetManager::run()
 			if (!canInterpolate && tm == Preset::INTERPOLATE) tm = Preset::AT_START;
 
 			initTargetValue.append((int)tm);
-			initTargetValue.append(val.value.size() > 2 ? val.value[2] : 0);
+			initTargetValue.append(val.value.size() > 2 ? (float)val.value[2] : 0);
 			initTargetValue.append(false); //has processed flag
 			initTargetMap.set(tc, initTargetValue);
 		}
