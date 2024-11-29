@@ -24,7 +24,8 @@ NodeManager::NodeManager(AudioProcessorGraph* graph,
 	midiInputNodeID(midiInputNodeID),
 	midiOutputNodeID(midiOutputNodeID),
 	looperControlCC("Looper Control"),
-	presetsCC("Connection Presets")
+	presetsCC("Connection Presets"),
+	customParametersCC("Custom Parameters")
 {
 
 	managerFactory = NodeFactory::getInstance();
@@ -48,6 +49,9 @@ NodeManager::NodeManager(AudioProcessorGraph* graph,
 	clearAllCurrentLooper = looperControlCC.addTrigger("Clear All Current Looper", "This will clear all tracks of the current looper");
 	addChildControllableContainer(&looperControlCC);
 
+	addChildControllableContainer(&customParametersCC);
+	customParametersCC.userCanAddControllables = true;
+
 	connectionManager.reset(new NodeConnectionManager(this));
 	connectionManager->hideInRemoteControl = true;
 	connectionManager->defaultHideInRemoteControl = true;
@@ -62,6 +66,7 @@ NodeManager::NodeManager(AudioProcessorGraph* graph,
 	updatePresetName = presetsCC.addTrigger("Update Preset Name", "Update the name of the current preset");
 	deletePreset = presetsCC.addTrigger("Delete Preset", "Delete the current preset");
 	addChildControllableContainer(&presetsCC);
+
 
 	presets = var(new DynamicObject());
 
@@ -405,6 +410,7 @@ var NodeManager::getJSONData()
 	data.getDynamicObject()->setProperty(looperControlCC.shortName, looperControlCC.getJSONData());
 	data.getDynamicObject()->setProperty(connectionManager->shortName, connectionManager->getJSONData());
 	data.getDynamicObject()->setProperty(presetsCC.shortName, presetsCC.getJSONData());
+	data.getDynamicObject()->setProperty(customParametersCC.shortName, customParametersCC.getJSONData());
 	data.getDynamicObject()->setProperty("connectionPresetData", presets);
 	return data;
 }
@@ -416,6 +422,7 @@ void NodeManager::loadJSONDataManagerInternal(var data)
 	presets = data.getProperty("connectionPresetData", var(new DynamicObject()));
 	presetsCC.loadJSONData(data.getProperty(presetsCC.shortName, var()));
 	connectionManager->loadJSONData(data.getProperty(connectionManager->shortName, var()));
+	customParametersCC.loadJSONData(data.getProperty(customParametersCC.shortName, var()));
 }
 
 void NodeManager::afterLoadJSONDataInternal()

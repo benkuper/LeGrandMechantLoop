@@ -73,6 +73,8 @@ public:
 
 	std::unique_ptr<NodeConnectionManager> connectionManager;
 
+	ControllableContainer customParametersCC;
+
 	void clear() override;
 
 	void setAudioInputs(const int& numInputs); //auto naming
