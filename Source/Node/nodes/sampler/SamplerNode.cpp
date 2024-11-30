@@ -57,9 +57,9 @@ SamplerNode::SamplerNode(var params) :
 	addChildControllableContainer(&controlsCC, false, 1);
 
 	fadeTimeMS = recordCC.addIntParameter("Fade Time", "Time to fade between start and end of recording, in milliseconds", 20);
-	recVolumeThreshold = (FloatParameter*)recordCC.addParameter(new DecibelFloatParameter("Rec Volume Threshold", "Volume threshold to start recording", .3, 0, 1, false));
+	recVolumeThreshold = (FloatParameter*)recordCC.addParameter(new DecibelFloatParameter("Rec Volume Threshold", "Volume threshold to start recording", .3, false));
 	recVolumeThreshold->canBeDisabledByUser = true;
-	stopRecVolumeThreshold = (FloatParameter*)recordCC.addParameter(new DecibelFloatParameter("Stop Rec Volume Threshold", "Volume threshold to stop recording", .1, 0, 1, false));
+	stopRecVolumeThreshold = (FloatParameter*)recordCC.addParameter(new DecibelFloatParameter("Stop Rec Volume Threshold", "Volume threshold to stop recording", .1, false));
 	stopRecVolumeThreshold->canBeDisabledByUser = true;
 
 	isRecording = recordCC.addBoolParameter("Is Recording", "Is recording a note ?", false);
