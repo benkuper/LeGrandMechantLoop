@@ -119,7 +119,7 @@ SamplerNode::SamplerNode(var params) :
 		sn->adsr.setTargetRatioDR(releaseCurve->floatValue());
 
 		sn->state = noteStatesCC.addEnumParameter(MidiMessage::getMidiNoteName(i, true, true, 3), "State for this note");
-		sn->state->addOption("Empty", EMPTY)->addOption("Recording", RECORDING)->addOption("Filled", FILLED)->addOption("Processing", PROCESSING)->addOption("Playing", PLAYING);
+		sn->state->addOption("Empty", EMPTY)->addOption("OnSet", ONSET)->addOption("Recording", RECORDING)->addOption("Filled", FILLED)->addOption("Processing", PROCESSING)->addOption("Playing", PLAYING);
 		sn->state->setControllableFeedbackOnly(true);
 
 		sn->oneShotted = false;
@@ -154,6 +154,8 @@ void SamplerNode::clearNote(int note)
 
 void SamplerNode::clearAllNotes()
 {
+	stopRecording();
+
 	ScopedSuspender sp(processor);
 	for (auto& n : samplerNotes)
 	{
@@ -451,10 +453,15 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 	HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
 
 	SamplerNote* sn = samplerNotes[midiNoteNumber];
+	NoteState ns = sn->state->getValueDataAsEnum<NoteState>();
 
 	if (clearMode->boolValue()) //clearing
 	{
 		clearNote(midiNoteNumber);
+	}
+	else if (ns == RECORDING)
+	{
+		//nothing
 	}
 	else if (!samplerNotes[midiNoteNumber]->hasContent()) //record and proxy autokey playing
 	{
@@ -554,9 +561,14 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 
 void SamplerNode::handleNoteOff(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity)
 {
-	HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
+	NoteState ns = samplerNotes[midiNoteNumber]->state->getValueDataAsEnum<NoteState>();
+	if (ns == ONSET)
+	{
+		return;
+	}
 
-	if (samplerNotes[midiNoteNumber]->state->getValueDataAsEnum<NoteState>() == RECORDING) stopRecording();
+	HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
+	if (ns == RECORDING) stopRecording();
 	else if (samplerNotes[midiNoteNumber]->hasContent() || samplerNotes[midiNoteNumber]->isProxyNote())
 	{
 		if (hm != PIANO) return;
@@ -766,9 +778,12 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 		{
 			SamplerNote* samplerNote = samplerNotes[recordingNote];
 
-			for (int i = 0; i < buffer.getNumChannels(); i++)
+			if (samplerNote->buffer.getNumSamples() >= blockSize)
 			{
-				samplerNote->buffer.copyFrom(i, recordedSamples, buffer, i, 0, blockSize);
+				for (int i = 0; i < buffer.getNumChannels(); i++)
+				{
+					samplerNote->buffer.copyFrom(i, recordedSamples, buffer, i, 0, blockSize);
+				}
 			}
 
 			recordedSamples += blockSize;
@@ -779,7 +794,11 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			float mag = buffer.getMagnitude(0, blockSize);
 			float decibels = Decibels::gainToDecibels(mag, -100.f);
 			float normDecibels = jmap(decibels, -100.f, 6.f, 0.f, 1.f);
-			if (normDecibels < stopRecVolumeThreshold->floatValue()) stopRecording();
+			if (normDecibels < stopRecVolumeThreshold->floatValue())
+			{
+				LOG("Auto stop recording");
+				stopRecording();
+			}
 		}
 	}
 
@@ -804,7 +823,11 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 
 			float decibels = Decibels::gainToDecibels(mag, -100.f);
 			float normDecibels = jmap(decibels, -100.f, 6.f, 0.f, 1.f);
-			if (normDecibels > recVolumeThreshold->floatValue()) startRecording(i);
+			if (normDecibels > recVolumeThreshold->floatValue())
+			{
+				LOG("Auto start recording " << i);
+				startRecording(i);
+			}
 			continue;
 		}
 

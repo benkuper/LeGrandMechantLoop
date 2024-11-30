@@ -45,7 +45,11 @@ void SamplerNodeViewUI::resizedInternalContentNode(Rectangle<int>& r)
 void SamplerNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
 	NodeViewUI::controllableFeedbackUpdateInternal(c);
-	if (c->parentContainer == &node->noteStatesCC) midiComp.repaint();
+	if (c->parentContainer == &node->noteStatesCC)
+	{
+		LOG("State changed for note");
+		midiComp.repaint();
+	}
 }
 
 void SamplerNodeViewUI::changeListenerCallback(ChangeBroadcaster* source)
@@ -69,7 +73,9 @@ void SamplerMidiKeyboardComponent::drawWhiteNote(int midiNoteNumber, Graphics& g
 	auto c = samplerNode->samplerNotes[midiNoteNumber]->hasContent() ? BLUE_COLOR.brighter() : Colours::transparentWhite;
 
 	SamplerNode::NoteState s = samplerNode->samplerNotes[midiNoteNumber]->state->getValueDataAsEnum<SamplerNode::NoteState>();
-	if (isDown) c = s == SamplerNode::RECORDING ? RED_COLOR : GREEN_COLOR;
+	if (s == SamplerNode::RECORDING) c = RED_COLOR;
+	else if (s == SamplerNode::ONSET) c = Colours::purple;
+	else if (isDown) c = GREEN_COLOR;
 	if (isOver)  c = c.overlaidWith(findColour(mouseOverKeyOverlayColourId));
 
 	g.setColour(c);
@@ -127,7 +133,10 @@ void SamplerMidiKeyboardComponent::drawBlackNote(int midiNoteNumber, Graphics& g
 	auto c = n->hasContent() ? BLUE_COLOR.darker() : (s == SamplerNode::PROCESSING ? Colours::darkgrey : noteFillColour);
 
 
-	if (isDown) c = s == SamplerNode::RECORDING ? RED_COLOR : GREEN_COLOR;
+	if (s == SamplerNode::RECORDING) c = RED_COLOR;
+	else if (s == SamplerNode::ONSET) c = Colours::purple;
+	else if (isDown) c = GREEN_COLOR;
+
 	if (isOver)  c = c.overlaidWith(findColour(mouseOverKeyOverlayColourId));
 
 
