@@ -57,6 +57,11 @@ SamplerNode::SamplerNode(var params) :
 	addChildControllableContainer(&controlsCC, false, 1);
 
 	fadeTimeMS = recordCC.addIntParameter("Fade Time", "Time to fade between start and end of recording, in milliseconds", 20);
+	recVolumeThreshold = (FloatParameter*)recordCC.addParameter(new DecibelFloatParameter("Rec Volume Threshold", "Volume threshold to start recording", .3, 0, 1, false));
+	recVolumeThreshold->canBeDisabledByUser = true;
+	stopRecVolumeThreshold = (FloatParameter*)recordCC.addParameter(new DecibelFloatParameter("Stop Rec Volume Threshold", "Volume threshold to stop recording", .1, 0, 1, false));
+	stopRecVolumeThreshold->canBeDisabledByUser = true;
+
 	isRecording = recordCC.addBoolParameter("Is Recording", "Is recording a note ?", false);
 	isRecording->setControllableFeedbackOnly(true);
 
@@ -503,7 +508,8 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 		}
 		else
 		{
-			startRecording(midiNoteNumber);
+			if (recVolumeThreshold->enabled) sn->state->setValueWithData(ONSET);
+			else startRecording(midiNoteNumber);
 		}
 	}
 	else //filled note playing
@@ -767,6 +773,14 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 
 			recordedSamples += blockSize;
 		}
+
+		if (stopRecVolumeThreshold->enabled)
+		{
+			float mag = buffer.getMagnitude(0, blockSize);
+			float decibels = Decibels::gainToDecibels(mag, -100.f);
+			float normDecibels = jmap(decibels, -100.f, 6.f, 0.f, 1.f);
+			if (normDecibels < stopRecVolumeThreshold->floatValue()) stopRecording();
+		}
 	}
 
 	if (!monitor->boolValue()) buffer.clear();
@@ -783,7 +797,16 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 		NoteState st = s->state->getValueDataAsEnum<NoteState>();
 		if (st == EMPTY || st == RECORDING || st == PROCESSING) continue;
 
+		if (st == ONSET)
+		{
+			if (isRecording->boolValue()) continue;
+			float mag = buffer.getMagnitude(0, blockSize);
 
+			float decibels = Decibels::gainToDecibels(mag, -100.f);
+			float normDecibels = jmap(decibels, -100.f, 6.f, 0.f, 1.f);
+			if (normDecibels > recVolumeThreshold->floatValue()) startRecording(i);
+			continue;
+		}
 
 		if (s->adsr.getState() == CurvedADSR::env_idle)
 		{

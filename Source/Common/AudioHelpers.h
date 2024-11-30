@@ -31,7 +31,7 @@ class DecibelFloatParameter :
     public FloatParameter
 {
 public:
-    DecibelFloatParameter(const String& niceName, const String& description, float initValue = .85f);
+    DecibelFloatParameter(const String& niceName, const String& description, float initValue = .85f, bool enabled = true);
     ~DecibelFloatParameter();
 
     float gain;

@@ -17,8 +17,8 @@ Point<float> DecibelsHelpers::mid2 = Point<float>(-18, .4f);
 Point<float> DecibelsHelpers::end = Point<float>(6, 1);
 
 
-DecibelFloatParameter::DecibelFloatParameter(const String& niceName, const String& description, float initValue) :
-	FloatParameter(niceName, description, initValue, 0, 1)
+DecibelFloatParameter::DecibelFloatParameter(const String& niceName, const String& description, float initValue, bool enabled) :
+	FloatParameter(niceName, description, initValue, 0, 1, enabled)
 {
 	decibels = DecibelsHelpers::valueToDecibels(value);
 	gain = DecibelsHelpers::valueToGain(value);

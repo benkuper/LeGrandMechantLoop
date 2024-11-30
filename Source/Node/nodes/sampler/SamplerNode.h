@@ -43,7 +43,8 @@ public:
 	BoolParameter* isRecording;
 	IntParameter* fadeTimeMS;
 	IntParameter* autoKeyFadeTimeMS;
-	
+	FloatParameter* recVolumeThreshold;
+	FloatParameter* stopRecVolumeThreshold;
 
 	ControllableContainer adsrCC;
 	FloatParameter* attack;
@@ -90,7 +91,7 @@ public:
 	MidiKeyboardState keyboardState;
 
 
-	enum NoteState { EMPTY, RECORDING, FILLED, PROCESSING, PLAYING };
+	enum NoteState { EMPTY, ONSET, RECORDING, FILLED, PROCESSING, PLAYING };
 	class SamplerNote :
 		public Thread
 	{
