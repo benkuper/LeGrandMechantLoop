@@ -17,7 +17,7 @@ class VSTParameterContainer :
     public Inspectable::InspectableListener
 {
 public:
-    VSTParameterContainer(AudioPluginInstance * vst);
+    VSTParameterContainer(AudioPluginInstance * vst, bool forceFloatParams = false);
     ~VSTParameterContainer();
 
     AudioPluginInstance* vst;
@@ -26,6 +26,7 @@ public:
     HashMap<int,  VSTParameterLink *> idParamMap;
     HashMap<Inspectable*, int> inspectableIdMap;
 
+    bool forceFloatParams;
     int maxMacros;
 
     void setMaxMacros(int val);

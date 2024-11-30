@@ -53,6 +53,8 @@ VSTNode::VSTNode(var params) :
 	autoActivateRange->setBounds(0, 0, 1, 1);
 	autoActivateRange->setPoint(0, 0);
 
+	forceFloatVSTParams = addBoolParameter("Force Float VST Params", "If checked, the VST parameters will be forced to be float", false);
+
 	addChildControllableContainer(&macrosCC);
 
 
@@ -137,7 +139,7 @@ void VSTNode::setupVST(PluginDescription* description)
 
 		if (vst != nullptr)
 		{
-			vstParamsCC.reset(new VSTParameterContainer(vst.get()));
+			vstParamsCC.reset(new VSTParameterContainer(vst.get(), forceFloatVSTParams->boolValue()));
 			vstParamsCC->setMaxMacros(numMacros->intValue());
 			addChildControllableContainer(vstParamsCC.get());
 
@@ -318,6 +320,10 @@ void VSTNode::onContainerParameterChangedInternal(Parameter* p)
 		updateMacros();
 	}
 	else if (p == autoActivateMacroIndex || p == autoActivateRange || p == dryWet || p == disableOnDry) checkAutoBypass();
+	else if (p == forceFloatVSTParams)
+	{
+		if (vstParamsCC != nullptr) vstParamsCC->forceFloatParams = forceFloatVSTParams->boolValue();
+	}
 }
 
 void VSTNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)

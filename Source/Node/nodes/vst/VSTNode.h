@@ -30,6 +30,7 @@ public:
 	IntParameter* numMacros;
 	IntParameter* autoActivateMacroIndex;
 	Point2DParameter* autoActivateRange;
+	BoolParameter* forceFloatVSTParams;
 
 	BoolParameter* showPluginParam;
 	BoolParameter* showMidiDevice;

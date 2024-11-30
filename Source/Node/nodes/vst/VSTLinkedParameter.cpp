@@ -131,11 +131,11 @@ void VSTLinkedBoolParameter::setValueInternal(var& value)
 
 
 //CONTAINER
-
-VSTParameterContainer::VSTParameterContainer(AudioPluginInstance* vst) :
+VSTParameterContainer::VSTParameterContainer(AudioPluginInstance* vst, bool forceFloatParams) :
 	ControllableContainer("VST Parameters"),
 	vst(vst),
-	maxMacros(0)
+	maxMacros(0),
+	forceFloatParams(forceFloatParams)
 {
 	fillContainerForVSTParamGroup(this, &vst->getParameterTree()); //fill empty containers and create idContainerMap
 }
@@ -235,6 +235,8 @@ void VSTParameterContainer::fillContainerForVSTParamGroup(ControllableContainer*
 
 VSTParameterLink* VSTParameterContainer::createParameterForVSTParam(AudioProcessorParameter* vstParam)
 {
+	if (forceFloatParams) return new VSTLinkedFloatParameter(vstParam);
+	
 	VSTParameterLink* p = nullptr;
 	if (vstParam->isBoolean()) p = new VSTLinkedBoolParameter(vstParam);
 	else if (vstParam->isDiscrete() && vstParam->getNumSteps() != INT32_MAX)
