@@ -101,7 +101,7 @@ public:
 
 	//Helpers
 	virtual bool hasContent(bool includeRecordPhase) const;
-	bool isRecording(bool includeWillRecord, bool includeRetroRec = false) const;
+	bool isRecording(bool includeWillRecord, bool includeRetroRec = true) const;
 	bool isPlaying(bool includeWillPlay) const;
 	bool isWaiting(bool waitingForRecord = true, bool waitingForFinishRecord = true, bool waitingForPlay = true, bool waitingForStop = true, bool waitingForRetroRec = true) const;
 };

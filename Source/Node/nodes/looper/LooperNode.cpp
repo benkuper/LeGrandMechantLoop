@@ -317,7 +317,7 @@ void LooperNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc,
 	}
 	else if (c == recordingState)
 	{
-		setCurrentTrack(currentTrack);
+		//setCurrentTrack(currentTrack);
 	}
 
 

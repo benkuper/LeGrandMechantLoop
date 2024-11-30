@@ -283,7 +283,7 @@ void LooperTrack::finishRecordingAndPlay()
 	if (!isFullFree)
 	{
 		loopBeat->setRange(0, numBeats - 1);
-		loopBar->setRange(0, jmax<int>(floor(numBeats * 1.0f / beatsPerBar) - 1, 0));
+		loopBar->setRange(0, jmax<int>(floor(numBeats * 1.0f / beatsPerBar) - 1, 1));
 
 		int numRecordedSamplesPerfect = numBeats * Transport::getInstance()->getBeatNumSamples();
 		numRecordedSamples = numRecordedSamplesPerfect;
@@ -416,18 +416,23 @@ void LooperTrack::onContainerTriggerTriggered(Trigger* t)
 	if (t == playRecordTrigger)
 	{
 		recordOrPlay();
+		looper->setCurrentTrack(this);
 	}
 	else if (t == retroRecTrigger)
 	{
-		if (looper->retroRecMode->getValueDataAsEnum<LooperNode::RetroRecMode>() == LooperNode::RETRO_NONE)
-		{
-			recordOrPlay();
-		}
-		else
+		LooperNode::RetroRecMode rm = looper->retroRecMode->getValueDataAsEnum<LooperNode::RetroRecMode>();
+		if (rm == LooperNode::RETRO_NONE || !Transport::getInstance()->isCurrentlyPlaying->boolValue()) playRecordTrigger->trigger();
+		else if (trackState->getValueDataAsEnum<TrackState>() == IDLE) //cancel recording
 		{
 			trackState->setValueWithData(LooperTrack::RETRO_REC);
 			retroRecCount++;
+
 		}
+		else if (trackState->getValueDataAsEnum<TrackState>() == RETRO_REC)
+		{
+			retroRecCount++;
+		}
+		looper->setCurrentTrack(this);
 	}
 	else if (t == playTrigger)
 	{
