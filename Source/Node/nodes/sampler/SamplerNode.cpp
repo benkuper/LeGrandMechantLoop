@@ -796,12 +796,16 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			float normDecibels = jmap(decibels, -100.f, 6.f, 0.f, 1.f);
 			if (normDecibels < stopRecVolumeThreshold->floatValue())
 			{
-				LOG("Auto stop recording");
+				//LOG("Auto stop recording");
 				stopRecording();
 			}
 		}
 	}
 
+	AudioSampleBuffer onSetCheckBuffer(buffer.getNumChannels(), buffer.getNumSamples());
+	onSetCheckBuffer.makeCopyOf(buffer);
+
+	if (!monitor->boolValue()) buffer.clear();
 	keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), false);
 
 	AudioSampleBuffer tmpNoteBuffer(buffer.getNumChannels(), blockSize);
@@ -818,13 +822,13 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 		if (st == ONSET)
 		{
 			if (isRecording->boolValue()) continue;
-			float mag = buffer.getMagnitude(0, blockSize);
+			float mag = onSetCheckBuffer.getMagnitude(0, blockSize);
 
 			float decibels = Decibels::gainToDecibels(mag, -100.f);
 			float normDecibels = jmap(decibels, -100.f, 6.f, 0.f, 1.f);
 			if (normDecibels > recVolumeThreshold->floatValue())
 			{
-				LOG("Auto start recording " << i);
+				//LOG("Auto start recording " << i);
 				startRecording(i);
 			}
 			continue;
@@ -961,9 +965,6 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			}
 		}
 	}
-
-	if (!monitor->boolValue()) buffer.clear();
-
 }
 
 
