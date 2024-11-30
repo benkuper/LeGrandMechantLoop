@@ -802,7 +802,6 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 		}
 	}
 
-	if (!monitor->boolValue()) buffer.clear();
 	keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), false);
 
 	AudioSampleBuffer tmpNoteBuffer(buffer.getNumChannels(), blockSize);
@@ -962,6 +961,9 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 			}
 		}
 	}
+
+	if (!monitor->boolValue()) buffer.clear();
+
 }
 
 
