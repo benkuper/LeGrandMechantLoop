@@ -34,6 +34,7 @@ public:
 		this->numChannels = numChannels;
 
 		audioBuffer = std::make_unique<AudioBuffer<Type>>(numChannels, bufferSize);
+		audioBuffer.get()->clear();
 		writePosition = 0;
 	}
 
