@@ -349,9 +349,9 @@ void NodeManager::onControllableFeedbackUpdate(ControllableContainer* cc, Contro
 
 void NodeManager::updateLooperList()
 {
-	Array<EnumParameter::EnumValue*> looperOptions;
+	Array<EnumParameter::EnumValue> looperOptions;
 	Array<LooperNode*> loopers = getItemsWithType<LooperNode>();
-	for (auto& i : loopers) looperOptions.add(new EnumParameter::EnumValue(i->niceName, i->shortName));
+	for (auto& i : loopers) looperOptions.add(EnumParameter::EnumValue(i->niceName, i->shortName));
 	currentLooperEnum->setOptions(looperOptions);
 }
 
@@ -372,12 +372,12 @@ void NodeManager::updatePresetEnum()
 
 	if (presets.isVoid()) presets = var(new DynamicObject()); //safety
 
-	Array<EnumParameter::EnumValue*> options;
-	options.add(new EnumParameter::EnumValue("None", var()));
+	Array<EnumParameter::EnumValue> options;
+	options.add(EnumParameter::EnumValue("None", var()));
 
 
 	NamedValueSet& nvSet = presets.getDynamicObject()->getProperties();
-	for (auto& nv : nvSet) options.add(new EnumParameter::EnumValue(nv.name.toString(), nv.name.toString()));
+	for (auto& nv : nvSet) options.add(EnumParameter::EnumValue(nv.name.toString(), nv.name.toString()));
 	presetEnum->setOptions(options);
 }
 
@@ -410,33 +410,33 @@ bool NodeManager::handleRemoteControlData(const OSCMessage& msg, const String& c
 
 	if (s == "/getSetup")
 	{
-		OSCMessage im("/inSlots");
-		OSCMessage om("/outSlots");
-		for (auto& n : items)
-		{
-			for (int i = 0; i < n->audioInputNames.size(); i++) im.addString(n->niceName + ":" + n->audioInputNames[i]);
-			for (int i = 0; i < n->audioOutputNames.size(); i++) om.addString(n->niceName + ":" + n->audioOutputNames[i]);
-		}
-		OSCRemoteControl::getInstance()->sendManualFeedback(im);
-		OSCRemoteControl::getInstance()->sendManualFeedback(om);
+	//	OSCMessage im("/inSlots");
+	//	OSCMessage om("/outSlots");
+	//	for (auto& n : items)
+	//	{
+	//		for (int i = 0; i < n->audioInputNames.size(); i++) im.addString(n->niceName + ":" + n->audioInputNames[i]);
+	//		for (int i = 0; i < n->audioOutputNames.size(); i++) om.addString(n->niceName + ":" + n->audioOutputNames[i]);
+	//	}
+	//	OSCRemoteControl::getInstance()->sendManualFeedback(im);
+	//	OSCRemoteControl::getInstance()->sendManualFeedback(om);
 
 
-		OSCMessage am("/audioConnections");
-		for (auto& c : connectionManager->items)
-		{
-			if (c->connectionType != NodeConnection::ConnectionType::AUDIO) continue;
-			NodeAudioConnection* ac = dynamic_cast<NodeAudioConnection*>(c);
-			am.addString(ac->sourceNode->niceName);
-			am.addString(ac->destNode->niceName);
-			am.addInt32(ac->channelMap.size());
-			for (auto& m : ac->channelMap)
-			{
-				String sourceOutputName = ac->sourceNode->audioOutputNames[m.sourceChannel];
-				String destInputName = ac->destNode->audioInputNames[m.destChannel];
-				am.addString(sourceOutputName + ":" + destInputName);
-			}
-		}
-		OSCRemoteControl::getInstance()->sendManualFeedback(am);
+	//	OSCMessage am("/audioConnections");
+	//	for (auto& c : connectionManager->items)
+	//	{
+	//		if (c->connectionType != NodeConnection::ConnectionType::AUDIO) continue;
+	//		NodeAudioConnection* ac = dynamic_cast<NodeAudioConnection*>(c);
+	//		am.addString(ac->sourceNode->niceName);
+	//		am.addString(ac->destNode->niceName);
+	//		am.addInt32(ac->channelMap.size());
+	//		for (auto& m : ac->channelMap)
+	//		{
+	//			String sourceOutputName = ac->sourceNode->audioOutputNames[m.sourceChannel];
+	//			String destInputName = ac->destNode->audioInputNames[m.destChannel];
+	//			am.addString(sourceOutputName + ":" + destInputName);
+	//		}
+	//	}
+	//	OSCRemoteControl::getInstance()->sendManualFeedback(am);
 	}
 	else if (s == "/connectAudio")
 	{

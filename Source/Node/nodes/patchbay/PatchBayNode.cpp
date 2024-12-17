@@ -34,10 +34,10 @@ PatchBayNode::PatchBayNode(var params) :
 
 void PatchBayNode::updatePresetEnum()
 {
-	Array<EnumParameter::EnumValue*> options;
-	options.add(new EnumParameter::EnumValue("None", var()));
+	Array<EnumParameter::EnumValue> options;
+	options.add(EnumParameter::EnumValue("None", var()));
 	NamedValueSet& nvSet = presets.getDynamicObject()->getProperties();
-	for (auto& nv : nvSet) options.add(new EnumParameter::EnumValue(nv.name.toString(), nv.name.toString()));
+	for (auto& nv : nvSet) options.add(EnumParameter::EnumValue(nv.name.toString(), nv.name.toString()));
 	presetEnum->setOptions(options);
 }
 
@@ -192,9 +192,9 @@ void PatchConnection::updateInputOptions(StringArray options, const String& forc
 {
 	String tmpInput;
 	if (input->getValueKey().isNotEmpty()) tmpInput = input->getValueKey();
-	Array<EnumParameter::EnumValue*> values;
+	Array<EnumParameter::EnumValue> values;
 
-	for (int i = 0; i < options.size(); i++) values.add(new EnumParameter::EnumValue(options[i], options[i]));
+	for (int i = 0; i < options.size(); i++) values.add(EnumParameter::EnumValue(options[i], options[i]));
 
 	input->setOptions(values);
 	if (forceNewVal.isNotEmpty()) input->setValueWithKey(forceNewVal);
@@ -208,9 +208,9 @@ void PatchConnection::updateOutputOptions(StringArray options, const String& for
 {
 	String tmpOutput;
 	if (output->getValueKey().isNotEmpty()) tmpOutput = output->getValueKey();
-	Array<EnumParameter::EnumValue*> values;
+	Array<EnumParameter::EnumValue> values;
 
-	for (int i = 0; i < options.size(); i++) values.add(new EnumParameter::EnumValue(options[i], options[i]));
+	for (int i = 0; i < options.size(); i++) values.add(EnumParameter::EnumValue(options[i], options[i]));
 
 	output->setOptions(values);
 	if (forceNewVal.isNotEmpty()) output->setValueWithKey(forceNewVal);
