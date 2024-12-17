@@ -403,6 +403,71 @@ void NodeManager::loadCurrentPreset()
 	}
 }
 
+bool NodeManager::handleRemoteControlData(const OSCMessage& msg, const String& clientId)
+{
+	String s = msg.getAddressPattern().toString().substring(getControlAddress().length());
+	LOG(s);
+
+	if (s == "/getSetup")
+	{
+		OSCMessage im("/inSlots");
+		OSCMessage om("/outSlots");
+		for (auto& n : items)
+		{
+			for (int i = 0; i < n->audioInputNames.size(); i++) im.addString(n->niceName + ":" + n->audioInputNames[i]);
+			for (int i = 0; i < n->audioOutputNames.size(); i++) om.addString(n->niceName + ":" + n->audioOutputNames[i]);
+		}
+		OSCRemoteControl::getInstance()->sendManualFeedback(im);
+		OSCRemoteControl::getInstance()->sendManualFeedback(om);
+
+
+		OSCMessage am("/audioConnections");
+		for (auto& c : connectionManager->items)
+		{
+			if (c->connectionType != NodeConnection::ConnectionType::AUDIO) continue;
+			NodeAudioConnection* ac = dynamic_cast<NodeAudioConnection*>(c);
+			am.addString(ac->sourceNode->niceName);
+			am.addString(ac->destNode->niceName);
+			am.addInt32(ac->channelMap.size());
+			for (auto& m : ac->channelMap)
+			{
+				String sourceOutputName = ac->sourceNode->audioOutputNames[m.sourceChannel];
+				String destInputName = ac->destNode->audioInputNames[m.destChannel];
+				am.addString(sourceOutputName + ":" + destInputName);
+			}
+		}
+		OSCRemoteControl::getInstance()->sendManualFeedback(am);
+	}
+	else if (s == "/connectAudio")
+	{
+		Node* n1 = getItemWithName(OSCHelpers::getStringArg(msg[0]), true);
+		Node* n2 = getItemWithName(OSCHelpers::getStringArg(msg[1]), true);
+		String outputName = OSCHelpers::getStringArg(msg[2]);
+		String inputName = OSCHelpers::getStringArg(msg[3]);
+
+		if (n1 != nullptr && n2 != nullptr)
+		{
+			connectionManager->addConnection(n1, n2, NodeConnection::AUDIO);
+			NodeAudioConnection* ac = dynamic_cast<NodeAudioConnection*>(connectionManager->getConnectionForSourceAndDest(n1, n2, NodeConnection::AUDIO));
+			if (ac != nullptr)
+			{
+				int sourceChannel = n1->audioOutputNames.indexOf(outputName);
+				int destChannel = n2->audioInputNames.indexOf(inputName);
+
+				ac->connectChannels(sourceChannel, destChannel);
+			}
+
+		}
+	}
+	return false;
+}
+
+void NodeManager::sendConnectionsToRemoteControl()
+{
+	if (!OSCRemoteControl::getInstance()->manualSendCC.enabled->boolValue()) return;
+
+}
+
 
 var NodeManager::getJSONData()
 {

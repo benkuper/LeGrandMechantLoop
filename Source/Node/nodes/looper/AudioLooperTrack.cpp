@@ -43,6 +43,8 @@ void AudioLooperTrack::updateStretch(bool force)
 {
 	LooperTrack::updateStretch(force);
 
+	if (isCurrentlyLoadingData || Engine::mainEngine->isLoadingFile) return;
+
 	if (bpmAtRecord == 0 || (!isPlaying(true) && !force) || stretch == 1)
 	{
 		stretchedBuffer.clear();

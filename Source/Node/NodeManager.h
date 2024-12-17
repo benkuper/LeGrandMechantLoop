@@ -103,6 +103,9 @@ public:
 	void updatePresetEnum();
 	void loadCurrentPreset();
 
+	bool handleRemoteControlData(const OSCMessage& msg, const String& clientId) override;
+	void sendConnectionsToRemoteControl();
+
 	var getJSONData() override;
 	void loadJSONDataManagerInternal(var data) override;
 	void afterLoadJSONDataInternal() override;
