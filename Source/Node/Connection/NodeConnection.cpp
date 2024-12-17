@@ -121,9 +121,9 @@ void NodeConnection::inspectableDestroyed(Inspectable* i)
 	}
 }
 
-var NodeConnection::getJSONData()
+var NodeConnection::getJSONData(bool includeNonOverriden)
 {
-	var data = BaseItem::getJSONData();
+	var data = BaseItem::getJSONData(includeNonOverriden);
 	if (sourceNode != nullptr) data.getDynamicObject()->setProperty("sourceNode", sourceNode->shortName);
 	if (destNode != nullptr) data.getDynamicObject()->setProperty("destNode", destNode->shortName);
 	data.getDynamicObject()->setProperty("connectionType", connectionType);
@@ -378,9 +378,9 @@ InspectableEditor* NodeAudioConnection::getEditorInternal(bool isRoot, Array<Ins
 }
 
 
-var NodeAudioConnection::getJSONData()
+var NodeAudioConnection::getJSONData(bool includeNonOverriden)
 {
-	var data = NodeConnection::getJSONData();
+	var data = NodeConnection::getJSONData(includeNonOverriden);
 
 	data.getDynamicObject()->setProperty("channels", getChannelMapData());
 

@@ -160,9 +160,9 @@ void PatchBayNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& 
 	buffer.makeCopyOf(tmpBuffer, true);
 }
 
-var PatchBayNode::getJSONData()
+var PatchBayNode::getJSONData(bool includeNonOverriden)
 {
-	var data = Node::getJSONData();
+	var data = Node::getJSONData(includeNonOverriden);
 	data.getDynamicObject()->setProperty("presets", presets);
 	data.getDynamicObject()->setProperty("connections", connections.getJSONData());
 	return data;

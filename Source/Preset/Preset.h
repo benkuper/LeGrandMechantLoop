@@ -83,7 +83,7 @@ public:
 	void controllableAdded(Controllable* c); //for linked presets
 
 
-	var getJSONData() override;
+	var getJSONData(bool includeNonOverriden = false) override;
 	void loadJSONDataItemInternal(var data) override;
 
 	void controllableControlAddressChanged(Controllable* c) override;

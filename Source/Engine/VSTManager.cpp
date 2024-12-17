@@ -202,9 +202,9 @@ void VSTManager::reset()
 	idDescriptionMap.clear();
 }
 
-var VSTManager::getJSONData()
+var VSTManager::getJSONData(bool includeNonOverriden)
 {
-	var data = ControllableContainer::getJSONData();
+	var data = ControllableContainer::getJSONData(includeNonOverriden);
 	var descData;
 	for (auto& d : descriptions) descData.append(d->createXml()->toString());
 	data.getDynamicObject()->setProperty("descriptions", descData);

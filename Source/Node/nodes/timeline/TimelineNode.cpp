@@ -105,9 +105,9 @@ void TimelineNode::selectThis(bool addToSelection, bool notify)
 	if (TimeMachineView* v = ShapeShifterManager::getInstance()->getContentForType<TimeMachineView>()) v->setSequence(&sequence);
 }
 
-var TimelineNode::getJSONData()
+var TimelineNode::getJSONData(bool includeNonOverriden)
 {
-	var data = Node::getJSONData();
+	var data = Node::getJSONData(includeNonOverriden);
 	data.getDynamicObject()->setProperty("sequence", sequence.getJSONData());
 	return data;
 }

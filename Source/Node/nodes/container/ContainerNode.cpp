@@ -115,9 +115,9 @@ void ContainerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer&
 	containerGraph.processBlock(buffer, midiMessages);
 }
 
-var ContainerNode::getJSONData()
+var ContainerNode::getJSONData(bool includeNonOverriden)
 {
-	var data = Node::getJSONData();
+	var data = Node::getJSONData(includeNonOverriden);
 	data.getDynamicObject()->setProperty("manager", nodeManager->getJSONData());
 	return data;
 }

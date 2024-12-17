@@ -244,9 +244,9 @@ String AudioManager::getCurrentDeviceDescription()
 	return deviceName + " : " + String(currentSampleRate) + "Hz, " + String(currentBufferSize) + " samples";
 }
 
-var AudioManager::getJSONData()
+var AudioManager::getJSONData(bool includeNonOverriden)
 {
-	var data = ControllableContainer::getJSONData();
+	var data = ControllableContainer::getJSONData(includeNonOverriden);
 	std::unique_ptr<XmlElement> xmlData(am.createStateXml());
 	if (xmlData != nullptr)  data.getDynamicObject()->setProperty("audioSettings", xmlData->toString());
 

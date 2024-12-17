@@ -71,7 +71,7 @@ public:
 
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
-	var getJSONData() override;
+	var getJSONData(bool includeNonOverriden = false) override;
 	void loadJSONDataItemInternal(var data) override;
 	void afterLoadJSONDataInternal() override;
 

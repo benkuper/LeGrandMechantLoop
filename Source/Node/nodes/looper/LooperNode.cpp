@@ -551,9 +551,9 @@ int LooperNode::getRetroNumSamples(int retroCount)
 	return Transport::getInstance()->getSamplesForBeat(getRetroNumBeats(retroCount));
 }
 
-var LooperNode::getJSONData()
+var LooperNode::getJSONData(bool includeNonOverriden)
 {
-	var data = Node::getJSONData();
+	var data = Node::getJSONData(includeNonOverriden);
 	data.getDynamicObject()->setProperty(controlsCC.shortName, controlsCC.getJSONData());
 	data.getDynamicObject()->setProperty(trackParamsCC.shortName, trackParamsCC.getJSONData());
 	data.getDynamicObject()->setProperty(recordCC.shortName, recordCC.getJSONData());

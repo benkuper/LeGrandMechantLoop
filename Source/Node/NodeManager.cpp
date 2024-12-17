@@ -469,9 +469,9 @@ void NodeManager::sendConnectionsToRemoteControl()
 }
 
 
-var NodeManager::getJSONData()
+var NodeManager::getJSONData(bool includeNonOverriden)
 {
-	var data = BaseManager::getJSONData();
+	var data = BaseManager::getJSONData(includeNonOverriden);
 	data.getDynamicObject()->setProperty(looperControlCC.shortName, looperControlCC.getJSONData());
 	data.getDynamicObject()->setProperty(connectionManager->shortName, connectionManager->getJSONData());
 	data.getDynamicObject()->setProperty(presetsCC.shortName, presetsCC.getJSONData());

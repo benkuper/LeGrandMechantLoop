@@ -494,9 +494,9 @@ void VSTNode::bypassInternal()
 	}
 }
 
-var VSTNode::getJSONData()
+var VSTNode::getJSONData(bool includeNonOverriden)
 {
-	var data = Node::getJSONData();
+	var data = Node::getJSONData(includeNonOverriden);
 	if (vst != nullptr) data.getDynamicObject()->setProperty("vstState", getVSTState());
 
 	if (vstParamsCC != nullptr) data.getDynamicObject()->setProperty("vstParams", vstParamsCC->getJSONData());

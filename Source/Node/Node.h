@@ -140,7 +140,7 @@ public:
 
 	virtual void bypassInternal() {}
 
-	virtual var getJSONData() override;
+	virtual var getJSONData(bool includeNonOverriden = false) override;
 	virtual void loadJSONDataItemInternal(var data) override;
 	virtual void afterLoadJSONDataInternal() override;
 

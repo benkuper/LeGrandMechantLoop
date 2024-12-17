@@ -41,7 +41,7 @@ public:
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 	void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
-	var getJSONData() override;
+	var getJSONData(bool includeNonOverriden = false) override;
 	void loadJSONDataItemInternal(var data) override;
 
 	BaseNodeViewUI* createViewUI() override;

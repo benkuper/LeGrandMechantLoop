@@ -78,9 +78,9 @@ void LGMLEngine::clearInternal()
     Transport::getInstance()->clear();
 }
 
-var LGMLEngine::getJSONData()
+var LGMLEngine::getJSONData(bool includeNonOverriden)
 {
-    var data = Engine::getJSONData();
+    var data = Engine::getJSONData(includeNonOverriden);
     data.getDynamicObject()->setProperty(RootNodeManager::getInstance()->shortName, RootNodeManager::getInstance()->getJSONData());
     data.getDynamicObject()->setProperty(Transport::getInstance()->shortName, Transport::getInstance()->getJSONData());
     //data.getDynamicObject()->setProperty(MacroManager::getInstance()->shortName, MacroManager::getInstance()->getJSONData());

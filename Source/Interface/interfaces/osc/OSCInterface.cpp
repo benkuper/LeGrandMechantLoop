@@ -428,9 +428,9 @@ var OSCInterface::argumentToVar(const OSCArgument& a)
 	return var("error");
 }
 
-var OSCInterface::getJSONData()
+var OSCInterface::getJSONData(bool includeNonOverriden)
 {
-	var data = Interface::getJSONData();
+	var data = Interface::getJSONData(includeNonOverriden);
 	
 	var inputData = receiveCC->getJSONData();
 	if (!inputData.isVoid()) data.getDynamicObject()->setProperty("input", inputData);

@@ -621,9 +621,9 @@ void Node::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMess
 	for (int i = getNumAudioInputs(); i < getNumAudioOutputs(); i++) buffer.clear(i, 0, buffer.getNumSamples());
 }
 
-var Node::getJSONData()
+var Node::getJSONData(bool includeNonOverriden)
 {
-	var data = BaseItem::getJSONData();
+	var data = BaseItem::getJSONData(includeNonOverriden);
 	if (!saveAndLoadRecursiveData)
 	{
 		if (outControl != nullptr) data.getDynamicObject()->setProperty("out", outControl->getJSONData());

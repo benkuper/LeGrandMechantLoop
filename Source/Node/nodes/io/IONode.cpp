@@ -205,9 +205,9 @@ void IONode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMe
 	buffer.clear();
 }
 
-var IONode::getJSONData()
+var IONode::getJSONData(bool includeNonOverriden)
 {
-	var data = Node::getJSONData();
+	var data = Node::getJSONData(includeNonOverriden);
 	var channelsData;
 	for (auto& cc : channelsCC.controllableContainers) channelsData.append(((VolumeControl*)cc.get())->getJSONData());
 	data.getDynamicObject()->setProperty("channels", channelsData);

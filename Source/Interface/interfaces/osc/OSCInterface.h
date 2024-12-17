@@ -111,7 +111,7 @@ public:
 
 
 	//save / load
-	virtual var getJSONData() override;
+	virtual var getJSONData(bool includeNonOverriden = false) override;
 	virtual void loadJSONDataInternal(var data) override;
 
 	virtual void onContainerParameterChangedInternal(Parameter* p) override;

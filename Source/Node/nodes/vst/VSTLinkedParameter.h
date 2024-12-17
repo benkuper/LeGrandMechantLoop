@@ -42,7 +42,7 @@ public:
 
     bool hasParam(int index) { return idParamMap.contains(index); }
 
-    var getJSONData() override;
+    var getJSONData(bool includeNonOverriden = false) override;
     void loadJSONData(var data, bool createIfNotThere = false) override;
 
     InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> inspectables = {}) override;

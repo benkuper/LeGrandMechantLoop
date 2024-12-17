@@ -129,7 +129,7 @@ public:
 	int getRetroNumSamples(int retroCount);
 
 
-	var getJSONData() override;
+	var getJSONData(bool includeNonOverriden = false) override;
 	void loadJSONDataItemInternal(var data) override;
 
 	void fileSaved(bool) override;

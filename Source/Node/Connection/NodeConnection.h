@@ -37,7 +37,7 @@ public:
 
     void inspectableDestroyed(Inspectable *) override;
 
-    var getJSONData() override;
+    var getJSONData(bool includeNonOverriden = false) override;
     void loadJSONDataItemInternal(var data) override;
     virtual void loadJSONDataConnectionInternal(var data) {}
 
@@ -84,7 +84,7 @@ public:
     void audioInputsChanged(Node* n) override;
     void audioOutputsChanged(Node* n) override;
 
-    var getJSONData() override;
+    var getJSONData(bool includeNonOverriden = false) override;
     void loadJSONDataConnectionInternal(var data) override;
 
     var getChannelMapData();

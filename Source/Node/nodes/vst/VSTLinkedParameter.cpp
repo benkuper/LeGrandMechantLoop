@@ -261,7 +261,7 @@ void VSTParameterContainer::inspectableDestroyed(Inspectable* i)
 	}
 }
 
-var VSTParameterContainer::getJSONData()
+var VSTParameterContainer::getJSONData(bool includeNonOverriden)
 {
 	var data;
 

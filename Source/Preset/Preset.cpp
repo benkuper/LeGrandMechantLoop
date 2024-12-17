@@ -377,9 +377,9 @@ void Preset::controllableAdded(Controllable* c)
 	}
 }
 
-var Preset::getJSONData()
+var Preset::getJSONData(bool includeNonOverriden)
 {
-	var data = BaseItem::getJSONData();
+	var data = BaseItem::getJSONData(includeNonOverriden);
 	data.getDynamicObject()->setProperty("subPresets", subPresets->getJSONData());
 	data.getDynamicObject()->setProperty("linkedPresets", linkedPresetsCC.getJSONData());
 	data.getDynamicObject()->setProperty("values", getPresetValues(false, Array<Controllable*>(), true));

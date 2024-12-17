@@ -110,9 +110,9 @@ void MixerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& mid
 	}
 }
 
-var MixerNode::getJSONData()
+var MixerNode::getJSONData(bool includeNonOverriden)
 {
-	var data = Node::getJSONData();
+	var data = Node::getJSONData(includeNonOverriden);
 	var inData;
 	var outData;
 	for (auto& il : inputLines) inData.append(il->getJSONData());

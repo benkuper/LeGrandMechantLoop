@@ -735,9 +735,9 @@ void SamplerNode::loadBankSamples()
 }
 
 
-var SamplerNode::getJSONData()
+var SamplerNode::getJSONData(bool includeNonOverriden)
 {
-	var data = Node::getJSONData();
+	var data = Node::getJSONData(includeNonOverriden);
 	data.getDynamicObject()->setProperty("viewStartKey", viewStartKey);
 	return data;
 }

@@ -99,7 +99,7 @@ public:
 	void addAudioManagerListener(AudioManagerListener* newListener) { audioManagerListeners.add(newListener); }
 	void removeAudioManagerListener(AudioManagerListener* listener) { audioManagerListeners.remove(listener); }
 
-	var getJSONData() override;
+	var getJSONData(bool includeNonOverriden = false) override;
 	void loadJSONDataInternal(var data) override;
 
 	InspectableEditor* getEditorInternal(bool isRoot, Array<Inspectable*> inspectables = {}) override;

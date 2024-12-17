@@ -161,7 +161,7 @@ public:
 	void loadBankSamples();
 
 
-	var getJSONData() override;
+	var getJSONData(bool includeNonOverriden = false) override;
 	void loadJSONDataItemInternal(var data) override;
 
 	void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;

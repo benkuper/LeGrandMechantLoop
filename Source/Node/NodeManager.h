@@ -106,7 +106,7 @@ public:
 	bool handleRemoteControlData(const OSCMessage& msg, const String& clientId) override;
 	void sendConnectionsToRemoteControl();
 
-	var getJSONData() override;
+	var getJSONData(bool includeNonOverriden = false) override;
 	void loadJSONDataManagerInternal(var data) override;
 	void afterLoadJSONDataInternal() override;
 };
