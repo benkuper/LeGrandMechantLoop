@@ -118,6 +118,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Full</Optimization>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <AdditionalIncludeDirectories>D:\Projects\Dev\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv\src;D:\Projects\Dev\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lilv;D:\Projects\Dev\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sratom;D:\Projects\Dev\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord\src;D:\Projects\Dev\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\sord;D:\Projects\Dev\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\serd;D:\Projects\Dev\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\lv2;D:\Projects\Dev\JUCE\modules\juce_audio_processors\format_types\LV2_SDK\;D:\Projects\Dev\JUCE\modules\juce_audio_processors\format_types\VST3_SDK;..\..\JuceLibraryCode;D:\Projects\Dev\JUCE\modules;..\..\Modules;../../Source;../../External/asio;../../External/asiodriver;../../External/servus/include;../../External/dnssd/include;../../External/vst2;../../External/serial/include;../../External/rubberband/include;../../External/abletonlink/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_WINDOWS;NDEBUG;VST_LOGGING=0;OSC_REMOTE_CONTROL_PORT=44000;LINK_PLATFORM_WINDOWS=1;USE_ABLETONLINK=1;JUCER_VS2022_78A503E=1;JUCE_APP_VERSION=1.1.0b1;JUCE_APP_VERSION_HEX=0x10100;JucePlugin_Build_VST=0;JucePlugin_Build_VST3=0;JucePlugin_Build_AU=0;JucePlugin_Build_AUv3=0;JucePlugin_Build_AAX=0;JucePlugin_Build_Standalone=0;JucePlugin_Build_Unity=0;JucePlugin_Build_LV2=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -140,7 +141,7 @@
       <OutputFile>$(OutDir)\LGML.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(IntDir)\LGML.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -3610,6 +3611,9 @@
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\helpers\crypto\hmac\SHA1.cpp">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Modules\juce_organicui\helpers\NetworkHelpers.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Modules\juce_organicui\helpers\OSCHelpers.cpp">

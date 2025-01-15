@@ -153,7 +153,7 @@ void LooperTrack::stateChanged()
 			//}
 			//else
 			//{
-			if (!looper->firstRecVolumeThreshold->enabled) startRecording();
+ 			if (!looper->firstRecVolumeThreshold->enabled) startRecording();
 			//}
 		}
 	}

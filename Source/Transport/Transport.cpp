@@ -84,25 +84,7 @@ Transport::Transport() :
 	weakLink = addBoolParameter("Weak Link", "Use weak link mode", false);
 	numLinkClients = addIntParameter("Num Link Clients", "Number of Ableton Link clients", 0, 0);
 
-#if USE_ABLETONLINK
-	link.reset(new ableton::Link{ bpm->floatValue() });
 
-	link->setTempoCallback([this](const double p) {
-		DBG("received bpm " << (double)p << " <> " << (double)bpm->value << " / " << (int)(p == (double)bpm->value));
-		bpm->setValue(p);
-		});
-
-	link->setNumPeersCallback([this](const int p) {
-		numLinkClients->setValue(p);
-		});
-
-	link->setStartStopCallback([this](const int p) {
-		if (!linkSyncStartStop->boolValue()) return;
-		if (p == 0) stop();
-		else if (p == 1 || p == 2) play();
-		});
-
-#endif
 
 	AudioManager::getInstance()->am.addAudioCallback(this);
 
@@ -208,13 +190,13 @@ void Transport::finishSetTempo(bool startPlaying)
 	firstLoopBeats->setValue(targetNumBeats);
 	curBar->setValue(0);
 	curBeat->setValue(0);
-	
+
 
 	transportListeners.call(&TransportListener::beatNumSamplesChanged);
 
 	if (startPlaying) playTrigger->trigger();
 
-	if (useAbletonLink->boolValue() && resetLinkTimeOnPlay->boolValue() && link->numPeers() > 0)
+	if (link != nullptr && useAbletonLink->boolValue() && resetLinkTimeOnPlay->boolValue() && link->numPeers() > 0)
 	{
 		auto session = link->captureAppSessionState();
 		session.forceBeatAtTime(0, link->clock().micros(), targetNumBeats);
@@ -288,7 +270,7 @@ void Transport::onContainerParameterChanged(Parameter* p)
 		transportListeners.call(&TransportListener::playStateChanged, isCurrentlyPlaying->boolValue(), false);
 
 #if USE_ABLETONLINK
-		if (linkSyncStartStop->boolValue())
+		if (linkSyncStartStop->boolValue() && link != nullptr)
 		{
 			auto session = link->captureAppSessionState();
 			session.setIsPlaying(isCurrentlyPlaying->boolValue(), link->clock().micros());
@@ -335,7 +317,7 @@ void Transport::onContainerParameterChanged(Parameter* p)
 	}
 	else if (p == linkSyncStartStop)
 	{
-		if (useAbletonLink->boolValue()) link->enableStartStopSync(linkSyncStartStop->boolValue());
+		if (useAbletonLink->boolValue() && link != nullptr) link->enableStartStopSync(linkSyncStartStop->boolValue());
 	}
 }
 
@@ -511,20 +493,40 @@ void Transport::setupAbletonLink()
 #if USE_ABLETONLINK
 	if (useAbletonLink->boolValue())
 	{
+		link.reset(new ableton::Link{ bpm->floatValue() });
+
+		link->setTempoCallback([this](const double p) {
+			DBG("received bpm " << (double)p << " <> " << (double)bpm->value << " / " << (int)(p == (double)bpm->value));
+			bpm->setValue(p);
+			});
+
+		link->setNumPeersCallback([this](const int p) {
+			numLinkClients->setValue(p);
+			});
+
+		link->setStartStopCallback([this](const int p) {
+			if (!linkSyncStartStop->boolValue()) return;
+			if (p == 0) stop();
+			else if (p == 1 || p == 2) play();
+			});
+
 
 		link->enableStartStopSync(linkSyncStartStop->boolValue());
 		link->enable(true);
 
 		jassert(link->isEnabled());
 
+		if (link->isEnabled()) LOG("Ableton Link is now enabled");
+		else LOGWARNING("Link is setup but could be enabled");
 	}
 	else
 	{
-		link->enable(false);
+		link.reset();
+		LOG("Ableton Link is now disabled");
+
 	}
 #endif
 
-	LOG("Ableton Link is now " << (link->isEnabled() ? "enabled" : "disabled"));
 }
 
 void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
@@ -537,7 +539,7 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 	if (isCurrentlyPlaying->boolValue())
 	{
 #if USE_ABLETONLINK
-		if (link->isEnabled() && link->numPeers() > 0 && !weakLink->boolValue())
+		if (link != nullptr && link->isEnabled() && link->numPeers() > 0 && !weakLink->boolValue())
 		{
 			checkLinkOnNextAudioCallback = false;
 			const int bPerBar = beatsPerBar->intValue();

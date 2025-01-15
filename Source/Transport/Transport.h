@@ -162,7 +162,7 @@ public:
 		virtual void playStateChanged(bool isPlaying, bool forceRestart) {}
 	};
 
-	DECLARE_INSPECTACLE_SAFE_LISTENER(Transport, transport)
+	DECLARE_INSPECTACLE_SAFE_NONBLOCKING_LISTENER(Transport, transport)
 
 	//DECLARE_ASYNC_EVENT(Transport, Transport, transport, ENUM_LIST(TIME_SIGNATURE_CHANGED, BPM_CHANGED))
 };
