@@ -218,35 +218,24 @@ void NodeManager::onControllableFeedbackUpdate(ControllableContainer* cc, Contro
 	}
 	else if (c == playAllLoopers)
 	{
-		for (auto& n : items)
-		{
-			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->playAllTrigger->trigger();
-			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->playAllLoopers->trigger();
-		}
+		Array<LooperNode*> loopers = getLoopers(true, true, true);
+		for (auto& looper : loopers) looper->playAllTrigger->trigger();
 	}
 	else if (c == stopAllLoopers)
 	{
-		for (auto& n : items)
-		{
-			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->stopAllTrigger->trigger();
-			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->stopAllLoopers->trigger();
-		}
+		Array<LooperNode*> loopers = getLoopers(true, true, true);
+		for (auto& looper : loopers) looper->stopAllTrigger->trigger();
+			
 	}
 	else if (c == clearAllLoopers)
 	{
-		for (auto& n : items)
-		{
-			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->clearAllTrigger->trigger();
-			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->clearAllLoopers->trigger();
-		}
+		Array<LooperNode*> loopers = getLoopers(true, true, false);
+		for (auto& looper : loopers)  looper->clearAllTrigger->trigger();
 	}
 	else if (c == tmpMuteAllLoopers)
 	{
-		for (auto& n : items)
-		{
-			if (LooperNode* looper = dynamic_cast<LooperNode*>(n)) looper->tmpMuteAllTrigger->trigger();
-			else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n)) cNode->nodeManager->tmpMuteAllLoopers->trigger();
-		}
+		Array<LooperNode*> loopers = getLoopers(true, true, true);
+		for (auto& looper : loopers) looper->tmpMuteAllTrigger->trigger();
 	}
 	else if (c == clearLastManipTrack)
 	{
@@ -466,6 +455,31 @@ void NodeManager::sendConnectionsToRemoteControl()
 {
 	if (!OSCRemoteControl::getInstance()->manualSendCC.enabled->boolValue()) return;
 
+}
+
+Array<LooperNode*> NodeManager::getLoopers(bool recursive, bool checkControl, bool checkTransport)
+{
+	Array<LooperNode*> result;
+	for (auto& n : items)
+	{
+		if (LooperNode* looper = dynamic_cast<LooperNode*>(n))
+		{
+			if (!looper->enabled->boolValue()) continue;
+			if (checkControl && looper->excludeFromGlobalControl->boolValue()) continue;
+			if (checkTransport && looper->excludeFromTransportCheck->boolValue()) continue;
+			result.add(looper);
+		}
+		else if (ContainerNode* cNode = dynamic_cast<ContainerNode*>(n))
+		{
+			if (!cNode->enabled->boolValue()) continue;
+			if (recursive)
+			{
+				result.addArray(cNode->nodeManager->getLoopers(true, checkControl, checkTransport));
+			}
+		}
+	}
+
+	return result;
 }
 
 

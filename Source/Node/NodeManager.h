@@ -106,6 +106,8 @@ public:
 	bool handleRemoteControlData(const OSCMessage& msg, const String& clientId) override;
 	void sendConnectionsToRemoteControl();
 
+	Array<LooperNode*> getLoopers(bool recursive = false, bool checkControl = false, bool checkTransport = false);
+
 	var getJSONData(bool includeNonOverriden = false) override;
 	void loadJSONDataManagerInternal(var data) override;
 	void afterLoadJSONDataInternal() override;

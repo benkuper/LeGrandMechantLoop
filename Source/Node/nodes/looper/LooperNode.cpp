@@ -91,6 +91,9 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	clearAllTrigger = controlsCC.addTrigger("Clear All", "Clear all the tracks");
 	tmpMuteAllTrigger = controlsCC.addTrigger("Temp Mute All", "This will mute all the tracks that are not already muted, and will unmute them depending on the Temp Mute Mode value");
 
+	excludeFromGlobalControl = controlsCC.addBoolParameter("Exclude From Global Control", "If enabled, this looper will not be affected by the global control triggers", false);
+	excludeFromTransportCheck = controlsCC.addBoolParameter("Exclude From Transport Check", "If enabled, this looper will not be affected by the transport state or affect it for node auto stop", false);
+
 	addChildControllableContainer(&trackParamsCC);
 	addChildControllableContainer(&recordCC);
 	addChildControllableContainer(&controlsCC);

@@ -68,6 +68,8 @@ public:
 	IntParameter* retroTripleRecCount;
 
 	ControllableContainer controlsCC;
+	BoolParameter* excludeFromGlobalControl;
+	BoolParameter* excludeFromTransportCheck;
 	Trigger* recTrigger;
 	Trigger* retroRecTrigger;
 	Trigger* clearCurrentTrigger;
