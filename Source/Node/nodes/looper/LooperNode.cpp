@@ -67,8 +67,13 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	saveLoadMode = saveLoadCC.addEnumParameter("Save Load Mode", "Save and load behaviour");
 	saveLoadMode->addOption("None", NONE)->addOption("Auto", AUTO_SAVELOAD)->addOption("Auto no overwrite", AUTO_NO_OVERWRITE)->addOption("Load Only", LOAD_ONLY)->addOption("Save Only", SAVE_ONLY);
 
+
 	sampleDirectory = saveLoadCC.addFileParameter("Sample Directory", "Directory where samples are stored. It will then look for 1.wav / 2.wav / 3.wav, etc.");
 	sampleDirectory->directoryMode = true;
+
+	quantizationOnLoad = saveLoadCC.addEnumParameter("Quantization On Load", "This is the quantization to use when loading a sample.");
+	quantizationOnLoad->addOption("From File", FROM_FILE)->addOption("From Looper", FROM_LOOPER)->addOption("Free", FREE)->addOption("Bar", BAR)->addOption("Beat", BEAT);
+	loadQuantizationValue = saveLoadCC.addIntParameter("Load Quantization Value", "This is the value to use when loading a sample with a quantization of bar or beat", 1, 1);
 
 	saveSamplesTrigger = saveLoadCC.addTrigger("Save samples", "Save samples in the directory");
 	loadSamplesTrigger = saveLoadCC.addTrigger("Load samples", "Load samples in the directory");

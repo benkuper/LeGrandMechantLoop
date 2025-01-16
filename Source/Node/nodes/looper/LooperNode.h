@@ -57,6 +57,9 @@ public:
 	Trigger* saveSamplesTrigger;
 	Trigger* loadSamplesTrigger;
 	Trigger* clearSamplesTrigger;
+	enum LoadQuantizMode { FROM_LOOPER, FROM_FILE, FREE, BAR, BEAT };
+	EnumParameter* quantizationOnLoad;
+	IntParameter* loadQuantizationValue;
 
 	enum RetroRecMode { RETRO_NONE, RETRO_FIRSTLOOP, RETRO_BEAT, RETRO_BAR };
 	EnumParameter* retroRecMode;

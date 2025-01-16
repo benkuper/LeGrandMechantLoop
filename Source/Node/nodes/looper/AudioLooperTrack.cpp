@@ -486,48 +486,86 @@ void AudioLooperTrack::loadSampleFile(File dir)
 	buffer.setSize(numChannels, blockPerfectLength);
 	reader->read(buffer.getArrayOfWritePointers(), numChannels, 0, blockPerfectLength);
 
-	String infos = reader->metadataValues[WavAudioFormat::riffInfoTitle];
 
-	StringArray infoSplit;
-	infoSplit.addTokens(infos, ";", "");
+	LooperNode::LoadQuantizMode lqm = looper->quantizationOnLoad->getValueDataAsEnum<LooperNode::LoadQuantizMode>();
+	int numQuantiz = looper->loadQuantizationValue->intValue();
 
-	if (infoSplit.size() < 3)
+
+	switch (lqm)
 	{
-		LOGWARNING("This loop file has not been saved by the looper. Trying my best to make something out of it.");
+	case LooperNode::FROM_LOOPER:
+	{
+		playQuantization = looper->getQuantization();
+		numBeats = numQuantiz;
+		if (playQuantization == Transport::BAR)
+		{
+			numBeats *= Transport::getInstance()->beatsPerBar->intValue();
+		}
+		else if (playQuantization == Transport::FIRSTLOOP)
+		{
+			numBeats *= Transport::getInstance()->firstLoopBeats->intValue();
+			playQuantization = Transport::BEAT;
+		}
+	}
+	break;
 
+	case LooperNode::FROM_FILE:
+	{
 		StringArray fSplit = StringArray::fromTokens(f.getFileNameWithoutExtension(), "_", "");
+		String infos = reader->metadataValues[WavAudioFormat::riffInfoTitle];
+		StringArray infoSplit;
+		infoSplit.addTokens(infos, ";", "");
 
 		if (fSplit.size() >= 3)
 		{
 			if (fSplit[2] == "bar") playQuantization = Transport::BAR;
 			else if (fSplit[2] == "beat") playQuantization = Transport::BEAT;
 			else if (fSplit[2] == "free") playQuantization = Transport::FREE;
-		}
-		else playQuantization = Transport::BAR;
 
-		if (playQuantization != Transport::FREE)
+			if (playQuantization != Transport::FREE)
+			{
+				bpmAtRecord = 0;
+				if (fSplit.size() >= 2)
+				{
+					numBeats = fSplit[1].getIntValue();
+				}
+				else
+				{
+					numBeats = Transport::getInstance()->getBeatForSamples(blockPerfectLength);
+					playQuantization = Transport::BEAT;
+					//numBeats = numBars * Transport::getInstance()->beatsPerBar->intValue();
+				}
+
+			}
+
+			LOG("Loading quantization from file name : " << fSplit[2] << " " << fSplit[3]);
+		}
+		else if (infoSplit.size() >= 3)
 		{
-			bpmAtRecord = 0;
-			if (fSplit.size() >= 2)
-			{
-				numBeats = fSplit[1].getIntValue();
-			}
-			else
-			{
-				numBeats = Transport::getInstance()->getBeatForSamples(blockPerfectLength);
-				playQuantization = Transport::BEAT;
-				//numBeats = numBars * Transport::getInstance()->beatsPerBar->intValue();
-			}
-
+			bpmAtRecord = infoSplit[0].getFloatValue();
+			numBeats = infoSplit[1].getIntValue();
+			playQuantization = (Transport::Quantization)infoSplit[2].getIntValue();
+			LOG("Loading quantization from metadata " << infos);
+		}
+		else
+		{
+			LOGWARNING("This loop file has not been saved by the looper. Trying my best to make something out of it.");
+			playQuantization = Transport::BAR;
 		}
 	}
-	else
-	{
-		bpmAtRecord = infoSplit[0].getFloatValue();
-		numBeats = infoSplit[1].getIntValue();
-		playQuantization = (Transport::Quantization)infoSplit[2].getIntValue();
-	}
+	break;
 
+
+	case LooperNode::BAR:
+		playQuantization = Transport::BAR;
+		numBeats = numQuantiz * Transport::getInstance()->beatsPerBar->intValue();
+		break;
+
+	case LooperNode::BEAT:
+		playQuantization = Transport::BEAT;
+		numBeats = numQuantiz;
+		break;
+	}
 
 
 	curSample = 0;
