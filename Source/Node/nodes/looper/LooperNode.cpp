@@ -72,7 +72,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	sampleDirectory->directoryMode = true;
 
 	quantizationOnLoad = saveLoadCC.addEnumParameter("Quantization On Load", "This is the quantization to use when loading a sample.");
-	quantizationOnLoad->addOption("From File", FROM_FILE)->addOption("From Looper", FROM_LOOPER)->addOption("Free", FREE)->addOption("Bar", BAR)->addOption("Beat", BEAT);
+	quantizationOnLoad->addOption("From File", FROM_FILE)->addOption("From Looper", FROM_LOOPER)->addOption("Free", FREE)->addOption("Bar", BAR)->addOption("Beat", BEAT)->addOption("Free", FREE);
 	loadQuantizationValue = saveLoadCC.addIntParameter("Load Quantization Value", "This is the value to use when loading a sample with a quantization of bar or beat", 1, 1);
 
 	saveSamplesTrigger = saveLoadCC.addTrigger("Save samples", "Save samples in the directory");

@@ -565,6 +565,12 @@ void AudioLooperTrack::loadSampleFile(File dir)
 		playQuantization = Transport::BEAT;
 		numBeats = numQuantiz;
 		break;
+
+	case LooperNode::FREE:
+		playQuantization = Transport::FREE;
+		numBeats = 0;
+		break;
+
 	}
 
 
