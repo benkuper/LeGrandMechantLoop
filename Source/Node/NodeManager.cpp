@@ -351,7 +351,15 @@ void NodeManager::setCurrentLooper(LooperNode* n)
 
 bool NodeManager::hasPlayingNodes()
 {
-	for (auto& i : items) if (i->isNodePlaying->boolValue()) return true;
+	for (auto& i : items)
+	{
+		if (LooperNode* looper = dynamic_cast<LooperNode*>(i))
+		{
+			if (looper->excludeFromTransportCheck->boolValue()) continue;
+		}
+
+		if (i->isNodePlaying->boolValue()) return true;
+	}
 	return false;
 }
 
