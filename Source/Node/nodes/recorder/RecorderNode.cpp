@@ -34,7 +34,7 @@ RecorderNode::RecorderNode(var params) :
     
 	recSeparateFiles = addBoolParameter("Separate Channels", "If checked, this will record one file per channel", false);
 
-	recTrigger = addTrigger("Rec", "Starts or stops recording depending on the current recording state");
+	record = addBoolParameter("Rec", "Starts or stops recording depending on the current recording state", false);
 	isRecording = addBoolParameter("Is Recording", "Is it currently recording ?", false);
 	isRecording->setControllableFeedbackOnly(true);
 
@@ -51,6 +51,8 @@ RecorderNode::~RecorderNode()
 
 void RecorderNode::startRecording()
 {
+	if (isRecording->boolValue()) return;
+
 	stopRecording();
 	if (!enabled->boolValue()) return;
 	if (sampleRate > 0)
@@ -113,7 +115,8 @@ void RecorderNode::startRecording()
 
 void RecorderNode::stopRecording()
 {
-    
+	if (!isRecording->boolValue()) return;
+
 	// First, clear this pointer to stop the audio callback from using our writer object..
 	{
 		const ScopedLock sl(writerLock);
@@ -140,23 +143,20 @@ void RecorderNode::stopRecording()
 
     stopOnNextSilence = false;
 	isRecording->setValue(false);
+	record->setValue(false);
 }
 
 void RecorderNode::onContainerParameterChangedInternal(Parameter* p)
 {
 	Node::onContainerParameterChangedInternal(p);
 	if (p == enabled) if (!enabled->boolValue()) stopRecording();
-}
-
-void RecorderNode::onContainerTriggerTriggered(Trigger* t)
-{
-	Node::onContainerTriggerTriggered(t);
-	if (t == recTrigger)
+	if (p == record)
 	{
-		if (isRecording->boolValue()) stopRecording();
-		else startRecording();
+		if (record->boolValue() && !isRecording->boolValue()) startRecording();
+		else if (!record->boolValue() && isRecording->boolValue()) stopRecording();
 	}
 }
+
 
 void RecorderNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {

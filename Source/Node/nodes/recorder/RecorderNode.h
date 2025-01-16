@@ -34,7 +34,7 @@ public:
     bool stopOnNextSilence;
     double timeSinceLastVolumeUnderThreshold;
 
-    Trigger* recTrigger;
+    BoolParameter* record;
     BoolParameter* isRecording;
     
     Array<File> files;
@@ -55,7 +55,6 @@ public:
     void stopRecording();
 
     void onContainerParameterChangedInternal(Parameter* p) override;
-    void onContainerTriggerTriggered(Trigger* t) override;
 
     void playStateChanged(bool isPlaying, bool forceRestart) override;
 
