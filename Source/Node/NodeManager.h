@@ -125,6 +125,8 @@ public:
 	RootNodeManager();
 	~RootNodeManager();
 
+	void clear() override;
+
 	void audioSetupChanged() override;
 	void onContainerParameterChanged(Parameter* p) override;
 

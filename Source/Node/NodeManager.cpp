@@ -544,6 +544,12 @@ RootNodeManager::~RootNodeManager()
 	AudioManager::getInstance()->removeAudioManagerListener(this);
 }
 
+void RootNodeManager::clear()
+{
+	NodeManager::clear();
+	customParametersCC.clear();
+}
+
 void RootNodeManager::audioSetupChanged()
 {
 	setAudioInputs(AudioManager::getInstance()->getInputChannelNames());
