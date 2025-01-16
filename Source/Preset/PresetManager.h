@@ -81,7 +81,7 @@ public:
     void processMessage(const OSCMessage& m, const String& clientId) override;
 
     void run() override;
-    void process(float progression, float weight);
+    void process(float progression, float weight, bool isStart = false);
 
     void endLoadFile() override;
 };

@@ -380,7 +380,7 @@ void RootPresetManager::run()
 
 	loadProgress->setValue(progression);
 
-	process(0, currentPreset->transitionCurve.getValueAtPosition(0)); //force for at_start changes
+	process(0, currentPreset->transitionCurve.getValueAtPosition(0), true); //force for at_start changes
 
 	double timeAtStart = Time::getMillisecondCounter() / 1000.0;
 
@@ -426,7 +426,7 @@ void RootPresetManager::run()
 
 }
 
-void RootPresetManager::process(float progression, float weight)
+void RootPresetManager::process(float progression, float weight, bool isStart)
 {
 	HashMap<WeakReference<Controllable>, var>::Iterator it(initTargetMap);
 
@@ -446,7 +446,7 @@ void RootPresetManager::process(float progression, float weight)
 			it.getValue()[4] = true;
 		}
 
-		if ((itm == Preset::AT_START && progression != 0) || (itm == Preset::AT_END && progression != 1)) continue;
+		if ((itm == Preset::AT_START && !isStart) || (itm == Preset::AT_END && progression != 1)) continue;
 
 
 		if (c->type == Controllable::TRIGGER)
