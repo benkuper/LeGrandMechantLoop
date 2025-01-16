@@ -35,6 +35,7 @@ RecorderNode::RecorderNode(var params) :
 	recSeparateFiles = addBoolParameter("Separate Channels", "If checked, this will record one file per channel", false);
 
 	record = addBoolParameter("Rec", "Starts or stops recording depending on the current recording state", false);
+	record->isSavable = false;
 	isRecording = addBoolParameter("Is Recording", "Is it currently recording ?", false);
 	isRecording->setControllableFeedbackOnly(true);
 
