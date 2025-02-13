@@ -234,7 +234,8 @@ void VSTManager::afterLoadJSONDataInternal()
 	if (descriptions.isEmpty())
 	{
 		LOG("No VST loaded from cache, try to scan");
-		startThread(); //not async to ensure file is loaded after first listing. Can be improved by handling async load in VST Nodes and connections
+		updateVSTList();
+		//startThread(); //not async to ensure file is loaded after first listing. Can be improved by handling async load in VST Nodes and connections
 	}
 }
 

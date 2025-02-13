@@ -70,7 +70,7 @@ public:
 #endif
 
 
-	virtual void loadAudioConfig();
+	virtual void loadAudioConfig(juce::var fallbackConfig = var());
 
 	virtual void audioDeviceAboutToStart(AudioIODevice* device) override;
 	virtual void audioDeviceStopped() override;

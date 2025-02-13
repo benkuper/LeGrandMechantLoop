@@ -8,7 +8,6 @@
   ==============================================================================
 */
 
-#include "AudioManager.h"
 #include "ui/AudioManagerEditor.h"
 #include "Transport/Transport.h"
 
@@ -130,7 +129,8 @@ void AudioManager::audioDeviceIOCallbackWithContext
 	//for (int i = 0; i < jmin(numInputChannels, numOutputChannels); ++i) FloatVectorOperations::copy(outputChannelData[i], inputChannelData[i], numSamples);
 }
 
-void AudioManager::loadAudioConfig()
+
+void AudioManager::loadAudioConfig(juce::var fallbackConfig)
 {
 	if (lastUserState != nullptr)
 	{
@@ -146,8 +146,48 @@ void AudioManager::loadAudioConfig()
 		}
 	}
 
-}
+	if (am.getCurrentAudioDevice() == nullptr)
+	{
+		String deviceType = fallbackConfig.getProperty("deviceType", "").toString();
+		if (deviceType.isNotEmpty())
+		{
+			am.initialise(0, 2, nullptr, false);
+			am.setCurrentAudioDeviceType(deviceType, true);
+		}
+		else
+		{
+			am.initialise(0, 2, nullptr, false);
+		}
+	}
 
+	AudioDeviceManager::AudioDeviceSetup setup = am.getAudioDeviceSetup();
+	if (am.getCurrentAudioDevice() != nullptr && am.getCurrentAudioDevice()->getActiveOutputChannels() == 0)
+	{
+		if (fallbackConfig.isObject())
+		{
+			setup.inputDeviceName = fallbackConfig.getProperty("inputDeviceName", "").toString();
+			setup.outputDeviceName = fallbackConfig.getProperty("outputDeviceName", "").toString();
+			setup.sampleRate = fallbackConfig.getProperty("sampleRate", 48000).toString().getDoubleValue();
+			setup.bufferSize = fallbackConfig.getProperty("bufferSize", 128).toString().getIntValue();
+
+			BigInteger inputChannels;
+			MemoryBlock bIn;
+			bIn.fromBase64Encoding(fallbackConfig.getProperty("inputChannels", "").toString());
+			inputChannels.loadFromMemoryBlock(bIn);
+
+			BigInteger outputChannels;
+			MemoryBlock bOut;
+			bOut.fromBase64Encoding(fallbackConfig.getProperty("outputChannels", "").toString());
+			outputChannels.loadFromMemoryBlock(bOut);
+
+			setup.inputChannels = inputChannels;
+			setup.outputChannels = outputChannels;
+
+			am.setAudioDeviceSetup(setup, false);
+		}
+	}
+
+}
 
 void AudioManager::audioDeviceAboutToStart(AudioIODevice* device)
 {
@@ -190,7 +230,7 @@ void AudioManager::changeListenerCallback(ChangeBroadcaster* source)
 	else
 	{
 		//LOG("Audio setup changed (no user action)");
-		
+
 	}
 
 	updateGraph();
@@ -237,7 +277,7 @@ void AudioManager::endLoadFile()
 
 String AudioManager::getCurrentDeviceDescription()
 {
-	String deviceName = am.getCurrentAudioDevice() != nullptr  ?am.getCurrentAudioDevice()->getName(): (targetDeviceName.isNotEmpty()?"[Disconnected :"+targetDeviceName+"]" : "");
+	String deviceName = am.getCurrentAudioDevice() != nullptr ? am.getCurrentAudioDevice()->getName() : (targetDeviceName.isNotEmpty() ? "[Disconnected :" + targetDeviceName + "]" : "");
 
 	am.getAudioDeviceSetup();
 
@@ -251,13 +291,20 @@ var AudioManager::getJSONData(bool includeNonOverriden)
 	if (xmlData != nullptr)  data.getDynamicObject()->setProperty("audioSettings", xmlData->toString());
 
 	data.getDynamicObject()->setProperty("deviceName", am.getCurrentAudioDevice() != nullptr ? am.getCurrentAudioDevice()->getName() : "");
-	//var audioSetupData(new DynamicObject());
-	//AudioDeviceManager::AudioDeviceSetup setup(am.getAudioDeviceSetup());
-	//audioSetupData.getDynamicObject()->setProperty("inputDeviceName", setup.inputDeviceName);
-	//audioSetupData.getDynamicObject()->setProperty("outputDeviceName", setup.outputDeviceName);
-	//audioSetupData.getDynamicObject()->setProperty("sampleRate", setup.sampleRate);
-	//audioSetupData.getDynamicObject()->setProperty("bufferSize", setup.bufferSize);
-	//data.getDynamicObject()->setProperty("audioSetup", audioSetupData);
+	if (am.getCurrentAudioDevice())
+	{
+		var setupData = var(new DynamicObject());
+		AudioDeviceManager::AudioDeviceSetup setup(am.getAudioDeviceSetup());
+		setupData.getDynamicObject()->setProperty("deviceType", am.getCurrentAudioDeviceType());
+		setupData.getDynamicObject()->setProperty("inputDeviceName", setup.inputDeviceName);
+		setupData.getDynamicObject()->setProperty("outputDeviceName", setup.outputDeviceName);
+		setupData.getDynamicObject()->setProperty("sampleRate", setup.sampleRate);
+		setupData.getDynamicObject()->setProperty("bufferSize", setup.bufferSize);
+		setupData.getDynamicObject()->setProperty("inputChannels", setup.inputChannels.toMemoryBlock().toBase64Encoding());
+		setupData.getDynamicObject()->setProperty("outputChannels", setup.outputChannels.toMemoryBlock().toBase64Encoding());
+		data.getDynamicObject()->setProperty("audioSetup", setupData);
+	}
+
 	return data;
 }
 
@@ -265,9 +312,13 @@ void AudioManager::loadJSONDataInternal(var data)
 {
 	String xmlState = data.getProperty("audioSettings", "").toString();
 	if (xmlState.isNotEmpty()) lastUserState = XmlDocument::parse(xmlState);
-	loadAudioConfig();
+
+	var audioSetup = data.getProperty("audioSetup", var());
+	loadAudioConfig(audioSetup);
 
 	targetDeviceName = data.getProperty("deviceName", "").toString();
+
+
 
 	//if (!checkAudioConfig()) targetAudioSetup = data.getProperty("audioSetup", var());
 }
