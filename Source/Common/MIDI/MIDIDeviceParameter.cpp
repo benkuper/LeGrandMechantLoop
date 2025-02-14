@@ -1,21 +1,21 @@
 /*
   ==============================================================================
 
-    MIDIDeviceParameter.cpp
-    Created: 20 Dec 2016 3:05:54pm
-    Author:  Ben
+	MIDIDeviceParameter.cpp
+	Created: 20 Dec 2016 3:05:54pm
+	Author:  Ben
 
   ==============================================================================
 */
 
-MIDIDeviceParameter::MIDIDeviceParameter(const String& name, bool canHaveInput, bool canHaveOutput) :
-	Parameter(CUSTOM, name, "MIDI Devices",var(), var(),var()),
-	canHaveInput(canHaveInput),
-	canHaveOutput(canHaveOutput),
+#include "Common/CommonIncludes.h"
+
+MIDIDeviceParameter::MIDIDeviceParameter(const String& name, const String& description) :
+	Parameter(CUSTOM, name, "MIDI Devices", description, var(), var()),
 	inputDevice(nullptr),
 	outputDevice(nullptr)
 {
-	MIDIManager::getInstance()->addMIDIManagerListener(this);
+	MIDIManager::getInstance()->addMIDIManagerListener(this);	
 	value.append("");
 	value.append("");
 }
@@ -30,11 +30,11 @@ MIDIDeviceParameter::~MIDIDeviceParameter()
 
 
 
-void MIDIDeviceParameter::setInputDevice(MIDIInputDevice * i)
+void MIDIDeviceParameter::setInputDevice(MIDIInputDevice* i)
 {
 	var val;
 	val.append(i != nullptr ? i->id : "");
-	val.append(value[1]);
+	val.append(value.size() >= 2 ? value[1] : "");
 
 	if (i != nullptr)
 	{
@@ -47,12 +47,12 @@ void MIDIDeviceParameter::setInputDevice(MIDIInputDevice * i)
 	setValue(val);
 }
 
-void MIDIDeviceParameter::setOutputDevice(MIDIOutputDevice * o)
+void MIDIDeviceParameter::setOutputDevice(MIDIOutputDevice* o)
 {
 	var val;
-	val.append(value[0]);
+	val.append(value.size() >= 1 ? value[0] : "");
 	val.append(o != nullptr ? o->id : "");
-	
+
 	if (o != nullptr)
 	{
 		ghostDeviceOut = val[1];
@@ -61,14 +61,12 @@ void MIDIDeviceParameter::setOutputDevice(MIDIOutputDevice * o)
 
 	outputDevice = o;
 
-	setValue(val,false,true);
-	
+	setValue(val, false, true);
+
 }
 
-void MIDIDeviceParameter::midiDeviceInAdded(MIDIInputDevice * i)
-{	
-	if (!canHaveInput) return;
-	
+void MIDIDeviceParameter::midiDeviceInAdded(MIDIInputDevice* i)
+{
 	//DBG("Device In added " << i->name << " / " << ghostDeviceIn);
 	if (inputDevice == nullptr && i->id == ghostDeviceIn)
 	{
@@ -76,19 +74,16 @@ void MIDIDeviceParameter::midiDeviceInAdded(MIDIInputDevice * i)
 	}
 }
 
-void MIDIDeviceParameter::midiDeviceOutAdded(MIDIOutputDevice * o)
+void MIDIDeviceParameter::midiDeviceOutAdded(MIDIOutputDevice* o)
 {
-	if (!canHaveOutput) return;
-	
-	if (outputDevice == nullptr&& o->id == ghostDeviceOut)
+	if (outputDevice == nullptr && o->id == ghostDeviceOut)
 	{
 		setOutputDevice(o);
 	}
 }
 
-void MIDIDeviceParameter::midiDeviceInRemoved(MIDIInputDevice * i)
+void MIDIDeviceParameter::midiDeviceInRemoved(MIDIInputDevice* i)
 {
-	if (!canHaveInput) return;
 	if (i == inputDevice)
 	{
 		if (i != nullptr)
@@ -100,9 +95,8 @@ void MIDIDeviceParameter::midiDeviceInRemoved(MIDIInputDevice * i)
 	}
 }
 
-void MIDIDeviceParameter::midiDeviceOutRemoved(MIDIOutputDevice * o)
+void MIDIDeviceParameter::midiDeviceOutRemoved(MIDIOutputDevice* o)
 {
-	if (!canHaveOutput) return;
 	if (o == outputDevice)
 	{
 		if (o != nullptr)
@@ -116,28 +110,51 @@ void MIDIDeviceParameter::midiDeviceOutRemoved(MIDIOutputDevice * o)
 }
 
 
-MIDIDeviceParameterUI * MIDIDeviceParameter::createMIDIParameterUI(Array<MIDIDeviceParameter *> parameters)
+MIDIDeviceParameterUI* MIDIDeviceParameter::createMIDIParameterUI(Array<MIDIDeviceParameter*> parameters)
 {
 	if (parameters.size() == 0) parameters = { this };
 	return new MIDIDeviceParameterUI(parameters);
 }
 
-ControllableUI * MIDIDeviceParameter::createDefaultUI(Array<Controllable *> controllables)
+ControllableUI* MIDIDeviceParameter::createDefaultUI(Array<Controllable*> controllables)
 {
 	Array<MIDIDeviceParameter*> parameters = Inspectable::getArrayAs<Controllable, MIDIDeviceParameter>(controllables);
 	if (parameters.size() == 0) parameters.add(this);
 	return createMIDIParameterUI(parameters);
 }
 
+var MIDIDeviceParameter::getJSONDataInternal()
+{
+	var data = Parameter::getJSONDataInternal();
+	if (ghostDeviceNameIn.isNotEmpty()) data.getDynamicObject()->setProperty("inputName", ghostDeviceNameIn);
+	if (ghostDeviceNameOut.isNotEmpty()) data.getDynamicObject()->setProperty("outputName", ghostDeviceNameOut);
+	return data;
+}
+
 void MIDIDeviceParameter::loadJSONDataInternal(var data)
 {
 	Parameter::loadJSONDataInternal(data);
+
+	ghostDeviceNameIn = data.getProperty("inputName", "").toString();
 	setInputDevice(MIDIManager::getInstance()->getInputDeviceWithID(value[0]));
 
-	if (inputDevice == nullptr) ghostDeviceIn = data.getProperty("value", var())[0];	
+	if (inputDevice == nullptr && ghostDeviceNameIn.isNotEmpty()) setInputDevice(MIDIManager::getInstance()->getInputDeviceWithName(ghostDeviceNameIn));
+	
+	var ghostInputVal = data.getProperty("value", var());
+	if (inputDevice == nullptr)
+	{
+		ghostDeviceIn = ghostInputVal.size() > 0 ? ghostInputVal[0] : "";
+	}
 
+	ghostDeviceNameOut = data.getProperty("outputName", "").toString();
 	setOutputDevice(MIDIManager::getInstance()->getOutputDeviceWithID(value[1]));
 
-	if (outputDevice == nullptr) ghostDeviceOut = data.getProperty("value", var())[1];
+	if (outputDevice == nullptr && ghostDeviceNameOut.isNotEmpty()) setOutputDevice(MIDIManager::getInstance()->getOutputDeviceWithName(ghostDeviceNameOut));
+
+	var ghostOutputVal = data.getProperty("value", var());
+	if (outputDevice == nullptr)
+	{
+		ghostDeviceOut = ghostOutputVal.size() > 1 ? ghostOutputVal[1] : "";
+	}
 
 }
