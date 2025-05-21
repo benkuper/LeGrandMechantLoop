@@ -13,7 +13,7 @@
 #include "../MacroParameter.h"
 
 class MacroUI :
-    public BaseItemUI<MacroParameter>
+    public ItemUI<MacroParameter>
 {
 public:
     MacroUI(MacroParameter* item);

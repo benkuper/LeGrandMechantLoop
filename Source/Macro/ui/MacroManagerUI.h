@@ -14,7 +14,7 @@
 #include "../MacroManager.h"
 
 class MacroManagerUI :
-    public BaseManagerShapeShifterUI<MacroManager, MacroParameter, MacroUI>
+    public ManagerShapeShifterUI<MacroManager, MacroParameter, MacroUI>
 {
 public:
     MacroManagerUI(const String& name);

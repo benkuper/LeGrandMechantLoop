@@ -11,7 +11,7 @@
 #include "MacroManagerUI.h"
 
 MacroManagerUI::MacroManagerUI(const String& name) :
-    BaseManagerShapeShifterUI(name, MacroManager::getInstance())
+    ManagerShapeShifterUI(name, MacroManager::getInstance())
 {
     addExistingItems();
 }

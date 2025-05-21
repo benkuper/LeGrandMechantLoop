@@ -13,7 +13,7 @@
 class NodeManager;
 
 class NodeConnectionManager :
-    public BaseManager<NodeConnection>
+    public Manager<NodeConnection>
 {
 public:
     NodeConnectionManager(NodeManager * nodeManager);
@@ -32,7 +32,7 @@ public:
     Array<UndoableAction*> getRemoveAllLinkedConnectionsActions(Array<Node*> itemsToRemove);
 
     NodeConnection* addItemFromData(var data, bool addToUndo = true) override;
-    Array<NodeConnection *> addItemsFromData(var data, bool addToUndo = true) override;
+    Array<BaseItem *> addItemsFromData(var data, bool addToUndo = true) override;
 
     void loadJSONDataInternal(var data) override;
     void afterLoadJSONDataInternal() override;

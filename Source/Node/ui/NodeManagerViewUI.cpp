@@ -11,7 +11,7 @@
 #include "Node/NodeIncludes.h"
 
 NodeManagerViewUI::NodeManagerViewUI(NodeManager* manager) :
-	BaseManagerViewUI(manager->niceName, manager),
+	ManagerViewUI(manager->niceName, manager),
 	draggingConnector(nullptr)
 {
 	addExistingItems(false);
@@ -43,14 +43,14 @@ BaseNodeViewUI* NodeManagerViewUI::createUIForItem(Node* n)
 
 void NodeManagerViewUI::resized()
 {
-	BaseManagerViewUI::resized();
+	ManagerViewUI::resized();
 	connectionManagerUI->setBounds(getLocalBounds());
 	connectionManagerUI->resized();
 }
 
 void NodeManagerViewUI::addItemUIInternal(BaseNodeViewUI* ui)
 {
-	BaseManagerViewUI::addItemUIInternal(ui);
+	ManagerViewUI::addItemUIInternal(ui);
 
 	if (connectionManagerUI != nullptr)
 	{
@@ -69,7 +69,7 @@ void NodeManagerViewUI::addItemUIInternal(BaseNodeViewUI* ui)
 
 void NodeManagerViewUI::mouseDown(const MouseEvent& e)
 {
-	if(e.originalComponent == this) BaseManagerViewUI::mouseDown(e);
+	if(e.originalComponent == this) ManagerViewUI::mouseDown(e);
 }
 
 void NodeManagerViewUI::mouseDrag(const MouseEvent& e)
@@ -87,12 +87,12 @@ void NodeManagerViewUI::mouseDrag(const MouseEvent& e)
 		return;
 	}
 
-	if(e.originalComponent == this) BaseManagerViewUI::mouseDrag(e);
+	if(e.originalComponent == this) ManagerViewUI::mouseDrag(e);
 }
 
 void NodeManagerViewUI::mouseUp(const MouseEvent& e)
 {
-	if (e.originalComponent == this) BaseManagerViewUI::mouseUp(e);
+	if (e.originalComponent == this) ManagerViewUI::mouseUp(e);
 	draggingConnector = nullptr;
 	forcedDragTargetPos = {};
 	repaint();
@@ -100,7 +100,7 @@ void NodeManagerViewUI::mouseUp(const MouseEvent& e)
 
 void NodeManagerViewUI::paintOverChildren(Graphics& g)
 {
-	BaseManagerViewUI::paintOverChildren(g);
+	ManagerViewUI::paintOverChildren(g);
 
 	if (draggingConnector != nullptr)
 	{
@@ -121,7 +121,7 @@ void NodeManagerViewUI::paintOverChildren(Graphics& g)
 bool NodeManagerViewUI::isInterestedInDragSource(const SourceDetails& details)
 {
 	if (NodeConnector* nc = dynamic_cast<NodeConnector*>(details.sourceComponent.get())) return true;
-	return BaseManagerViewUI::isInterestedInDragSource(details);
+	return ManagerViewUI::isInterestedInDragSource(details);
 }
 
 void NodeManagerViewUI::itemDragEnter(const DragAndDropTarget::SourceDetails& details)
@@ -131,7 +131,7 @@ void NodeManagerViewUI::itemDragEnter(const DragAndDropTarget::SourceDetails& de
 		repaint();
 		return;
 	}
-	BaseManagerViewUI::itemDragEnter(details);
+	ManagerViewUI::itemDragEnter(details);
 }
 
 void NodeManagerViewUI::itemDragMove(const DragAndDropTarget::SourceDetails& details)
@@ -141,13 +141,13 @@ void NodeManagerViewUI::itemDragMove(const DragAndDropTarget::SourceDetails& det
 		repaint();
 		return;
 	}
-	BaseManagerViewUI::itemDragMove(details);
+	ManagerViewUI::itemDragMove(details);
 }
 
 void NodeManagerViewUI::itemDragExit(const DragAndDropTarget::SourceDetails& details)
 {
 
-	BaseManagerViewUI::itemDragExit(details);
+	ManagerViewUI::itemDragExit(details);
 }
 
 void NodeManagerViewUI::itemDropped(const DragAndDropTarget::SourceDetails& details)
@@ -165,10 +165,10 @@ void NodeManagerViewUI::itemDropped(const DragAndDropTarget::SourceDetails& deta
 			bool isInput = nc->isInput;
 			NodeConnection::ConnectionType connectionType = nc->connectionType;
 
-			showMenuAndAddItem(false, getMouseXYRelative(), [this, initNode, isInput, connectionType](Node* n)
+			showMenuAndAddItem(false, getMouseXYRelative(), [this, initNode, isInput, connectionType](BaseItem* n)
 				{
-					Node* s = isInput ? n : initNode;
-					Node* d = isInput ? initNode : n;
+					Node* s = isInput ? (Node*)n : initNode;
+					Node* d = isInput ? initNode : (Node*)n;
 					if (s != nullptr && d != nullptr) manager->connectionManager->addConnection(s, d, connectionType);
 				}
 			);
@@ -178,7 +178,7 @@ void NodeManagerViewUI::itemDropped(const DragAndDropTarget::SourceDetails& deta
 		return;
 	}
 
-	BaseManagerViewUI::itemDropped(details);
+	ManagerViewUI::itemDropped(details);
 
 }
 

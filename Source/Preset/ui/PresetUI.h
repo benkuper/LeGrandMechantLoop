@@ -13,8 +13,8 @@
 class PresetManagerUI;
 
 class PresetUI :
-	public BaseItemUI<Preset>,
-	public BaseManagerUI<PresetManager, Preset, PresetUI>::ManagerUIListener
+	public ItemUI<Preset>,
+	public ManagerUI<PresetManager, Preset, PresetUI>::ManagerUIListener
 {
 public:
 	PresetUI(Preset* p);

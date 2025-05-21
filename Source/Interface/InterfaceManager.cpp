@@ -13,7 +13,7 @@
 juce_ImplementSingleton(InterfaceManager)
 
 InterfaceManager::InterfaceManager() :
-	BaseManager("Interfaces")
+	Manager("Interfaces")
 {
 	factory.defs.add(Factory<Interface>::Definition::createDef<MIDIInterface>("", "MIDI"));
 	factory.defs.add(Factory<Interface>::Definition::createDef<OSCInterface>("", "OSC"));
@@ -26,7 +26,7 @@ InterfaceManager::~InterfaceManager()
 
 void InterfaceManager::addItemInternal(Interface* i, var data)
 {
-	BaseManager::addItemInternal(i, data);
+	Manager::addItemInternal(i, data);
 	if (MIDIInterface* mi = dynamic_cast<MIDIInterface*>(i))
 	{
 		mi->addMIDIInterfaceListener(this);
@@ -35,7 +35,7 @@ void InterfaceManager::addItemInternal(Interface* i, var data)
 
 void InterfaceManager::removeItemInternal(Interface* i)
 {
-	BaseManager::removeItemInternal(i);
+	Manager::removeItemInternal(i);
 	if (MIDIInterface* mi = dynamic_cast<MIDIInterface*>(i))
 	{
 		mi->removeMIDIInterfaceListener(this);

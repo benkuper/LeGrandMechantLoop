@@ -12,7 +12,7 @@
 #include "NodeConnectionManager.h"
 
 NodeConnectionManager::NodeConnectionManager(NodeManager* nodeManager) :
-	BaseManager("Connections"),
+	Manager("Connections"),
 	nodeManager(nodeManager)
 {
 	hideInEditor = true;
@@ -96,7 +96,7 @@ NodeConnection* NodeConnectionManager::addItemFromData(var data, bool addToUndo)
 	return nullptr;
 }
 
-Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool addToUndo)
+Array<BaseItem*> NodeConnectionManager::addItemsFromData(var data, bool addToUndo)
 {
 	Array<NodeConnection*> itemsToAdd;
 
@@ -105,7 +105,11 @@ Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool ad
 		NodeConnection::ConnectionType t = (NodeConnection::ConnectionType)(int)data[i].getProperty("connectionType", NodeConnection::AUDIO);
 		if (NodeConnection* nc = createConnectionForType(t)) itemsToAdd.add(nc);
 	}
-	return addItems(itemsToAdd, data, addToUndo);
+	Array<NodeConnection*> itemsAdded = addItems(itemsToAdd, data, addToUndo);
+
+	Array<BaseItem*> result;
+	for (auto& i : itemsAdded) result.add(i);
+	return result;
 }
 
 
@@ -113,7 +117,7 @@ void NodeConnectionManager::loadJSONDataInternal(var data)
 {
 	if (Engine::mainEngine->isLoadingFile || data.isVoid())
 	{
-		BaseManager::loadJSONDataInternal(data);
+		Manager::loadJSONDataInternal(data);
 		return;
 	}
 
@@ -167,7 +171,7 @@ void NodeConnectionManager::loadJSONDataInternal(var data)
 
 void NodeConnectionManager::afterLoadJSONDataInternal()
 {
-	BaseManager::afterLoadJSONDataInternal();
+	Manager::afterLoadJSONDataInternal();
 
 	Array<NodeConnection*> toRemove;
 	for (auto& i : items) if (i->sourceNode == nullptr || i->destNode == nullptr) toRemove.add(i);

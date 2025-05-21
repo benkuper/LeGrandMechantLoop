@@ -30,8 +30,8 @@ OSCInterface::OSCInterface(var params) :
 
 	if (!Engine::mainEngine->isLoadingFile) setupReceiver();
 
-	outputManager.reset(new BaseManager<OSCOutput>("OSC Outputs"));
-	outputManager->addBaseManagerListener(this);
+	outputManager.reset(new Manager<OSCOutput>("OSC Outputs"));
+	outputManager->addManagerListener(this);
 
 	addChildControllableContainer(outputManager.get());
 
@@ -160,11 +160,11 @@ void OSCInterface::processMessage(const OSCMessage& msg)
 		var args = var(Array<var>()); //initialize force array
 		for (auto& a : msg) args.append(OSCInterface::argumentToVar(a));
 		params.add(args);
-		scriptManager->callFunctionOnAllItems(oscEventId, params);
+		scriptManager->callFunctionOnAllScripts(oscEventId, params);
 
 		for (auto& entry : scriptCallbacks)
 			if (std::get<0>(entry).matches(msg.getAddressPattern().toString()))
-				scriptManager->callFunctionOnAllItems(std::get<1>(entry), params);
+				scriptManager->callFunctionOnAllScripts(std::get<1>(entry), params);
 	}
 
 }

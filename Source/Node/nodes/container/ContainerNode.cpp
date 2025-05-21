@@ -34,7 +34,7 @@ ContainerNode::ContainerNode(var params) :
 	nodeManager.reset(new NodeManager(&containerGraph, audioInputID, audioOutputID, midiInputID, midiOutputID));
 	addChildControllableContainer(nodeManager.get());
 
-	nodeManager->addBaseManagerListener(this);
+	nodeManager->addManagerListener(this);
 
 	viewUISize->setPoint(200, 150);
 }

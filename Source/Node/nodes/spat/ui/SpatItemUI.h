@@ -11,7 +11,7 @@
 #pragma once
 
 class SpatItemUI :
-	public BaseItemMinimalUI<SpatItem>
+	public ItemMinimalUI<SpatItem>
 {
 public:
 	SpatItemUI(SpatItem* item);

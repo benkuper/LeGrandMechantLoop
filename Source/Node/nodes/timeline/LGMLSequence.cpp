@@ -17,7 +17,7 @@ LGMLSequence::LGMLSequence(TimelineNode* node) :
 	setAudioDeviceManager(&AudioManager::getInstance()->am);
 
 	layerManager->factory.defs.add(SequenceLayerManager::LayerDefinition::createDef("", "Audio", &LGMLAudioLayer::create, this, true));
-	layerManager->addBaseManagerListener(this);
+	layerManager->addManagerListener(this);
 }
 
 LGMLSequence::~LGMLSequence()
@@ -28,7 +28,7 @@ LGMLSequence::~LGMLSequence()
 void LGMLSequence::clearItem()
 {
 	Sequence::clearItem();
-	layerManager->removeBaseManagerListener(this);
+	layerManager->removeManagerListener(this);
 	for (auto& layer : layerManager->items)
 	{
 		if (LGMLAudioLayer* audioLayer = dynamic_cast<LGMLAudioLayer*>(layer))

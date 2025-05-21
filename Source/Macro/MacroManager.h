@@ -13,7 +13,7 @@
 #include "MacroParameter.h"
 
 class MacroManager :
-    public BaseManager<MacroParameter>
+    public Manager<MacroParameter>
 {
 public:
     juce_DeclareSingleton(MacroManager, true);

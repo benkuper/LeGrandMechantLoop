@@ -43,8 +43,8 @@ SpatNode::SpatNode(var params) :
 
 
 
-	sources.addBaseManagerListener(this);
-	targets.addBaseManagerListener(this);
+	sources.addManagerListener(this);
+	targets.addManagerListener(this);
 
 	sources.selectItemWhenCreated = false;
 	targets.selectItemWhenCreated = false;

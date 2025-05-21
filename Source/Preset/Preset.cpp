@@ -23,7 +23,7 @@ Preset::Preset(var params) :
 
 	subPresets.reset(new PresetManager());
 	addChildControllableContainer(subPresets.get());
-	subPresets->addBaseManagerListener(this);
+	subPresets->addManagerListener(this);
 	subPresets->hideInEditor = true;
 
 	Random r;

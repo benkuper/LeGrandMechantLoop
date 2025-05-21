@@ -14,7 +14,7 @@
 juce_ImplementSingleton(MappingManager)
 
 MappingManager::MappingManager() :
-	BaseManager("Mappings")
+	Manager("Mappings")
 {
 	factory.defs.add(Factory<Mapping>::Definition::createDef<MIDIMapping>("", "MIDI"));
 	factory.defs.add(Factory<Mapping>::Definition::createDef<MacroMapping>("", "Macro"));

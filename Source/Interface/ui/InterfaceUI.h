@@ -10,7 +10,7 @@
 
 #pragma once
 class InterfaceUI :
-    public BaseItemUI<Interface>
+    public ItemUI<Interface>
 {
 public:
     InterfaceUI(Interface* i);

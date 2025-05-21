@@ -13,7 +13,7 @@
 juce_ImplementSingleton(MacroManager)
 
 MacroManager::MacroManager() :
-    BaseManager("Macros")
+    Manager("Macros")
 {
 }
 

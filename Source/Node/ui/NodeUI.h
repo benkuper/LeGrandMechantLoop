@@ -11,7 +11,7 @@
 #pragma once
 
 class NodeUI :
-    public BaseItemUI<Node>
+    public ItemUI<Node>
 {
 public:
     NodeUI(Node * node);

@@ -12,7 +12,7 @@
 #include "NodeViewUI.h"
 
 BaseNodeViewUI::BaseNodeViewUI(Node* node) :
-	BaseItemUI(node, Direction::ALL, true)
+	ItemUI(node, Direction::ALL, true)
 {
 	dragAndDropEnabled = true;
 	autoHideWhenDragging = false;
@@ -122,7 +122,7 @@ void BaseNodeViewUI::updateOutputConnectors()
 
 void BaseNodeViewUI::paint(Graphics& g)
 {
-	BaseItemUI::paint(g);
+	ItemUI::paint(g);
 	if (!item->miniMode->boolValue() && outControlUI != nullptr)
 	{
 		g.setColour(bgColor.darker(.3f));
@@ -134,7 +134,7 @@ void BaseNodeViewUI::paint(Graphics& g)
 
 void BaseNodeViewUI::paintOverChildren(Graphics& g)
 {
-	BaseItemUI::paintOverChildren(g);
+	ItemUI::paintOverChildren(g);
 	if (!item->enabled->boolValue())
 	{
 		if (inAudioConnector != nullptr && outAudioConnector != nullptr)
@@ -147,7 +147,7 @@ void BaseNodeViewUI::paintOverChildren(Graphics& g)
 
 void BaseNodeViewUI::resized()
 {
-	BaseItemUI::resized();
+	ItemUI::resized();
 
 	int w = 10;
 	bool miniMode = item->miniMode->boolValue();
@@ -172,7 +172,7 @@ void BaseNodeViewUI::resized()
 
 void BaseNodeViewUI::resizedInternalContent(Rectangle<int>& r)
 {
-	BaseItemUI::resizedInternalContent(r);
+	ItemUI::resizedInternalContent(r);
 	r.removeFromLeft(2);
 
 	outControlRect = Rectangle<int>(r);
@@ -195,7 +195,7 @@ bool BaseNodeViewUI::isInterestedInDragSource(const SourceDetails& details)
 		else return nc->connectionType == NodeConnection::AUDIO ? item->hasAudioInput : item->hasMIDIInput;
 	}
 
-	return BaseItemUI::isInterestedInDragSource(details);
+	return ItemUI::isInterestedInDragSource(details);
 }
 
 
@@ -219,7 +219,7 @@ void BaseNodeViewUI::itemDragEnter(const SourceDetails& details)
 		return;
 	}
 
-	BaseItemUI::itemDragEnter(details);
+	ItemUI::itemDragEnter(details);
 }
 
 void BaseNodeViewUI::itemDragExit(const SourceDetails& details)
@@ -230,7 +230,7 @@ void BaseNodeViewUI::itemDragExit(const SourceDetails& details)
 		return;
 	}
 
-	BaseItemUI::itemDragExit(details);
+	ItemUI::itemDragExit(details);
 }
 
 void BaseNodeViewUI::itemDropped(const SourceDetails& details)
@@ -244,7 +244,7 @@ void BaseNodeViewUI::itemDropped(const SourceDetails& details)
 		return;
 	}
 
-	BaseItemUI::itemDropped(details);
+	ItemUI::itemDropped(details);
 }
 
 Rectangle<int> BaseNodeViewUI::getMainBounds()
@@ -305,6 +305,6 @@ void BaseNodeViewUI::handleContextMenuResult(int result)
 	}
 	else
 	{
-		BaseItemUI::handleContextMenuResult(result);
+		ItemUI::handleContextMenuResult(result);
 	}
 }

@@ -13,7 +13,7 @@
 class NodeConnector;
 
 class NodeConnectionViewUI :
-    public BaseItemMinimalUI<NodeConnection>,
+    public ItemMinimalUI<NodeConnection>,
     public ComponentListener,
     public NodeConnection::AsyncListener,
     public Timer

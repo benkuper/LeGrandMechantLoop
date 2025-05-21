@@ -11,7 +11,7 @@
 #include "Node/NodeIncludes.h"
 
 SpatItemUI::SpatItemUI(SpatItem* item) :
-	BaseItemMinimalUI(item),
+	ItemMinimalUI(item),
 	item(item)
 {
 	setSize(30, 30);

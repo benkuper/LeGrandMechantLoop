@@ -11,7 +11,7 @@
 #pragma once
 
 class InterfaceManager :
-    public BaseManager<Interface>,
+    public Manager<Interface>,
     public MIDIInterface::MIDIInterfaceListener
 {
 public:

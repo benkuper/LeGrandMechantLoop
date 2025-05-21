@@ -11,7 +11,7 @@
 #pragma once
 
 class PresetManager :
-    public BaseManager<Preset>
+    public Manager<Preset>
 {
 public:
     PresetManager();

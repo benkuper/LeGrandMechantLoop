@@ -13,7 +13,7 @@
 #include "NodeConnectionViewUI.h"
 
 NodeConnectionViewUI::NodeConnectionViewUI(NodeConnection* connection, NodeConnector* _sourceConnector, NodeConnector* _destConnector) :
-	BaseItemMinimalUI(connection),
+	ItemMinimalUI(connection),
 	sourceConnector(nullptr),
 	destConnector(nullptr),
 	activityLevel(0)
@@ -214,7 +214,8 @@ void NodeConnectionViewUI::mouseUp(const MouseEvent& e)
 				if (r == -1) item->remove();
 				if (Node* n = manager->managerFactory->createFromMenuResult(r))
 				{
-					manager->addItem(n, pos);
+					n->viewUIPosition->setPoint(pos);
+					manager->addItem(n);
 					Node* dn = item->destNode;
 					item->setDestNode(n);
 
@@ -234,7 +235,7 @@ void NodeConnectionViewUI::mouseDoubleClick(const MouseEvent& e)
 bool NodeConnectionViewUI::isInterestedInDragSource(const SourceDetails& details)
 {
 	if (NodeConnector* nc = dynamic_cast<NodeConnector*>(details.sourceComponent.get())) return true;
-	return BaseItemMinimalUI::isInterestedInDragSource(details);
+	return ItemMinimalUI::isInterestedInDragSource(details);
 }
 
 void NodeConnectionViewUI::itemDragEnter(const SourceDetails& details)
@@ -251,7 +252,7 @@ void NodeConnectionViewUI::itemDragEnter(const SourceDetails& details)
 		return;
 	}
 
-	BaseItemMinimalUI::itemDragEnter(details);
+	ItemMinimalUI::itemDragEnter(details);
 }
 
 
@@ -263,7 +264,7 @@ void NodeConnectionViewUI::itemDragExit(const SourceDetails& details)
 		return;
 	}
 
-	BaseItemMinimalUI::itemDragExit(details);
+	ItemMinimalUI::itemDragExit(details);
 }
 
 void NodeConnectionViewUI::itemDropped(const SourceDetails& details)
@@ -291,7 +292,7 @@ void NodeConnectionViewUI::itemDropped(const SourceDetails& details)
 		}
 	}
 
-	BaseItemMinimalUI::itemDropped(details);
+	ItemMinimalUI::itemDropped(details);
 }
 
 

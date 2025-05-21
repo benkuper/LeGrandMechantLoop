@@ -13,7 +13,7 @@
 class NodeConnectionManagerViewUI;
 
 class NodeManagerViewUI :
-    public BaseManagerViewUI<NodeManager, Node, BaseNodeViewUI>,
+    public ManagerViewUI<NodeManager, Node, BaseNodeViewUI>,
     public DragAndDropContainer
 {
 public:

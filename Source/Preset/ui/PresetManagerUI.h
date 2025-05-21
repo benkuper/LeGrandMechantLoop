@@ -11,7 +11,7 @@
 #pragma once
 
 class PresetManagerUI :
-    public BaseManagerUI<PresetManager, Preset, PresetUI>
+    public ManagerUI<PresetManager, Preset, PresetUI>
 {
 public:
     PresetManagerUI(PresetManager* manager);
@@ -23,7 +23,7 @@ public:
 };
 
 class RootPresetManagerUI :
-    public BaseManagerShapeShifterUI<PresetManager, Preset, PresetUI>
+    public ManagerShapeShifterUI<PresetManager, Preset, PresetUI>
 {
 public:
     RootPresetManagerUI();

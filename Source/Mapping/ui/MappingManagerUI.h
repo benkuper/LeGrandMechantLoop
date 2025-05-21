@@ -14,7 +14,7 @@
 #include "../MappingManager.h"
 
 class MappingManagerUI :
-    public BaseManagerShapeShifterUI<MappingManager, Mapping, MappingUI>
+    public ManagerShapeShifterUI<MappingManager, Mapping, MappingUI>
 {
 public:
     MappingManagerUI(const String& name);

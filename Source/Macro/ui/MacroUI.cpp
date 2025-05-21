@@ -11,7 +11,7 @@
 #include "MacroUI.h"
 
 MacroUI::MacroUI(MacroParameter* item) :
-    BaseItemUI(item)
+    ItemUI(item)
 {
     valueUI.reset(item->value->createSlider());
     addAndMakeVisible(valueUI.get());

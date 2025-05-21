@@ -32,7 +32,7 @@ void Interface::onContainerParameterChangedInternal(Parameter* p)
 {
 	Array<var> params;
 	params.add(p->getScriptObject());
-	scriptManager->callFunctionOnAllItems("interfaceParameterChanged", params);
+	scriptManager->callFunctionOnAllScripts("interfaceParameterChanged", params);
 }
 
 void Interface::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
@@ -41,6 +41,6 @@ void Interface::onControllableFeedbackUpdateInternal(ControllableContainer* cc, 
 	{
 		Array<var> params;
 		params.add(c->getScriptObject());
-		scriptManager->callFunctionOnAllItems("interfaceParameterChanged", params);
+		scriptManager->callFunctionOnAllScripts("interfaceParameterChanged", params);
 	}
 }

@@ -11,7 +11,7 @@
 #include "Node/NodeIncludes.h"
 
 NodeConnectionManagerViewUI::NodeConnectionManagerViewUI(NodeManagerViewUI* nodeManagerUI, NodeConnectionManager* manager) :
-	BaseManagerUI(manager->niceName, manager, false),
+	ManagerUI(manager->niceName, manager, false),
 	nodeManagerUI(nodeManagerUI)
 {
 	bringToFrontOnSelect = false;

@@ -13,7 +13,7 @@
 #include "PresetUI.h"
 
 PresetUI::PresetUI(Preset* p) :
-	BaseItemUI(p, NONE, true)
+	ItemUI(p, NONE, true)
 {
 	addBT.reset(AssetManager::getInstance()->getAddBT());
 	addAndMakeVisible(addBT.get());
@@ -48,7 +48,7 @@ PresetUI::~PresetUI()
 
 void PresetUI::paintOverChildren(Graphics& g)
 {
-	BaseItemUI::paintOverChildren(g);
+	ItemUI::paintOverChildren(g);
 	if (item->isCurrent->boolValue())
 	{
 		g.setColour(GREEN_COLOR);
@@ -58,7 +58,7 @@ void PresetUI::paintOverChildren(Graphics& g)
 
 void PresetUI::mouseEnter(const MouseEvent& e)
 {
-	BaseItemUI::mouseEnter(e);
+	ItemUI::mouseEnter(e);
 	if (e.eventComponent == this || e.eventComponent == &itemLabel)
 	{
 		inspectable->highlightLinkedInspectables(true);
@@ -75,7 +75,7 @@ void PresetUI::mouseEnter(const MouseEvent& e)
 
 void PresetUI::mouseExit(const MouseEvent& e)
 {
-	BaseItemUI::mouseExit(e);
+	ItemUI::mouseExit(e);
 	if (e.eventComponent == this || e.eventComponent == &itemLabel)
 	{
 		inspectable->highlightLinkedInspectables(false);
@@ -91,7 +91,7 @@ void PresetUI::mouseExit(const MouseEvent& e)
 
 void PresetUI::mouseDown(const MouseEvent& e)
 {
-	BaseItemUI::mouseDown(e);
+	ItemUI::mouseDown(e);
 	if (e.eventComponent == this || e.eventComponent == &itemLabel)
 	{
 		if (e.mods.isLeftButtonDown() && e.mods.isAltDown()) item->loadTrigger->trigger();
@@ -163,7 +163,7 @@ void PresetUI::childBoundsChanged(Component* c)
 
 void PresetUI::controllableFeedbackUpdateInternal(Controllable* c)
 {
-	BaseItemUI::controllableFeedbackUpdateInternal(c);
+	ItemUI::controllableFeedbackUpdateInternal(c);
 
 	if (c == item->itemColor)
 	{
@@ -178,7 +178,7 @@ void PresetUI::controllableFeedbackUpdateInternal(Controllable* c)
 
 void PresetUI::buttonClicked(Button* b)
 {
-	BaseItemUI::buttonClicked(b);
+	ItemUI::buttonClicked(b);
 	if (b == addBT.get())
 	{
 		pmui->manager->addItem();

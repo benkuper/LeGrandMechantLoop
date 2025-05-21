@@ -11,7 +11,7 @@
 #include "Preset/PresetIncludes.h"
 
 PresetManagerUI::PresetManagerUI(PresetManager* manager) :
-	BaseManagerUI(manager->niceName, manager, false)
+	ManagerUI(manager->niceName, manager, false)
 {
 	//animateItemOnAdd = false;
 	setShowSearchBar(true);
@@ -33,7 +33,7 @@ void PresetManagerUI::removeItemUIInternal(PresetUI* ui)
 }
 
 RootPresetManagerUI::RootPresetManagerUI() :
-	BaseManagerShapeShifterUI(RootPresetManager::getInstance()->niceName, RootPresetManager::getInstance())
+	ManagerShapeShifterUI(RootPresetManager::getInstance()->niceName, RootPresetManager::getInstance())
 {
 	loadProgressionUI.reset(RootPresetManager::getInstance()->loadProgress->createSlider());
 	loadProgressionUI->showLabel = false;
@@ -51,7 +51,7 @@ RootPresetManagerUI::~RootPresetManagerUI()
 
 void RootPresetManagerUI::resizedInternalHeader(Rectangle<int>& r)
 {
-	BaseManagerShapeShifterUI::resizedInternalHeader(r);
+	ManagerShapeShifterUI::resizedInternalHeader(r);
 	saveCurrentUI->setBounds(r.removeFromRight(80).reduced(2));
 	r.removeFromRight(8);
 	loadProgressionUI->setBounds(r.removeFromRight(80).reduced(3));

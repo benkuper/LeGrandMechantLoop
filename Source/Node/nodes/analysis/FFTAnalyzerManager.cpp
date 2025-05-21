@@ -9,7 +9,7 @@
 */
 
 FFTAnalyzerManager::FFTAnalyzerManager() :
-	BaseManager("FFT Analysis"),
+	Manager("FFT Analysis"),
 	forwardFFT(fftOrder),
 	window(fftSize, dsp::WindowingFunction<float>::hann)
 {

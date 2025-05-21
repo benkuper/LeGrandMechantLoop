@@ -9,7 +9,7 @@
 */
 
 NodeUI::NodeUI(Node* node) :
-    BaseItemUI(node)
+    ItemUI(node)
 {
 }
 

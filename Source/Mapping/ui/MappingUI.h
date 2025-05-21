@@ -12,7 +12,7 @@
 #include "../Mapping.h"
 
 class MappingUI :
-    public BaseItemUI<Mapping>
+    public ItemUI<Mapping>
 {
 public:
     MappingUI(Mapping * item);

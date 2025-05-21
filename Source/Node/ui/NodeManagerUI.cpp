@@ -9,7 +9,7 @@
 */
 
 NodeManagerUI::NodeManagerUI(NodeManager * manager) :
-    BaseManagerUI(manager->niceName, manager)
+    ManagerUI(manager->niceName, manager)
 {
     addExistingItems();
 }

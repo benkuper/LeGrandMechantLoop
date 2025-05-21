@@ -14,7 +14,7 @@
 juce_ImplementSingleton(RootPresetManager);
 
 PresetManager::PresetManager() :
-	BaseManager("Presets")
+	Manager("Presets")
 {
 	itemDataType = "Preset";
 }

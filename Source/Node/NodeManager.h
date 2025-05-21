@@ -20,7 +20,7 @@ class MIDIOutputNode;
 class LooperNode;
 
 class NodeManager :
-	public BaseManager<Node>
+	public Manager<Node>
 {
 public:
 	NodeManager(AudioProcessorGraph* graph,

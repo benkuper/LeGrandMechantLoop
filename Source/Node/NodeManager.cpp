@@ -16,7 +16,7 @@ juce_ImplementSingleton(RootNodeManager)
 NodeManager::NodeManager(AudioProcessorGraph* graph,
 	AudioProcessorGraph::NodeID audioInputNodeID, AudioProcessorGraph::NodeID audioOutputNodeID,
 	AudioProcessorGraph::NodeID midiInputNodeID, AudioProcessorGraph::NodeID midiOutputNodeID) :
-	BaseManager("Nodes"),
+	Manager("Nodes"),
 	graph(graph),
 	cpuUsage(nullptr),
 	audioInputNodeID(audioInputNodeID),
@@ -83,7 +83,7 @@ NodeManager::~NodeManager()
 void NodeManager::clear()
 {
 	connectionManager->clear();
-	BaseManager::clear();
+	Manager::clear();
 }
 
 void NodeManager::setAudioInputs(const int& numInputs)
@@ -195,7 +195,7 @@ Array<UndoableAction*> NodeManager::getRemoveItemUndoableAction(Node* item)
 	Array<Node*> itemsToRemove;
 	itemsToRemove.add(item);
 	result.addArray(connectionManager->getRemoveAllLinkedConnectionsActions(itemsToRemove));
-	result.addArray(BaseManager::getRemoveItemUndoableAction(item));
+	result.addArray(Manager::getRemoveItemUndoableAction(item));
 	return result;
 }
 
@@ -203,7 +203,7 @@ Array<UndoableAction*> NodeManager::getRemoveItemsUndoableAction(Array<Node*> it
 {
 	Array<UndoableAction*> result;
 	result.addArray(connectionManager->getRemoveAllLinkedConnectionsActions(itemsToRemove));
-	result.addArray(BaseManager::getRemoveItemsUndoableAction(itemsToRemove));
+	result.addArray(Manager::getRemoveItemsUndoableAction(itemsToRemove));
 	return result;
 }
 
@@ -493,7 +493,7 @@ Array<LooperNode*> NodeManager::getLoopers(bool recursive, bool checkControl, bo
 
 var NodeManager::getJSONData(bool includeNonOverriden)
 {
-	var data = BaseManager::getJSONData(includeNonOverriden);
+	var data = Manager::getJSONData(includeNonOverriden);
 	data.getDynamicObject()->setProperty(looperControlCC.shortName, looperControlCC.getJSONData());
 	data.getDynamicObject()->setProperty(connectionManager->shortName, connectionManager->getJSONData());
 	data.getDynamicObject()->setProperty(presetsCC.shortName, presetsCC.getJSONData());
@@ -504,7 +504,7 @@ var NodeManager::getJSONData(bool includeNonOverriden)
 
 void NodeManager::loadJSONDataManagerInternal(var data)
 {
-	BaseManager::loadJSONDataManagerInternal(data);
+	Manager::loadJSONDataManagerInternal(data);
 	looperControlCC.loadJSONData(data.getProperty(looperControlCC.shortName, var()));
 	presets = data.getProperty("connectionPresetData", var(new DynamicObject()));
 	presetsCC.loadJSONData(data.getProperty(presetsCC.shortName, var()));
@@ -514,7 +514,7 @@ void NodeManager::loadJSONDataManagerInternal(var data)
 
 void NodeManager::afterLoadJSONDataInternal()
 {
-	BaseManager::afterLoadJSONDataInternal();
+	Manager::afterLoadJSONDataInternal();
 	updatePresetEnum();
 	updateLooperList();
 

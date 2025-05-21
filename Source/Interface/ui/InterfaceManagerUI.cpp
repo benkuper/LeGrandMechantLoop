@@ -9,7 +9,7 @@
 */
 
 InterfaceManagerUI::InterfaceManagerUI(StringRef name) :
-    BaseManagerShapeShifterUI(name, InterfaceManager::getInstance())
+    ManagerShapeShifterUI(name, InterfaceManager::getInstance())
 {
     addExistingItems();
 }

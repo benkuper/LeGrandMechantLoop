@@ -28,7 +28,7 @@ PatchBayNode::PatchBayNode(var params) :
 
 	presets = var(new DynamicObject());
 
-	connections.addBaseManagerListener(this);
+	connections.addManagerListener(this);
 	connections.selectItemWhenCreated = false;
 }
 

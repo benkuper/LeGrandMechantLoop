@@ -12,8 +12,8 @@
 
 class SpatNode :
 	public Node,
-	public BaseManager<SpatSource>::ManagerListener,
-	public BaseManager<SpatTarget>::ManagerListener
+	public Manager<SpatSource>::ManagerListener,
+	public Manager<SpatTarget>::ManagerListener
 {
 public:
 	SpatNode(var params = var());
@@ -31,8 +31,8 @@ public:
 	FloatParameter* circleArc;
 	BoolParameter* firstIsCentered;
 
-	BaseManager<SpatSource> sources;
-	BaseManager<SpatTarget> targets;
+	Manager<SpatSource> sources;
+	Manager<SpatTarget> targets;
 
 	Array<float, CriticalSection> weights;
 

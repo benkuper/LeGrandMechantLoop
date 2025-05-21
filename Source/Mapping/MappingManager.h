@@ -13,7 +13,7 @@
 #include "Mapping.h"
 
 class MappingManager :
-    public BaseManager<Mapping>,
+    public Manager<Mapping>,
     public EngineListener
 {
 public:

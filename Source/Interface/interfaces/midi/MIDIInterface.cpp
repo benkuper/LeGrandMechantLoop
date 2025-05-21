@@ -295,7 +295,7 @@ void MIDIInterface::noteOnReceived(const int& channel, const int& pitch, const i
 
 	midiInterfaceListeners.call(&MIDIInterfaceListener::noteOnReceived, this, channel, pitch, velocity);
 
-	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(noteOnEventId, Array<var>(channel, pitch, velocity));
+	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllScripts(noteOnEventId, Array<var>(channel, pitch, velocity));
 }
 
 void MIDIInterface::noteOffReceived(const int& channel, const int& pitch, const int& velocity)
@@ -306,7 +306,7 @@ void MIDIInterface::noteOffReceived(const int& channel, const int& pitch, const 
 
 	midiInterfaceListeners.call(&MIDIInterfaceListener::noteOffReceived, this, channel, pitch, velocity);
 
-	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(noteOffEventId, Array<var>(channel, pitch, velocity));
+	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllScripts(noteOffEventId, Array<var>(channel, pitch, velocity));
 }
 
 void MIDIInterface::controlChangeReceived(const int& channel, const int& number, const int& value)
@@ -317,7 +317,7 @@ void MIDIInterface::controlChangeReceived(const int& channel, const int& number,
 
 	midiInterfaceListeners.call(&MIDIInterfaceListener::controlChangeReceived, this, channel, number, value);
 
-	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(ccEventId, Array<var>(channel, number, value));
+	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllScripts(ccEventId, Array<var>(channel, number, value));
 }
 
 void MIDIInterface::sysExReceived(const MidiMessage& msg)
@@ -339,7 +339,7 @@ void MIDIInterface::sysExReceived(const MidiMessage& msg)
 
 	midiInterfaceListeners.call(&MIDIInterfaceListener::sysExReceived, this, msg);
 
-	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(sysexEventId, Array<var>(data.getRawDataPointer(), data.size()));
+	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllScripts(sysexEventId, Array<var>(data.getRawDataPointer(), data.size()));
 }
 
 void MIDIInterface::fullFrameTimecodeReceived(const MidiMessage& msg)
@@ -359,7 +359,7 @@ void MIDIInterface::pitchWheelReceived(const int& channel, const int& value)
 	//inActivityTrigger->trigger();
 	if (logIncomingData->boolValue()) NLOG(niceName, "Pitch wheel, channel : " << channel << ", value : " << value);
 
-	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(pitchWheelEventId, Array<var>(channel, value));
+	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllScripts(pitchWheelEventId, Array<var>(channel, value));
 
 	midiInterfaceListeners.call(&MIDIInterfaceListener::pitchWheelReceived, this, channel, value);
 }
@@ -370,7 +370,7 @@ void MIDIInterface::channelPressureReceived(const int& channel, const int& value
 	//inActivityTrigger->trigger();
 	if (logIncomingData->boolValue()) NLOG(niceName, "Channel Pressure, channel : " << channel << ", value : " << value);
 
-	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(channelPressureId, Array<var>(channel, value));
+	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllScripts(channelPressureId, Array<var>(channel, value));
 
 	midiInterfaceListeners.call(&MIDIInterfaceListener::channelPressureReceived, this, channel, value);
 }
@@ -381,7 +381,7 @@ void MIDIInterface::afterTouchReceived(const int& channel, const int& note, cons
 	//inActivityTrigger->trigger();
 	if (logIncomingData->boolValue()) NLOG(niceName, "After Touch, channel : " << channel << ", note : " << note << ", value : " << value);
 
-	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllItems(afterTouchId, Array<var>(channel, note, value));
+	if (scriptManager->items.size() > 0) scriptManager->callFunctionOnAllScripts(afterTouchId, Array<var>(channel, note, value));
 
 	midiInterfaceListeners.call(&MIDIInterfaceListener::afterTouchReceived, this, channel, note, value);
 }

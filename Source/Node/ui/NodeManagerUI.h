@@ -11,7 +11,7 @@
 #pragma once
 
 class NodeManagerUI :
-    public BaseManagerUI<NodeManager, Node, NodeUI>
+    public ManagerUI<NodeManager, Node, NodeUI>
 {
 public:
     NodeManagerUI(NodeManager * manager);

@@ -31,13 +31,13 @@ public:
 
 class PatchBayNode :
 	public Node,
-	public BaseManager<PatchConnection>::ManagerListener
+	public Manager<PatchConnection>::ManagerListener
 {
 public:
 	PatchBayNode(var params = var());
 	~PatchBayNode() {}
 
-	BaseManager<PatchConnection> connections;
+	Manager<PatchConnection> connections;
 
 	ControllableContainer presetsCC;
 	EnumParameter* presetEnum;

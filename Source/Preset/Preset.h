@@ -14,7 +14,7 @@ class PresetManager;
 
 class Preset :
 	public BaseItem,
-	public BaseManager<Preset>::ManagerListener,
+	public ManagerTListener<Preset>,
 	public EngineListener
 {
 public:

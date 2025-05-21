@@ -11,7 +11,7 @@
 #include "MappingManagerUI.h"
 
 MappingManagerUI::MappingManagerUI(const String& name) :
-	BaseManagerShapeShifterUI(name, MappingManager::getInstance())
+	ManagerShapeShifterUI(name, MappingManager::getInstance())
 {
 	setShowSearchBar(true);
 	addExistingItems();
@@ -28,7 +28,7 @@ bool MappingManagerUI::isInterestedInDragSource(const DragAndDropTarget::SourceD
 		return true;
 	}
 
-	return BaseManagerShapeShifterUI::isInterestedInDragSource(details);
+	return ManagerShapeShifterUI::isInterestedInDragSource(details);
 }
 
 void MappingManagerUI::itemDropped(const DragAndDropTarget::SourceDetails& details)
@@ -60,5 +60,5 @@ void MappingManagerUI::itemDropped(const DragAndDropTarget::SourceDetails& detai
 			});
 	}
 
-	BaseManagerShapeShifterUI::itemDropped(details);
+	ManagerShapeShifterUI::itemDropped(details);
 }

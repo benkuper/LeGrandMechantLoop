@@ -27,7 +27,7 @@ public:
     ~VSTRackNode();
 
     BoolParameter* exclusive;
-    BaseManager<VSTRackItem> manager;
+    Manager<VSTRackItem> manager;
 
     void addVSTFromDescription(PluginDescription* d);
 };

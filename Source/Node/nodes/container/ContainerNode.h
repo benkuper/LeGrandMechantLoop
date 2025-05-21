@@ -14,7 +14,7 @@ class NodeManager;
 
 class ContainerNode :
     public Node,
-    public BaseManager<Node>::ManagerListener,
+    public Manager<Node>::ManagerListener,
     public Node::NodeListener
 {
 public:

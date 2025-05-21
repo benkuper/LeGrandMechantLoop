@@ -11,7 +11,7 @@
 #include "MappingUI.h"
 
 MappingUI::MappingUI(Mapping * item) :
-    BaseItemUI(item)
+    ItemUI(item)
 {
     updateValueUI();
     updateOutUI();
@@ -25,7 +25,7 @@ void MappingUI::resizedInternalHeader(Rectangle<int>& r)
 {
     if (outUI != nullptr)
     {
-        outUI->setBounds(r.removeFromRight(jmin(r.getWidth() / 2,150)));
+        outUI->setBounds(r.removeFromRight(jmin(r.getWidth() / 2, 150)));
         r.removeFromRight(2);
     }
 
@@ -45,7 +45,7 @@ void MappingUI::updateOutUI()
 
     outUI.reset(item->dest != nullptr ? item->dest->createDefaultUI() : nullptr);
 
-    if(outUI != nullptr)
+    if (outUI != nullptr)
     {
         outUI->showLabel = false;
         addAndMakeVisible(outUI.get());
@@ -106,9 +106,9 @@ void MappingUI::itemDropped(const DragAndDropTarget::SourceDetails& details)
     {
         if (GenericMapping* i = dynamic_cast<GenericMapping*>(item))
         {
-			PopupMenu p;
-			p.addItem(3, "Set as source");
-			p.addItem(4, "Set as destination");
+            PopupMenu p;
+            p.addItem(3, "Set as source");
+            p.addItem(4, "Set as destination");
 
             p.showMenuAsync(PopupMenu::Options().withDeletionCheck(*this), [=](int result)
                 {
@@ -122,5 +122,5 @@ void MappingUI::itemDropped(const DragAndDropTarget::SourceDetails& details)
         }
     }
 
-    BaseItemUI::itemDropped(details);
+    ItemUI::itemDropped(details);
 }
