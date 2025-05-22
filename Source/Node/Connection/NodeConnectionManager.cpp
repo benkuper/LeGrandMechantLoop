@@ -75,6 +75,13 @@ Array<NodeConnection*> NodeConnectionManager::getInAndOutConnectionsFor(Node* no
 	return result;
 }
 
+void NodeConnectionManager::removeAllLinkedConnections(Array<Node*> itemsToRemove)
+{
+	Array<UndoableAction*> actions;
+	actions.addArray(getRemoveAllLinkedConnectionsActions(itemsToRemove));
+	UndoMaster::getInstance()->performActions("Remove linked connections", actions);
+}
+
 Array<UndoableAction*> NodeConnectionManager::getRemoveAllLinkedConnectionsActions(Array<Node*> itemsToRemove)
 {
 	Array<NodeConnection*> connectionsToRemove;

@@ -29,6 +29,7 @@ public:
     virtual NodeConnection* getConnectionForSourceAndDest(Node* sourceNode, Node* destNode, NodeConnection::ConnectionType connectionType);
     virtual Array<NodeConnection*> getInAndOutConnectionsFor(Node* node);
 
+	void removeAllLinkedConnections(Array<Node*> itemsToRemove);
     Array<UndoableAction*> getRemoveAllLinkedConnectionsActions(Array<Node*> itemsToRemove);
 
     NodeConnection* addItemFromData(var data, bool addToUndo = true) override;

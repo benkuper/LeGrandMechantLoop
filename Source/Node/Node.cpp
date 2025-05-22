@@ -129,7 +129,7 @@ void Node::clearItem()
 {
 	BaseItem::clearItem();
 	setMIDIInterface(nullptr);
-	//setMIDIOutDevice(nullptr);
+	
 	if (nodeGraphPtr != nullptr && graph != nullptr) graph->removeNode(nodeGraphPtr.get());
 	masterReference.clear();
 }

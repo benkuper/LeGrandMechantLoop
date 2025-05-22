@@ -182,6 +182,8 @@ void NodeManager::addItemInternal(Node* n, var data)
 
 void NodeManager::removeItemInternal(Node* n)
 {
+	connectionManager->removeAllLinkedConnections(n);
+
 	if (AudioInputNode* in = dynamic_cast<AudioInputNode*>(n))  audioInputNodes.removeAllInstancesOf(in);
 	else if (AudioOutputNode* on = dynamic_cast<AudioOutputNode*>(n)) audioOutputNodes.removeAllInstancesOf(on);
 	else if (MIDIInputNode* mio = dynamic_cast<MIDIInputNode*>(n)) midiInputNodes.removeAllInstancesOf(mio);
