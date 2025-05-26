@@ -73,6 +73,7 @@
 #include "nodes/timeline/LGMLSequence.h"
 #include "nodes/timeline/TimelineNode.h"
 
+
 //UI
 #include "ui/NodeUI.h"
 #include "ui/NodeManagerUI.h"
@@ -111,4 +112,6 @@
 #include "nodes/vst/ui/VSTLinkedParameterUI.h"
 #include "nodes/vst/ui/VSTNodeViewUI.h"
 #include "nodes/vst/ui/VSTRackNodeUI.h"
+
+#include "nodes/timeline/ui/TimelineNodeUI.h"
 

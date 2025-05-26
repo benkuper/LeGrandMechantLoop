@@ -359,10 +359,12 @@
 		D94A0DB2F0FE0BCE7C2D2B78 /* include_juce_events.mm */ /* include_juce_events.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_events.mm; path = ../../JuceLibraryCode/include_juce_events.mm; sourceTree = SOURCE_ROOT; };
 		D9D1372E70FB917C1F7539EC /* BinaryData.h */ /* BinaryData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BinaryData.h; path = ../../JuceLibraryCode/BinaryData.h; sourceTree = SOURCE_ROOT; };
 		DAA80D35A376B32DB21ABF1B /* MTCSender.cpp */ /* MTCSender.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MTCSender.cpp; path = ../../Source/Common/MIDI/MTCSender.cpp; sourceTree = SOURCE_ROOT; };
+		DB01D5EE2EC1CE8158916CBE /* TimelineNodeUI.h */ /* TimelineNodeUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimelineNodeUI.h; path = ../../Source/Node/nodes/timeline/ui/TimelineNodeUI.h; sourceTree = SOURCE_ROOT; };
 		DB5BA6584B95771395BC957F /* juce_audio_devices */ /* juce_audio_devices */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_audio_devices; path = ../../JUCE/modules/juce_audio_devices; sourceTree = SOURCE_ROOT; };
 		DC0C72D88A46EFB892562EEF /* juce_simpleweb */ /* juce_simpleweb */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_simpleweb; path = ../../Modules/juce_simpleweb; sourceTree = SOURCE_ROOT; };
 		DCA2FDB3318047B6B026C615 /* MappingUI.cpp */ /* MappingUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = MappingUI.cpp; path = ../../Source/Mapping/ui/MappingUI.cpp; sourceTree = SOURCE_ROOT; };
 		DDDE73BE013ABB74466D9B4F /* include_juce_audio_formats.mm */ /* include_juce_audio_formats.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_formats.mm; path = ../../JuceLibraryCode/include_juce_audio_formats.mm; sourceTree = SOURCE_ROOT; };
+		DE18969C80C46DFE482E73DB /* TimelineNodeUI.cpp */ /* TimelineNodeUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TimelineNodeUI.cpp; path = ../../Source/Node/nodes/timeline/ui/TimelineNodeUI.cpp; sourceTree = SOURCE_ROOT; };
 		E0030CE5FB0E247A4CF27996 /* NodeViewUI.cpp */ /* NodeViewUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NodeViewUI.cpp; path = ../../Source/Node/ui/NodeViewUI.cpp; sourceTree = SOURCE_ROOT; };
 		E1EED57D2228C25B8217CE75 /* MacroManager.h */ /* MacroManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = MacroManager.h; path = ../../Source/Macro/MacroManager.h; sourceTree = SOURCE_ROOT; };
 		E282EE4A56F6B3D0E732F78F /* NodeManagerViewUI.cpp */ /* NodeManagerViewUI.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = NodeManagerViewUI.cpp; path = ../../Source/Node/ui/NodeManagerViewUI.cpp; sourceTree = SOURCE_ROOT; };
@@ -934,6 +936,8 @@
 			children = (
 				781A1DA04905670EB38EBC95,
 				26A008126EC0D8D88C0B4251,
+				DE18969C80C46DFE482E73DB,
+				DB01D5EE2EC1CE8158916CBE,
 			);
 			name = ui;
 			sourceTree = "<group>";
@@ -1450,7 +1454,7 @@
 					"LINK_PLATFORM_MACOSX=1",
 					"USE_ABLETONLINK=1",
 					"JUCER_XCODE_MAC_2F3811D6=1",
-					"JUCE_APP_VERSION=1.1.0b3",
+					"JUCE_APP_VERSION=1.1.0b4",
 					"JUCE_APP_VERSION_HEX=0x10100",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",
@@ -1629,7 +1633,7 @@
 					"LINK_PLATFORM_MACOSX=1",
 					"USE_ABLETONLINK=1",
 					"JUCER_XCODE_MAC_2F3811D6=1",
-					"JUCE_APP_VERSION=1.1.0b3",
+					"JUCE_APP_VERSION=1.1.0b4",
 					"JUCE_APP_VERSION_HEX=0x10100",
 					"JucePlugin_Build_VST=0",
 					"JucePlugin_Build_VST3=0",

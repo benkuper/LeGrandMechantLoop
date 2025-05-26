@@ -18,7 +18,7 @@ public:
 	TimelineNode(var params = var());
 	~TimelineNode();
 
-	LGMLSequence sequence;
+	LGMLSequenceManager sequenceManager;
 	AudioProcessorGraph containerGraph;
 	AudioProcessorGraph::NodeID audioInputID;
 	AudioProcessorGraph::NodeID audioOutputID;
@@ -43,10 +43,13 @@ public:
 	void updatePlayConfigInternal() override;
 	void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
-	void selectThis(bool addToSelection = false, bool notify = true) override;
+
+	BaseNodeViewUI* createViewUI() override;
 
 	var getJSONData(bool includeNonOverriden = false) override;
 	void loadJSONDataInternal(var data) override;
+
+	
 
 	DECLARE_TYPE("Timeline");
 };

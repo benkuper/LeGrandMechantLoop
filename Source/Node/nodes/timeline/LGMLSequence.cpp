@@ -79,6 +79,16 @@ void LGMLSequence::updateAudioOutputs()
 	}
 }
 
+void LGMLSequence::selectThis(bool addToSelection, bool notify)
+{
+	Sequence::selectThis(addToSelection, notify);
+
+	if (TimeMachineView* t = ShapeShifterManager::getInstance()->getContentForType<TimeMachineView>())
+	{
+		t->setSequence(this);
+	}
+}
+
 LGMLAudioLayer::LGMLAudioLayer(Sequence* s, var params) :
 	AudioLayer(s, params)
 {

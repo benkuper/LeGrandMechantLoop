@@ -21,6 +21,7 @@ NodeManagerViewUI::NodeManagerViewUI(NodeManager* manager) :
 
 	setShowPane(true);
 
+	addItemOnDoubleClick = false;
 	bringToFrontOnSelect = false;
 	enableSnapping = true;
 

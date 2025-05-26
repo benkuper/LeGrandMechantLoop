@@ -1504,6 +1504,9 @@
     <ClCompile Include="..\..\Source\Node\nodes\timeline\ui\SequenceEditor.cpp">
       <Filter>LGML\Source\Node\nodes\timeline\ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Node\nodes\timeline\ui\TimelineNodeUI.cpp">
+      <Filter>LGML\Source\Node\nodes\timeline\ui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Node\nodes\timeline\LGMLSequence.cpp">
       <Filter>LGML\Source\Node\nodes\timeline</Filter>
     </ClCompile>
@@ -5749,6 +5752,9 @@
       <Filter>LGML\Source\Node\nodes\patchbay</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\timeline\ui\SequenceEditor.h">
+      <Filter>LGML\Source\Node\nodes\timeline\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Node\nodes\timeline\ui\TimelineNodeUI.h">
       <Filter>LGML\Source\Node\nodes\timeline\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Node\nodes\timeline\LGMLSequence.h">

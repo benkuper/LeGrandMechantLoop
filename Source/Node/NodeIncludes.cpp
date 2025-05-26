@@ -65,6 +65,7 @@
 #include "nodes/timeline/LGMLSequence.cpp"
 #include "nodes/timeline/TimelineNode.cpp"
 
+
 #include "nodes/recorder/RecorderNode.cpp"
 
 #include "nodes/analysis/FFTAnalyzer.cpp"
@@ -77,6 +78,7 @@
 #include "nodes/vst/ui/VSTNodeViewUI.cpp"
 #include "nodes/vst/ui/VSTRackNodeUI.cpp"
 
+#include "nodes/timeline/ui/TimelineNodeUI.cpp"
 
 #include "ui/NodeUI.cpp"
 #include "ui/NodeManagerUI.cpp"
@@ -87,3 +89,4 @@
 #include "Connection/ui/NodeConnectionViewUI.cpp"
 #include "Connection/ui/NodeConnector.cpp"
 #include "Connection/ui/NodeConnectionManagerViewUI.cpp"
+

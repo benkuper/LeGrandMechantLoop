@@ -9,11 +9,10 @@
 */
 
 #include "Node/NodeIncludes.h"
-#include "TimelineNode.h"
 
 TimelineNode::TimelineNode(var params) :
 	Node(getTypeString(), params, true, true, true),
-	sequence(this),
+	sequenceManager(this),
 	audioInputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),
 	audioOutputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),
 	midiInputID(AudioProcessorGraph::NodeID(AudioManager::getInstance()->getNewGraphID())),
@@ -31,8 +30,8 @@ TimelineNode::TimelineNode(var params) :
 
 	setMIDIIO(true, true);
 	
-
-	addChildControllableContainer(&sequence);
+	addChildControllableContainer(&sequenceManager);
+	if (!Engine::mainEngine->isLoadingFile) sequenceManager.addItem();
 
 	Transport::getInstance()->addTransportListener(this);
 }
@@ -44,8 +43,8 @@ TimelineNode::~TimelineNode()
 
 void TimelineNode::clearItem()
 {
+	sequenceManager.clear();
 	Node::clearItem();
-	sequence.clearItem();
 }
 
 void TimelineNode::initInternal()
@@ -66,10 +65,13 @@ void TimelineNode::updateGraph()
 	containerGraph.setPlayConfigDetails(getNumAudioInputs(), getNumAudioOutputs(), processor->getSampleRate(), processor->getBlockSize());
 	containerGraph.prepareToPlay(processor->getSampleRate(), processor->getBlockSize());
 	
-	sequence.updateAudioInputs();
-	sequence.updateAudioOutputs();
-
-	 
+	for (auto& i : sequenceManager.items)
+	{
+		LGMLSequence* s = dynamic_cast<LGMLSequence*>(i);
+		s->updateAudioInputs();
+		s->updateAudioOutputs();
+	}
+		 
 }
 
 void TimelineNode::playStateChanged(bool isPlaying, bool forceRestart)
@@ -79,12 +81,20 @@ void TimelineNode::playStateChanged(bool isPlaying, bool forceRestart)
 
 void TimelineNode::updateAudioInputsInternal()
 {
-	sequence.updateAudioInputs();
+	for (auto& i : sequenceManager.items)
+	{
+		LGMLSequence* s = dynamic_cast<LGMLSequence*>(i);
+		s->updateAudioInputs();
+	}
 }
 
 void TimelineNode::updateAudioOutputsInternal()
 {
-	sequence.updateAudioOutputs();
+	for (auto& i : sequenceManager.items)
+	{
+		LGMLSequence* s = dynamic_cast<LGMLSequence*>(i);
+		s->updateAudioOutputs();
+	}
 }
 
 void TimelineNode::updatePlayConfigInternal()
@@ -99,22 +109,22 @@ void TimelineNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& 
 	containerGraph.processBlock(buffer, midiMessages);
 }
 
-void TimelineNode::selectThis(bool addToSelection, bool notify)
+
+BaseNodeViewUI* TimelineNode::createViewUI()
 {
-	Node::selectThis(addToSelection, notify);
-	if (TimeMachineView* v = ShapeShifterManager::getInstance()->getContentForType<TimeMachineView>()) v->setSequence(&sequence);
+	return new TimelineNodeUI(this);
 }
 
 var TimelineNode::getJSONData(bool includeNonOverriden)
 {
 	var data = Node::getJSONData(includeNonOverriden);
-	data.getDynamicObject()->setProperty("sequence", sequence.getJSONData());
+	data.getDynamicObject()->setProperty(sequenceManager.shortName, sequenceManager.getJSONData());
 	return data;
 }
 
 void TimelineNode::loadJSONDataInternal(var data)
 {
 	Node::loadJSONDataItemInternal(data);
-	sequence.loadJSONData(data.getProperty("sequence", var()));
+	sequenceManager.loadJSONData(data.getProperty(sequenceManager.shortName, var()));
 	updateGraph();
 }
