@@ -67,7 +67,7 @@ void LooperTrackUI::setViewedComponents(bool showRec, bool showStopClear, bool s
 		if (playRecordUI == nullptr)
 		{
 			playRecordUI.reset(track->playRecordTrigger->createButtonUI());
-			Colour c = Colour::fromHSV((track->section->intValue() - 1) * .2f, .3f, .6f, 1);
+			Colour c = Colour::fromHSV((track->section->intValue() - 1) * .2f, .3f, .6f, 1.f);
 			playRecordUI->customLabel = track->section->stringValue();
 			playRecordUI->customBGColor = c;
 			playRecordUI->useCustomBGColor = true;
@@ -146,7 +146,7 @@ void LooperTrackUI::newMessage(const ContainerAsyncEvent& e)
 		{
 			if (playRecordUI != nullptr)
 			{
-				Colour c = Colour::fromHSV((track->section->intValue() - 1) * .2f, .3f, .6f, 1);
+				Colour c = Colour::fromHSV((track->section->intValue() - 1) * .2f, .3f, .6f, 1.f);
 				playRecordUI->customLabel = track->section->stringValue();
 				playRecordUI->customBGColor = c;
 				playRecordUI->updateUIParams();

@@ -10,7 +10,6 @@
 
 #include "Interface/InterfaceIncludes.h"
 #include "LGMLAssetManager.h"
-#include "Interface.h"
 
 Interface::Interface(StringRef name, var params) :
 	BaseItem(name, true, true)
@@ -32,7 +31,7 @@ void Interface::onContainerParameterChangedInternal(Parameter* p)
 {
 	Array<var> params;
 	params.add(p->getScriptObject());
-	scriptManager->callFunctionOnAllScripts("interfaceParameterChanged", params);
+	scriptManager->callFunctionOnAllItems("interfaceParameterChanged", params);
 }
 
 void Interface::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
@@ -41,6 +40,6 @@ void Interface::onControllableFeedbackUpdateInternal(ControllableContainer* cc, 
 	{
 		Array<var> params;
 		params.add(c->getScriptObject());
-		scriptManager->callFunctionOnAllScripts("interfaceParameterChanged", params);
+		scriptManager->callFunctionOnAllItems("interfaceParameterChanged", params);
 	}
 }

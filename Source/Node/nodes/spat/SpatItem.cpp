@@ -15,7 +15,7 @@ SpatItem::SpatItem(const String& name, var params) :
     index(0)
 {
 	setHasCustomColor(true);
-	if(!Engine::mainEngine->isLoadingFile) itemColor->setColor(Colour::fromHSV(Random().nextFloat(), .8f, .8f, 1));
+	if(!Engine::mainEngine->isLoadingFile) itemColor->setColor(Colour::fromHSV(Random().nextFloat(), .8f, .8f, 1.f));
 	//hideInEditor = true;
 	position = addPoint2DParameter("Position", "Position of this point");
 	position->setBounds(0, 0, 1, 1);
@@ -39,7 +39,7 @@ SpatSource::SpatSource() :
 	setHasCustomColor(true);
 
 	Random r;
-	itemColor->setColor(Colour::fromHSV(r.nextFloat(), .8f, .5f, 1));
+	itemColor->setColor(Colour::fromHSV(r.nextFloat(), .8f, .5f, 1.f));
 
 	controlMode = addEnumParameter("Mode", "Mode of the positionning");
 	controlMode->addOption("Free 2D", FREE_2D)->addOption("Free Polar", FREE_POLAR)->addOption("Circle", CONTROL_CIRCLE)->addOption("Noise", CONTROL_NOISE);

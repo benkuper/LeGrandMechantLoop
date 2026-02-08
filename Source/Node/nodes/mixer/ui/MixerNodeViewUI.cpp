@@ -101,7 +101,7 @@ void MixerNodeViewUI::viewFilterUpdated()
 
 void MixerNodeViewUI::paint(Graphics& g)
 {
-    BaseItemUI::paint(g);
+    ItemUI::paint(g);
     g.setColour(NORMAL_COLOR.withAlpha(.5f));
 }
 

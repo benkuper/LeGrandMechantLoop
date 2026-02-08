@@ -93,7 +93,7 @@ RootPresetManager::~RootPresetManager()
 void RootPresetManager::clear()
 {
 	setCurrentPreset(nullptr);
-	BaseManager::clear();
+	Manager::clear();
 }
 
 void RootPresetManager::setCurrentPreset(Preset* p)

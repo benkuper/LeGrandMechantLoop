@@ -103,7 +103,7 @@ NodeConnection* NodeConnectionManager::addItemFromData(var data, bool addToUndo)
 	return nullptr;
 }
 
-Array<BaseItem*> NodeConnectionManager::addItemsFromData(var data, bool addToUndo)
+Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool addToUndo)
 {
 	Array<NodeConnection*> itemsToAdd;
 
@@ -112,11 +112,7 @@ Array<BaseItem*> NodeConnectionManager::addItemsFromData(var data, bool addToUnd
 		NodeConnection::ConnectionType t = (NodeConnection::ConnectionType)(int)data[i].getProperty("connectionType", NodeConnection::AUDIO);
 		if (NodeConnection* nc = createConnectionForType(t)) itemsToAdd.add(nc);
 	}
-	Array<NodeConnection*> itemsAdded = addItems(itemsToAdd, data, addToUndo);
-
-	Array<BaseItem*> result;
-	for (auto& i : itemsAdded) result.add(i);
-	return result;
+	return addItems(itemsToAdd, data, addToUndo);
 }
 
 

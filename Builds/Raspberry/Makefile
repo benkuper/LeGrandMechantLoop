@@ -39,7 +39,7 @@ ifeq ($(CONFIG),Release)
     TARGET_ARCH := -march=armv8-a
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DNDEBUG=1" "-DVST_LOGGING=0" "-DOSC_REMOTE_CONTROL_PORT=44000" "-DLINK_PLATFORM_LINUX=1" "-DUSE_ABLETONLINK=1" "-DJUCER_LINUX_MAKE_9C1B7400=1" "-DJUCE_APP_VERSION=1.1.0b4" "-DJUCE_APP_VERSION_HEX=0x10100" $(shell $(PKG_CONFIG) --cflags $(shell ($(PKG_CONFIG) --exists webkit2gtk-4.1 && echo webkit2gtk-4.1) || echo webkit2gtk-4.0) alsa freetype2 fontconfig gl libcurl gtk+-x11-3.0) -pthread -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK -I../../JUCE/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../JUCE/modules -I../../Modules -I/usr/include/freetype2 -I../../External/libusb/include/libusb-1.0 -I../../Source -I../../External/asio -I../../External/asiodriver -I../../External/servus/include -I../../External/dnssd/include -I../../External/vst2 -I../../External/serial/include -I../../External/rubberband/include -I../../External/abletonlink/include $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DNDEBUG=1" "-DVST_LOGGING=0" "-DOSC_REMOTE_CONTROL_PORT=44000" "-DLINK_PLATFORM_LINUX=1" "-DUSE_ABLETONLINK=1" "-DJUCER_LINUX_MAKE_9C1B7400=1" "-DJUCE_APP_VERSION=1.1.0b4" "-DJUCE_APP_VERSION_HEX=0x10100" $(shell $(PKG_CONFIG) --cflags $(shell ($(PKG_CONFIG) --exists webkit2gtk-4.1 && echo webkit2gtk-4.1) || echo webkit2gtk-4.0) alsa freetype2 fontconfig gl libcurl gtk+-x11-3.0) -pthread -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/lilv/src -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/lilv -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/sratom -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/sord/src -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/sord -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/serd -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/lv2 -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK -I../../JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK -I../../JuceLibraryCode -I../../JUCE/modules -I../../Modules -I/usr/include/freetype2 -I../../External/libusb/include/libusb-1.0 -I../../Source -I../../External/asio -I../../External/asiodriver -I../../External/servus/include -I../../External/dnssd/include -I../../External/vst2 -I../../External/serial/include -I../../External/rubberband/include -I../../External/abletonlink/include $(CPPFLAGS)
   JUCE_CPPFLAGS_APP :=  "-DJucePlugin_Build_VST=0" "-DJucePlugin_Build_VST3=0" "-DJucePlugin_Build_AU=0" "-DJucePlugin_Build_AUv3=0" "-DJucePlugin_Build_AAX=0" "-DJucePlugin_Build_Standalone=0" "-DJucePlugin_Build_Unity=0" "-DJucePlugin_Build_LV2=0"
   JUCE_TARGET_APP := LGML
 
@@ -60,7 +60,7 @@ ifeq ($(CONFIG),Debug)
     TARGET_ARCH := -march=armv8-a
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DDEBUG=1" "-D_DEBUG=1" "-DVST_LOGGING=0" "-DOSC_REMOTE_CONTROL_PORT=44000" "-DLINK_PLATFORM_LINUX=1" "-DUSE_ABLETONLINK=1" "-DJUCER_LINUX_MAKE_9C1B7400=1" "-DJUCE_APP_VERSION=1.1.0b4" "-DJUCE_APP_VERSION_HEX=0x10100" $(shell $(PKG_CONFIG) --cflags $(shell ($(PKG_CONFIG) --exists webkit2gtk-4.1 && echo webkit2gtk-4.1) || echo webkit2gtk-4.0) alsa freetype2 fontconfig gl libcurl gtk+-x11-3.0) -pthread -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK -I../../JUCE/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../JUCE/modules -I../../Modules -I/usr/include/freetype2 -I../../External/libusb/include/libusb-1.0 -I../../Source -I../../External/asio -I../../External/asiodriver -I../../External/servus/include -I../../External/dnssd/include -I../../External/vst2 -I../../External/serial/include -I../../External/rubberband/include -I../../External/abletonlink/include $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DDEBUG=1" "-D_DEBUG=1" "-DVST_LOGGING=0" "-DOSC_REMOTE_CONTROL_PORT=44000" "-DLINK_PLATFORM_LINUX=1" "-DUSE_ABLETONLINK=1" "-DJUCER_LINUX_MAKE_9C1B7400=1" "-DJUCE_APP_VERSION=1.1.0b4" "-DJUCE_APP_VERSION_HEX=0x10100" $(shell $(PKG_CONFIG) --cflags $(shell ($(PKG_CONFIG) --exists webkit2gtk-4.1 && echo webkit2gtk-4.1) || echo webkit2gtk-4.0) alsa freetype2 fontconfig gl libcurl gtk+-x11-3.0) -pthread -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/lilv/src -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/lilv -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/sratom -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/sord/src -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/sord -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/serd -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/lv2 -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK -I../../JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK -I../../JuceLibraryCode -I../../JUCE/modules -I../../Modules -I/usr/include/freetype2 -I../../External/libusb/include/libusb-1.0 -I../../Source -I../../External/asio -I../../External/asiodriver -I../../External/servus/include -I../../External/dnssd/include -I../../External/vst2 -I../../External/serial/include -I../../External/rubberband/include -I../../External/abletonlink/include $(CPPFLAGS)
   JUCE_CPPFLAGS_APP :=  "-DJucePlugin_Build_VST=0" "-DJucePlugin_Build_VST3=0" "-DJucePlugin_Build_AU=0" "-DJucePlugin_Build_AUv3=0" "-DJucePlugin_Build_AAX=0" "-DJucePlugin_Build_Standalone=0" "-DJucePlugin_Build_Unity=0" "-DJucePlugin_Build_LV2=0"
   JUCE_TARGET_APP := LGML
 
@@ -81,7 +81,7 @@ ifeq ($(CONFIG),Release64)
     TARGET_ARCH := -march=armv8-a
   endif
 
-  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DNDEBUG=1" "-DVST_LOGGING=0" "-DOSC_REMOTE_CONTROL_PORT=44000" "-DLINK_PLATFORM_LINUX=1" "-DUSE_ABLETONLINK=1" "-DJUCER_LINUX_MAKE_9C1B7400=1" "-DJUCE_APP_VERSION=1.1.0b4" "-DJUCE_APP_VERSION_HEX=0x10100" $(shell $(PKG_CONFIG) --cflags $(shell ($(PKG_CONFIG) --exists webkit2gtk-4.1 && echo webkit2gtk-4.1) || echo webkit2gtk-4.0) alsa freetype2 fontconfig gl libcurl gtk+-x11-3.0) -pthread -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv/src -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lilv -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sratom -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord/src -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/sord -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/serd -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2 -I../../JUCE/modules/juce_audio_processors/format_types/LV2_SDK -I../../JUCE/modules/juce_audio_processors/format_types/VST3_SDK -I../../JuceLibraryCode -I../../JUCE/modules -I../../Modules -I../../Source -I../../External/asio -I../../External/asiodriver -I../../External/servus/include -I../../External/dnssd/include -I../../External/vst2 -I../../External/serial/include -I../../External/rubberband/include -I../../External/abletonlink/include $(CPPFLAGS)
+  JUCE_CPPFLAGS := $(DEPFLAGS) "-DLINUX=1" "-DNDEBUG=1" "-DVST_LOGGING=0" "-DOSC_REMOTE_CONTROL_PORT=44000" "-DLINK_PLATFORM_LINUX=1" "-DUSE_ABLETONLINK=1" "-DJUCER_LINUX_MAKE_9C1B7400=1" "-DJUCE_APP_VERSION=1.1.0b4" "-DJUCE_APP_VERSION_HEX=0x10100" $(shell $(PKG_CONFIG) --cflags $(shell ($(PKG_CONFIG) --exists webkit2gtk-4.1 && echo webkit2gtk-4.1) || echo webkit2gtk-4.0) alsa freetype2 fontconfig gl libcurl gtk+-x11-3.0) -pthread -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/lilv/src -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/lilv -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/sratom -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/sord/src -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/sord -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/serd -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK/lv2 -I../../JUCE/modules/juce_audio_processors_headless/format_types/LV2_SDK -I../../JUCE/modules/juce_audio_processors_headless/format_types/VST3_SDK -I../../JuceLibraryCode -I../../JUCE/modules -I../../Modules -I../../Source -I../../External/asio -I../../External/asiodriver -I../../External/servus/include -I../../External/dnssd/include -I../../External/vst2 -I../../External/serial/include -I../../External/rubberband/include -I../../External/abletonlink/include $(CPPFLAGS)
   JUCE_CPPFLAGS_APP :=  "-DJucePlugin_Build_VST=0" "-DJucePlugin_Build_VST3=0" "-DJucePlugin_Build_AU=0" "-DJucePlugin_Build_AUv3=0" "-DJucePlugin_Build_AAX=0" "-DJucePlugin_Build_Standalone=0" "-DJucePlugin_Build_Unity=0" "-DJucePlugin_Build_LV2=0"
   JUCE_TARGET_APP := LGML
 
@@ -129,8 +129,9 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/include_juce_audio_devices_63111d02.o \
   $(JUCE_OBJDIR)/include_juce_audio_formats_15f82001.o \
   $(JUCE_OBJDIR)/include_juce_audio_processors_10c03666.o \
-  $(JUCE_OBJDIR)/include_juce_audio_processors_ara_2a4c6ef7.o \
-  $(JUCE_OBJDIR)/include_juce_audio_processors_lv2_libs_12bdca08.o \
+  $(JUCE_OBJDIR)/include_juce_audio_processors_headless_1902bafc.o \
+  $(JUCE_OBJDIR)/include_juce_audio_processors_headless_ara_8deeb88d.o \
+  $(JUCE_OBJDIR)/include_juce_audio_processors_headless_lv2_libs_36180e32.o \
   $(JUCE_OBJDIR)/include_juce_audio_utils_9f9fb2d6.o \
   $(JUCE_OBJDIR)/include_juce_core_f26d17db.o \
   $(JUCE_OBJDIR)/include_juce_core_CompilationTime_9257742c.o \
@@ -154,6 +155,7 @@ OBJECTS_APP := \
   $(JUCE_OBJDIR)/include_juce_simpleweb_acec7570.o \
   $(JUCE_OBJDIR)/include_juce_simpleweb2_f0c24e8c.o \
   $(JUCE_OBJDIR)/include_juce_timeline_e6183ffd.o \
+  $(JUCE_OBJDIR)/include_juce_timeline2_dd0fd59f.o \
 
 .PHONY: clean all strip
 
@@ -348,14 +350,19 @@ $(JUCE_OBJDIR)/include_juce_audio_processors_10c03666.o: ../../JuceLibraryCode/i
 	@echo "Compiling include_juce_audio_processors.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
-$(JUCE_OBJDIR)/include_juce_audio_processors_ara_2a4c6ef7.o: ../../JuceLibraryCode/include_juce_audio_processors_ara.cpp
+$(JUCE_OBJDIR)/include_juce_audio_processors_headless_1902bafc.o: ../../JuceLibraryCode/include_juce_audio_processors_headless.cpp
 	-$(V_AT)mkdir -p $(@D)
-	@echo "Compiling include_juce_audio_processors_ara.cpp"
+	@echo "Compiling include_juce_audio_processors_headless.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
-$(JUCE_OBJDIR)/include_juce_audio_processors_lv2_libs_12bdca08.o: ../../JuceLibraryCode/include_juce_audio_processors_lv2_libs.cpp
+$(JUCE_OBJDIR)/include_juce_audio_processors_headless_ara_8deeb88d.o: ../../JuceLibraryCode/include_juce_audio_processors_headless_ara.cpp
 	-$(V_AT)mkdir -p $(@D)
-	@echo "Compiling include_juce_audio_processors_lv2_libs.cpp"
+	@echo "Compiling include_juce_audio_processors_headless_ara.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_juce_audio_processors_headless_lv2_libs_36180e32.o: ../../JuceLibraryCode/include_juce_audio_processors_headless_lv2_libs.cpp
+	-$(V_AT)mkdir -p $(@D)
+	@echo "Compiling include_juce_audio_processors_headless_lv2_libs.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/include_juce_audio_utils_9f9fb2d6.o: ../../JuceLibraryCode/include_juce_audio_utils.cpp
@@ -471,6 +478,11 @@ $(JUCE_OBJDIR)/include_juce_simpleweb2_f0c24e8c.o: ../../JuceLibraryCode/include
 $(JUCE_OBJDIR)/include_juce_timeline_e6183ffd.o: ../../JuceLibraryCode/include_juce_timeline.cpp
 	-$(V_AT)mkdir -p $(@D)
 	@echo "Compiling include_juce_timeline.cpp"
+	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
+
+$(JUCE_OBJDIR)/include_juce_timeline2_dd0fd59f.o: ../../JuceLibraryCode/include_juce_timeline2.cpp
+	-$(V_AT)mkdir -p $(@D)
+	@echo "Compiling include_juce_timeline2.cpp"
 	$(V_AT)$(CXX) $(JUCE_CXXFLAGS) $(JUCE_CPPFLAGS_APP) $(JUCE_CFLAGS_APP) -o "$@" -c "$<"
 
 $(JUCE_OBJDIR)/execinfo.cmd:

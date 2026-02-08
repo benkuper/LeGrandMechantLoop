@@ -9,7 +9,6 @@
 */
 
 #include "Node/NodeIncludes.h"
-#include "NodeManager.h"
 
 juce_ImplementSingleton(RootNodeManager)
 
