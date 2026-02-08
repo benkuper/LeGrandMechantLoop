@@ -40,6 +40,12 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.2
 
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore "Builds/${{ matrix.buildFolder }}/${{ env.ProjectName }}.sln"
+
       - name: Force 64-bit Linker
         shell: powershell
         run: |
@@ -252,7 +258,7 @@ jobs:
       - name: Upload
         uses: ./.github/actions/upload
         with:
-          pkg-name: ./Builds/LinuxMakefile/${{ steps.create_package.outputs.pkg-name }}
+          pkg-name: ${{ steps.create_package.outputs.pkg-name }}
           url: ${{ secrets.UPLOADURL }}
           pass: ${{ secrets.UPLOADPASS }}
   
@@ -389,6 +395,6 @@ jobs:
       - name: Upload
         uses: ./.github/actions/upload
         with:
-          pkg-name: ./Builds/${{ matrix.buildFolder }}/${{ steps.create_package.outputs.pkg-name }}
+          pkg-name: ${{ steps.create_package.outputs.pkg-name }}
           url: ${{ secrets.UPLOADURL }}
           pass: ${{ secrets.UPLOADPASS }}
