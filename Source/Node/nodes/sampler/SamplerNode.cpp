@@ -39,6 +39,8 @@ SamplerNode::SamplerNode(var params) :
 
     autoKeyLiveMode = playCC.addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
     autoKeyFadeTimeMS = playCC.addIntParameter("Auto Key Fade", "Fade for anticlick when repitching auto keys, in milliseconds", 50);
+    autoKeyMode = playCC.addEnumParameter("Auto Key Algorithm", "Algorithm used to pitch-shift when computing auto keys.\nResample: clean, no wobble, slight formant shift.\nRubberBand: phase vocoder, preserves formants, may wobble on tonal sounds.");
+    autoKeyMode->addOption("Resample", RESAMPLE)->addOption("RubberBand", RUBBERBAND);
 
     addChildControllableContainer(&playCC, false, 0);
 
@@ -216,7 +218,7 @@ void SamplerNode::computeAutoKeys()
         if (closestNote != -1)
         {
             double shift = MidiMessage::getMidiNoteInHertz(i) / MidiMessage::getMidiNoteInHertz(closestNote);
-            n->computeAutoKey(samplerNotes[closestNote], shift, getFadeNumSamples(autoKeyFadeTimeMS->intValue()));
+            n->computeAutoKey(samplerNotes[closestNote], shift, getFadeNumSamples(autoKeyFadeTimeMS->intValue()), autoKeyMode->getValueDataAsEnum<AutoKeyAlgorithm>());
         }
     }
 }
@@ -1014,101 +1016,133 @@ void SamplerNode::SamplerNote::setAutoKey(SamplerNote* remoteNote, double shift)
     rtPitchedBuffer.setSize(autoKeyFromNote->buffer.getNumChannels(), Transport::getInstance()->blockSize);
 }
 
-void SamplerNode::SamplerNote::computeAutoKey(SamplerNote* remoteNote, double shift, int fadeSamples)
+void SamplerNode::SamplerNote::computeAutoKey(SamplerNote* remoteNote, double shift, int fadeSamples, int algorithm)
 {
     shifting = shift;
     fadeNumSamples = fadeSamples;
+    autoKeyAlgorithm = algorithm;
     autoKeyFromNote = remoteNote;
-
     startThread();
-
 }
 
 void SamplerNode::SamplerNote::run()
 {
     state->setValueWithData(NoteState::PROCESSING);
 
-    const int numChannels = autoKeyFromNote->buffer.getNumChannels();
-    const int numSamples = autoKeyFromNote->buffer.getNumSamples();
-    const float* const* channelData = autoKeyFromNote->buffer.getArrayOfReadPointers();
-    buffer = AudioSampleBuffer(numChannels, 0);
-
-    // Offline pitch shift: no time stretching (ratio = 1.0), formant preserved.
-    // Use a standard (not short) window for tonal/sustained sounds to avoid wobble.
-    // OptionTransientsCrisp preserves the shape of transients within the pitched region.
-    RubberBand::RubberBandStretcher rubberBand(
-        Transport::getInstance()->sampleRate, numChannels,
-        RubberBand::RubberBandStretcher::OptionProcessOffline
-        | RubberBand::RubberBandStretcher::OptionStretchPrecise
-        | RubberBand::RubberBandStretcher::OptionFormantPreserved
-        | RubberBand::RubberBandStretcher::OptionTransientsCrisp
-        | RubberBand::RubberBandStretcher::OptionPitchHighConsistency
-        | RubberBand::RubberBandStretcher::OptionChannelsTogether
-    );
-
-    // Pitch shift only – time ratio stays at default 1.0 (no stretching)
-    rubberBand.setPitchScale(shifting);
-    rubberBand.setExpectedInputDuration(numSamples);
-
-    // Study + process the full buffer
-    rubberBand.study(channelData, numSamples, true);
-    rubberBand.process(channelData, numSamples, true);
-
-    // Collect all pitched output
-    AudioBuffer<float> pitchedFull(numChannels, 0);
-    while (rubberBand.available() > 0)
+    SamplerNote* sourceNote = autoKeyFromNote;
+    if (sourceNote == nullptr || !sourceNote->hasContent())
     {
-        const int avail = (int)rubberBand.available();
-        AudioBuffer<float> tmp(numChannels, avail);
-        const int retrieved = rubberBand.retrieve(tmp.getArrayOfWritePointers(), avail);
-        const int curSize = pitchedFull.getNumSamples();
-        pitchedFull.setSize(numChannels, curSize + retrieved, true, false, true);
-        for (int ch = 0; ch < numChannels; ++ch)
-            pitchedFull.copyFrom(ch, curSize, tmp, ch, 0, retrieved);
-    }
-
-    // How many output samples we can actually fill
-    const int outSamples = jmin(numSamples, pitchedFull.getNumSamples());
-    if (outSamples == 0)
-    {
+        buffer.setSize(0, 0);
         autoKeyFromNote = nullptr;
-        state->setValueWithData(NoteState::FILLED);
+        state->setValueWithData(NoteState::EMPTY);
         return;
     }
 
-    // Protect the attack: copy the first ~12 ms verbatim from the original recording
-    // so piano/percussive transients are not smeared by pitch processing.
-    // Then crossfade smoothly from the dry attack into the pitched body.
-    const int attackSamples = jlimit(0, outSamples, (int)(Transport::getInstance()->sampleRate * 0.012));
-    const int xfadeSamples  = jmin(attackSamples, jmin(512, outSamples - attackSamples));
+    const int numChannels = sourceNote->buffer.getNumChannels();
+    const int numSamples = sourceNote->buffer.getNumSamples();
+    if (numChannels <= 0 || numSamples <= 0)
+    {
+        buffer.setSize(0, 0);
+        autoKeyFromNote = nullptr;
+        state->setValueWithData(NoteState::EMPTY);
+        return;
+    }
 
-    buffer.setSize(numChannels, outSamples, false, true, true);
+    const double safeShift = (std::isfinite(shifting) && shifting > 0.0) ? shifting : 1.0;
 
+    // Snapshot source once so the worker thread never dereferences mutable note memory.
+    AudioBuffer<float> sourceCopy(numChannels, numSamples);
+    sourceCopy.makeCopyOf(sourceNote->buffer, true);
+
+    AudioBuffer<float> pitchedFull(numChannels, numSamples);
+    pitchedFull.clear();
+
+    if (autoKeyAlgorithm == SamplerNode::RESAMPLE)
+    {
+        const int srcNeeded = jmax(numSamples + 16, (int)(numSamples * safeShift) + 16);
+        AudioBuffer<float> extSrc(numChannels, srcNeeded);
+        for (int ch = 0; ch < numChannels; ++ch)
+            for (int i = 0; i < srcNeeded; ++i)
+                extSrc.setSample(ch, i, sourceCopy.getSample(ch, i % numSamples));
+
+        for (int ch = 0; ch < numChannels; ++ch)
+        {
+            CatmullRomInterpolator resampler;
+            resampler.process(safeShift, extSrc.getReadPointer(ch), pitchedFull.getWritePointer(ch), numSamples);
+        }
+    }
+    else
+    {
+        HeapBlock<const float*> channelData(numChannels);
+        for (int ch = 0; ch < numChannels; ++ch)
+            channelData[ch] = sourceCopy.getReadPointer(ch);
+
+        RubberBand::RubberBandStretcher rubberBand(
+            Transport::getInstance()->sampleRate,
+            (size_t)numChannels,
+            RubberBand::RubberBandStretcher::OptionProcessOffline
+            | RubberBand::RubberBandStretcher::OptionStretchPrecise
+            | RubberBand::RubberBandStretcher::OptionFormantPreserved
+            | RubberBand::RubberBandStretcher::OptionWindowLong
+            | RubberBand::RubberBandStretcher::OptionSmoothingOn
+            | RubberBand::RubberBandStretcher::OptionPitchHighConsistency
+            | RubberBand::RubberBandStretcher::OptionChannelsTogether
+        );
+
+        rubberBand.setPitchScale(safeShift);
+        rubberBand.setExpectedInputDuration((size_t)numSamples);
+
+        // RB4-safe path for this use case: process directly, no study().
+        rubberBand.process(channelData.get(), (size_t)numSamples, true);
+
+        int collected = 0;
+        while (collected < numSamples && rubberBand.available() > 0)
+        {
+            const int avail = jmin((int)rubberBand.available(), numSamples - collected);
+            AudioBuffer<float> tmp(numChannels, avail);
+            const int retrieved = (int)rubberBand.retrieve(tmp.getArrayOfWritePointers(), (size_t)avail);
+            if (retrieved <= 0) break;
+
+            for (int ch = 0; ch < numChannels; ++ch)
+                pitchedFull.copyFrom(ch, collected, tmp, ch, 0, retrieved);
+
+            collected += retrieved;
+        }
+
+        if (collected < numSamples)
+            for (int ch = 0; ch < numChannels; ++ch)
+                pitchedFull.clear(ch, collected, numSamples - collected);
+    }
+
+    // Attack protection + short crossfade into pitched body.
+    const int attackSamples = jlimit(0, numSamples, (int)(Transport::getInstance()->sampleRate * 0.012));
+    const int xfadeSamples = jmin(attackSamples, jmin(512, numSamples - attackSamples));
+    const int dryEnd = attackSamples - xfadeSamples;
+
+    buffer.setSize(numChannels, numSamples, false, true, true);
     for (int ch = 0; ch < numChannels; ++ch)
     {
-        // --- pure pitched region (base layer for the whole output) ---
-        buffer.copyFrom(ch, 0, pitchedFull, ch, 0, outSamples);
+        buffer.copyFrom(ch, 0, pitchedFull, ch, 0, numSamples);
 
-        // --- pure dry attack region [0, attackSamples - xfadeSamples) ---
-        const int dryEnd = attackSamples - xfadeSamples;
         if (dryEnd > 0)
-            buffer.copyFrom(ch, 0, autoKeyFromNote->buffer, ch, 0, dryEnd);
+            buffer.copyFrom(ch, 0, sourceCopy, ch, 0, dryEnd);
 
-        // --- crossfade region [dryEnd, attackSamples): dry -> pitched ---
         for (int n = 0; n < xfadeSamples; ++n)
         {
             const int pos = dryEnd + n;
-            if (pos >= outSamples) break;
-            const float t   = (float)n / (float)xfadeSamples;   // 0 = dry, 1 = pitched
-            const float dry = autoKeyFromNote->buffer.getSample(ch, pos);
+            if (pos >= numSamples) break;
+
+            const float t = (float)n / (float)xfadeSamples;
+            const float dry = sourceCopy.getSample(ch, pos);
             const float wet = pitchedFull.getSample(ch, pos);
-            buffer.setSample(ch, pos, dry * (1.f - t) + wet * t);
+            buffer.setSample(ch, pos, dry * (1.0f - t) + wet * t);
         }
     }
 
     autoKeyFromNote = nullptr;
     state->setValueWithData(NoteState::FILLED);
 }
+
 
 void SamplerNode::SamplerNote::reset()
 {
