@@ -502,6 +502,8 @@ void Node::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 
 void Node::updateSustainedNotes()
 {
+    if(pedalSustain == nullptr || forceSustain == nullptr) return;
+    
     if (!enabled->boolValue() || (!pedalSustain->boolValue() && !forceSustain->boolValue()))
     {
         // Copy entries out while holding the map lock, THEN clear, THEN send note-offs.
@@ -517,8 +519,8 @@ void Node::updateSustainedNotes()
         }
         sustainedNotes.clear();
 
-        NLOG(niceName, "Releasing " << toRelease.size() << " sustained notes (pedalSustain="
-            << (int)pedalSustain->boolValue() << ", forceSustain=" << (int)forceSustain->boolValue() << ")");
+//        NLOG(niceName, "Releasing " << toRelease.size() << " sustained notes (pedalSustain="
+//            << (int)pedalSustain->boolValue() << ", forceSustain=" << (int)forceSustain->boolValue() << ")");
 
         // MidiMessageCollector expects seconds-since-boot (Time::getMillisecondCounterHiRes() * 0.001),
         // NOT epoch milliseconds (Time::currentTimeMillis()).
