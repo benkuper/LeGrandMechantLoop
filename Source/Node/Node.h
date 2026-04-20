@@ -69,7 +69,7 @@ public:
 	BoolParameter* forceNoteOffOnEnabled;
 
 	MidiMessageCollector midiCollector;
-	HashMap<int, int> sustainedNotes; //keep track of sustain
+    HashMap<int, int, DefaultHashFunctions, CriticalSection> sustainedNotes; //keep track of sustain
 
 	BoolParameter* isNodePlaying;
 	IntParameter* numAudioInputs; //if userCanSetIO

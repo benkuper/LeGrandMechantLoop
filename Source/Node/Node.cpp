@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-	Node.cpp
-	Created: 15 Nov 2020 8:40:03am
-	Author:  bkupe
+    Node.cpp
+    Created: 15 Nov 2020 8:40:03am
+    Author:  bkupe
 
   ==============================================================================
 */
@@ -12,113 +12,113 @@
 #include "Interface/InterfaceIncludes.h"
 
 Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, bool userCanSetIO, bool useOutControl, bool canHaveMidiDeviceIn, bool canHaveMidiDeviceOut) :
-	BaseItem(name, true),
-	graph(nullptr),
-	nodeGraphID(AudioManager::getInstance()->getNewGraphID()),
-	hasAudioInput(hasAudioInput),
-	hasAudioOutput(hasAudioOutput),
-	hasMIDIInput(false),
-	hasMIDIOutput(false),
-	numAudioInputs(nullptr),
-	numAudioOutputs(nullptr),
-	midiInterfaceParam(nullptr),
-	midiInterface(nullptr),
-	//currentInDevice(nullptr),
-	//currentOutDevice(nullptr),
-	pedalSustain(nullptr),
-	forceSustain(nullptr),
-	viewCC("View"),
-	showOutControl(nullptr),
-	bypassAntiClickCount(anticlickBlocks),
-	channelMismatch(false),
-	forceNoteOffOnEnabled(nullptr),
-	clearAudioBufferIfNoConnections(true),
-	nodeNotifier(5)
+    BaseItem(name, true),
+    graph(nullptr),
+    nodeGraphID(AudioManager::getInstance()->getNewGraphID()),
+    hasAudioInput(hasAudioInput),
+    hasAudioOutput(hasAudioOutput),
+    hasMIDIInput(false),
+    hasMIDIOutput(false),
+    numAudioInputs(nullptr),
+    numAudioOutputs(nullptr),
+    midiInterfaceParam(nullptr),
+    midiInterface(nullptr),
+    //currentInDevice(nullptr),
+    //currentOutDevice(nullptr),
+    pedalSustain(nullptr),
+    forceSustain(nullptr),
+    viewCC("View"),
+    showOutControl(nullptr),
+    bypassAntiClickCount(anticlickBlocks),
+    channelMismatch(false),
+    forceNoteOffOnEnabled(nullptr),
+    clearAudioBufferIfNoConnections(true),
+    nodeNotifier(5)
 {
-	showWarningInUI = true;
+    showWarningInUI = true;
 
-	setHasCustomColor(true);
-	itemColor->setDefaultValue(Colours::darkgrey);
+    setHasCustomColor(true);
+    itemColor->setDefaultValue(Colours::darkgrey);
 
-	processor = new NodeAudioProcessor(this);
-	processor->setPlayHead(Transport::getInstance());
+    processor = new NodeAudioProcessor(this);
+    processor->setPlayHead(Transport::getInstance());
 
-	hideInEditor = true;
-	editorIsCollapsed = true;
+    hideInEditor = true;
+    editorIsCollapsed = true;
 
-	isNodePlaying = addBoolParameter("Is Node Playing", "This is a feedback to know if a node has playing content. Used by the global time to automatically stop if no content is playing", false);
-	isNodePlaying->setControllableFeedbackOnly(true);
-	//isNodePlaying->hideInEditor = true;
-	isNodePlaying->hideInRemoteControl = true;
-	isNodePlaying->defaultHideInRemoteControl = true;
-	isNodePlaying->hideInEditor = true;
+    isNodePlaying = addBoolParameter("Is Node Playing", "This is a feedback to know if a node has playing content. Used by the global time to automatically stop if no content is playing", false);
+    isNodePlaying->setControllableFeedbackOnly(true);
+    //isNodePlaying->hideInEditor = true;
+    isNodePlaying->hideInRemoteControl = true;
+    isNodePlaying->defaultHideInRemoteControl = true;
+    isNodePlaying->hideInEditor = true;
 
 
-	if (userCanSetIO)
-	{
-		customIONamesCC.reset(new ControllableContainer("Custom IO Names"));
+    if (userCanSetIO)
+    {
+        customIONamesCC.reset(new ControllableContainer("Custom IO Names"));
 
-		if (hasAudioInput)
-		{
-			numAudioInputs = addIntParameter("Audio Inputs", "Number of audio inputs for this node", 2, 0, 64);
-			customInputNamesCC.reset(new ControllableContainer("Custom Input Names"));
-			customInputNamesCC->editorIsCollapsed = true;
-			customIONamesCC->addChildControllableContainer(customInputNamesCC.get());
-		}
+        if (hasAudioInput)
+        {
+            numAudioInputs = addIntParameter("Audio Inputs", "Number of audio inputs for this node", 2, 0, 64);
+            customInputNamesCC.reset(new ControllableContainer("Custom Input Names"));
+            customInputNamesCC->editorIsCollapsed = true;
+            customIONamesCC->addChildControllableContainer(customInputNamesCC.get());
+        }
 
-		if (hasAudioOutput)
-		{
-			numAudioOutputs = addIntParameter("Audio Outputs", "Number of audio outputs for this node", 2, 0, 64);
-			customOutputNamesCC.reset(new ControllableContainer("Custom Output Names"));
-			customOutputNamesCC->editorIsCollapsed = true;
-			customIONamesCC->addChildControllableContainer(customOutputNamesCC.get());
-		}
+        if (hasAudioOutput)
+        {
+            numAudioOutputs = addIntParameter("Audio Outputs", "Number of audio outputs for this node", 2, 0, 64);
+            customOutputNamesCC.reset(new ControllableContainer("Custom Output Names"));
+            customOutputNamesCC->editorIsCollapsed = true;
+            customIONamesCC->addChildControllableContainer(customOutputNamesCC.get());
+        }
 
-		customIONamesCC->includeInRecursiveSave = false;
-		customIONamesCC->saveAndLoadRecursiveData = true;
-		customIONamesCC->editorIsCollapsed = true;
-		addChildControllableContainer(customIONamesCC.get());
+        customIONamesCC->includeInRecursiveSave = false;
+        customIONamesCC->saveAndLoadRecursiveData = true;
+        customIONamesCC->editorIsCollapsed = true;
+        addChildControllableContainer(customIONamesCC.get());
 
-		if (!Engine::mainEngine->isLoadingFile) updateIONamesCC();
-	}
+        if (!Engine::mainEngine->isLoadingFile) updateIONamesCC();
+    }
 
-	if (useOutControl)
-	{
-		outControl.reset(new VolumeControl("Out", true));
-		addChildControllableContainer(outControl.get());
+    if (useOutControl)
+    {
+        outControl.reset(new VolumeControl("Out", true));
+        addChildControllableContainer(outControl.get());
 
-		showOutControl = viewCC.addBoolParameter("Show Out Control", "Shows the Gain, RMS and Active on the right side in the view", true);
-	}
+        showOutControl = viewCC.addBoolParameter("Show Out Control", "Shows the Gain, RMS and Active on the right side in the view", true);
+    }
 
-	viewCC.hideInRemoteControl = true;
-	viewCC.defaultHideInRemoteControl = true;
-	addChildControllableContainer(&viewCC);
+    viewCC.hideInRemoteControl = true;
+    viewCC.defaultHideInRemoteControl = true;
+    addChildControllableContainer(&viewCC);
 
-	if (canHaveMidiDeviceIn || canHaveMidiDeviceOut)
-	{
-		midiCC.reset(new ControllableContainer("MIDI"));
-		midiCC->saveAndLoadRecursiveData = true;
+    if (canHaveMidiDeviceIn || canHaveMidiDeviceOut)
+    {
+        midiCC.reset(new ControllableContainer("MIDI"));
+        midiCC->saveAndLoadRecursiveData = true;
 
-		midiInterfaceParam = midiCC->addTargetParameter("MIDI Interface", "The interface to get midi messages from", InterfaceManager::getInstance());// canHaveMidiDeviceIn, canHaveMidiDeviceOut);
-		midiInterfaceParam->targetType = TargetParameter::CONTAINER;
-		midiInterfaceParam->maxDefaultSearchLevel = 0;
+        midiInterfaceParam = midiCC->addTargetParameter("MIDI Interface", "The interface to get midi messages from", InterfaceManager::getInstance());// canHaveMidiDeviceIn, canHaveMidiDeviceOut);
+        midiInterfaceParam->targetType = TargetParameter::CONTAINER;
+        midiInterfaceParam->maxDefaultSearchLevel = 0;
 
-		pedalSustain = midiCC->addBoolParameter("Pedal Sustain", "If enabled, incoming CC64 midi messages from device will be treated as incoming pedal and this will be the feedback for its state", false);
-		pedalSustain->canBeDisabledByUser = true;
-		pedalSustain->setControllableFeedbackOnly(true);
-		forceSustain = midiCC->addBoolParameter("Force Sustain", "If checked, this will force sustain manually independent of the pedal", false);
-		forceNoteOffOnEnabled = midiCC->addBoolParameter("Force Note offs on enabled", "If checked, this will send all notes off when enabled state is changed", false);
-		logIncomingMidi = midiCC->addBoolParameter("Log Incoming messages", "This will log incoming messages (only working on the device directly connected, not incoming connection from other nodes", false);
-		channelFilterCC.reset(new ControllableContainer("Channel Filter"));
-		midiChannels.ensureStorageAllocated(16);
-		for (int i = 1; i <= 16; i++) midiChannels.set(i, channelFilterCC->addBoolParameter(String(i), "If checked, this node will accept messages from this channel", true));
-		channelFilterCC->editorIsCollapsed = true;
-		midiCC->addChildControllableContainer(channelFilterCC.get());
+        pedalSustain = midiCC->addBoolParameter("Pedal Sustain", "If enabled, incoming CC64 midi messages from device will be treated as incoming pedal and this will be the feedback for its state", false);
+        pedalSustain->canBeDisabledByUser = true;
+        pedalSustain->setControllableFeedbackOnly(true);
+        forceSustain = midiCC->addBoolParameter("Force Sustain", "If checked, this will force sustain manually independent of the pedal", false);
+        forceNoteOffOnEnabled = midiCC->addBoolParameter("Force Note offs on enabled", "If checked, this will send all notes off when enabled state is changed", false);
+        logIncomingMidi = midiCC->addBoolParameter("Log Incoming messages", "This will log incoming messages (only working on the device directly connected, not incoming connection from other nodes", false);
+        channelFilterCC.reset(new ControllableContainer("Channel Filter"));
+        midiChannels.ensureStorageAllocated(16);
+        for (int i = 1; i <= 16; i++) midiChannels.set(i, channelFilterCC->addBoolParameter(String(i), "If checked, this node will accept messages from this channel", true));
+        channelFilterCC->editorIsCollapsed = true;
+        midiCC->addChildControllableContainer(channelFilterCC.get());
 
-		addChildControllableContainer(midiCC.get());
+        addChildControllableContainer(midiCC.get());
 
-		setMIDIIO(canHaveMidiDeviceIn, canHaveMidiDeviceOut);
-	}
+        setMIDIIO(canHaveMidiDeviceIn, canHaveMidiDeviceOut);
+    }
 }
 
 Node::~Node()
@@ -127,659 +127,686 @@ Node::~Node()
 
 void Node::clearItem()
 {
-	BaseItem::clearItem();
-	setMIDIInterface(nullptr);
-	
-	if (nodeGraphPtr != nullptr && graph != nullptr) graph->removeNode(nodeGraphPtr.get());
-	masterReference.clear();
+    BaseItem::clearItem();
+    setMIDIInterface(nullptr);
+    
+    if (nodeGraphPtr != nullptr && graph != nullptr) graph->removeNode(nodeGraphPtr.get());
+    masterReference.clear();
 }
 
 void Node::init(AudioProcessorGraph* _graph)
 {
-	jassert(graph == nullptr);
-	graph = _graph;
+    jassert(graph == nullptr);
+    graph = _graph;
 
-	ScopedSuspender sp(processor);
+    ScopedSuspender sp(processor);
 
 
-	initInternal();
+    initInternal();
 
-	if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
-	else updateAudioInputs(false);
+    if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
+    else updateAudioInputs(false);
 
-	if (numAudioOutputs != nullptr && numAudioInputs->enabled) autoSetNumAudioOutputs();
-	else updateAudioOutputs(false);
+    if (numAudioOutputs != nullptr && numAudioInputs->enabled) autoSetNumAudioOutputs();
+    else updateAudioOutputs(false);
 
-	updatePlayConfig();
+    updatePlayConfig();
 
-	nodeGraphPtr = graph->addNode(std::unique_ptr<NodeAudioProcessor>(processor), AudioProcessorGraph::NodeID(nodeGraphID), AudioProcessorGraph::UpdateKind::async);
+    nodeGraphPtr = graph->addNode(std::unique_ptr<NodeAudioProcessor>(processor), AudioProcessorGraph::NodeID(nodeGraphID), AudioProcessorGraph::UpdateKind::async);
 
 }
 
 void Node::onContainerParameterChangedInternal(Parameter* p)
 {
-	if (p == enabled)
-	{
-		if (!enabled->boolValue())
-		{
-			for (auto& c : outAudioConnections) c->activityLevel = 0;
-			if (outControl != nullptr) outControl->rms->setValue(0);
-			if (processor->getSampleRate() > 0) midiCollector.reset(processor->getSampleRate());
-			updateSustainedNotes();
-		}
+    if (p == enabled)
+    {
+        if (!enabled->boolValue())
+        {
+            for (auto& c : outAudioConnections) c->activityLevel = 0;
+            if (outControl != nullptr) outControl->rms->setValue(0);
+            if (processor->getSampleRate() > 0) midiCollector.reset(processor->getSampleRate());
+            updateSustainedNotes();
+        }
 
-		if (hasMIDIInput && (forceNoteOffOnEnabled != nullptr && forceNoteOffOnEnabled->boolValue()))
-		{
-			if (processor->getSampleRate() > 0)
-			{
+        if (hasMIDIInput && (forceNoteOffOnEnabled != nullptr && forceNoteOffOnEnabled->boolValue()))
+        {
+            if (processor->getSampleRate() > 0)
+            {
 
-				midiCollector.reset(processor->getSampleRate());
-				for (int i = 1; i <= 16; i++)
-				{
-					MidiMessage m(MidiMessage::allNotesOff(i), 1);
-					midiCollector.addMessageToQueue(m);
-				}
-			}
-		}
-	}
-	else if (p == numAudioInputs)
-	{
-		updateIONamesCC();
-		if (numAudioInputs->enabled) autoSetNumAudioInputs();
-	}
-	else if (p == numAudioOutputs)
-	{
-		updateIONamesCC();
-		if (numAudioOutputs->enabled) autoSetNumAudioOutputs();
-	}
+                midiCollector.reset(processor->getSampleRate());
+                for (int i = 1; i <= 16; i++)
+                {
+                    MidiMessage m(MidiMessage::allNotesOff(i), 1);
+                    midiCollector.addMessageToQueue(m);
+                }
+            }
+        }
+    }
+    else if (p == numAudioInputs)
+    {
+        updateIONamesCC();
+        if (numAudioInputs->enabled) autoSetNumAudioInputs();
+    }
+    else if (p == numAudioOutputs)
+    {
+        updateIONamesCC();
+        if (numAudioOutputs->enabled) autoSetNumAudioOutputs();
+    }
 }
 
 void Node::onControllableFeedbackUpdateInternal(ControllableContainer* cc, Controllable* c)
 {
-	if (cc == &viewCC)
-	{
-		if (!isCurrentlyLoadingData) nodeNotifier.addMessage(new NodeEvent(NodeEvent::VIEW_FILTER_UPDATED, this));
-	}
-	else if (c == midiInterfaceParam)
-	{
-		setMIDIInterface((MIDIInterface*)midiInterfaceParam->targetContainer.get());
-		//setMIDIOutDevice(midiInterfaceParam->outputDevice);
-	}
-	else if (c == pedalSustain || c == forceSustain)
-	{
-		if (!forceSustain->boolValue()) updateSustainedNotes();
-	}
-	else if (c->parentContainer == customInputNamesCC.get())
-	{
-		autoSetNumAudioInputs();
-	}
-	else if (c->parentContainer == customOutputNamesCC.get())
-	{
-		autoSetNumAudioOutputs();
-	}
+    if (cc == &viewCC)
+    {
+        if (!isCurrentlyLoadingData) nodeNotifier.addMessage(new NodeEvent(NodeEvent::VIEW_FILTER_UPDATED, this));
+    }
+    else if (c == midiInterfaceParam)
+    {
+        setMIDIInterface((MIDIInterface*)midiInterfaceParam->targetContainer.get());
+        //setMIDIOutDevice(midiInterfaceParam->outputDevice);
+    }
+    else if (c == pedalSustain || c == forceSustain)
+    {
+        if (!forceSustain->boolValue()) updateSustainedNotes();
+    }
+    else if (c->parentContainer == customInputNamesCC.get())
+    {
+        autoSetNumAudioInputs();
+    }
+    else if (c->parentContainer == customOutputNamesCC.get())
+    {
+        autoSetNumAudioOutputs();
+    }
 }
 
 void Node::setAudioInputs(const int& numInputs, bool updateConfig)
 {
-	StringArray s;
-	for (int i = 0; i < numInputs; i++) s.add("Input " + String(i + 1));
-	setAudioInputs(s, updateConfig);
+    StringArray s;
+    for (int i = 0; i < numInputs; i++) s.add("Input " + String(i + 1));
+    setAudioInputs(s, updateConfig);
 }
 
 void Node::setAudioInputs(const StringArray& inputNames, bool updateConfig)
 {
-	if (audioInputNames == inputNames) return;
-	ScopedSuspender sp(processor);
+    if (audioInputNames == inputNames) return;
+    ScopedSuspender sp(processor);
 
-	audioInputNames = inputNames;
-	updateAudioInputs(updateConfig);
-	nodeListeners.call(&NodeListener::audioInputsChanged, this);
-	nodeNotifier.addMessage(new NodeEvent(NodeEvent::INPUTS_CHANGED, this));
-	processor->suspendProcessing(true);
+    audioInputNames = inputNames;
+    updateAudioInputs(updateConfig);
+    nodeListeners.call(&NodeListener::audioInputsChanged, this);
+    nodeNotifier.addMessage(new NodeEvent(NodeEvent::INPUTS_CHANGED, this));
+    processor->suspendProcessing(true);
 }
 
 void Node::setAudioOutputs(const int& numOutputs, bool updateConfig)
 {
-	StringArray s;
-	for (int i = 0; i < numOutputs; i++) s.add("Output " + String(i + 1));
-	setAudioOutputs(s, updateConfig);
+    StringArray s;
+    for (int i = 0; i < numOutputs; i++) s.add("Output " + String(i + 1));
+    setAudioOutputs(s, updateConfig);
 }
 
 void Node::setAudioOutputs(const StringArray& outputNames, bool updateConfig)
 {
-	if (audioOutputNames == outputNames) return;
-	ScopedSuspender sp(processor);
+    if (audioOutputNames == outputNames) return;
+    ScopedSuspender sp(processor);
 
-	audioOutputNames = outputNames;
-	updateAudioOutputs(updateConfig);
-	nodeListeners.call(&NodeListener::audioOutputsChanged, this);
-	nodeNotifier.addMessage(new NodeEvent(NodeEvent::OUTPUTS_CHANGED, this));
+    audioOutputNames = outputNames;
+    updateAudioOutputs(updateConfig);
+    nodeListeners.call(&NodeListener::audioOutputsChanged, this);
+    nodeNotifier.addMessage(new NodeEvent(NodeEvent::OUTPUTS_CHANGED, this));
 }
 
 void Node::autoSetNumAudioInputs(bool force)
 {
-	if (isCurrentlyLoadingData && !force) return;
+    if (isCurrentlyLoadingData && !force) return;
 
-	if (customInputNamesCC == nullptr)
-	{
-		setAudioInputs(numAudioInputs->intValue());
-		return;
-	}
+    if (customInputNamesCC == nullptr)
+    {
+        setAudioInputs(numAudioInputs->intValue());
+        return;
+    }
 
-	StringArray names;
-	for (int i = 0; i < numAudioInputs->intValue(); i++)
-	{
-		if (customInputNamesCC->controllables.size() > i)
-		{
-			String s = dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->stringValue();
-			names.add(s.isNotEmpty() ? s : "Input " + String(i + 1));
-		}
-		else
-		{
-			names.add("Input " + String(i + 1));
-		}
-	}
-	setAudioInputs(names);
+    StringArray names;
+    for (int i = 0; i < numAudioInputs->intValue(); i++)
+    {
+        if (customInputNamesCC->controllables.size() > i)
+        {
+            String s = dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->stringValue();
+            names.add(s.isNotEmpty() ? s : "Input " + String(i + 1));
+        }
+        else
+        {
+            names.add("Input " + String(i + 1));
+        }
+    }
+    setAudioInputs(names);
 }
 
 void Node::autoSetNumAudioOutputs(bool force)
 {
-	if (isCurrentlyLoadingData && !force) return;
+    if (isCurrentlyLoadingData && !force) return;
 
-	if (customOutputNamesCC == nullptr)
-	{
-		setAudioOutputs(numAudioOutputs->intValue());
-		return;
-	}
+    if (customOutputNamesCC == nullptr)
+    {
+        setAudioOutputs(numAudioOutputs->intValue());
+        return;
+    }
 
-	StringArray names;
-	for (int i = 0; i < numAudioOutputs->intValue(); i++)
-	{
-		if (customOutputNamesCC->controllables.size() > i)
-		{
-			String s = dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->stringValue();
-			names.add(s.isNotEmpty() ? s : "Output " + String(i + 1));
-		}
-		else
-		{
-			names.add("Output " + String(i + 1));
-		}
-	}
-	setAudioOutputs(names);
+    StringArray names;
+    for (int i = 0; i < numAudioOutputs->intValue(); i++)
+    {
+        if (customOutputNamesCC->controllables.size() > i)
+        {
+            String s = dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->stringValue();
+            names.add(s.isNotEmpty() ? s : "Output " + String(i + 1));
+        }
+        else
+        {
+            names.add("Output " + String(i + 1));
+        }
+    }
+    setAudioOutputs(names);
 }
 
 void Node::updateIONamesCC()
 {
-	if (customInputNamesCC != nullptr)
-	{
-		if (numAudioInputs->enabled)
-		{
-			int numParams = numAudioInputs->intValue();
-			while (customInputNamesCC->controllables.size() < numParams)
-			{
-				customInputNamesCC->addStringParameter("Input " + String(customInputNamesCC->controllables.size() + 1), "Custom name for input " + String(customInputNamesCC->controllables.size() + 1), "");
-			}
+    if (customInputNamesCC != nullptr)
+    {
+        if (numAudioInputs->enabled)
+        {
+            int numParams = numAudioInputs->intValue();
+            while (customInputNamesCC->controllables.size() < numParams)
+            {
+                customInputNamesCC->addStringParameter("Input " + String(customInputNamesCC->controllables.size() + 1), "Custom name for input " + String(customInputNamesCC->controllables.size() + 1), "");
+            }
 
-			while (customInputNamesCC->controllables.size() > numParams)
-			{
-				customInputNamesCC->removeControllable(customInputNamesCC->controllables.getLast());
-			}
-		}
-		else
-		{
-			customInputNamesCC->clear();
-		}
-	}
+            while (customInputNamesCC->controllables.size() > numParams)
+            {
+                customInputNamesCC->removeControllable(customInputNamesCC->controllables.getLast());
+            }
+        }
+        else
+        {
+            customInputNamesCC->clear();
+        }
+    }
 
-	//same for output
-	if (customOutputNamesCC != nullptr)
-	{
-		if (numAudioOutputs->enabled)
-		{
-			int numParams = numAudioOutputs->intValue();
-			while (customOutputNamesCC->controllables.size() < numParams)
-			{
-				customOutputNamesCC->addStringParameter("Output " + String(customOutputNamesCC->controllables.size() + 1), "Custom name for output " + String(customOutputNamesCC->controllables.size() + 1), "");
-			}
+    //same for output
+    if (customOutputNamesCC != nullptr)
+    {
+        if (numAudioOutputs->enabled)
+        {
+            int numParams = numAudioOutputs->intValue();
+            while (customOutputNamesCC->controllables.size() < numParams)
+            {
+                customOutputNamesCC->addStringParameter("Output " + String(customOutputNamesCC->controllables.size() + 1), "Custom name for output " + String(customOutputNamesCC->controllables.size() + 1), "");
+            }
 
-			while (customOutputNamesCC->controllables.size() > numParams)
-			{
-				customOutputNamesCC->removeControllable(customOutputNamesCC->controllables.getLast());
-			}
-		}
-		else
-		{
-			customOutputNamesCC->clear();
-		}
-	}
+            while (customOutputNamesCC->controllables.size() > numParams)
+            {
+                customOutputNamesCC->removeControllable(customOutputNamesCC->controllables.getLast());
+            }
+        }
+        else
+        {
+            customOutputNamesCC->clear();
+        }
+    }
 }
 
 void Node::updateAudioInputs(bool updateConfig)
 {
-	ScopedSuspender sp(processor);
-	updateAudioInputsInternal();
-	if (updateConfig) updatePlayConfig();
+    ScopedSuspender sp(processor);
+    updateAudioInputsInternal();
+    if (updateConfig) updatePlayConfig();
 }
 
 void Node::updateAudioOutputs(bool updateConfig)
 {
-	ScopedSuspender sp(processor);
-	updateAudioOutputsInternal();
-	if (updateConfig)  updatePlayConfig();
+    ScopedSuspender sp(processor);
+    updateAudioOutputsInternal();
+    if (updateConfig)  updatePlayConfig();
 }
 
 void Node::addInConnection(NodeConnection* c)
 {
-	ScopedSuspender sp(processor);
-	if (c->connectionType == NodeConnection::AUDIO) inAudioConnections.addIfNotAlreadyThere((NodeAudioConnection*)c);
-	else if (c->connectionType == NodeConnection::MIDI) inMidiConnections.addIfNotAlreadyThere((NodeMIDIConnection*)c);
+    ScopedSuspender sp(processor);
+    if (c->connectionType == NodeConnection::AUDIO) inAudioConnections.addIfNotAlreadyThere((NodeAudioConnection*)c);
+    else if (c->connectionType == NodeConnection::MIDI) inMidiConnections.addIfNotAlreadyThere((NodeMIDIConnection*)c);
 }
 
 void Node::removeInConnection(NodeConnection* c)
 {
-	ScopedSuspender sp(processor);
-	if (c->connectionType == NodeConnection::AUDIO) inAudioConnections.removeAllInstancesOf((NodeAudioConnection*)c);
-	else if (c->connectionType == NodeConnection::MIDI) inMidiConnections.removeAllInstancesOf((NodeMIDIConnection*)c);
+    ScopedSuspender sp(processor);
+    if (c->connectionType == NodeConnection::AUDIO) inAudioConnections.removeAllInstancesOf((NodeAudioConnection*)c);
+    else if (c->connectionType == NodeConnection::MIDI) inMidiConnections.removeAllInstancesOf((NodeMIDIConnection*)c);
 }
 
 void Node::addOutConnection(NodeConnection* c)
 {
-	ScopedSuspender sp(processor);
-	if (c->connectionType == NodeConnection::AUDIO) outAudioConnections.addIfNotAlreadyThere((NodeAudioConnection*)c);
-	else if (c->connectionType == NodeConnection::MIDI) outMidiConnections.addIfNotAlreadyThere((NodeMIDIConnection*)c);
+    ScopedSuspender sp(processor);
+    if (c->connectionType == NodeConnection::AUDIO) outAudioConnections.addIfNotAlreadyThere((NodeAudioConnection*)c);
+    else if (c->connectionType == NodeConnection::MIDI) outMidiConnections.addIfNotAlreadyThere((NodeMIDIConnection*)c);
 }
 
 void Node::removeOutConnection(NodeConnection* c)
 {
-	ScopedSuspender sp(processor);
-	if (c->connectionType == NodeConnection::AUDIO) outAudioConnections.removeAllInstancesOf((NodeAudioConnection*)c);
-	else if (c->connectionType == NodeConnection::MIDI) outMidiConnections.removeAllInstancesOf((NodeMIDIConnection*)c);
+    ScopedSuspender sp(processor);
+    if (c->connectionType == NodeConnection::AUDIO) outAudioConnections.removeAllInstancesOf((NodeAudioConnection*)c);
+    else if (c->connectionType == NodeConnection::MIDI) outMidiConnections.removeAllInstancesOf((NodeMIDIConnection*)c);
 }
 
 void Node::setMIDIIO(bool hasInput, bool hasOutput)
 {
-	if (hasMIDIInput != hasInput)
-	{
-		hasMIDIInput = hasInput;
-		nodeListeners.call(&NodeListener::midiInputChanged, this);
-		nodeNotifier.addMessage(new NodeEvent(NodeEvent::MIDI_INPUT_CHANGED, this));
-	}
+    if (hasMIDIInput != hasInput)
+    {
+        hasMIDIInput = hasInput;
+        nodeListeners.call(&NodeListener::midiInputChanged, this);
+        nodeNotifier.addMessage(new NodeEvent(NodeEvent::MIDI_INPUT_CHANGED, this));
+    }
 
-	if (hasMIDIOutput != hasOutput)
-	{
-		hasMIDIOutput = hasOutput;
-		nodeListeners.call(&NodeListener::midiOutputChanged, this);
-		nodeNotifier.addMessage(new NodeEvent(NodeEvent::MIDI_OUTPUT_CHANGED, this));
-	}
+    if (hasMIDIOutput != hasOutput)
+    {
+        hasMIDIOutput = hasOutput;
+        nodeListeners.call(&NodeListener::midiOutputChanged, this);
+        nodeNotifier.addMessage(new NodeEvent(NodeEvent::MIDI_OUTPUT_CHANGED, this));
+    }
 
 }
 
 void Node::setMIDIInterface(MIDIInterface* i)
 {
-	if (midiInterface == i) return;
-	if (midiInterface != nullptr)
-	{
-		midiInterface->removeMIDIInterfaceListener(this);
-	}
+    if (midiInterface == i) return;
+    if (midiInterface != nullptr)
+    {
+        midiInterface->removeMIDIInterfaceListener(this);
+    }
 
-	midiInterface = i;
+    midiInterface = i;
 
-	if (midiInterface != nullptr)
-	{
-		midiInterface->addMIDIInterfaceListener(this);
-	}
+    if (midiInterface != nullptr)
+    {
+        midiInterface->addMIDIInterfaceListener(this);
+    }
 }
 
 
 
 void Node::updatePlayConfig(bool notify)
 {
-	if (graph == nullptr)
-	{
-		DBG("Update play config, graph is null !");
-		return;
-	}
+    if (graph == nullptr)
+    {
+        DBG("Update play config, graph is null !");
+        return;
+    }
 
-	ScopedSuspender sp(processor);
+    ScopedSuspender sp(processor);
 
-	updatePlayConfigInternal();
-	if (notify && !isCurrentlyLoadingData) nodeListeners.call(&NodeListener::nodePlayConfigUpdated, this);
+    updatePlayConfigInternal();
+    if (notify && !isCurrentlyLoadingData) nodeListeners.call(&NodeListener::nodePlayConfigUpdated, this);
 }
 
 void Node::updatePlayConfigInternal()
 {
-	processor->setPlayConfigDetails(audioInputNames.size(), audioOutputNames.size(), graph->getSampleRate(), graph->getBlockSize());
+    processor->setPlayConfigDetails(audioInputNames.size(), audioOutputNames.size(), graph->getSampleRate(), graph->getBlockSize());
 
-	if (graph->getSampleRate() > 0) midiCollector.reset(graph->getSampleRate());
+    if (graph->getSampleRate() > 0) midiCollector.reset(graph->getSampleRate());
 }
 
 void Node::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 {
-	if (!enabled->boolValue()) return;
-	if (m.getChannel() > 0 && !midiChannels[m.getChannel() - 1]->boolValue()) return;
+    if (!enabled->boolValue()) return;
+    if (m.getChannel() > 0 && !midiChannels[m.getChannel() - 1]->boolValue()) return;
 
-	if (logIncomingMidi->boolValue())
-	{
-		NLOG(niceName, "Received MIDI : " << m.getDescription());
-	}
+    if (logIncomingMidi->boolValue())
+    {
+        NLOG(niceName, "Received MIDI : " << m.getDescription());
+    }
 
-	bool addToQueue = true;
-	bool shouldReleaseSustainedNotes = false;
+    bool addToQueue = true;
+    bool shouldReleaseSustainedNotes = false;
 
-	if (m.isSustainPedalOn() || m.isSustainPedalOff())
-	{
+    if (m.isSustainPedalOn() || m.isSustainPedalOff())
+    {
         if (pedalSustain->enabled)
-		{
-			pedalSustain->setValue(m.isSustainPedalOn());
-			shouldReleaseSustainedNotes = m.isSustainPedalOff() && !forceSustain->boolValue();
-		}
-	}
+        {
+            pedalSustain->setValue(m.isSustainPedalOn());
+            shouldReleaseSustainedNotes = m.isSustainPedalOff() && !forceSustain->boolValue();
+        }
+    }
 
-	if (m.isNoteOff())
-	{
-		if (pedalSustain->boolValue() || forceSustain->boolValue())
-		{
-			sustainedNotes.set(m.getNoteNumber(), m.getChannel());
-			addToQueue = false;
-		}
-		else sustainedNotes.remove(m.getNoteNumber());
-	}
-	else if (m.isNoteOn())
-	{
-		sustainedNotes.remove(m.getNoteNumber());
-	}
+    if (m.isNoteOff())
+    {
+        if (pedalSustain->boolValue() || forceSustain->boolValue())
+        {
+            sustainedNotes.set(m.getNoteNumber(), m.getChannel());
+            addToQueue = false;
+        }
+        else sustainedNotes.remove(m.getNoteNumber());
+    }
+    else if (m.isNoteOn())
+    {
+        sustainedNotes.remove(m.getNoteNumber());
+    }
 
-	if (addToQueue)
-	{
-		if (processor->getSampleRate() != 0) midiCollector.addMessageToQueue(m);
-	}
+    if (addToQueue)
+    {
+        if (processor->getSampleRate() != 0) midiCollector.addMessageToQueue(m);
+    }
 
-	if (shouldReleaseSustainedNotes)
-	{
-		updateSustainedNotes();
-	}
+    if (shouldReleaseSustainedNotes)
+    {
+        updateSustainedNotes();
+    }
 }
 
 void Node::updateSustainedNotes()
 {
-	if (!enabled->boolValue() || (!pedalSustain->boolValue() && !forceSustain->boolValue()))
-	{
-		HashMap<int, int>::Iterator it(sustainedNotes);
-		while (it.next()) midiCollector.addMessageToQueue(MidiMessage::noteOff(it.getValue(), it.getKey()).withTimeStamp(Time::currentTimeMillis()));
-		sustainedNotes.clear();
-	}
+    if (!enabled->boolValue() || (!pedalSustain->boolValue() && !forceSustain->boolValue()))
+    {
+        // Copy entries out while holding the map lock, THEN clear, THEN send note-offs.
+        // The HashMap Iterator API does not hold the lock, so iterating while the MIDI thread
+        // calls sustainedNotes.set() is a data race that can produce corrupt channel values.
+        struct NoteEntry { int note; int channel; };
+        Array<NoteEntry> toRelease;
+        {
+            const GenericScopedLock<CriticalSection> sl(sustainedNotes.getLock());
+            HashMap<int, int, DefaultHashFunctions, CriticalSection>::Iterator it(sustainedNotes);
+            while (it.next())
+                toRelease.add({ it.getKey(), it.getValue() });
+        }
+        sustainedNotes.clear();
+
+        NLOG(niceName, "Releasing " << toRelease.size() << " sustained notes (pedalSustain="
+            << (int)pedalSustain->boolValue() << ", forceSustain=" << (int)forceSustain->boolValue() << ")");
+
+        // MidiMessageCollector expects seconds-since-boot (Time::getMillisecondCounterHiRes() * 0.001),
+        // NOT epoch milliseconds (Time::currentTimeMillis()).
+        double correctTimestamp = Time::getMillisecondCounterHiRes() * 0.001;
+
+        for (auto& e : toRelease)
+        {
+            if (e.channel < 1 || e.channel > 16)
+            {
+                NLOGWARNING(niceName, "  -> Skipping note-off for note " << e.note << " - invalid channel " << e.channel);
+                continue;
+            }
+            NLOG(niceName, "  -> Queuing note-off for note " << e.note << " ch " << e.channel);
+            midiCollector.addMessageToQueue(MidiMessage::noteOff(e.channel, e.note).withTimeStamp(correctTimestamp));
+        }
+    }
 }
 
 
 void Node::prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock)
 {
-	if (sampleRate != 0)
-	{
-		midiCollector.reset(sampleRate);
-	}
+    if (sampleRate != 0)
+    {
+        midiCollector.reset(sampleRate);
+    }
 }
 
 void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	if (processor->isSuspended())
-	{
-		LOGWARNING("Processor should be suspended, should not be here...");
-		return;
-	}
+    if (processor->isSuspended())
+    {
+        LOGWARNING("Processor should be suspended, should not be here...");
+        return;
+    }
 
-	ScopedLock sl(processor->getCallbackLock());
+    ScopedLock sl(processor->getCallbackLock());
 
 
 
-	int numInputs = getNumAudioInputs();
-	int numOutputs = getNumAudioOutputs();
+    int numInputs = getNumAudioInputs();
+    int numOutputs = getNumAudioOutputs();
 
-	if (buffer.getNumChannels() != jmax(numInputs, numOutputs))
-	{
-		jassert(!Engine::mainEngine->isLoadingFile);
+    if (buffer.getNumChannels() != jmax(numInputs, numOutputs))
+    {
+        jassert(!Engine::mainEngine->isLoadingFile);
 
-		if (!channelMismatch)
-		{
-			setWarningMessage("Not the same number of channels ! " + String(buffer.getNumChannels()) + " < > " + String(jmax(numInputs, numOutputs)), "Channel Mismatch");
-		}
-		channelMismatch = true;
-		return;
-	}
-	else if (channelMismatch)
-	{
-		channelMismatch = false;
-		clearWarning("Channel Mismatch");
-	}
+        if (!channelMismatch)
+        {
+            setWarningMessage("Not the same number of channels ! " + String(buffer.getNumChannels()) + " < > " + String(jmax(numInputs, numOutputs)), "Channel Mismatch");
+        }
+        channelMismatch = true;
+        return;
+    }
+    else if (channelMismatch)
+    {
+        channelMismatch = false;
+        clearWarning("Channel Mismatch");
+    }
 
-	if (clearAudioBufferIfNoConnections && inAudioConnections.isEmpty()) buffer.clear();
+    if (clearAudioBufferIfNoConnections && inAudioConnections.isEmpty()) buffer.clear();
 
-	//MIDI
-	if (hasMIDIInput) midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
+    //MIDI
+    if (hasMIDIInput) midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
 
-	bool isEnabled = enabled->boolValue();
-	bool antiClickFinished = bypassAntiClickCount == (isEnabled ? anticlickBlocks : 0);
-	if (antiClickFinished)
-	{
+    bool isEnabled = enabled->boolValue();
+    bool antiClickFinished = bypassAntiClickCount == (isEnabled ? anticlickBlocks : 0);
+    if (antiClickFinished)
+    {
 
-		if (isEnabled)
-		{
-			processBlockInternal(buffer, midiMessages);
-			if (outControl != nullptr) outControl->applyGain(buffer);
-		}
-		else
-		{
-			processBlockBypassed(buffer, midiMessages);
-			if (outControl != nullptr) outControl->updateRMS(buffer);
-		}
-	}
-	else
-	{
+        if (isEnabled)
+        {
+            processBlockInternal(buffer, midiMessages);
+            if (outControl != nullptr) outControl->applyGain(buffer);
+        }
+        else
+        {
+            processBlockBypassed(buffer, midiMessages);
+            if (outControl != nullptr) outControl->updateRMS(buffer);
+        }
+    }
+    else
+    {
 
-		AudioSampleBuffer b1;
-		b1.makeCopyOf(buffer);
-		AudioSampleBuffer b2;
-		b2.makeCopyOf(buffer);
-		processBlockInternal(b1, midiMessages);
-		processBlockBypassed(b2, midiMessages);
-		buffer.clear();
+        AudioSampleBuffer b1;
+        b1.makeCopyOf(buffer);
+        AudioSampleBuffer b2;
+        b2.makeCopyOf(buffer);
+        processBlockInternal(b1, midiMessages);
+        processBlockBypassed(b2, midiMessages);
+        buffer.clear();
 
-		float curVal = bypassAntiClickCount * 1.0f / anticlickBlocks;
-		bypassAntiClickCount += isEnabled ? 1 : -1;
-		float nextVal = bypassAntiClickCount * 1.0f / anticlickBlocks;
+        float curVal = bypassAntiClickCount * 1.0f / anticlickBlocks;
+        bypassAntiClickCount += isEnabled ? 1 : -1;
+        float nextVal = bypassAntiClickCount * 1.0f / anticlickBlocks;
 
-		if (!antiClickFinished && bypassAntiClickCount == 0)
-		{
-			bypassInternal();
-		}
+        if (!antiClickFinished && bypassAntiClickCount == 0)
+        {
+            bypassInternal();
+        }
 
-		for (int i = 0; i < buffer.getNumChannels(); i++)
-		{
-			buffer.addFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), curVal, nextVal);
-			buffer.addFromWithRamp(i, 0, b2.getReadPointer(i), buffer.getNumSamples(), 1 - curVal, 1 - nextVal);
-		}
-	}
+        for (int i = 0; i < buffer.getNumChannels(); i++)
+        {
+            buffer.addFromWithRamp(i, 0, b1.getReadPointer(i), buffer.getNumSamples(), curVal, nextVal);
+            buffer.addFromWithRamp(i, 0, b2.getReadPointer(i), buffer.getNumSamples(), 1 - curVal, 1 - nextVal);
+        }
+    }
 
-	connectionsActivityLevels.fill(0);
-	int numOutConnections = outAudioConnections.size();
+    connectionsActivityLevels.fill(0);
+    int numOutConnections = outAudioConnections.size();
 
-	for (int i = 0; i < buffer.getNumChannels(); i++)
-	{
-		float channelRMS = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
-		if (isinf(channelRMS) || isnan(channelRMS)) channelRMS = 0;
+    for (int i = 0; i < buffer.getNumChannels(); i++)
+    {
+        float channelRMS = buffer.getRMSLevel(i, 0, buffer.getNumSamples());
+        if (isinf(channelRMS) || isnan(channelRMS)) channelRMS = 0;
 
-		for (int c = 0; c < numOutConnections; c++)
-		{
-			for (auto& cm : outAudioConnections[c]->channelMap)
-			{
-				if (cm.sourceChannel == i) connectionsActivityLevels.set(c, jmax(connectionsActivityLevels[c], channelRMS));
-			}
-		}
-	}
+        for (int c = 0; c < numOutConnections; c++)
+        {
+            for (auto& cm : outAudioConnections[c]->channelMap)
+            {
+                if (cm.sourceChannel == i) connectionsActivityLevels.set(c, jmax(connectionsActivityLevels[c], channelRMS));
+            }
+        }
+    }
 
-	for (int i = 0; i < outAudioConnections.size(); i++)
-	{
-		float curLevel = outAudioConnections[i]->activityLevel;
-		float level = connectionsActivityLevels[i];
-		if (isnan(curLevel) || isinf(curLevel)) curLevel = level;
-		outAudioConnections[i]->activityLevel = curLevel + (level - curLevel) * .2f;
-	}
+    for (int i = 0; i < outAudioConnections.size(); i++)
+    {
+        float curLevel = outAudioConnections[i]->activityLevel;
+        float level = connectionsActivityLevels[i];
+        if (isnan(curLevel) || isinf(curLevel)) curLevel = level;
+        outAudioConnections[i]->activityLevel = curLevel + (level - curLevel) * .2f;
+    }
 
 }
 
 void Node::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	for (int i = getNumAudioInputs(); i < getNumAudioOutputs(); i++) buffer.clear(i, 0, buffer.getNumSamples());
+    for (int i = getNumAudioInputs(); i < getNumAudioOutputs(); i++) buffer.clear(i, 0, buffer.getNumSamples());
 }
 
 var Node::getJSONData(bool includeNonOverriden)
 {
-	var data = BaseItem::getJSONData(includeNonOverriden);
-	if (!saveAndLoadRecursiveData)
-	{
-		if (outControl != nullptr) data.getDynamicObject()->setProperty("out", outControl->getJSONData());
-		data.getDynamicObject()->setProperty("view", viewCC.getJSONData());
-		if (midiCC != nullptr) data.getDynamicObject()->setProperty("midi", midiCC->getJSONData());
-	}
+    var data = BaseItem::getJSONData(includeNonOverriden);
+    if (!saveAndLoadRecursiveData)
+    {
+        if (outControl != nullptr) data.getDynamicObject()->setProperty("out", outControl->getJSONData());
+        data.getDynamicObject()->setProperty("view", viewCC.getJSONData());
+        if (midiCC != nullptr) data.getDynamicObject()->setProperty("midi", midiCC->getJSONData());
+    }
 
-	if (customIONamesCC != nullptr)
-	{
-		var customNamesData(new DynamicObject());
-		var customInputNamesData(new DynamicObject());
-		var customOutputNamesData(new DynamicObject());
+    if (customIONamesCC != nullptr)
+    {
+        var customNamesData(new DynamicObject());
+        var customInputNamesData(new DynamicObject());
+        var customOutputNamesData(new DynamicObject());
 
-		bool hasCustomInputNames = false;
-		bool hasCustomOutputNames = false;
+        bool hasCustomInputNames = false;
+        bool hasCustomOutputNames = false;
 
-		if (numAudioInputs != nullptr && numAudioInputs->enabled)
-		{
-			for (int i = 0; i < numAudioInputs->intValue(); i++)
-			{
-				if (customInputNamesCC->controllables.size() <= i)
-				{
-					NLOGWARNING(niceName, "Custom input names CC does not have enough controllables !");
-					break;
-				}
+        if (numAudioInputs != nullptr && numAudioInputs->enabled)
+        {
+            for (int i = 0; i < numAudioInputs->intValue(); i++)
+            {
+                if (customInputNamesCC->controllables.size() <= i)
+                {
+                    NLOGWARNING(niceName, "Custom input names CC does not have enough controllables !");
+                    break;
+                }
 
-				String s = dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->stringValue();
-				if (s.isNotEmpty())
-				{
-					customInputNamesData.getDynamicObject()->setProperty(String(i), s);
-					hasCustomInputNames = true;
-				}
-			}
-		}
+                String s = dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->stringValue();
+                if (s.isNotEmpty())
+                {
+                    customInputNamesData.getDynamicObject()->setProperty(String(i), s);
+                    hasCustomInputNames = true;
+                }
+            }
+        }
 
-		if (numAudioOutputs != nullptr && numAudioOutputs->enabled)
-		{
-			for (int i = 0; i < numAudioOutputs->intValue(); i++)
-			{
-				if (customOutputNamesCC->controllables.size() <= i)
-				{
-					NLOGWARNING(niceName, "Custom input names CC does not have enough controllables !");
-					break;
-				}
+        if (numAudioOutputs != nullptr && numAudioOutputs->enabled)
+        {
+            for (int i = 0; i < numAudioOutputs->intValue(); i++)
+            {
+                if (customOutputNamesCC->controllables.size() <= i)
+                {
+                    NLOGWARNING(niceName, "Custom input names CC does not have enough controllables !");
+                    break;
+                }
 
-				String s = dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->stringValue();
-				if (s.isNotEmpty())
-				{
-					customOutputNamesData.getDynamicObject()->setProperty(String(i), s);
-					hasCustomOutputNames = true;
-				}
-			}
-		}
+                String s = dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->stringValue();
+                if (s.isNotEmpty())
+                {
+                    customOutputNamesData.getDynamicObject()->setProperty(String(i), s);
+                    hasCustomOutputNames = true;
+                }
+            }
+        }
 
-		if (hasCustomInputNames || hasCustomOutputNames)
-		{
+        if (hasCustomInputNames || hasCustomOutputNames)
+        {
 
-			if (hasCustomInputNames) customNamesData.getDynamicObject()->setProperty("input", customInputNamesData);
-			if (hasCustomOutputNames) customNamesData.getDynamicObject()->setProperty("output", customOutputNamesData);
-			data.getDynamicObject()->setProperty("customIONames", customNamesData);
-		}
-	}
-	return data;
+            if (hasCustomInputNames) customNamesData.getDynamicObject()->setProperty("input", customInputNamesData);
+            if (hasCustomOutputNames) customNamesData.getDynamicObject()->setProperty("output", customOutputNamesData);
+            data.getDynamicObject()->setProperty("customIONames", customNamesData);
+        }
+    }
+    return data;
 }
 
 void Node::loadJSONDataItemInternal(var data)
 {
-	if (!saveAndLoadRecursiveData)
-	{
-		if (outControl != nullptr) outControl->loadJSONData(data.getProperty("out", var()));
-		viewCC.loadJSONData(data.getProperty("view", var()));
-		if (midiCC != nullptr) midiCC->loadJSONData(data.getProperty("midi", var()));
+    if (!saveAndLoadRecursiveData)
+    {
+        if (outControl != nullptr) outControl->loadJSONData(data.getProperty("out", var()));
+        viewCC.loadJSONData(data.getProperty("view", var()));
+        if (midiCC != nullptr) midiCC->loadJSONData(data.getProperty("midi", var()));
 
 
 
-	}
+    }
 
-	if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
-	if (numAudioOutputs != nullptr && numAudioOutputs->enabled) autoSetNumAudioOutputs();
+    if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
+    if (numAudioOutputs != nullptr && numAudioOutputs->enabled) autoSetNumAudioOutputs();
 
-	if (customIONamesCC != nullptr)
-	{
-		updateIONamesCC();
+    if (customIONamesCC != nullptr)
+    {
+        updateIONamesCC();
 
-		var customNamesData = data.getProperty("customIONames", var());
-		if (customNamesData.hasProperty("input"))
-		{
-			var customInputNamesData = customNamesData.getProperty("input", var());
-			for (int i = 0; i < numAudioInputs->intValue(); i++)
-			{
-				if (customInputNamesData.hasProperty(String(i)))
-				{
-					dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->setValue(customInputNamesData.getProperty(String(i), var()).toString());
-				}
-			}
-		}
+        var customNamesData = data.getProperty("customIONames", var());
+        if (customNamesData.hasProperty("input"))
+        {
+            var customInputNamesData = customNamesData.getProperty("input", var());
+            for (int i = 0; i < numAudioInputs->intValue(); i++)
+            {
+                if (customInputNamesData.hasProperty(String(i)))
+                {
+                    dynamic_cast<Parameter*>(customInputNamesCC->controllables[i])->setValue(customInputNamesData.getProperty(String(i), var()).toString());
+                }
+            }
+        }
 
-		if (customNamesData.hasProperty("output"))
-		{
-			var customOutputNamesData = customNamesData.getProperty("output", var());
-			for (int i = 0; i < numAudioOutputs->intValue(); i++)
-			{
-				if (customOutputNamesData.hasProperty(String(i)))
-				{
-					dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->setValue(customOutputNamesData.getProperty(String(i), var()).toString());
-				}
-			}
-		}
-	}
+        if (customNamesData.hasProperty("output"))
+        {
+            var customOutputNamesData = customNamesData.getProperty("output", var());
+            for (int i = 0; i < numAudioOutputs->intValue(); i++)
+            {
+                if (customOutputNamesData.hasProperty(String(i)))
+                {
+                    dynamic_cast<Parameter*>(customOutputNamesCC->controllables[i])->setValue(customOutputNamesData.getProperty(String(i), var()).toString());
+                }
+            }
+        }
+    }
 }
 
 void Node::afterLoadJSONDataInternal()
 {
-	if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
-	if (numAudioOutputs != nullptr && numAudioOutputs->enabled) autoSetNumAudioOutputs();
+    if (numAudioInputs != nullptr && numAudioInputs->enabled) autoSetNumAudioInputs();
+    if (numAudioOutputs != nullptr && numAudioOutputs->enabled) autoSetNumAudioOutputs();
 }
 
 BaseNodeViewUI* Node::createViewUI()
 {
-	return new BaseNodeViewUI(this);
+    return new BaseNodeViewUI(this);
 }
 
 NodeAudioProcessor::Suspender::Suspender(NodeAudioProcessor* proc) : proc(proc)
 {
-	proc->suspend();
+    proc->suspend();
 }
 
 NodeAudioProcessor::Suspender::~Suspender() {
-	proc->resume();
+    proc->resume();
 }
 
 void NodeAudioProcessor::suspend()
 {
-	suspendCount++;
-	if (suspendCount == 1) suspendProcessing(true);
+    suspendCount++;
+    if (suspendCount == 1) suspendProcessing(true);
 }
 
 
 void NodeAudioProcessor::resume()
 {
-	suspendCount--;
-	jassert(suspendCount >= 0);
-	if (suspendCount == 0) suspendProcessing(false);
+    suspendCount--;
+    jassert(suspendCount >= 0);
+    if (suspendCount == 0) suspendProcessing(false);
 }
 
 void NodeAudioProcessor::numChannelsChanged()
 {
-	NLOG(node->niceName, "Channels changed : " << getTotalNumInputChannels() << ":" << getTotalNumOutputChannels());
+    NLOG(node->niceName, "Channels changed : " << getTotalNumInputChannels() << ":" << getTotalNumOutputChannels());
 }
