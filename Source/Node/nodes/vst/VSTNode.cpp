@@ -472,35 +472,14 @@ void VSTNode::processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiM
 
 void VSTNode::processVSTBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages, bool bypassed)
 {
+    if (bypassed) return;
+
     if (vst != nullptr)
     {
         GenericScopedTryLock lock(vstStateLock);
         if (lock.isLocked())
         {
-            // Log CC64 sustain and note-off messages going to the VST for debugging
-            for (const auto& meta : midiMessages)
-            {
-                const MidiMessage& m = meta.getMessage();
-                if (m.isController() && m.getControllerNumber() == 64)
-                {
-                    NLOG(niceName, "CC64 (sustain) -> VST : value=" << m.getControllerValue() << (bypassed ? " [bypass]" : ""));
-                }
-                else if (m.isNoteOff())
-                {
-                    NLOG(niceName, "Note-off -> VST : note=" << m.getNoteNumber() << " ch=" << m.getChannel() << (bypassed ? " [bypass]" : ""));
-                }
-            }
-
-            if (bypassed)
-            {
-                AudioBuffer<float> silentBuffer(buffer.getNumChannels(), buffer.getNumSamples());
-                silentBuffer.clear();
-                vst->processBlock(silentBuffer, midiMessages);
-            }
-            else
-            {
-                vst->processBlock(buffer, midiMessages);
-            }
+            vst->processBlock(buffer, midiMessages);
         }
     }
 }
