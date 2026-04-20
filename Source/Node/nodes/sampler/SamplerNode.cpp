@@ -42,6 +42,18 @@ SamplerNode::SamplerNode(var params) :
     autoKeyMode = playCC.addEnumParameter("Auto Key Algorithm", "Algorithm used to pitch-shift when computing auto keys.\nResample: clean, no wobble, slight formant shift.\nRubberBand: phase vocoder, preserves formants, may wobble on tonal sounds.");
     autoKeyMode->addOption("Resample", RESAMPLE)->addOption("RubberBand", RUBBERBAND);
 
+    // --- New RubberBand Tweakable Parameters ---
+    rbPreserveFormants = playCC.addBoolParameter("RB Formants", "Preserve Formants (RubberBand)", false);
+    
+    rbPitchMode = playCC.addEnumParameter("RB Pitch Mode", "Pitch shifting algorithm");
+    rbPitchMode->addOption("High Quality", RB_PITCH_HQ)->addOption("High Consistency", RB_PITCH_CONSISTENT);
+    
+    rbTransients = playCC.addEnumParameter("RB Transients", "Transient handling");
+    rbTransients->addOption("Crisp", RB_TRANS_CRISP)->addOption("Mixed", RB_TRANS_MIXED)->addOption("Smooth", RB_TRANS_SMOOTH);
+    
+    rbWindowSize = playCC.addEnumParameter("RB Window", "FFT Window Size");
+    rbWindowSize->addOption("Standard", RB_WIN_STANDARD)->addOption("Short", RB_WIN_SHORT)->addOption("Long", RB_WIN_LONG);
+
     addChildControllableContainer(&playCC, false, 0);
 
 
@@ -83,7 +95,7 @@ SamplerNode::SamplerNode(var params) :
     release = adsrCC.addFloatParameter("Release", "Time of the release in seconds", .2f, 0);
     release->defaultUI = FloatParameter::TIME;
 
-    releaseCurve = adsrCC.addFloatParameter("Release Curve", "Bend the release", 0.001f, 0, 0.1f);
+    releaseCurve = adsrCC.addFloatParameter("Release Curve", "Bend the release", 0.001f, 0.001f, 0.1f);
 
     addChildControllableContainer(&adsrCC, false, 3);
 
@@ -178,8 +190,6 @@ void SamplerNode::resetAllNotes()
 
 void SamplerNode::computeAutoKeys()
 {
-    //ScopedSuspender sp(processor);
-
     for (int i = 0; i < samplerNotes.size(); i++)
     {
         NoteState ns = samplerNotes[i]->state->getValueDataAsEnum<NoteState>();
@@ -188,6 +198,12 @@ void SamplerNode::computeAutoKeys()
 
     int startKey = startAutoKey->intValue();
     int endKey = endAutoKey->intValue();
+    
+    // Grab UI settings to pass to threads
+    bool formants = rbPreserveFormants->boolValue();
+    int transients = rbTransients->getValueDataAsEnum<int>();
+    int pitchMode = rbPitchMode->getValueDataAsEnum<int>();
+    int windowSize = rbWindowSize->getValueDataAsEnum<int>();
 
     for (int i = startKey; i <= endKey; i++)
     {
@@ -218,7 +234,7 @@ void SamplerNode::computeAutoKeys()
         if (closestNote != -1)
         {
             double shift = MidiMessage::getMidiNoteInHertz(i) / MidiMessage::getMidiNoteInHertz(closestNote);
-            n->computeAutoKey(samplerNotes[closestNote], shift, getFadeNumSamples(autoKeyFadeTimeMS->intValue()), autoKeyMode->getValueDataAsEnum<AutoKeyAlgorithm>());
+            n->computeAutoKey(samplerNotes[closestNote], shift, getFadeNumSamples(autoKeyFadeTimeMS->intValue()), autoKeyMode->getValueDataAsEnum<AutoKeyAlgorithm>(), formants, transients, pitchMode, windowSize);
         }
     }
 }
@@ -234,15 +250,12 @@ void SamplerNode::updateBuffers()
 void SamplerNode::updateRingBuffer()
 {
     ScopedSuspender sp(processor);
-    ringBuffer.reset(new RingBuffer<float>(getNumAudioInputs(), getFadeNumSamples(fadeTimeMS->intValue()) * 2)); //double to not have overlapping read and write
-
+    ringBuffer.reset(new RingBuffer<float>(getNumAudioInputs(), getFadeNumSamples(fadeTimeMS->intValue()) * 2));
 }
 
 void SamplerNode::startRecording(int note)
 {
     if (recordingNote != -1) return;
-
-    //ScopedSuspender sp(processor);
 
     GenericScopedLock<SpinLock> lock(recLock);
 
@@ -269,8 +282,6 @@ void SamplerNode::startRecording(int note)
 void SamplerNode::stopRecording()
 {
     if (recordingNote == -1) return;
-
-    //ScopedSuspender sp(processor);
 
     GenericScopedTryLock<SpinLock> lock(recLock);
 
@@ -353,7 +364,6 @@ void SamplerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc
             String b = currentLibrary->getValueData().toString();
             if (b == "new")
             {
-                //create a window with name parameter to create a new folder
                 AlertWindow* window = new AlertWindow("Add a Bank", "Add a new bank", AlertWindow::AlertIconType::NoIcon);
                 window->addTextEditor("bank", libraryFolder->getFile().getNonexistentChildFile("Library", "", true).getFileName(), "Library Name");
                 window->addButton("OK", 1, KeyPress(KeyPress::returnKey));
@@ -381,7 +391,7 @@ void SamplerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc
             }
             else
             {
-                currentBank->setValue(1, false, true); //force reload bank
+                currentBank->setValue(1, false, true);
             }
         }
     }
@@ -457,7 +467,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
     SamplerNote* sn = samplerNotes[midiNoteNumber];
     NoteState ns = sn->state->getValueDataAsEnum<NoteState>();
 
-    if (clearMode->boolValue()) //clearing
+    if (clearMode->boolValue())
     {
         clearNote(midiNoteNumber);
     }
@@ -465,7 +475,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
     {
         //nothing
     }
-    else if (!samplerNotes[midiNoteNumber]->hasContent()) //record and proxy autokey playing
+    else if (!samplerNotes[midiNoteNumber]->hasContent())
     {
         int closestNote = -1;
         if (autoKeyLiveMode->boolValue())
@@ -528,7 +538,6 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
         {
             samplerNotes[midiNoteNumber]->adsr.gate(0);
             samplerNotes[midiNoteNumber]->state->setValueWithData(FILLED);
-            //handleNoteOff(source, midiChannel, midiNoteNumber, velocity);
         }
         else if (ns == PLAYING && (hm == HIT_RESET || hm == HIT_FULL))
         {
@@ -549,7 +558,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 
             if (sn->isProxyNote())
             {
-                sn->pitcher->reset(); //here even with peek
+                sn->pitcher->reset();
                 sn->rtPitchReadSample = sn->playingSample;
             }
 
@@ -674,11 +683,10 @@ void SamplerNode::saveBankSamples()
 
         if (auto fileStream = std::unique_ptr<FileOutputStream>(f.createOutputStream()))
         {
-            // Now create a WAV writer object that writes to our output stream...
             WavAudioFormat wavFormat;
             if (std::unique_ptr<AudioFormatWriter> writer = std::unique_ptr<AudioFormatWriter>(wavFormat.createWriterFor(fileStream.get(), processor->getSampleRate(), n->buffer.getNumChannels(), 16, {}, 0)))
             {
-                fileStream.release(); // (passes responsibility for deleting the stream to the writer object that is now using it)
+                fileStream.release();
                 bool result = writer->writeFromAudioSampleBuffer(n->buffer, 0, n->buffer.getNumSamples());
                 if (!result) LOGWARNING("Error writing note " << i);
                 else numSamplesExported++;
@@ -688,7 +696,6 @@ void SamplerNode::saveBankSamples()
             {
                 LOGWARNING("Could not create a writer for " << f.getFileName());
             }
-
         }
         else
         {
@@ -724,7 +731,7 @@ void SamplerNode::loadBankSamples()
             WavAudioFormat wavFormat;
             if (std::unique_ptr<AudioFormatReader> reader = std::unique_ptr<AudioFormatReader>(wavFormat.createReaderFor(fileStream.get(), false)))
             {
-                fileStream.release(); // (passes responsibility for deleting the stream to the writer object that is now using it)
+                fileStream.release();
                 n->buffer.setSize(reader->numChannels, reader->lengthInSamples);
                 reader->read(n->buffer.getArrayOfWritePointers(), reader->numChannels, 0, n->buffer.getNumSamples());
                 n->state->setValueWithData(FILLED);
@@ -763,7 +770,6 @@ void SamplerNode::prepareToPlay(double sampleRate, int maximumExpectedSamplesPer
         samplerNotes[i]->adsr.setReleaseRate(release->floatValue() * sampleRate);
         samplerNotes[i]->adsr.setTargetRatioDR(releaseCurve->floatValue());
     }
-    //for (int i = 0; i < 128; i++) samplerNotes[i]->adsr.setSampleRate(sampleRate);
 }
 
 void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
@@ -798,7 +804,6 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
             float normDecibels = jmap(decibels, -100.f, 6.f, 0.f, 1.f);
             if (normDecibels < stopRecVolumeThreshold->floatValue())
             {
-                //LOG("Auto stop recording");
                 stopRecording();
             }
         }
@@ -830,7 +835,6 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
             float normDecibels = jmap(decibels, -100.f, 6.f, 0.f, 1.f);
             if (normDecibels > recVolumeThreshold->floatValue())
             {
-                //LOG("Auto start recording " << i);
                 startRecording(i);
             }
             continue;
@@ -852,6 +856,12 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
             continue;
         }
 
+
+        if (pm == HIT_ONESHOT && s->oneShotted)
+        {
+            s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
+            continue;
+        }
 
         if (pm != HIT_ONESHOT || !s->oneShotted)
         {
@@ -894,16 +904,11 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
                 s->pitcher->retrieve(s->rtPitchedBuffer.getArrayOfWritePointers(), s->rtPitchedBuffer.getNumSamples());
 
                 targetBuffer = &s->rtPitchedBuffer;
-                targetReadSample = 0; //read from rtbuffer
+                targetReadSample = 0;
             }
-
-
-            //String dbg;
-            //dbg << "[" << i << "] Jump ghost sample : " << s->jumpGhostSample << ", playingSample : " << s->playingSample << ", adsr : " << s->adsr.getOutput() << ", velocity " << s->velocity;
 
             if (s->jumpGhostSample != -1 && s->jumpGhostSample != s->playingSample && s->jumpGhostSample < s->buffer.getNumSamples())
             {
-                //dbg += " > Interpolate";
                 for (int j = 0; j < buffer.getNumChannels(); j++)
                 {
                     tmpNoteBuffer.copyFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->jumpGhostSample), blockSize, 1, 0);
@@ -914,28 +919,34 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
             }
             else
             {
-                for (int j = 0; j < buffer.getNumChannels(); j++)
-                {
-                    if (pm == HIT_ONESHOT)
-                    {
-                        if (s->playingSample == targetBuffer->getNumSamples() - blockSize)
-                        {
-                            tmpNoteBuffer.copyFromWithRamp(j, 0, targetBuffer->getReadPointer(j, targetReadSample), blockSize, 1, 0);
-                        }
-                        else if (s->playingSample == 0)
-                        {
-                            tmpNoteBuffer.copyFromWithRamp(j, 0, targetBuffer->getReadPointer(j, targetReadSample), blockSize, 0, 1);
-                        }
-                        else
-                        {
-                            tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, blockSize);
-                        }
-                    }
-                    else
-                    {
-                        tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, blockSize);
-                    }
-                }
+               const int bufNumSamples = targetBuffer->getNumSamples();
+               const int firstPart = jmax(0, jmin(blockSize, bufNumSamples - targetReadSample));
+               const int secondPart = blockSize - firstPart;
+               
+               for (int j = 0; j < buffer.getNumChannels(); j++)
+               {
+                   tmpNoteBuffer.clear(j, 0, blockSize);
+               
+                   if (pm == HIT_ONESHOT || s->isProxyNote())
+                   {
+                       if (firstPart > 0)
+                           tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
+               
+                       if (secondPart > 0 && firstPart > 0)
+                       {
+                           const int fadeLen = jmin(64, firstPart);
+                           tmpNoteBuffer.applyGainRamp(j, firstPart - fadeLen, fadeLen, 1.0f, 0.0f);
+                       }
+                   }
+                   else
+                   {
+                       if (firstPart > 0)
+                           tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
+               
+                       if (secondPart > 0)
+                           tmpNoteBuffer.copyFrom(j, firstPart, *targetBuffer, j, 0, secondPart);
+                   }
+               }
             }
 
             s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
@@ -948,21 +959,22 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 
             s->playingSample += blockSize;
 
-            int numSamplesToCheck = s->isProxyNote() ? s->autoKeyFromNote->buffer.getNumSamples() : targetBuffer->getNumSamples();
-            if (!s->isProxyNote() && s->playingSample >= numSamplesToCheck)
+            int numSamplesToCheck = s->isProxyNote() ? s->autoKeyFromNote->buffer.getNumSamples()
+                                                     : targetBuffer->getNumSamples();
+            
+            if (s->playingSample >= numSamplesToCheck)
             {
-                if (pm == HIT_ONESHOT)
+                if (pm == HIT_ONESHOT || s->isProxyNote())
                 {
-                    //s->oneShotted = true;
-                    //s->jumpGhostSample = -1;
-
-                    //HitMode hm = hitMode->getValueDataAsEnum<HitMode>();
-                 //if (hm == HIT_FULL || hm == HIT_RESET || hm == TOGGLE)
-                 //{
-                    s->reset();
-                 //}
+                    s->oneShotted = true;
+                    s->jumpGhostSample = -1;
+                    s->adsr.gate(0);
+                    s->playingSample = 0;
                 }
-                s->playingSample = 0;
+                else
+                {
+                    s->playingSample %= numSamplesToCheck;
+                }
             }
         }
     }
@@ -989,7 +1001,6 @@ void SamplerNode::SamplerNote::setAutoKey(SamplerNote* remoteNote, double shift)
     autoKeyFromNote = remoteNote;
     if (autoKeyFromNote == nullptr)
     {
-        //pitcher.reset();
         rtPitchedBuffer.clear();
         return;
     }
@@ -1001,7 +1012,6 @@ void SamplerNode::SamplerNote::setAutoKey(SamplerNote* remoteNote, double shift)
         pitcher.reset(new RubberBand::RubberBandStretcher(Transport::getInstance()->sampleRate, autoKeyFromNote->buffer.getNumChannels(),
             RubberBand::RubberBandStretcher::OptionProcessRealTime
             | RubberBand::RubberBandStretcher::OptionStretchPrecise
-            | RubberBand::RubberBandStretcher::OptionFormantPreserved
             | RubberBand::RubberBandStretcher::OptionWindowShort
             | RubberBand::RubberBandStretcher::OptionTransientsMixed
             | RubberBand::RubberBandStretcher::OptionPitchHighConsistency
@@ -1016,12 +1026,18 @@ void SamplerNode::SamplerNote::setAutoKey(SamplerNote* remoteNote, double shift)
     rtPitchedBuffer.setSize(autoKeyFromNote->buffer.getNumChannels(), Transport::getInstance()->blockSize);
 }
 
-void SamplerNode::SamplerNote::computeAutoKey(SamplerNote* remoteNote, double shift, int fadeSamples, int algorithm)
+void SamplerNode::SamplerNote::computeAutoKey(SamplerNote* remoteNote, double shift, int fadeSamples, int algorithm, bool formants, int transients, int pitchMode, int windowSize)
 {
     shifting = shift;
     fadeNumSamples = fadeSamples;
     autoKeyAlgorithm = algorithm;
     autoKeyFromNote = remoteNote;
+    
+    optFormants = formants;
+    optTransients = transients;
+    optPitchMode = pitchMode;
+    optWindow = windowSize;
+    
     startThread();
 }
 
@@ -1050,7 +1066,6 @@ void SamplerNode::SamplerNote::run()
 
     const double safeShift = (std::isfinite(shifting) && shifting > 0.0) ? shifting : 1.0;
 
-    // Snapshot source once so the worker thread never dereferences mutable note memory.
     AudioBuffer<float> sourceCopy(numChannels, numSamples);
     sourceCopy.makeCopyOf(sourceNote->buffer, true);
 
@@ -1073,72 +1088,104 @@ void SamplerNode::SamplerNote::run()
     }
     else
     {
-        HeapBlock<const float*> channelData(numChannels);
-        for (int ch = 0; ch < numChannels; ++ch)
-            channelData[ch] = sourceCopy.getReadPointer(ch);
+        // 1. Build Options dynamically from UI selections
+        int rbOptions = RubberBand::RubberBandStretcher::OptionProcessOffline
+                      | RubberBand::RubberBandStretcher::OptionStretchPrecise
+                      | RubberBand::RubberBandStretcher::OptionChannelsTogether;
+
+        if (optFormants) rbOptions |= RubberBand::RubberBandStretcher::OptionFormantPreserved;
+        
+        if (optTransients == SamplerNode::RB_TRANS_CRISP) rbOptions |= RubberBand::RubberBandStretcher::OptionTransientsCrisp;
+        else if (optTransients == SamplerNode::RB_TRANS_MIXED) rbOptions |= RubberBand::RubberBandStretcher::OptionTransientsMixed;
+        else if (optTransients == SamplerNode::RB_TRANS_SMOOTH) rbOptions |= RubberBand::RubberBandStretcher::OptionTransientsSmooth;
+        
+        if (optPitchMode == SamplerNode::RB_PITCH_HQ) rbOptions |= RubberBand::RubberBandStretcher::OptionPitchHighQuality;
+        else if (optPitchMode == SamplerNode::RB_PITCH_CONSISTENT) rbOptions |= RubberBand::RubberBandStretcher::OptionPitchHighConsistency;
+        
+        if (optWindow == SamplerNode::RB_WIN_SHORT) rbOptions |= RubberBand::RubberBandStretcher::OptionWindowShort;
+        else if (optWindow == SamplerNode::RB_WIN_LONG) rbOptions |= RubberBand::RubberBandStretcher::OptionWindowLong;
+
 
         RubberBand::RubberBandStretcher rubberBand(
             Transport::getInstance()->sampleRate,
             (size_t)numChannels,
-            RubberBand::RubberBandStretcher::OptionProcessOffline
-            | RubberBand::RubberBandStretcher::OptionStretchPrecise
-            | RubberBand::RubberBandStretcher::OptionFormantPreserved
-            | RubberBand::RubberBandStretcher::OptionWindowLong
-            | RubberBand::RubberBandStretcher::OptionSmoothingOn
-            | RubberBand::RubberBandStretcher::OptionPitchHighConsistency
-            | RubberBand::RubberBandStretcher::OptionChannelsTogether
+            rbOptions
         );
 
         rubberBand.setPitchScale(safeShift);
-        rubberBand.setExpectedInputDuration((size_t)numSamples);
+        rubberBand.setTimeRatio(1.0);
 
-        // RB4-safe path for this use case: process directly, no study().
-        rubberBand.process(channelData.get(), (size_t)numSamples, true);
+        // 2. The Safety Pad (Stomp Killer)
+        const int padSamples = (int)(Transport::getInstance()->sampleRate * 0.100);
+        const int paddedInputSamples = numSamples + padSamples;
+        
+        AudioBuffer<float> paddedSource(numChannels, paddedInputSamples);
+        paddedSource.clear();
+        for (int ch = 0; ch < numChannels; ++ch)
+        {
+            paddedSource.copyFrom(ch, 0, sourceCopy, ch, 0, numSamples);
+        }
 
+        const int preFade = jmin((int)(Transport::getInstance()->sampleRate * 0.010), numSamples);
+        if (preFade > 0)
+        {
+            for (int ch = 0; ch < numChannels; ++ch)
+                paddedSource.applyGainRamp(ch, numSamples - preFade, preFade, 1.0f, 0.0f);
+        }
+
+        rubberBand.setExpectedInputDuration((size_t)paddedInputSamples);
+
+        // 3. Process the audio
+        auto readPointers = paddedSource.getArrayOfReadPointers();
+        rubberBand.study(readPointers, (size_t)paddedInputSamples, true);
+        rubberBand.process(readPointers, (size_t)paddedInputSamples, true);
+
+        // 4. Retrieve exactly numSamples and ignore the rest
         int collected = 0;
+        const int chunkSize = 8192;
+        AudioBuffer<float> fetchBuffer(numChannels, chunkSize);
+
         while (collected < numSamples && rubberBand.available() > 0)
         {
-            const int avail = jmin((int)rubberBand.available(), numSamples - collected);
-            AudioBuffer<float> tmp(numChannels, avail);
-            const int retrieved = (int)rubberBand.retrieve(tmp.getArrayOfWritePointers(), (size_t)avail);
-            if (retrieved <= 0) break;
-
-            for (int ch = 0; ch < numChannels; ++ch)
-                pitchedFull.copyFrom(ch, collected, tmp, ch, 0, retrieved);
-
-            collected += retrieved;
+            int avail = rubberBand.available();
+            int toFetch = jmin(avail, chunkSize);
+            int retrieved = rubberBand.retrieve(fetchBuffer.getArrayOfWritePointers(), (size_t)toFetch);
+            
+            if (retrieved > 0)
+            {
+                int actualToKeep = jmin(retrieved, numSamples - collected);
+                for (int ch = 0; ch < numChannels; ++ch)
+                {
+                    pitchedFull.copyFrom(ch, collected, fetchBuffer, ch, 0, actualToKeep);
+                }
+                collected += actualToKeep;
+            }
+            else break;
         }
 
+        // 5. Fill any remaining tiny gap with absolute silence
         if (collected < numSamples)
-            for (int ch = 0; ch < numChannels; ++ch)
-                pitchedFull.clear(ch, collected, numSamples - collected);
-    }
-
-    // Attack protection + short crossfade into pitched body.
-    const int attackSamples = jlimit(0, numSamples, (int)(Transport::getInstance()->sampleRate * 0.012));
-    const int xfadeSamples = jmin(attackSamples, jmin(512, numSamples - attackSamples));
-    const int dryEnd = attackSamples - xfadeSamples;
-
-    buffer.setSize(numChannels, numSamples, false, true, true);
-    for (int ch = 0; ch < numChannels; ++ch)
-    {
-        buffer.copyFrom(ch, 0, pitchedFull, ch, 0, numSamples);
-
-        if (dryEnd > 0)
-            buffer.copyFrom(ch, 0, sourceCopy, ch, 0, dryEnd);
-
-        for (int n = 0; n < xfadeSamples; ++n)
         {
-            const int pos = dryEnd + n;
-            if (pos >= numSamples) break;
+            for (int ch = 0; ch < numChannels; ++ch)
+            {
+                pitchedFull.clear(ch, collected, numSamples - collected);
+            }
+        }
 
-            const float t = (float)n / (float)xfadeSamples;
-            const float dry = sourceCopy.getSample(ch, pos);
-            const float wet = pitchedFull.getSample(ch, pos);
-            buffer.setSample(ch, pos, dry * (1.0f - t) + wet * t);
+        // 6. Hard tail fade to guarantee the speaker rests at zero (5ms)
+        const int tailFade = jmin((int)(Transport::getInstance()->sampleRate * 0.005), numSamples);
+        if (tailFade > 1)
+        {
+            for (int ch = 0; ch < numChannels; ++ch)
+            {
+                pitchedFull.applyGainRamp(ch, numSamples - tailFade, tailFade, 1.0f, 0.0f);
+            }
         }
     }
 
+    // Replace the buffer
+    buffer.makeCopyOf(pitchedFull);
+    
     autoKeyFromNote = nullptr;
     state->setValueWithData(NoteState::FILLED);
 }
@@ -1146,7 +1193,6 @@ void SamplerNode::SamplerNote::run()
 
 void SamplerNode::SamplerNote::reset()
 {
-    //adsr.reset();
     adsr.gate(0);
     setAutoKey(nullptr);
     jumpGhostSample = -1;

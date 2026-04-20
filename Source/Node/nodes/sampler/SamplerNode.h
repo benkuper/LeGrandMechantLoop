@@ -21,6 +21,11 @@ public:
     enum PlayMode { HIT_LOOP, HIT_ONESHOT, PEEK, KEEP };
     enum HitMode { PIANO, HIT_RESET, HIT_FULL, TOGGLE };
     enum AutoKeyAlgorithm { RESAMPLE, RUBBERBAND };
+    
+    // --- New RubberBand Enums ---
+    enum RBPitchMode { RB_PITCH_HQ, RB_PITCH_CONSISTENT };
+    enum RBTransients { RB_TRANS_CRISP, RB_TRANS_MIXED, RB_TRANS_SMOOTH };
+    enum RBWindow { RB_WIN_STANDARD, RB_WIN_SHORT, RB_WIN_LONG };
 
 
     ControllableContainer playCC;
@@ -31,6 +36,12 @@ public:
     BoolParameter* autoKeyLiveMode;
     IntParameter* autoKeyFadeTimeMS;
     EnumParameter* autoKeyMode;
+    
+    // --- New RubberBand Parameters ---
+    BoolParameter* rbPreserveFormants;
+    EnumParameter* rbPitchMode;
+    EnumParameter* rbTransients;
+    EnumParameter* rbWindowSize;
 
     ControllableContainer controlsCC;
     BoolParameter* clearMode;
@@ -113,9 +124,15 @@ public:
         //offline pitching
         double shifting = 0;
         int fadeNumSamples = 0;
-        int autoKeyAlgorithm = 0; // AutoKeyAlgorithm enum value
+        int autoKeyAlgorithm = 0;
+        
+        // --- RubberBand Offline Params ---
+        bool optFormants = false;
+        int optTransients = 0;
+        int optPitchMode = 0;
+        int optWindow = 0;
 
-        //rt pitch shifting // now trying to do it offline
+        //rt pitch shifting
         AudioSampleBuffer rtPitchedBuffer;
         SamplerNote* autoKeyFromNote = nullptr;
         int rtPitchReadSample = 0;
@@ -124,7 +141,7 @@ public:
         std::unique_ptr<RubberBand::RubberBandStretcher> pitcher;
 
         void setAutoKey(SamplerNote* remoteNote, double shift = 0);
-        void computeAutoKey(SamplerNote* remoteNote, double shift = 0, int fadeSamples = 0, int algorithm = 0);
+        void computeAutoKey(SamplerNote* remoteNote, double shift, int fadeSamples, int algorithm, bool formants, int transients, int pitchMode, int windowSize);
 
         void run();
 
@@ -155,7 +172,7 @@ public:
     virtual void handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
     virtual void handleNoteOff(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
 
-    virtual int getFadeNumSamples(int fadeMS); //for ring buffer fade
+    virtual int getFadeNumSamples(int fadeMS);
 
     void updateLibraries(bool loadAfter = true);
     void updateBank();
@@ -169,7 +186,6 @@ public:
 
     void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
-    //void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
 
     DECLARE_TYPE("Sampler");
