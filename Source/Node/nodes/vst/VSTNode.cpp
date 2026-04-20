@@ -364,8 +364,22 @@ void VSTNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiM
 
 	if (prevWetDry == weight)
 	{
-		if (weight == 1) processVSTBlock(buffer, midiMessages, false);
-		else if (weight == 0) processBlockBypassed(buffer, midiMessages);
+		if (weight == 1)
+		{
+			processVSTBlock(buffer, midiMessages, false);
+		}
+		else if (weight == 0)
+		{
+			processBlockBypassed(buffer, midiMessages);
+		}
+		else
+		{
+			AudioBuffer<float> vstBuffer(buffer.getNumChannels(), buffer.getNumSamples());
+			vstBuffer.clear();
+			processVSTBlock(vstBuffer, midiMessages, false);
+			buffer.applyGain(1 - weight);
+			for (int c = 0; c < buffer.getNumChannels(); c++) buffer.addFrom(c, 0, vstBuffer, c, 0, buffer.getNumSamples(), weight);
+		}
 	}
 	else
 	{

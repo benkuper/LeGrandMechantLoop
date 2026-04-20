@@ -77,24 +77,6 @@ Transport::Transport() :
 	useAbletonLink = addBoolParameter("Enable Ableton Link", "Use Ableton Link. Enabling this will sync to other ableton link clients", false);
 	numLinkClients = addIntParameter("Num Link Clients", "Number of Ableton Link clients", 0, 0);
 
-#if USE_ABLETONLINK
-	link.reset(new ableton::Link{ bpm->floatValue() });
-
-	link->setTempoCallback([this](const double p) {
-		bpm->setValue(p);
-		});
-
-	link->setNumPeersCallback([this](const int p) {
-		numLinkClients->setValue(p);
-		});
-
-	link->setStartStopCallback([this](const int p) {
-		if (p == 0) stop();
-		else if (p == 2) play();
-		});
-
-#endif
-
 	AudioManager::getInstance()->am.addAudioCallback(this);
 
 }
@@ -264,9 +246,12 @@ void Transport::onContainerParameterChanged(Parameter* p)
 		transportListeners.call(&TransportListener::playStateChanged, isCurrentlyPlaying->boolValue(), false);
 
 #if USE_ABLETONLINK
-		auto session = link->captureAppSessionState();
-		session.setIsPlaying(isCurrentlyPlaying->boolValue(), link->clock().micros());
-		link->commitAudioSessionState(session);
+		if (link != nullptr && link->isEnabled())
+		{
+			auto session = link->captureAppSessionState();
+			session.setIsPlaying(isCurrentlyPlaying->boolValue(), link->clock().micros());
+			link->commitAppSessionState(session);
+		}
 #endif
 	}
 	else if (p == recQuantization)
@@ -290,11 +275,11 @@ void Transport::onContainerParameterChanged(Parameter* p)
 		}
 
 #if USE_ABLETONLINK
-		if (link != nullptr)
+		if (link != nullptr && link->isEnabled())
 		{
 			auto session = link->captureAppSessionState();
 			session.setTempo(bpm->floatValue(), link->clock().micros());
-			link->commitAudioSessionState(session);
+			link->commitAppSessionState(session);
 		}
 #endif
 
@@ -479,6 +464,23 @@ void Transport::setupAbletonLink()
 #if USE_ABLETONLINK
 	if (useAbletonLink->boolValue())
 	{
+		if (link == nullptr)
+		{
+			link.reset(new ableton::Link{ bpm->floatValue() });
+
+			link->setTempoCallback([this](const double p) {
+				bpm->setValue(p);
+			});
+
+			link->setNumPeersCallback([this](const int p) {
+				numLinkClients->setValue(p);
+			});
+
+			link->setStartStopCallback([this](const int p) {
+				if (p == 0) stop();
+				else if (p == 2) play();
+			});
+		}
 
 		link->enableStartStopSync(true);
 		link->enable(true);
@@ -488,11 +490,11 @@ void Transport::setupAbletonLink()
 	}
 	else
 	{
-		link->enable(false);
+		if (link != nullptr) link->enable(false);
 	}
-#endif
 
-	LOG("Ableton Link is now " << (link->isEnabled() ? "enabled" : "disabled"));
+	LOG("Ableton Link is now " << (link != nullptr && link->isEnabled() ? "enabled" : "disabled"));
+#endif
 }
 
 void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChannelData,
@@ -503,12 +505,13 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 	const AudioIODeviceCallbackContext& context)
 {
 
-	if (link->isEnabled() && link->numPeers() > 0)
+#if USE_ABLETONLINK
+	if (link != nullptr && link->isEnabled() && link->numPeers() > 0)
 	{
 		const int bPerBar = beatsPerBar->intValue();
 
 		const auto time = link->clock().micros();
-		const auto session = link->captureAppSessionState();
+		const auto session = link->captureAudioSessionState();
 		const auto beat = session.beatAtTime(time, bPerBar);
 		const auto phase = session.phaseAtTime(time, bPerBar);
 
@@ -521,7 +524,9 @@ void Transport::audioDeviceIOCallbackWithContext(const float* const* inputChanne
 		
 		setCurrentTime(curSample);
 	}
-	else if (isCurrentlyPlaying->boolValue())
+	else
+#endif
+	if (isCurrentlyPlaying->boolValue())
 	{
 		setCurrentTime(timeInSamples + numSamples);
 	}
