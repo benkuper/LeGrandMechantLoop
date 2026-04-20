@@ -1078,7 +1078,7 @@ void SamplerNode::SamplerNote::run()
         AudioBuffer<float> extSrc(numChannels, srcNeeded);
         for (int ch = 0; ch < numChannels; ++ch)
             for (int i = 0; i < srcNeeded; ++i)
-                extSrc.setSample(ch, i, sourceCopy.getSample(ch, i % numSamples));
+                extSrc.setSample(ch, i, i < numSamples ? sourceCopy.getSample(ch, i) : 0.0f);
 
         for (int ch = 0; ch < numChannels; ++ch)
         {
