@@ -1033,71 +1033,76 @@ void SamplerNode::SamplerNote::run()
     const float* const* channelData = autoKeyFromNote->buffer.getArrayOfReadPointers();
     buffer = AudioSampleBuffer(numChannels, 0);
 
-    RubberBand::RubberBandStretcher rubberBand(Transport::getInstance()->sampleRate, autoKeyFromNote->buffer.getNumChannels(),
+    // Offline pitch shift: no time stretching (ratio = 1.0), formant preserved.
+    // Use a standard (not short) window for tonal/sustained sounds to avoid wobble.
+    // OptionTransientsCrisp preserves the shape of transients within the pitched region.
+    RubberBand::RubberBandStretcher rubberBand(
+        Transport::getInstance()->sampleRate, numChannels,
         RubberBand::RubberBandStretcher::OptionProcessOffline
         | RubberBand::RubberBandStretcher::OptionStretchPrecise
         | RubberBand::RubberBandStretcher::OptionFormantPreserved
-        | RubberBand::RubberBandStretcher::OptionWindowShort
-        | RubberBand::RubberBandStretcher::OptionTransientsMixed
+        | RubberBand::RubberBandStretcher::OptionTransientsCrisp
         | RubberBand::RubberBandStretcher::OptionPitchHighConsistency
         | RubberBand::RubberBandStretcher::OptionChannelsTogether
     );
 
-    const int attackProtectSamples = jlimit(64, numSamples, (int)(Transport::getInstance()->sampleRate * 0.012));
-    const int bodySamples = jmax(0, numSamples - attackProtectSamples);
-    const int bodyFadeSamples = jmin(fadeNumSamples, bodySamples);
+    // Pitch shift only – time ratio stays at default 1.0 (no stretching)
+    rubberBand.setPitchScale(shifting);
+    rubberBand.setExpectedInputDuration(numSamples);
 
-    AudioBuffer<float> pitchedBody(numChannels, 0);
-    if (bodySamples > 0)
+    // Study + process the full buffer
+    rubberBand.study(channelData, numSamples, true);
+    rubberBand.process(channelData, numSamples, true);
+
+    // Collect all pitched output
+    AudioBuffer<float> pitchedFull(numChannels, 0);
+    while (rubberBand.available() > 0)
     {
-        heapBlock<const float*> bodyPtrs(numChannels);
-        for (int ch = 0; ch < numChannels; ++ch) bodyPtrs[ch] = channelData[ch] + attackProtectSamples;
-
-        const double bodyTimeRatio = (bodySamples + bodyFadeSamples) * 1.0 / bodySamples;
-        rubberBand.setPitchScale(shifting);
-        rubberBand.setTimeRatio(bodyTimeRatio);
-        rubberBand.setExpectedInputDuration(bodySamples);
-        rubberBand.study(bodyPtrs.getData(), bodySamples, true);
-        rubberBand.process(bodyPtrs.getData(), bodySamples, true);
-
-        while (rubberBand.available() > 0)
-        {
-            juce::AudioBuffer<float> tmpBuffer(numChannels, rubberBand.available());
-            const int numRetrieved = rubberBand.retrieve(tmpBuffer.getArrayOfWritePointers(), rubberBand.available());
-            const int curSize = pitchedBody.getNumSamples();
-            pitchedBody.setSize(numChannels, curSize + numRetrieved, true, false, true);
-            for (int ch = 0; ch < numChannels; ++ch) pitchedBody.copyFrom(ch, curSize, tmpBuffer, ch, 0, numRetrieved);
-        }
-
-        if (bodyFadeSamples > 0 && pitchedBody.getNumSamples() >= bodySamples + bodyFadeSamples)
-        {
-            for (int ch = 0; ch < numChannels; ++ch)
-            {
-                pitchedBody.applyGainRamp(0, bodyFadeSamples, 0, 1);
-                pitchedBody.addFromWithRamp(ch, 0, pitchedBody.getReadPointer(ch, bodySamples), bodyFadeSamples, 1, 0);
-            }
-            pitchedBody.setSize(numChannels, bodySamples, true, true, true);
-        }
+        const int avail = (int)rubberBand.available();
+        AudioBuffer<float> tmp(numChannels, avail);
+        const int retrieved = rubberBand.retrieve(tmp.getArrayOfWritePointers(), avail);
+        const int curSize = pitchedFull.getNumSamples();
+        pitchedFull.setSize(numChannels, curSize + retrieved, true, false, true);
+        for (int ch = 0; ch < numChannels; ++ch)
+            pitchedFull.copyFrom(ch, curSize, tmp, ch, 0, retrieved);
     }
 
-    buffer.setSize(numChannels, numSamples, false, true, true);
+    // How many output samples we can actually fill
+    const int outSamples = jmin(numSamples, pitchedFull.getNumSamples());
+    if (outSamples == 0)
+    {
+        autoKeyFromNote = nullptr;
+        state->setValueWithData(NoteState::FILLED);
+        return;
+    }
+
+    // Protect the attack: copy the first ~12 ms verbatim from the original recording
+    // so piano/percussive transients are not smeared by pitch processing.
+    // Then crossfade smoothly from the dry attack into the pitched body.
+    const int attackSamples = jlimit(0, outSamples, (int)(Transport::getInstance()->sampleRate * 0.012));
+    const int xfadeSamples  = jmin(attackSamples, jmin(512, outSamples - attackSamples));
+
+    buffer.setSize(numChannels, outSamples, false, true, true);
+
     for (int ch = 0; ch < numChannels; ++ch)
     {
-        buffer.copyFrom(ch, 0, autoKeyFromNote->buffer, ch, 0, attackProtectSamples);
-        if (bodySamples > 0) buffer.copyFrom(ch, attackProtectSamples, pitchedBody, ch, 0, jmin(bodySamples, pitchedBody.getNumSamples()));
+        // --- pure pitched region (base layer for the whole output) ---
+        buffer.copyFrom(ch, 0, pitchedFull, ch, 0, outSamples);
 
-        // Blend attack into pitched body to avoid a hard seam at the split point.
-        const int seamXFade = jmin(attackProtectSamples, 128);
-        if (bodySamples > 0 && seamXFade > 0)
+        // --- pure dry attack region [0, attackSamples - xfadeSamples) ---
+        const int dryEnd = attackSamples - xfadeSamples;
+        if (dryEnd > 0)
+            buffer.copyFrom(ch, 0, autoKeyFromNote->buffer, ch, 0, dryEnd);
+
+        // --- crossfade region [dryEnd, attackSamples): dry -> pitched ---
+        for (int n = 0; n < xfadeSamples; ++n)
         {
-            const int seamStart = attackProtectSamples - seamXFade;
-            for (int n = 0; n < seamXFade; ++n)
-            {
-                const float a = (float)n / (float)seamXFade;
-                const float dry = autoKeyFromNote->buffer.getSample(ch, seamStart + n);
-                const float wet = buffer.getSample(ch, seamStart + n);
-                buffer.setSample(ch, seamStart + n, dry * (1.0f - a) + wet * a);
-            }
+            const int pos = dryEnd + n;
+            if (pos >= outSamples) break;
+            const float t   = (float)n / (float)xfadeSamples;   // 0 = dry, 1 = pitched
+            const float dry = autoKeyFromNote->buffer.getSample(ch, pos);
+            const float wet = pitchedFull.getSample(ch, pos);
+            buffer.setSample(ch, pos, dry * (1.f - t) + wet * t);
         }
     }
 
