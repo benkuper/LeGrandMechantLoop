@@ -489,8 +489,7 @@
                ORGANICUI_USE_SERVUS="1" JUCE_PLUGINHOST_VST="1" JUCE_ALLOW_SPECIAL_CHARS_IN_ADDRESS="1"
                JUCE_ENABLE_BROADCAST_BY_DEFAULT="1" JUCE_EXCLUSIVE_BINDING_BY_DEFAULT="1"
                JUCE_IP_AND_PORT_DETECTION="1" JUCE_PLUGINHOST_LADSPA="1" JUCE_PLUGINHOST_LV2="1"
-               JUCE_USE_WIN_WEBVIEW2="1" JUCE_USE_MP3AUDIOFORMAT="1" JUCE_USE_LAME_AUDIO_FORMAT="1"
-               JUCE_JACK="1"/>
+               JUCE_USE_WIN_WEBVIEW2="1" JUCE_USE_MP3AUDIOFORMAT="1" JUCE_USE_LAME_AUDIO_FORMAT="1"/>
   <EXPORTFORMATS>
     <VS2022 targetFolder="Builds/VisualStudio2022" externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib"
             smallIcon="k24oFh" bigIcon="k24oFh" extraDefs="LINK_PLATFORM_WINDOWS=1&#10;USE_ABLETONLINK=1"
@@ -731,6 +730,38 @@
         <MODULEPATH id="juce_audio_processors_headless" path="JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
+    <VS2026 targetFolder="Builds/VisualStudio2026" extraDefs="LINK_PLATFORM_WINDOWS=1&#10;USE_ABLETONLINK=1"
+            extraCompilerFlags="/Zm1000 /bigobj" extraLinkerFlags="/HEAP:0x200000,0x10000"
+            externalLibraries="Setupapi.lib&#10;Servus.lib&#10;dnssd.lib&#10;rubberband-static.lib">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" libraryPath="../../External/servus/lib/win/x64/debug&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/debug"
+                       binaryPath="Binaries/Debug"/>
+        <CONFIGURATION isDebug="0" name="Release" libraryPath="../../External/servus/lib/win/x64/release&#10;../../External/dnssd/lib&#10;../../External/rubberband/lib/win/release"
+                       binaryPath="Binaries" alwaysGenerateDebugSymbols="1"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_devices" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_formats" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_processors" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_processors_headless" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_utils" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_core" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_cryptography" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_data_structures" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_dsp" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_events" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_graphics" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_basics" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_gui_extra" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_javascript" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_opengl" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_organicui" path="Modules"/>
+        <MODULEPATH id="juce_osc" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_simpleweb" path="Modules"/>
+        <MODULEPATH id="juce_timeline" path="Modules"/>
+      </MODULEPATHS>
+    </VS2026>
   </EXPORTFORMATS>
   <MODULES>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>

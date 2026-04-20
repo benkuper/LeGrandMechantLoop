@@ -78,7 +78,7 @@
 #endif
 
 #ifndef    JUCE_JACK
- #define   JUCE_JACK 1
+ //#define JUCE_JACK 0
 #endif
 
 #ifndef    JUCE_USE_ANDROID_OBOE
