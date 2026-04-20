@@ -464,10 +464,15 @@ void Node::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 	}
 
 	bool addToQueue = true;
+	bool shouldReleaseSustainedNotes = false;
 
 	if (m.isSustainPedalOn() || m.isSustainPedalOff())
 	{
-		if (pedalSustain->enabled) pedalSustain->setValue(m.isSustainPedalOn());
+        if (pedalSustain->enabled)
+		{
+			pedalSustain->setValue(m.isSustainPedalOn());
+			shouldReleaseSustainedNotes = m.isSustainPedalOff() && !forceSustain->boolValue();
+		}
 	}
 
 	if (m.isNoteOff())
@@ -487,6 +492,11 @@ void Node::midiMessageReceived(MIDIInterface* i, const MidiMessage& m)
 	if (addToQueue)
 	{
 		if (processor->getSampleRate() != 0) midiCollector.addMessageToQueue(m);
+	}
+
+	if (shouldReleaseSustainedNotes)
+	{
+		updateSustainedNotes();
 	}
 }
 
