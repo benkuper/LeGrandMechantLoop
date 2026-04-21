@@ -181,12 +181,12 @@ void Preset::saveContainer(ControllableContainer* container, bool recursive)
     for (auto& c : cList) save(c);
 }
 
-void Preset::save(Controllable* controllable, bool saveAllPresettables, bool noCheck)
+void Preset::save(Controllable* controllable, bool saveAllPresettables, bool noCheck, bool reloadUI)
 {
     if (controllable != nullptr)
     {
         if (!RootPresetManager::getInstance()->isControllablePresettable(controllable)) return;
-        addControllableToDataMap(controllable);
+        addControllableToDataMap(controllable, reloadUI);
     }
     else
     {
@@ -215,10 +215,12 @@ void Preset::save(Controllable* controllable, bool saveAllPresettables, bool noC
             if (!p->shouldBeSaved()) continue;
             if (saveAllPresettables || overridenControllables.contains(add))
             {
-                addControllableToDataMap(p);
+                addControllableToDataMap(p, false);
                 numSaved++;
             }
         }
+        
+        if(reloadUI) notifyShouldReloadUI();
 
         NLOG(niceName, "Saved " << numSaved << " values.");
     }
@@ -246,7 +248,7 @@ void Preset::load(bool recursive)
 }
 
 
-void Preset::addControllableToDataMap(Controllable* c, var forceValue)
+void Preset::addControllableToDataMap(Controllable* c, var forceValue, bool reloadUI )
 {
     if (c == nullptr) return;
 
@@ -263,6 +265,8 @@ void Preset::addControllableToDataMap(Controllable* c, var forceValue)
 
     c->addControllableListener(this);
     registerLinkedInspectable(c);
+    
+    if(reloadUI) notifyShouldReloadUI();
 }
 
 void Preset::updateControllableAddress(Controllable* c)
@@ -274,11 +278,11 @@ void Preset::updateControllableAddress(Controllable* c)
         String oldAdd = controllableGhostAddressMap[c];
         var oldVal = addressMap[oldAdd];
         removeAddressFromDataMap(oldAdd);
-        addControllableToDataMap(c, oldVal);
+        addControllableToDataMap(c, oldVal, false);
     }
 }
 
-void Preset::removeControllableFromDataMap(Controllable* c)
+void Preset::removeControllableFromDataMap(Controllable* c, bool reloadUI)
 {
     if (c == nullptr) return;
 
@@ -293,13 +297,15 @@ void Preset::removeControllableFromDataMap(Controllable* c)
     addressMap.remove(add);
     lostControllables.remove(add);
     overridenControllables.removeAllInstancesOf(add);
+    
+    if(reloadUI) notifyShouldReloadUI();
 }
 
-void Preset::removeAddressFromDataMap(String address)
+void Preset::removeAddressFromDataMap(String address, bool reloadUI)
 {
     if (Controllable* c = Engine::mainEngine->getControllableForAddress(address))
     {
-        removeControllableFromDataMap(c);
+        removeControllableFromDataMap(c, reloadUI);
         return;
     }
 
@@ -322,7 +328,7 @@ void Preset::recoverLostControllables()
         if (Controllable* c = Engine::mainEngine->getControllableForAddress(add))
         {
             var lostVal = lit.getValue();
-            addControllableToDataMap(c, lostVal[0]);
+            addControllableToDataMap(c, lostVal[0], false);
             transitionMap.set(c, (TransitionMode)(int)lostVal[1]);
             if (lostVal.size() > 2) transitionPercentMap.set(c, (float)lostVal[2]);
             if (lostVal.size() > 3) enabledMap.set(c, (bool)lostVal[3]);
@@ -423,7 +429,7 @@ void Preset::loadJSONDataItemInternal(var data)
         {
             if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
             {
-                addControllableToDataMap(tc, p.value.isArray() ? p.value[0] : p.value);
+                addControllableToDataMap(tc, p.value.isArray() ? p.value[0] : p.value, false);
                 if (p.value.size() > 1) transitionMap.set(tc, (TransitionMode)(int)p.value[1]);
                 if (p.value.size() > 2) transitionPercentMap.set(tc, (float)p.value[2]);
                 if (p.value.size() > 3) enabledMap.set(tc, (bool)p.value[3]);
@@ -487,6 +493,11 @@ void Preset::childStructureChanged(ControllableContainer* cc)
 
     if (Engine::mainEngine->isLoadingFile) return;
     recoverLostControllables();
+}
+
+void Preset::notifyShouldReloadUI()
+{
+    queuedNotifier.addMessage(new ContainerAsyncEvent(ContainerAsyncEvent::ControllableContainerNeedsRebuild, this));
 }
 
 void Preset::endLoadFile()

@@ -61,19 +61,18 @@ public:
     var getPresetValues(bool includeParents = true, Array<Controllable*> ignoreList = Array<Controllable*>(), bool includeDisabled = false, bool resolveTransition = false);
 
     void saveContainer(ControllableContainer* container, bool recursive);
-    void save(Controllable* controllable = nullptr, bool saveAllPresettables = false, bool noCheck = false);
+    void save(Controllable* controllable = nullptr, bool saveAllPresettables = false, bool noCheck = false, bool reloadUI = true);
     void load(bool recursive = false);
 
-    void addControllableToDataMap(Controllable* c, var forceValue = var());
+    void addControllableToDataMap(Controllable* c, var forceValue = var(), bool reloadUI = true);
     void updateControllableAddress(Controllable* c);
-    void removeControllableFromDataMap(Controllable* c);
-    void removeAddressFromDataMap(String address);
+    void removeControllableFromDataMap(Controllable* c, bool reloadUI = true);
+    void removeAddressFromDataMap(String address, bool reloadUI = true);
 
     void recoverLostControllables();
 
     bool isMain(); //check if it's not an override
     bool hasPresetControllable(Controllable* c);
-
 
 
     void onContainerTriggerTriggered(Trigger* t) override;
@@ -88,6 +87,8 @@ public:
     void loadJSONDataItemInternal(var data) override;
 
     void controllableControlAddressChanged(Controllable* c) override;
+    
+    void notifyShouldReloadUI();
 
     void childStructureChanged(ControllableContainer* cc) override;
     void endLoadFile() override;

@@ -397,6 +397,11 @@ void PresetEditor::newMessage(const ContainerAsyncEvent& e)
     else
     {
         BaseItemEditor::newMessage(e);
+        
+        if(e.type == ContainerAsyncEvent::ControllableContainerNeedsRebuild)
+        {
+            buildValuesCC();
+        }
     }
 }
 
