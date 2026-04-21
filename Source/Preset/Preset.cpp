@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-	Preset.cpp
-	Created: 17 Apr 2021 12:08:52pm
-	Author:  bkupe
+    Preset.cpp
+    Created: 17 Apr 2021 12:08:52pm
+    Author:  bkupe
 
   ==============================================================================
 */
@@ -13,479 +13,489 @@
 #include "Preset.h"
 
 Preset::Preset(var params) :
-	BaseItem(getTypeString()),
-	linkedPresetsCC("Linked Presets"),
-	transitionCC("Transition"),
-	transitionCurve("Transition Curve")
+    BaseItem(getTypeString()),
+    linkedPresetsCC("Linked Presets"),
+    transitionCC("Transition"),
+    transitionCurve("Transition Curve")
 {
-	itemDataType = "Preset";
-	hideInEditor = true;
+    itemDataType = "Preset";
+    hideInEditor = true;
 
-	subPresets.reset(new PresetManager());
-	addChildControllableContainer(subPresets.get());
-	subPresets->addManagerListener(this);
-	subPresets->hideInEditor = true;
+    subPresets.reset(new PresetManager());
+    addChildControllableContainer(subPresets.get());
+    subPresets->addManagerListener(this);
+    subPresets->hideInEditor = true;
 
-	Random r;
-	isCurrent = addBoolParameter("Is Current", "If this is the currently loaded preset", false);
-	isCurrent->setControllableFeedbackOnly(true);
-	isCurrent->hideInEditor = true;
+    Random r;
+    isCurrent = addBoolParameter("Is Current", "If this is the currently loaded preset", false);
+    isCurrent->setControllableFeedbackOnly(true);
+    isCurrent->hideInEditor = true;
 
-	description = addStringParameter("Description", "Description of this preset", "");
-	description->multiline = true;
+    description = addStringParameter("Description", "Description of this preset", "");
+    description->multiline = true;
 
-	setHasCustomColor(true);
-	itemColor->forceSaveValue = true;
+    setHasCustomColor(true);
+    itemColor->forceSaveValue = true;
 
-	saveTrigger = addTrigger("Save", "Save the current state in this preset. If this is a sub-preset, this will only save overriden values");
-	loadTrigger = addTrigger("Load", "Load the values in this preset. It this is a sub-preset, this will fetch all values up to its root preset");
-	sideLoadTrigger = addTrigger("Side Load", "Load the values in this preset without setting it as the current preset");
+    saveTrigger = addTrigger("Save", "Save the current state in this preset. If this is a sub-preset, this will only save overriden values");
+    loadTrigger = addTrigger("Load", "Load the values in this preset. It this is a sub-preset, this will fetch all values up to its root preset");
+    sideLoadTrigger = addTrigger("Side Load", "Load the values in this preset without setting it as the current preset");
 
-	skipInPrev = addBoolParameter("Skip in Prev", "Skip this preset in the previous preset actions", false);
-	skipInNext = addBoolParameter("Skip in Next", "Skip this preset in the next preset actions", false);
-	noParentOnNearbyLoad = addBoolParameter("No Parent on Nearby Load", "If checked, this will prevent from loading the parent preset when loading this preset from a nearby preset", false);
-	resolveParentTransitions = addBoolParameter("Resolve Parent Transitions", "If checked, this will force parent preset values with default transition mode to use same-level defaul transition instead of this one.", false);
+    skipInPrev = addBoolParameter("Skip in Prev", "Skip this preset in the previous preset actions", false);
+    skipInNext = addBoolParameter("Skip in Next", "Skip this preset in the next preset actions", false);
+    noParentOnNearbyLoad = addBoolParameter("No Parent on Nearby Load", "If checked, this will prevent from loading the parent preset when loading this preset from a nearby preset", false);
+    resolveParentTransitions = addBoolParameter("Resolve Parent Transitions", "If checked, this will force parent preset values with default transition mode to use same-level defaul transition instead of this one.", false);
 
-	transitionQuantiz = transitionCC.addEnumParameter("Quantization", "Transition quantization for this preset");
-	transitionQuantiz->addOption("Custom", Transport::FREE)->addOption("From Transport", Transport::DEFAULT)->addOption("First Loop", Transport::FIRSTLOOP)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT);
+    transitionQuantiz = transitionCC.addEnumParameter("Quantization", "Transition quantization for this preset");
+    transitionQuantiz->addOption("Custom", Transport::FREE)->addOption("From Transport", Transport::DEFAULT)->addOption("First Loop", Transport::FIRSTLOOP)->addOption("Bar", Transport::BAR)->addOption("Beat", Transport::BEAT);
 
-	numBeatBarQuantiz = transitionCC.addIntParameter("Quantiz Extra", "If quantization is set to beat or bar, this is the number of beats or bars to add to the current one for computing transition time", 0, 0);
-	//numBeatBarQuantiz->setEnabled(false);
+    numBeatBarQuantiz = transitionCC.addIntParameter("Quantiz Extra", "If quantization is set to beat or bar, this is the number of beats or bars to add to the current one for computing transition time", 0, 0);
+    //numBeatBarQuantiz->setEnabled(false);
 
-	transitionTime = transitionCC.addFloatParameter("Transition Time", "Time to transition.", 0, 0);
-	transitionTime->defaultUI = FloatParameter::TIME;
+    transitionTime = transitionCC.addFloatParameter("Transition Time", "Time to transition.", 0, 0);
+    transitionTime->defaultUI = FloatParameter::TIME;
 
-	defaultTransitionMode = transitionCC.addEnumParameter("Default Transition Mode", "Default transition mode for all parameters. For non interpolable parameters, choosing Interpolate will result in Change at Start");
-	defaultTransitionMode->addOption("Interpolate", INTERPOLATE)->addOption("Change at start", AT_START)->addOption("Change at end", AT_END)->addOption("Change at %", AT_PERCENT);
+    defaultTransitionMode = transitionCC.addEnumParameter("Default Transition Mode", "Default transition mode for all parameters. For non interpolable parameters, choosing Interpolate will result in Change at Start");
+    defaultTransitionMode->addOption("Interpolate", INTERPOLATE)->addOption("Change at start", AT_START)->addOption("Change at end", AT_END)->addOption("Change at %", AT_PERCENT);
 
-	transitionCurve.addKey(0, 0);
-	transitionCurve.addKey(1, 1);
-	transitionCurve.editorCanBeCollapsed = true;
-	transitionCurve.editorIsCollapsed = true;
-	transitionCC.enabled->setDefaultValue(false);
-	transitionCC.saveAndLoadRecursiveData = true;
-	transitionCC.addChildControllableContainer(&transitionCurve);
+    transitionCurve.addKey(0, 0);
+    transitionCurve.addKey(1, 1);
+    transitionCurve.editorCanBeCollapsed = true;
+    transitionCurve.editorIsCollapsed = true;
+    transitionCC.enabled->setDefaultValue(false);
+    transitionCC.saveAndLoadRecursiveData = true;
+    transitionCC.addChildControllableContainer(&transitionCurve);
 
-	addChildControllableContainer(&transitionCC);
+    addChildControllableContainer(&transitionCC);
 
-	linkedPresetsCC.userCanAddControllables = true;
-	linkedPresetsCC.userAddControllablesFilters.add(TargetParameter::getTypeStringStatic());
-	linkedPresetsCC.customUserCreateControllableFunc = [this](ControllableContainer* cc)
-		{
-			TargetParameter* p = cc->addTargetParameter("Preset 1", "Linked preset to load values from", RootPresetManager::getInstance());
-			p->targetType = TargetParameter::CONTAINER;
-			p->saveValueOnly = false;
-			p->canBeDisabledByUser = true;
-			p->isRemovableByUser = true;
-			p->typesFilter.add(Preset::getTypeStringStatic());
-		};
+    linkedPresetsCC.userCanAddControllables = true;
+    linkedPresetsCC.userAddControllablesFilters.add(TargetParameter::getTypeStringStatic());
+    linkedPresetsCC.customUserCreateControllableFunc = [this](ControllableContainer* cc)
+        {
+            TargetParameter* p = cc->addTargetParameter("Preset 1", "Linked preset to load values from", RootPresetManager::getInstance());
+            p->targetType = TargetParameter::CONTAINER;
+            p->saveValueOnly = false;
+            p->canBeDisabledByUser = true;
+            p->isRemovableByUser = true;
+            p->typesFilter.add(Preset::getTypeStringStatic());
+        };
 
-	addChildControllableContainer(&linkedPresetsCC);
+    addChildControllableContainer(&linkedPresetsCC);
 
 
-	listUISize->isSavable = false;
+    listUISize->isSavable = false;
 
-	editorIsCollapsed = true;
+    editorIsCollapsed = true;
 
-	highlightLinkedInspectableOnSelect = true;
+    highlightLinkedInspectableOnSelect = true;
 
-	Engine::mainEngine->addControllableContainerListener(this);
-	Engine::mainEngine->addEngineListener(this);
+    Engine::mainEngine->addControllableContainerListener(this);
+    Engine::mainEngine->addEngineListener(this);
 }
 
 Preset::~Preset()
 {
-	Engine::mainEngine->removeControllableContainerListener(this);
+    Engine::mainEngine->removeControllableContainerListener(this);
 }
 
 void Preset::clearItem()
 {
-	BaseItem::clearItem();
-	HashMap<WeakReference<Controllable>, var>::Iterator it(dataMap);
-	while (it.next()) if (it.getKey() != nullptr && !it.getKey().wasObjectDeleted())
-	{
-		it.getKey()->removeControllableListener(this);
-	}
+    BaseItem::clearItem();
+    HashMap<WeakReference<Controllable>, var>::Iterator it(dataMap);
+    while (it.next()) if (it.getKey() != nullptr && !it.getKey().wasObjectDeleted())
+    {
+        it.getKey()->removeControllableListener(this);
+    }
 }
 
 var Preset::getPresetValues(bool includeParents, Array<Controllable*> ignoreList, bool includeDisabled, bool resolveTransition)
 {
-	var data(new DynamicObject());
+    var data(new DynamicObject());
 
-	if (!enabled->boolValue() && !includeDisabled) return data;
+    if (!enabled->boolValue() && !includeDisabled) return data;
 
-	ignoreList.addArray(ignoredControllables);
-
-
-	HashMap<WeakReference<Controllable>, var>::Iterator it(dataMap);
-	while (it.next())
-	{
-		WeakReference<Controllable> c = it.getKey();
-		if (c == nullptr || c.wasObjectDeleted()) continue;
-		if (ignoreList.contains(c)) continue;
-
-		String add = c->getControlAddress();
-		if (!data.hasProperty(add))
-		{
-			var v;
-			v.append(it.getValue());
-			TransitionMode tm = transitionMap.contains(c) ? transitionMap[c] : TransitionMode::DEFAULT;
-			if (tm == TransitionMode::DEFAULT && resolveTransition) tm = defaultTransitionMode->getValueDataAsEnum<TransitionMode>();
-			v.append(tm);
-
-			v.append(transitionMap.contains(c) ? transitionPercentMap[c] : 0);
-
-			data.getDynamicObject()->setProperty(add, v);
-		}
-		ignoreList.add(c);
-	}
+    ignoreList.addArray(ignoredControllables);
 
 
-	//Parents and Linked presets
-	Array<Preset*> presetsToInclude;
-	if (includeParents)
-	{
-		if (parentContainer != nullptr && parentContainer != RootPresetManager::getInstance()) presetsToInclude.add((Preset*)parentContainer->parentContainer.get());
+    HashMap<WeakReference<Controllable>, var>::Iterator it(dataMap);
+    while (it.next())
+    {
+        WeakReference<Controllable> c = it.getKey();
+        if (c == nullptr || c.wasObjectDeleted()) continue;
+        if (ignoreList.contains(c)) continue;
 
-		for (auto& c : linkedPresetsCC.controllables)
-		{
-			if (!c->enabled) continue;
-			Preset* p = dynamic_cast<Preset*>(((TargetParameter*)c)->targetContainer.get());
-			if (p == nullptr) continue;
-			presetsToInclude.add(p);
-		}
-	}
+        bool isParamEnabled = enabledMap.contains(c) ? enabledMap[c] : true;
+        if (!isParamEnabled && !includeDisabled) continue;
 
-	for (auto& p : presetsToInclude)
-	{
-		var pData = p->getPresetValues(true, ignoreList, includeDisabled, resolveTransition);
+        String add = c->getControlAddress();
+        if (!data.hasProperty(add))
+        {
+            var v;
+            v.append(it.getValue());
+            TransitionMode tm = transitionMap.contains(c) ? transitionMap[c] : TransitionMode::DEFAULT;
+            if (tm == TransitionMode::DEFAULT && resolveTransition) tm = defaultTransitionMode->getValueDataAsEnum<TransitionMode>();
+            v.append(tm);
 
-		NamedValueSet props = pData.getDynamicObject()->getProperties();
-		for (auto& p : props)
-		{
-			if (data.hasProperty(p.name)) continue;
-			data.getDynamicObject()->setProperty(p.name, p.value);
-		}
-	}
+            v.append(transitionMap.contains(c) ? transitionPercentMap[c] : 0);
+            v.append(isParamEnabled);
 
-	return data;
+            data.getDynamicObject()->setProperty(add, v);
+        }
+        ignoreList.add(c);
+    }
+
+
+    //Parents and Linked presets
+    Array<Preset*> presetsToInclude;
+    if (includeParents)
+    {
+        if (parentContainer != nullptr && parentContainer != RootPresetManager::getInstance()) presetsToInclude.add((Preset*)parentContainer->parentContainer.get());
+
+        for (auto& c : linkedPresetsCC.controllables)
+        {
+            if (!c->enabled) continue;
+            Preset* p = dynamic_cast<Preset*>(((TargetParameter*)c)->targetContainer.get());
+            if (p == nullptr) continue;
+            presetsToInclude.add(p);
+        }
+    }
+
+    for (auto& p : presetsToInclude)
+    {
+        var pData = p->getPresetValues(true, ignoreList, includeDisabled, resolveTransition);
+
+        NamedValueSet props = pData.getDynamicObject()->getProperties();
+        for (auto& p : props)
+        {
+            if (data.hasProperty(p.name)) continue;
+            data.getDynamicObject()->setProperty(p.name, p.value);
+        }
+    }
+
+    return data;
 }
 
 void Preset::saveContainer(ControllableContainer* container, bool recursive)
 {
-	Array<WeakReference<Parameter>> cList = container->getAllParameters(recursive);
-	for (auto& c : cList) save(c);
+    Array<WeakReference<Parameter>> cList = container->getAllParameters(recursive);
+    for (auto& c : cList) save(c);
 }
 
 void Preset::save(Controllable* controllable, bool saveAllPresettables, bool noCheck)
 {
-	if (controllable != nullptr)
-	{
-		if (!RootPresetManager::getInstance()->isControllablePresettable(controllable)) return;
-		addControllableToDataMap(controllable);
-	}
-	else
-	{
-		if (!isCurrent->boolValue() && !noCheck)
-		{
-			AlertWindow::showOkCancelBox(AlertWindow::WarningIcon, "Not the current preset", "This is not the currently loaded preset. Do you want still want to save to preset", "Yes", "No", nullptr, ModalCallbackFunction::create([=](int result)
-				{
-					if (result) save(controllable, saveAllPresettables, true);
-				}));
+    if (controllable != nullptr)
+    {
+        if (!RootPresetManager::getInstance()->isControllablePresettable(controllable)) return;
+        addControllableToDataMap(controllable);
+    }
+    else
+    {
+        if (!isCurrent->boolValue() && !noCheck)
+        {
+            AlertWindow::showOkCancelBox(AlertWindow::WarningIcon, "Not the current preset", "This is not the currently loaded preset. Do you want still want to save to preset", "Yes", "No", nullptr, ModalCallbackFunction::create([=](int result)
+                {
+                    if (result) save(controllable, saveAllPresettables, true);
+                }));
 
-			return;
-		}
+            return;
+        }
 
 
-		Array<WeakReference<Parameter>> params = Engine::mainEngine->getAllParameters(true);
+        Array<WeakReference<Parameter>> params = Engine::mainEngine->getAllParameters(true);
 
-		dataMap.clear();
-		addressMap.clear();
+        dataMap.clear();
+        addressMap.clear();
 
-		int numSaved = 0;
-		for (auto& p : params)
-		{
-			if (!RootPresetManager::getInstance()->isControllablePresettable(p)) continue;
-			var d = p->value;
-			String add = p->getControlAddress();
-			if (!p->shouldBeSaved()) continue;
-			if (saveAllPresettables || overridenControllables.contains(add))
-			{
-				addControllableToDataMap(p);
-				numSaved++;
-			}
-		}
+        int numSaved = 0;
+        for (auto& p : params)
+        {
+            if (!RootPresetManager::getInstance()->isControllablePresettable(p)) continue;
+            var d = p->value;
+            String add = p->getControlAddress();
+            if (!p->shouldBeSaved()) continue;
+            if (saveAllPresettables || overridenControllables.contains(add))
+            {
+                addControllableToDataMap(p);
+                numSaved++;
+            }
+        }
 
-		NLOG(niceName, "Saved " << numSaved << " values.");
-	}
+        NLOG(niceName, "Saved " << numSaved << " values.");
+    }
 }
 
 
 void Preset::load(bool recursive)
 {
-	int numLoaded = 0;
-	var data = getPresetValues(recursive, Array<Controllable*>(), false, resolveParentTransitions->boolValue());
-	NamedValueSet props = data.getDynamicObject()->getProperties();
-	for (auto& p : props)
-	{
-		if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
-		{
-			if (!RootPresetManager::getInstance()->isControllablePresettable(tc)) continue;
+    int numLoaded = 0;
+    var data = getPresetValues(recursive, Array<Controllable*>(), false, resolveParentTransitions->boolValue());
+    NamedValueSet props = data.getDynamicObject()->getProperties();
+    for (auto& p : props)
+    {
+        if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
+        {
+            if (!RootPresetManager::getInstance()->isControllablePresettable(tc)) continue;
 
-			if (tc->type == Controllable::TRIGGER) ((Trigger*)tc)->trigger();
-			else ((Parameter*)tc)->setValue(p.value[0]);
+            if (tc->type == Controllable::TRIGGER) ((Trigger*)tc)->trigger();
+            else ((Parameter*)tc)->setValue(p.value[0]);
 
-			numLoaded++;
-		}
-	}
-	NLOG(niceName, "Loaded " << numLoaded << " values.");
+            numLoaded++;
+        }
+    }
+    NLOG(niceName, "Loaded " << numLoaded << " values.");
 }
 
 
 void Preset::addControllableToDataMap(Controllable* c, var forceValue)
 {
-	if (c == nullptr) return;
+    if (c == nullptr) return;
 
-	var val = c->type == Controllable::TRIGGER ? var() : forceValue.isVoid() ? ((Parameter*)c)->value : forceValue;
+    var val = c->type == Controllable::TRIGGER ? var() : forceValue.isVoid() ? ((Parameter*)c)->value : forceValue;
 
-	String add = c->getControlAddress();
+    String add = c->getControlAddress();
 
-	dataMap.set(c, val);
-	addressMap.set(add, val);
-	controllableGhostAddressMap.set(c, add);
-	lostControllables.remove(add);
-	/*if (!isMain()) */overridenControllables.addIfNotAlreadyThere(add);
+    dataMap.set(c, val);
+    if (!enabledMap.contains(c)) enabledMap.set(c, true);
+    addressMap.set(add, val);
+    controllableGhostAddressMap.set(c, add);
+    lostControllables.remove(add);
+    /*if (!isMain()) */overridenControllables.addIfNotAlreadyThere(add);
 
-	c->addControllableListener(this);
-	registerLinkedInspectable(c);
+    c->addControllableListener(this);
+    registerLinkedInspectable(c);
 }
 
 void Preset::updateControllableAddress(Controllable* c)
 {
-	if (c == nullptr) return;
+    if (c == nullptr) return;
 
-	if (controllableGhostAddressMap.contains(c))
-	{
-		String oldAdd = controllableGhostAddressMap[c];
-		var oldVal = addressMap[oldAdd];
-		removeAddressFromDataMap(oldAdd);
-		addControllableToDataMap(c, oldVal);
-	}
+    if (controllableGhostAddressMap.contains(c))
+    {
+        String oldAdd = controllableGhostAddressMap[c];
+        var oldVal = addressMap[oldAdd];
+        removeAddressFromDataMap(oldAdd);
+        addControllableToDataMap(c, oldVal);
+    }
 }
 
 void Preset::removeControllableFromDataMap(Controllable* c)
 {
-	if (c == nullptr) return;
+    if (c == nullptr) return;
 
-	String add = c->getControlAddress();
-	dataMap.remove(c);
-	transitionMap.remove(c);
-	transitionPercentMap.remove(c);
-	controllableGhostAddressMap.remove(c);
-	c->removeControllableListener(this);
-	unregisterLinkedInspectable(c);
-	addressMap.remove(add);
-	lostControllables.remove(add);
-	overridenControllables.removeAllInstancesOf(add);
+    String add = c->getControlAddress();
+    dataMap.remove(c);
+    transitionMap.remove(c);
+    transitionPercentMap.remove(c);
+    enabledMap.remove(c);
+    controllableGhostAddressMap.remove(c);
+    c->removeControllableListener(this);
+    unregisterLinkedInspectable(c);
+    addressMap.remove(add);
+    lostControllables.remove(add);
+    overridenControllables.removeAllInstancesOf(add);
 }
 
 void Preset::removeAddressFromDataMap(String address)
 {
-	if (Controllable* c = Engine::mainEngine->getControllableForAddress(address))
-	{
-		removeControllableFromDataMap(c);
-		return;
-	}
+    if (Controllable* c = Engine::mainEngine->getControllableForAddress(address))
+    {
+        removeControllableFromDataMap(c);
+        return;
+    }
 
-	controllableGhostAddressMap.removeValue(address);
-	addressMap.remove(address);
-	/* if (!isMain()) */ overridenControllables.removeAllInstancesOf(address);
+    controllableGhostAddressMap.removeValue(address);
+    addressMap.remove(address);
+    /* if (!isMain()) */ overridenControllables.removeAllInstancesOf(address);
 }
 
 void Preset::recoverLostControllables()
 {
-	HashMap<String, var> initLostControllables;
+    HashMap<String, var> initLostControllables;
 
-	HashMap<String, var>::Iterator it(lostControllables);
-	while (it.next()) initLostControllables.set(it.getKey(), it.getValue()); //copy first because recovering changes the initial hashmap
+    HashMap<String, var>::Iterator it(lostControllables);
+    while (it.next()) initLostControllables.set(it.getKey(), it.getValue()); //copy first because recovering changes the initial hashmap
 
-	HashMap<String, var>::Iterator lit(initLostControllables);
-	while (lit.next())
-	{
-		String add = lit.getKey();
-		if (Controllable* c = Engine::mainEngine->getControllableForAddress(add))
-		{
-			var lostVal = lit.getValue();
-			addControllableToDataMap(c, lostVal[0]);
-			transitionMap.set(c, (TransitionMode)(int)lostVal[1]);
-			if (lostVal.size() > 2) transitionPercentMap.set(c, (float)lostVal[2]);
-		}
-	}
+    HashMap<String, var>::Iterator lit(initLostControllables);
+    while (lit.next())
+    {
+        String add = lit.getKey();
+        if (Controllable* c = Engine::mainEngine->getControllableForAddress(add))
+        {
+            var lostVal = lit.getValue();
+            addControllableToDataMap(c, lostVal[0]);
+            transitionMap.set(c, (TransitionMode)(int)lostVal[1]);
+            if (lostVal.size() > 2) transitionPercentMap.set(c, (float)lostVal[2]);
+            if (lostVal.size() > 3) enabledMap.set(c, (bool)lostVal[3]);
+        }
+    }
 }
 
 bool Preset::isMain()
 {
-	return parentContainer == RootPresetManager::getInstance();
+    return parentContainer == RootPresetManager::getInstance();
 }
 
 bool Preset::hasPresetControllable(Controllable* c)
 {
-	return dataMap.contains(c);
+    return dataMap.contains(c);
 }
 
 void Preset::onContainerTriggerTriggered(Trigger* t)
 {
-	if (t == saveTrigger) save();
-	else if (t == loadTrigger) RootPresetManager::getInstance()->setCurrentPreset(this);
-	else if (t == sideLoadTrigger) load(true);
+    if (t == saveTrigger) save();
+    else if (t == loadTrigger) RootPresetManager::getInstance()->setCurrentPreset(this);
+    else if (t == sideLoadTrigger) load(true);
 }
 
 void Preset::onControllableFeedbackUpdate(ControllableContainer* cc, Controllable* c)
 {
-	BaseItem::onControllableFeedbackUpdate(cc, c);
+    BaseItem::onControllableFeedbackUpdate(cc, c);
 
-	if (c == transitionQuantiz)
-	{
-		Transport::Quantization q = transitionQuantiz->getValueDataAsEnum<Transport::Quantization>();
-		transitionTime->setEnabled(q == Transport::FREE);
-		numBeatBarQuantiz->setEnabled(q == Transport::BEAT || q == Transport::BAR);
-	}
+    if (c == transitionQuantiz)
+    {
+        Transport::Quantization q = transitionQuantiz->getValueDataAsEnum<Transport::Quantization>();
+        transitionTime->setEnabled(q == Transport::FREE);
+        numBeatBarQuantiz->setEnabled(q == Transport::BEAT || q == Transport::BAR);
+    }
 }
 
 void Preset::itemAdded(Preset* p)
 {
-	if (!isCurrentlyLoadingData) p->itemColor->setColor(itemColor->getColor().brighter(.3f));
+    if (!isCurrentlyLoadingData) p->itemColor->setColor(itemColor->getColor().brighter(.3f));
 }
 
 void Preset::controllableAdded(Controllable* c)
 {
-	BaseItem::controllableAdded(c);
+    BaseItem::controllableAdded(c);
 
-	if (c->parentContainer == &linkedPresetsCC)
-	{
-		if (TargetParameter* p = (TargetParameter*)c)
-		{
-			p->targetType = TargetParameter::CONTAINER;
-			p->saveValueOnly = false;
-			p->canBeDisabledByUser = true;
-			p->isRemovableByUser = true;
-			p->typesFilter.add(Preset::getTypeStringStatic());
-			p->setRootContainer(RootPresetManager::getInstance());
-		}
+    if (c->parentContainer == &linkedPresetsCC)
+    {
+        if (TargetParameter* p = (TargetParameter*)c)
+        {
+            p->targetType = TargetParameter::CONTAINER;
+            p->saveValueOnly = false;
+            p->canBeDisabledByUser = true;
+            p->isRemovableByUser = true;
+            p->typesFilter.add(Preset::getTypeStringStatic());
+            p->setRootContainer(RootPresetManager::getInstance());
+        }
 
 
-	}
+    }
 }
 
 var Preset::getJSONData(bool includeNonOverriden)
 {
-	var data = BaseItem::getJSONData(includeNonOverriden);
-	data.getDynamicObject()->setProperty("subPresets", subPresets->getJSONData());
-	data.getDynamicObject()->setProperty("linkedPresets", linkedPresetsCC.getJSONData());
-	data.getDynamicObject()->setProperty("values", getPresetValues(false, Array<Controllable*>(), true));
-	data.getDynamicObject()->setProperty("transition", transitionCC.getJSONData());
+    var data = BaseItem::getJSONData(includeNonOverriden);
+    data.getDynamicObject()->setProperty("subPresets", subPresets->getJSONData());
+    data.getDynamicObject()->setProperty("linkedPresets", linkedPresetsCC.getJSONData());
+    data.getDynamicObject()->setProperty("values", getPresetValues(false, Array<Controllable*>(), true));
+    data.getDynamicObject()->setProperty("transition", transitionCC.getJSONData());
 
-	var ignoreData;
-	for (auto& c : ignoredControllables)
-	{
-		if (c == nullptr || c.wasObjectDeleted()) continue;
-		ignoreData.append(c->getControlAddress());
-	}
-	data.getDynamicObject()->setProperty("ignores", ignoreData);
+    var ignoreData;
+    for (auto& c : ignoredControllables)
+    {
+        if (c == nullptr || c.wasObjectDeleted()) continue;
+        ignoreData.append(c->getControlAddress());
+    }
+    data.getDynamicObject()->setProperty("ignores", ignoreData);
 
-	var lostData(new DynamicObject());
-	HashMap<String, var>::Iterator lit(lostControllables);
-	while (lit.next()) lostData.getDynamicObject()->setProperty(lit.getKey(), lit.getValue());
-	data.getDynamicObject()->setProperty("lost", lostData);
+    var lostData(new DynamicObject());
+    HashMap<String, var>::Iterator lit(lostControllables);
+    while (lit.next()) lostData.getDynamicObject()->setProperty(lit.getKey(), lit.getValue());
+    data.getDynamicObject()->setProperty("lost", lostData);
 
-	return data;
+    return data;
 }
 
 void Preset::loadJSONDataItemInternal(var data)
 {
-	subPresets->loadJSONData(data["subPresets"]);
-	linkedPresetsCC.loadJSONData(data["linkedPresets"], true);
-	transitionCC.loadJSONData(data["transition"], true);
+    subPresets->loadJSONData(data["subPresets"]);
+    linkedPresetsCC.loadJSONData(data["linkedPresets"], true);
+    transitionCC.loadJSONData(data["transition"], true);
 
 
-	var values = data["values"];
-	if (values.isObject())
-	{
-		NamedValueSet params = values.getDynamicObject()->getProperties();
-		for (auto& p : params)
-		{
-			if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
-			{
-				addControllableToDataMap(tc, p.value.isArray() ? p.value[0] : p.value);
-				if (p.value.size() > 1) transitionMap.set(tc, (TransitionMode)(int)p.value[1]);
-				if (p.value.size() > 2) transitionPercentMap.set(tc, (float)p.value[2]);
-			}
-			else
-			{
-				lostControllables.set(p.name.toString(), p.value);
-			}
-		}
-	}
+    var values = data["values"];
+    if (values.isObject())
+    {
+        NamedValueSet params = values.getDynamicObject()->getProperties();
+        for (auto& p : params)
+        {
+            if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(p.name.toString())))
+            {
+                addControllableToDataMap(tc, p.value.isArray() ? p.value[0] : p.value);
+                if (p.value.size() > 1) transitionMap.set(tc, (TransitionMode)(int)p.value[1]);
+                if (p.value.size() > 2) transitionPercentMap.set(tc, (float)p.value[2]);
+                if (p.value.size() > 3) enabledMap.set(tc, (bool)p.value[3]);
+            }
+            else
+            {
+                lostControllables.set(p.name.toString(), p.value);
+            }
+        }
+    }
 
-	var ignoreData = data.getProperty("ignores", var());
-	for (int i = 0; i < ignoreData.size(); i++)
-	{
-		if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(ignoreData[i].toString())))
-		{
-			ignoredControllables.add(tc);
-		}
-	}
+    var ignoreData = data.getProperty("ignores", var());
+    for (int i = 0; i < ignoreData.size(); i++)
+    {
+        if (Controllable* tc = dynamic_cast<Controllable*>(Engine::mainEngine->getControllableForAddress(ignoreData[i].toString())))
+        {
+            ignoredControllables.add(tc);
+        }
+    }
 
-	var lostData = data.getProperty("lost", var());
-	if (lostData.isObject())
-	{
-		NamedValueSet lData = lostData.getDynamicObject()->getProperties();
-		for (auto& ld : lData)
-		{
-			lostControllables.set(ld.name.toString(), ld.value);
-		}
-	}
+    var lostData = data.getProperty("lost", var());
+    if (lostData.isObject())
+    {
+        NamedValueSet lData = lostData.getDynamicObject()->getProperties();
+        for (auto& ld : lData)
+        {
+            lostControllables.set(ld.name.toString(), ld.value);
+        }
+    }
 }
 
 void Preset::controllableControlAddressChanged(Controllable* c)
 {
-	BaseItem::controllableControlAddressChanged(c);
-	bool isAttachedToRoot = ControllableUtil::findParentAs<Engine>(c) != nullptr;
-	if (isAttachedToRoot && dataMap.contains(c)) updateControllableAddress(c);
-	else
-	{
-		//got detached, meaning it will be surely removed
-		if (dataMap.contains(c))
-		{
-			c->removeControllableListener(this);
+    BaseItem::controllableControlAddressChanged(c);
+    bool isAttachedToRoot = ControllableUtil::findParentAs<Engine>(c) != nullptr;
+    if (isAttachedToRoot && dataMap.contains(c)) updateControllableAddress(c);
+    else
+    {
+        //got detached, meaning it will be surely removed
+        if (dataMap.contains(c))
+        {
+            c->removeControllableListener(this);
 
-			var lostVal;
-			lostVal.append(dataMap[c]);
-			lostVal.append(transitionMap[c]);
-			if (transitionPercentMap.contains(c)) lostVal.append(transitionPercentMap[c]);
-			dataMap.remove(c);
+            var lostVal;
+            lostVal.append(dataMap[c]);
+            lostVal.append(transitionMap[c]);
+            if (transitionPercentMap.contains(c)) lostVal.append(transitionPercentMap[c]);
+            else lostVal.append(0);
+            lostVal.append(enabledMap.contains(c) ? enabledMap[c] : true);
+            dataMap.remove(c);
 
-			lostControllables.set(controllableGhostAddressMap[c], lostVal);
-			controllableGhostAddressMap.remove(c);
-		}
-	}
+            lostControllables.set(controllableGhostAddressMap[c], lostVal);
+            controllableGhostAddressMap.remove(c);
+        }
+    }
 }
 
 void Preset::childStructureChanged(ControllableContainer* cc)
 {
-	if (cc != Engine::mainEngine) BaseItem::childStructureChanged(cc);
+    if (cc != Engine::mainEngine) BaseItem::childStructureChanged(cc);
 
-	if (Engine::mainEngine->isLoadingFile) return;
-	recoverLostControllables();
+    if (Engine::mainEngine->isLoadingFile) return;
+    recoverLostControllables();
 }
 
 void Preset::endLoadFile()
 {
-	Engine::mainEngine->removeEngineListener(this);
-	recoverLostControllables();
+    Engine::mainEngine->removeEngineListener(this);
+    recoverLostControllables();
 }
 
 InspectableEditor* Preset::getEditorInternal(bool isRoot, Array<Inspectable*> controllables)
 {
-	return new PresetEditor(this, isRoot);
+    return new PresetEditor(this, isRoot);
 }
