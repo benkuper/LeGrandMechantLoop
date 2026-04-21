@@ -510,6 +510,8 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
                 if (hm == HIT_RESET)
                 {
                     sn->jumpGhostSample = sn->playingSample;
+                    sn->jumpGhostGain = sn->adsr.getOutput();
+                    sn->adsr.reset();
                     sn->playingSample = 0;
                     sn->rtPitchReadSample = 0;
                 }
@@ -519,6 +521,8 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
                 double shift = MidiMessage::getMidiNoteInHertz(midiNoteNumber) / MidiMessage::getMidiNoteInHertz(closestNote);
                 samplerNotes[midiNoteNumber]->setAutoKey(samplerNotes[closestNote], shift);
 
+                sn->jumpGhostGain = sn->adsr.getOutput();
+                sn->adsr.reset();
                 sn->velocity = velocity;
                 sn->adsr.gate(1);
                 lastPlayedNote = midiNoteNumber;
@@ -543,7 +547,9 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
         {
             if (hm == HIT_RESET)
             {
-                sn->jumpGhostSample = -1;
+                sn->jumpGhostSample = sn->playingSample;
+                sn->jumpGhostGain = sn->adsr.getOutput();
+                sn->adsr.reset();
                 sn->playingSample = 0;
             }
         }
@@ -551,7 +557,12 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
         {
             if (pm == HIT_LOOP || pm == HIT_ONESHOT)
             {
-                if (sn->adsr.getState() != CurvedADSR::env_idle) sn->jumpGhostSample = sn->playingSample;
+                if (sn->adsr.getState() != CurvedADSR::env_idle)
+                {
+                    sn->jumpGhostSample = sn->playingSample;
+                    sn->jumpGhostGain = sn->adsr.getOutput();
+                }
+                sn->adsr.reset();
                 sn->playingSample = 0;
                 sn->oneShotted = false;
             }
@@ -913,17 +924,15 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
                 const int ghostFirstPart = jmax(0, jmin(blockSize, bufNumSamples - s->jumpGhostSample));
                 const int playFirstPart = jmax(0, jmin(blockSize, bufNumSamples - s->playingSample));
 
+                float ghostGainStart = s->jumpGhostGain;
+
                 for (int j = 0; j < buffer.getNumChannels(); j++)
                 {
                     tmpNoteBuffer.clear(j, 0, blockSize);
-                    if (ghostFirstPart > 0)
-                    {
-                        tmpNoteBuffer.copyFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->jumpGhostSample), ghostFirstPart, 1, 1.0f - ((float)ghostFirstPart / blockSize));
-                    }
                     
                     if (playFirstPart > 0)
                     {
-                        tmpNoteBuffer.addFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->playingSample), playFirstPart, 0, (float)playFirstPart / blockSize);
+                        tmpNoteBuffer.copyFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->playingSample), playFirstPart, 0, (float)playFirstPart / blockSize);
                     }
                     
                     if (playFirstPart < blockSize)
@@ -935,6 +944,16 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
                         }
                     }
                 }
+                
+                s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
+
+                for (int j = 0; j < buffer.getNumChannels(); j++)
+                {
+                    if (ghostFirstPart > 0)
+                    {
+                        tmpNoteBuffer.addFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->jumpGhostSample), ghostFirstPart, ghostGainStart, ghostGainStart * (1.0f - ((float)ghostFirstPart / blockSize)));
+                    }
+                }
 
                 s->jumpGhostSample = -1;
             }
@@ -944,15 +963,18 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
                const int firstPart = jmax(0, jmin(blockSize, bufNumSamples - targetReadSample));
                const int secondPart = blockSize - firstPart;
                
+
                for (int j = 0; j < buffer.getNumChannels(); j++)
                {
                    tmpNoteBuffer.clear(j, 0, blockSize);
                
+
                    if (pm == HIT_ONESHOT || s->isProxyNote())
                    {
                        if (firstPart > 0)
                            tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
                
+
                        if (secondPart > 0 && firstPart > 0)
                        {
                            const int fadeLen = jmin(64, firstPart);
@@ -964,6 +986,7 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
                        if (firstPart > 0)
                            tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
                
+
                        if (secondPart > 0)
                            tmpNoteBuffer.copyFrom(j, firstPart, *targetBuffer, j, 0, secondPart);
                    }
@@ -1217,6 +1240,7 @@ void SamplerNode::SamplerNote::reset()
     adsr.gate(0);
     setAutoKey(nullptr);
     jumpGhostSample = -1;
+    jumpGhostGain = 0.0f;
     playingSample = 0;
     oneShotted = false;
     state->setValueWithData(hasContent() ? NoteState::FILLED : NoteState::EMPTY);

@@ -114,6 +114,7 @@ public:
         EnumParameter* state;
         int playingSample = 0;
         int jumpGhostSample = -1;
+        float jumpGhostGain = 0.0f;
         float prevVelocity = 0;
         float velocity = 0;
         CurvedADSR adsr;
@@ -172,7 +173,7 @@ public:
     virtual void handleNoteOn(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
     virtual void handleNoteOff(MidiKeyboardState* source, int midiChannel, int midiNoteNumber, float velocity) override;
 
-    virtual int getFadeNumSamples(int fadeMS);
+    virtual int getFadeNumSamples(int fadeMS); //for ring buffer fade
 
     void updateLibraries(bool loadAfter = true);
     void updateBank();
@@ -186,6 +187,7 @@ public:
 
     void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
+    //void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
 
     DECLARE_TYPE("Sampler");
