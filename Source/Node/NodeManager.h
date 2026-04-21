@@ -40,6 +40,7 @@ public:
 	Trigger* clearLastManipTrack;
 	EnumParameter* currentLooperEnum;
 	Trigger* recCurrentLooper;
+    Trigger* clearCurrentLooper;
 	Trigger* retroRecCurrentLooper;
 	Trigger* playAllCurrentLooper;
 	Trigger* stopAllCurrentLooper;

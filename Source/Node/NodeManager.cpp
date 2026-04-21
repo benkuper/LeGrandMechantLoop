@@ -42,7 +42,8 @@ NodeManager::NodeManager(AudioProcessorGraph* graph,
 	clearLastManipTrack = looperControlCC.addTrigger("Clear Last Manip Track", "This will clear the last manipulated track, in any looper");
 	currentLooperEnum = looperControlCC.addEnumParameter("Current Looper", "This is the current looper selected in the UI");
 	recCurrentLooper = looperControlCC.addTrigger("Rec Current Looper", "This will record the current looper");
-	retroRecCurrentLooper = looperControlCC.addTrigger("Retro Rec Current Looper", "This will retro record the current looper");
+    clearCurrentLooper = looperControlCC.addTrigger("Clear Current Looper", "This will clear the current looper's last track");
+    retroRecCurrentLooper = looperControlCC.addTrigger("Retro Rec Current Looper", "This will retro record the current looper");
 	playAllCurrentLooper = looperControlCC.addTrigger("Play All Current Looper", "This will play all tracks of the current looper");
 	stopAllCurrentLooper = looperControlCC.addTrigger("Stop All Current Looper", "This will stop all tracks of the current looper");
 	clearAllCurrentLooper = looperControlCC.addTrigger("Clear All Current Looper", "This will clear all tracks of the current looper");
@@ -256,7 +257,13 @@ void NodeManager::onControllableFeedbackUpdate(ControllableContainer* cc, Contro
 		{
 			looper->recTrigger->trigger();
 		}
-	}
+	}else if (c == clearCurrentLooper)
+    {
+        if (LooperNode* looper = dynamic_cast<LooperNode*>(getItemWithName(currentLooperEnum->getValue())))
+        {
+            looper->clearCurrentTrigger->trigger();
+        }
+    }
 	else if (c == retroRecCurrentLooper)
 	{
 		if (LooperNode* looper = dynamic_cast<LooperNode*>(getItemWithName(currentLooperEnum->getValue())))

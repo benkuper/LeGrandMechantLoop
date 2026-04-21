@@ -47,7 +47,6 @@ void SamplerNodeViewUI::controllableFeedbackUpdateInternal(Controllable* c)
 	NodeViewUI::controllableFeedbackUpdateInternal(c);
 	if (c->parentContainer == &node->noteStatesCC)
 	{
-		LOG("State changed for note");
 		midiComp.repaint();
 	}
 }
