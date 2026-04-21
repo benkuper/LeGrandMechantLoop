@@ -909,10 +909,31 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 
             if (s->jumpGhostSample != -1 && s->jumpGhostSample != s->playingSample && s->jumpGhostSample < s->buffer.getNumSamples())
             {
+                const int bufNumSamples = targetBuffer->getNumSamples();
+                const int ghostFirstPart = jmax(0, jmin(blockSize, bufNumSamples - s->jumpGhostSample));
+                const int playFirstPart = jmax(0, jmin(blockSize, bufNumSamples - s->playingSample));
+
                 for (int j = 0; j < buffer.getNumChannels(); j++)
                 {
-                    tmpNoteBuffer.copyFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->jumpGhostSample), blockSize, 1, 0);
-                    tmpNoteBuffer.addFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->playingSample), blockSize, 0, 1);
+                    tmpNoteBuffer.clear(j, 0, blockSize);
+                    if (ghostFirstPart > 0)
+                    {
+                        tmpNoteBuffer.copyFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->jumpGhostSample), ghostFirstPart, 1, 1.0f - ((float)ghostFirstPart / blockSize));
+                    }
+                    
+                    if (playFirstPart > 0)
+                    {
+                        tmpNoteBuffer.addFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->playingSample), playFirstPart, 0, (float)playFirstPart / blockSize);
+                    }
+                    
+                    if (playFirstPart < blockSize)
+                    {
+                        const int playSecondPart = blockSize - playFirstPart;
+                        if (pm != HIT_ONESHOT && !s->isProxyNote())
+                        {
+                            tmpNoteBuffer.addFromWithRamp(j, playFirstPart, targetBuffer->getReadPointer(j, 0), playSecondPart, (float)playFirstPart / blockSize, 1);
+                        }
+                    }
                 }
 
                 s->jumpGhostSample = -1;
