@@ -66,8 +66,8 @@ public:
 
     void clearItem() override;
    
-    virtual void setSourceNode(Node* node);
-    virtual void setDestNode(Node* node);
+    virtual void setSourceNode(Node* node) override;
+    virtual void setDestNode(Node* node) override;
 
     void handleNodesUpdated() override;
 

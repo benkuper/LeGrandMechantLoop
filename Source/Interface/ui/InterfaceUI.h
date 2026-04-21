@@ -19,7 +19,7 @@ public:
     std::unique_ptr<TriggerImageUI> inActivityUI;
     std::unique_ptr<TriggerImageUI> outActivityUI;
 
-    void paintOverChildren(Graphics& g);
+    void paintOverChildren(Graphics& g) override;
     virtual void resizedHeader(Rectangle<int>& r) override;
     virtual void mouseDown(const MouseEvent& e) override;
 };

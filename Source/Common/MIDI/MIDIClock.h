@@ -52,7 +52,7 @@ private:
 
      void bpmChanged () override;
      virtual void beatChanged(bool isNewBar); //this allow for event after both bar and beat have been updated
-     virtual void playStateChanged(bool isPlaying, bool forceRestart);
+    virtual void playStateChanged(bool isPlaying, bool forceRestart) override;
 
     void addClockIfNeeded(double & timeToNextMessage);
     int appendCurrentSPP();

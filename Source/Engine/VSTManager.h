@@ -80,8 +80,8 @@ public:
 	VSTPluginParameterUI* createVSTParamUI();
 	ControllableUI* createDefaultUI(Array<Controllable*> controllables = {}) override;
 
-	var getJSONDataInternal();
-	void loadJSONDataInternal(var data);
+	var getJSONDataInternal() override;
+	void loadJSONDataInternal(var data) override;
 };
 
 class DescriptionSorter
