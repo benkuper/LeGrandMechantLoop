@@ -301,9 +301,9 @@ void PresetEditor::buildValuesCC()
         if (c->type != Controllable::TRIGGER) ((Parameter*)c)->setValue(it.getValue());
         String s = oc->niceName;
         ControllableContainer* pc = oc->parentContainer;
-        while (pc != nullptr && pc != RootNodeManager::getInstance())
+        while (pc != nullptr && pc != Engine::mainEngine)
         {
-            if (dynamic_cast<NodeManager*>(pc))
+            if (dynamic_cast<NodeManager*>(pc) || dynamic_cast<PresetManager*>(pc))
             {
                 pc = pc->parentContainer;
                 continue;
@@ -434,7 +434,6 @@ PresetValueEditor::PresetValueEditor(Preset* p, Controllable* c, Controllable* s
     transitionMode("Transition Mode"),
     transitionPercent("Transition Percent", "Transition Percent", 0, 0, 1)
 {
-    minLabelWidth = 320;
 
     //add +1 to avoid id -1
     transitionMode.addItem("Default", Preset::DEFAULT + 1);
