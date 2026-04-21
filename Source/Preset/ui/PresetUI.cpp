@@ -303,7 +303,7 @@ void PresetEditor::buildValuesCC()
         ControllableContainer* pc = oc->parentContainer;
         while (pc != nullptr && pc != Engine::mainEngine)
         {
-            if (dynamic_cast<NodeManager*>(pc) == nullptr || dynamic_cast<PresetManager*>(pc) == nullptr)
+            if (dynamic_cast<NodeManager*>(pc) != nullptr || dynamic_cast<PresetManager*>(pc) != nullptr)
             {
                 
                 pc = pc->parentContainer;
