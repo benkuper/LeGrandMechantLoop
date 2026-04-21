@@ -242,7 +242,7 @@ void Preset::load(bool recursive)
             numLoaded++;
         }
     }
-    NLOG(niceName, "Loaded " << numLoaded << " values.");
+    if(RootPresetManager::getInstance()->logPresets->boolValue()) NLOG(niceName, "Loaded " << numLoaded << " values.");
 }
 
 

@@ -32,6 +32,7 @@ public:
     RootPresetManager();
     ~RootPresetManager();
 
+    BoolParameter* logPresets;
     Trigger* saveCurrentTrigger;
     Trigger* loadCurrentTrigger;
     Trigger* nextPresetTrigger;

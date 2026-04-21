@@ -49,6 +49,8 @@ RootPresetManager::RootPresetManager() :
 	prevPreset(nullptr),
 	currentPreset(nullptr)
 {
+    logPresets = addBoolParameter("Log Presets", "Log preset changes and loading in the console, for debugging purposes", false);
+    
 	saveCurrentTrigger = addTrigger("Save Current", "Save state to current preset");
 	loadCurrentTrigger = addTrigger("Load Current", "Load state to current preset");
 
@@ -429,6 +431,12 @@ void RootPresetManager::run()
 void RootPresetManager::process(float progression, float weight, bool isStart)
 {
 	HashMap<WeakReference<Controllable>, var>::Iterator it(initTargetMap);
+
+    if(logPresets->boolValue() && currentPreset != nullptr)
+    {
+        if(isStart) NLOG(currentPreset->niceName, "Preset Start");
+        else if(progression == 1) NLOG(currentPreset->niceName, "Preset End");
+    }
 
 	while (it.next())
 	{
