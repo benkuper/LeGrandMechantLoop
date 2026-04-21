@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-	MIDIInputNode.cpp
-	Created: 15 Nov 2020 8:42:29am
-	Author:  bkupe
+    MIDIInputNode.cpp
+    Created: 15 Nov 2020 8:42:29am
+    Author:  bkupe
 
   ==============================================================================
 */
@@ -11,11 +11,11 @@
 #include "Node/NodeIncludes.h"
 
 MIDIInputNode::MIDIInputNode(var params) :
-	Node(getTypeString(), params, false, false, false, false, true, false)
+    Node(getTypeString(), params, false, false, false, false, true, false)
 {
-	setMIDIIO(false, true);
+    setMIDIIO(false, true);
 
-	viewUISize->setPoint(200, 100);
+    viewUISize->setPoint(200, 100);
 }
 
 MIDIInputNode::~MIDIInputNode()
@@ -25,14 +25,17 @@ MIDIInputNode::~MIDIInputNode()
 
 void MIDIInputNode::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	midiMessages.clear();
-	Node::processBlock(buffer, midiMessages);
+    midiMessages.clear();
+    
+    midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
+    
+    Node::processBlock(buffer, midiMessages);
 }
 
 MIDIOutputNode::MIDIOutputNode(var params) :
-	Node(getTypeString(), params, false, false, false, false, false, true)
+    Node(getTypeString(), params, false, false, false, false, false, true)
 {
-	setMIDIIO(true, false);
+    setMIDIIO(true, false);
 }
 
 MIDIOutputNode::~MIDIOutputNode()
@@ -41,10 +44,10 @@ MIDIOutputNode::~MIDIOutputNode()
 
 void MIDIOutputNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	if (midiMessages.isEmpty()) return;
-	if (midiInterface == nullptr) return;
+    if (midiMessages.isEmpty()) return;
+    if (midiInterface == nullptr) return;
 
-	midiInterface->sendMidiBuffer(midiMessages);
+    midiInterface->sendMidiBuffer(midiMessages);
 
-	midiMessages.clear();
+    midiMessages.clear();
 }
