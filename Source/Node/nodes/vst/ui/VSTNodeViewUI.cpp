@@ -174,6 +174,7 @@ void PluginWindow::setVSTEditor(AudioPluginInstance* vstInstance)
 	{
 		setContentOwned(vstInstance->createEditor(), true);
 		setVisible(true);
+        setAlwaysOnTop(true);
 		toFront(true);
 		if (getX() < 0 || getY() < 0)
 		{
