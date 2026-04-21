@@ -8,7 +8,6 @@
   ==============================================================================
 */
 #include "Node/NodeIncludes.h"
-#include "NodeConnection.h"
 
 NodeConnection::NodeConnection(NodeManager* nodeManager, Node* sourceNode, Node* destNode, ConnectionType ct) :
 	BaseItem("Connection", false, false),
@@ -21,6 +20,8 @@ NodeConnection::NodeConnection(NodeManager* nodeManager, Node* sourceNode, Node*
 {
 	setSourceNode(sourceNode);
 	setDestNode(destNode);
+    
+    permanent = addBoolParameter("Permanent", "If checked, this connection won't be automatically removed when loading connection presets", false);
 }
 
 NodeConnection::~NodeConnection()

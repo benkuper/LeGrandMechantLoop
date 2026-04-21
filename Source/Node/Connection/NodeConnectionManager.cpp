@@ -163,7 +163,7 @@ void NodeConnectionManager::loadJSONDataInternal(var data)
 
 	// Add new connections
 	Array<NodeConnection*> toRemove;
-	for (auto& c : items) if (!newConnections.contains(c)) toRemove.add(c);
+	for (auto& c : items) if (!newConnections.contains(c) && !c->permanent->boolValue()) toRemove.add(c);
 
 
 	//NLOG(niceName, "Removing " << toRemove.size() << " connections");

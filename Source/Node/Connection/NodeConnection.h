@@ -27,6 +27,7 @@ public:
     ConnectionType connectionType;
     Node * sourceNode;
     Node * destNode;
+    BoolParameter* permanent;
 
     float activityLevel;
 

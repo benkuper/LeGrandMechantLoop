@@ -21,6 +21,9 @@ NodeAudioConnectionEditor::NodeAudioConnectionEditor(NodeAudioConnection* connec
 	offOutByPlusOneBT("Out +1"),
 	offOutByMinusOneBT("Out -1")
 {
+    
+    permanentUI.reset(connection->permanent->createToggle());
+
 	buildSlots();
 	buildConnections();
 
@@ -28,6 +31,7 @@ NodeAudioConnectionEditor::NodeAudioConnectionEditor(NodeAudioConnection* connec
 	removeMouseListener(this);
 	addMouseListener(this, true);
 	setDisableInternalMouseEvents(true);
+    
 
 	addAndMakeVisible(removeAllConnectionsBT);
 	addAndMakeVisible(connectAllParallelBT);
@@ -36,6 +40,8 @@ NodeAudioConnectionEditor::NodeAudioConnectionEditor(NodeAudioConnection* connec
 	addAndMakeVisible(offInByMinusOneBT);
 	addAndMakeVisible(offOutByPlusOneBT);
 	addAndMakeVisible(offOutByMinusOneBT);
+    addAndMakeVisible(permanentUI.get());
+    
 
 	removeAllConnectionsBT.addListener(this);
 	connectAllParallelBT.addListener(this);
@@ -56,6 +62,7 @@ NodeAudioConnectionEditor::~NodeAudioConnectionEditor()
 void NodeAudioConnectionEditor::resizedInternalContent(Rectangle<int>& r)
 {
 	toolsRect = r.removeFromTop(30).reduced(4);
+    permanentUI->setBounds(toolsRect.removeFromRight(80).reduced(2));
 	removeAllConnectionsBT.setBounds(toolsRect.removeFromLeft(50));
 	connectAllParallelBT.setBounds(toolsRect.removeFromLeft(50));
 	connectSameNameBT.setBounds(toolsRect.removeFromLeft(50));

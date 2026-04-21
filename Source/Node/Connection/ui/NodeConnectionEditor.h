@@ -28,6 +28,7 @@ public:
 	TextButton offInByMinusOneBT;
 	TextButton offOutByPlusOneBT;
 	TextButton offOutByMinusOneBT;
+    std::unique_ptr<BoolToggleUI> permanentUI;
 
 	void resizedInternalContent(Rectangle<int>& r) override;
 
