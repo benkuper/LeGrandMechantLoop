@@ -510,7 +510,9 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
                 if (hm == HIT_RESET)
                 {
                     sn->jumpGhostSample = sn->playingSample;
-                    sn->jumpGhostGain = sn->adsr.getOutput();
+                    sn->jumpGhostGain = sn->adsr.getOutput() * sn->velocity;
+                    sn->jumpGhostFadeTotal = jmax(1, (int)(AudioManager::getInstance()->currentSampleRate * 0.02f));
+                    sn->jumpGhostFadeRemaining = sn->jumpGhostFadeTotal;
                     sn->adsr.reset();
                     sn->playingSample = 0;
                     sn->rtPitchReadSample = 0;
@@ -521,7 +523,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
                 double shift = MidiMessage::getMidiNoteInHertz(midiNoteNumber) / MidiMessage::getMidiNoteInHertz(closestNote);
                 samplerNotes[midiNoteNumber]->setAutoKey(samplerNotes[closestNote], shift);
 
-                sn->jumpGhostGain = sn->adsr.getOutput();
+                sn->jumpGhostGain = sn->adsr.getOutput() * sn->velocity;
                 sn->adsr.reset();
                 sn->velocity = velocity;
                 sn->adsr.gate(1);
@@ -548,7 +550,9 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
             if (hm == HIT_RESET)
             {
                 sn->jumpGhostSample = sn->playingSample;
-                sn->jumpGhostGain = sn->adsr.getOutput();
+                sn->jumpGhostGain = sn->adsr.getOutput() * sn->velocity;
+                sn->jumpGhostFadeTotal = jmax(1, (int)(AudioManager::getInstance()->currentSampleRate * 0.02f));
+                sn->jumpGhostFadeRemaining = sn->jumpGhostFadeTotal;
                 sn->adsr.reset();
                 sn->playingSample = 0;
             }
@@ -560,7 +564,9 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
                 if (sn->adsr.getState() != CurvedADSR::env_idle)
                 {
                     sn->jumpGhostSample = sn->playingSample;
-                    sn->jumpGhostGain = sn->adsr.getOutput();
+                    sn->jumpGhostGain = sn->adsr.getOutput() * sn->velocity;
+                    sn->jumpGhostFadeTotal = jmax(1, (int)(AudioManager::getInstance()->currentSampleRate * 0.02f));
+                    sn->jumpGhostFadeRemaining = sn->jumpGhostFadeTotal;
                 }
                 sn->adsr.reset();
                 sn->playingSample = 0;
@@ -868,12 +874,6 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
         }
 
 
-        if (pm == HIT_ONESHOT && s->oneShotted)
-        {
-            s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
-            continue;
-        }
-
         if (pm != HIT_ONESHOT || !s->oneShotted)
         {
             AudioSampleBuffer* targetBuffer = &s->buffer;
@@ -881,7 +881,6 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
 
             if (s->isProxyNote())
             {
-
                 AudioBuffer<float> tmpBuffer(s->autoKeyFromNote->buffer.getNumChannels(), blockSize);
                 auto readPointers = tmpBuffer.getArrayOfReadPointers();
 
@@ -905,7 +904,6 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
                     if (pm == HIT_ONESHOT && s->playingSample + blockSize >= sourceNumSamples)
                     {
                         s->oneShotted = true;
-                        s->jumpGhostSample = -1;
                         s->playingSample = 0;
                         s->state->setValueWithData(s->hasContent() ? NoteState::FILLED : NoteState::EMPTY);
                         break;
@@ -918,106 +916,101 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
                 targetReadSample = 0;
             }
 
-            if (s->jumpGhostSample != -1 && s->jumpGhostSample != s->playingSample && s->jumpGhostSample < s->buffer.getNumSamples())
+            // --- 1. NORMAL PROCESSING ---
+            if (pm == HIT_ONESHOT && s->oneShotted)
+            {
+                // Process release tail silently so the ADSR finishes correctly
+                tmpNoteBuffer.clear();
+                s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
+            }
+            else
             {
                 const int bufNumSamples = targetBuffer->getNumSamples();
-                const int ghostFirstPart = jmax(0, jmin(blockSize, bufNumSamples - s->jumpGhostSample));
-                const int playFirstPart = jmax(0, jmin(blockSize, bufNumSamples - s->playingSample));
-
-                float ghostGainStart = s->jumpGhostGain;
-
+                const int firstPart = jmax(0, jmin(blockSize, bufNumSamples - targetReadSample));
+                const int secondPart = blockSize - firstPart;
+                
                 for (int j = 0; j < buffer.getNumChannels(); j++)
                 {
                     tmpNoteBuffer.clear(j, 0, blockSize);
                     
-                    if (playFirstPart > 0)
+                    if (pm == HIT_ONESHOT || s->isProxyNote())
                     {
-                        tmpNoteBuffer.copyFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->playingSample), playFirstPart, 0, (float)playFirstPart / blockSize);
-                    }
-                    
-                    if (playFirstPart < blockSize)
-                    {
-                        const int playSecondPart = blockSize - playFirstPart;
-                        if (pm != HIT_ONESHOT && !s->isProxyNote())
+                        if (firstPart > 0)
+                            tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
+                        
+                        if (secondPart > 0 && firstPart > 0)
                         {
-                            tmpNoteBuffer.addFromWithRamp(j, playFirstPart, targetBuffer->getReadPointer(j, 0), playSecondPart, (float)playFirstPart / blockSize, 1);
+                            const int fadeLen = jmin(64, firstPart);
+                            tmpNoteBuffer.applyGainRamp(j, firstPart - fadeLen, fadeLen, 1.0f, 0.0f);
                         }
                     }
-                }
-                
-                s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
-
-                for (int j = 0; j < buffer.getNumChannels(); j++)
-                {
-                    if (ghostFirstPart > 0)
+                    else
                     {
-                        tmpNoteBuffer.addFromWithRamp(j, 0, targetBuffer->getReadPointer(j, s->jumpGhostSample), ghostFirstPart, ghostGainStart, ghostGainStart * (1.0f - ((float)ghostFirstPart / blockSize)));
+                        if (firstPart > 0)
+                            tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
+                        
+                        if (secondPart > 0)
+                            tmpNoteBuffer.copyFrom(j, firstPart, *targetBuffer, j, 0, secondPart);
                     }
                 }
 
-                s->jumpGhostSample = -1;
-            }
-            else
-            {
-               const int bufNumSamples = targetBuffer->getNumSamples();
-               const int firstPart = jmax(0, jmin(blockSize, bufNumSamples - targetReadSample));
-               const int secondPart = blockSize - firstPart;
-               
-
-               for (int j = 0; j < buffer.getNumChannels(); j++)
-               {
-                   tmpNoteBuffer.clear(j, 0, blockSize);
-               
-
-                   if (pm == HIT_ONESHOT || s->isProxyNote())
-                   {
-                       if (firstPart > 0)
-                           tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
-               
-
-                       if (secondPart > 0 && firstPart > 0)
-                       {
-                           const int fadeLen = jmin(64, firstPart);
-                           tmpNoteBuffer.applyGainRamp(j, firstPart - fadeLen, fadeLen, 1.0f, 0.0f);
-                       }
-                   }
-                   else
-                   {
-                       if (firstPart > 0)
-                           tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
-               
-
-                       if (secondPart > 0)
-                           tmpNoteBuffer.copyFrom(j, firstPart, *targetBuffer, j, 0, secondPart);
-                   }
-               }
-            }
-
-            s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
-            for (int j = 0; j < buffer.getNumChannels(); j++)
-            {
-                buffer.addFromWithRamp(j, 0, tmpNoteBuffer.getReadPointer(j), blockSize, s->prevVelocity, s->velocity);
-            }
-
-            s->prevVelocity = s->velocity;
-
-            s->playingSample += blockSize;
-
-            int numSamplesToCheck = s->isProxyNote() ? s->autoKeyFromNote->buffer.getNumSamples()
-                                                     : targetBuffer->getNumSamples();
-            
-            if (s->playingSample >= numSamplesToCheck)
-            {
-                if (pm == HIT_ONESHOT || s->isProxyNote())
+                s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
+                for (int j = 0; j < buffer.getNumChannels(); j++)
                 {
-                    s->oneShotted = true;
-                    s->jumpGhostSample = -1;
-                    s->adsr.gate(0);
-                    s->playingSample = 0;
+                    buffer.addFromWithRamp(j, 0, tmpNoteBuffer.getReadPointer(j), blockSize, s->prevVelocity, s->velocity);
                 }
-                else
+
+                s->prevVelocity = s->velocity;
+                s->playingSample += blockSize;
+
+                int numSamplesToCheck = s->isProxyNote() ? s->autoKeyFromNote->buffer.getNumSamples()
+                                                         : targetBuffer->getNumSamples();
+                
+                if (s->playingSample >= numSamplesToCheck)
                 {
-                    s->playingSample %= numSamplesToCheck;
+                    if (pm == HIT_ONESHOT || s->isProxyNote())
+                    {
+                        s->oneShotted = true;
+                        s->adsr.gate(0);
+                        s->playingSample = 0;
+                    }
+                    else
+                    {
+                        s->playingSample %= numSamplesToCheck;
+                    }
+                }
+            }
+
+            // --- 2. INDEPENDENT GHOST FADE LOGIC ---
+            // Process the fading tail directly into the main buffer (bypassing the new velocity ramp)
+            if (!s->isProxyNote() && s->jumpGhostSample != -1 && s->jumpGhostFadeRemaining > 0)
+            {
+                const int bufNumSamples = s->buffer.getNumSamples();
+                const int ghostFirstPart = jmax(0, jmin(blockSize, bufNumSamples - s->jumpGhostSample));
+                int processSamples = jmin(ghostFirstPart, s->jumpGhostFadeRemaining);
+
+                if (processSamples > 0)
+                {
+                    float gainStart = s->jumpGhostGain * ((float)s->jumpGhostFadeRemaining / s->jumpGhostFadeTotal);
+                    float gainEnd   = s->jumpGhostGain * ((float)(s->jumpGhostFadeRemaining - processSamples) / s->jumpGhostFadeTotal);
+
+                    // Prevent click if the sample intrinsically ends before the 20ms fade finishes
+                    if (s->jumpGhostSample + processSamples >= bufNumSamples)
+                        gainEnd = 0.0f;
+
+                    for (int j = 0; j < buffer.getNumChannels(); j++)
+                    {
+                        buffer.addFromWithRamp(j, 0, s->buffer.getReadPointer(j, s->jumpGhostSample), processSamples, gainStart, gainEnd);
+                    }
+
+                    s->jumpGhostSample += processSamples;
+                    s->jumpGhostFadeRemaining -= processSamples;
+                }
+
+                // Clean up ghost when fade completes or sample ends
+                if (s->jumpGhostFadeRemaining <= 0 || s->jumpGhostSample >= bufNumSamples)
+                {
+                    s->jumpGhostSample = -1;
                 }
             }
         }
@@ -1241,6 +1234,8 @@ void SamplerNode::SamplerNote::reset()
     setAutoKey(nullptr);
     jumpGhostSample = -1;
     jumpGhostGain = 0.0f;
+    jumpGhostFadeTotal = 0;
+    jumpGhostFadeRemaining = 0;
     playingSample = 0;
     oneShotted = false;
     state->setValueWithData(hasContent() ? NoteState::FILLED : NoteState::EMPTY);

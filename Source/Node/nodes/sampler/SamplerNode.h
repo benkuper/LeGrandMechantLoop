@@ -115,6 +115,8 @@ public:
         int playingSample = 0;
         int jumpGhostSample = -1;
         float jumpGhostGain = 0.0f;
+        int jumpGhostFadeTotal = 0;      // ADD THIS
+        int jumpGhostFadeRemaining = 0;  // ADD THIS
         float prevVelocity = 0;
         float velocity = 0;
         CurvedADSR adsr;
