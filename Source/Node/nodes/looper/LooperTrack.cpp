@@ -250,6 +250,7 @@ void LooperTrack::finishRecordingAndPlay()
 	if (Transport::getInstance()->isSettingTempo)
 	{
 		Transport::getInstance()->finishSetTempo(true);
+        Transport::getInstance()->transportWasStartedFromNode = true; // for transport autostop behaviour
 	}
 
 	if (q == Transport::FREE)
@@ -311,6 +312,8 @@ void LooperTrack::finishRecordingAndPlay()
 
 	updateStretch(); //reevaluate stretch
 	finishRecordLock = false;
+    
+
 }
 
 void LooperTrack::retroRecAndPlay()

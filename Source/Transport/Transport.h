@@ -57,7 +57,9 @@ public:
 	Trigger* togglePlayTrigger;
 	Trigger* pauseTrigger;
 	Trigger* stopTrigger;
-	BoolParameter* autoStopOnLastNodeStop;
+    
+    enum AutoStopBehaviour { NEVER, LAST_NODE, LAST_NODE_NOPREPLAY };
+	EnumParameter* autoStopBehaviour;
 
 	BoolParameter* useAbletonLink;
 	BoolParameter* linkSyncStartStop;
@@ -73,6 +75,7 @@ public:
 
 	bool isSettingTempo;
 	int setTempoSampleCount;
+    bool transportWasStartedFromNode;
 
 	double timeAtStart;
 

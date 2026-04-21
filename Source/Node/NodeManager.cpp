@@ -563,9 +563,14 @@ void RootNodeManager::onContainerParameterChanged(Parameter* p)
 
 	if (p == isPlaying)
 	{
-		if (!isPlaying->boolValue() && Transport::getInstance()->autoStopOnLastNodeStop->boolValue())
+		if (!isPlaying->boolValue())
 		{
-			Transport::getInstance()->stopTrigger->trigger();
+            Transport::AutoStopBehaviour b = Transport::getInstance()->autoStopBehaviour->getValueDataAsEnum<Transport::AutoStopBehaviour>();
+            
+            if(b == Transport::LAST_NODE || (b == Transport::LAST_NODE_NOPREPLAY && Transport::getInstance()->transportWasStartedFromNode))
+            {
+                Transport::getInstance()->stopTrigger->trigger();
+            }
 		}
 	}
 }

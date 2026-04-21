@@ -23,6 +23,7 @@ Transport::Transport() :
 	numSamplesPerBeat(0),
 	isSettingTempo(false),
 	setTempoSampleCount(0),
+    transportWasStartedFromNode(false),
 	timeAtStart(0)
 #if USE_ABLETONLINK
 	, checkLinkOnNextAudioCallback(false)
@@ -65,8 +66,8 @@ Transport::Transport() :
 	togglePlayTrigger = addTrigger("Toggle Play", "Toggle between play / stop");
 	pauseTrigger = addTrigger("Pause", "Stops playing but keeps the current time");
 	stopTrigger = addTrigger("Stop", "Stops playing and resets current time");
-	autoStopOnLastNodeStop = addBoolParameter("Nodes Auto Stop", "Stop playing when the last playing node stops", true);
-
+	autoStopBehaviour = addEnumParameter("Nodes Auto Stop", "Auto stop behaviour depending on nodes");
+    autoStopBehaviour->addOption("Last Node (No PrePlay)", LAST_NODE_NOPREPLAY)->addOption("Last Node", LAST_NODE)->addOption("Don't Stop", NEVER);
 	quantization = addEnumParameter("Quantization", "Default quantization for nodes.");
 	quantization->addOption("First Loop", FIRSTLOOP)->addOption("Bar", BAR)->addOption("Beat", BEAT)->addOption("Free", FREE);
 
@@ -277,6 +278,11 @@ void Transport::onContainerParameterChanged(Parameter* p)
 			link->commitAudioSessionState(session);
 		}
 #endif
+        
+        if(!isCurrentlyPlaying->boolValue())
+        {
+            transportWasStartedFromNode = false;
+        }
 	}
 	else if (p == recQuantization)
 	{
