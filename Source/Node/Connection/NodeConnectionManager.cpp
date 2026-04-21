@@ -118,7 +118,7 @@ Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool ad
 
 void NodeConnectionManager::loadJSONDataInternal(var data)
 {
-	if (Engine::mainEngine->isLoadingFile || data.isVoid())
+	if (Engine::mainEngine->isLoadingFile)
 	{
 		Manager::loadJSONDataInternal(data);
 		return;
@@ -126,7 +126,7 @@ void NodeConnectionManager::loadJSONDataInternal(var data)
 
 	Array<NodeConnection*> connectionsToAdd;
 	Array<NodeConnection*> newConnections;
-
+    
 	var itemsData = data.getProperty("items", var());
 
 

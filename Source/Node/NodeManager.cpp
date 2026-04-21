@@ -390,22 +390,9 @@ void NodeManager::loadCurrentPreset()
 {
 	if (isCurrentlyLoadingData) return;
 
-	if (presetEnum->getValue().isVoid())
-	{
-		connectionManager->clear();
-	}
-	else
-	{
-		var data = presets.getProperty(presetEnum->getValue().toString(), var());
-		if (data.isVoid())
-		{
-			NLOGWARNING(niceName, "No data in preset " << presetEnum->getValue().toString());
-		}
-		else
-		{
-			connectionManager->loadJSONData(data);
-		}
-	}
+    var pData = presetEnum->getValue();
+    var data = pData.isVoid()? var(new DynamicObject()) : presets.getProperty(pData.toString(), var());
+    connectionManager->loadJSONData(data);
 }
 
 bool NodeManager::handleRemoteControlData(const OSCMessage& msg, const String& clientId)
