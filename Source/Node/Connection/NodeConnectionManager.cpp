@@ -133,6 +133,8 @@ void NodeConnectionManager::loadJSONDataInternal(var data)
 	for (int i = 0; i < itemsData.size(); i++)
 	{
 		var iData = itemsData[i];
+        if(iData.getProperty("permanent", false)) continue; // Permanent connections are not loaded from file, they should be created in code
+        
 		NodeConnection::ConnectionType t = (NodeConnection::ConnectionType)(int)(iData.getProperty("connectionType", NodeConnection::AUDIO));
 		Node* sourceNode = nodeManager->getItemWithName(iData.getProperty("sourceNode", ""));
 		Node* destNode = nodeManager->getItemWithName(iData.getProperty("destNode", ""));

@@ -22,6 +22,7 @@ NodeConnection::NodeConnection(NodeManager* nodeManager, Node* sourceNode, Node*
 	setDestNode(destNode);
     
     permanent = addBoolParameter("Permanent", "If checked, this connection won't be automatically removed when loading connection presets", false);
+    permanent->isSavable = false;
 }
 
 NodeConnection::~NodeConnection()
@@ -128,15 +129,16 @@ var NodeConnection::getJSONData(bool includeNonOverriden)
 	if (sourceNode != nullptr) data.getDynamicObject()->setProperty("sourceNode", sourceNode->shortName);
 	if (destNode != nullptr) data.getDynamicObject()->setProperty("destNode", destNode->shortName);
 	data.getDynamicObject()->setProperty("connectionType", connectionType);
-	return data;
+    if(permanent != nullptr && permanent->boolValue()) data.getDynamicObject()->setProperty("permanent", permanent->boolValue());
+    return data;
 }
 
 void NodeConnection::loadJSONDataItemInternal(var data)
 {
 	if (data.hasProperty("sourceNode")) setSourceNode(nodeManager->getItemWithName(data.getProperty("sourceNode", "")));
 	if (data.hasProperty("destNode")) setDestNode(nodeManager->getItemWithName(data.getProperty("destNode", "")));
-
-	loadJSONDataConnectionInternal(data);
+    if(data.getDynamicObject()->hasProperty("permanent")) permanent->setValue(data.getProperty("permanent", false));
+    loadJSONDataConnectionInternal(data);
 }
 
 NodeAudioConnection::NodeAudioConnection(NodeManager* nodeManager, Node* sourceNode, Node* destNode) :
