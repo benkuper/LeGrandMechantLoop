@@ -36,6 +36,7 @@ public:
     IntParameter* oneShotFadeTimeMS;
     BoolParameter* autoKeyLiveMode;
     IntParameter* autoKeyFadeTimeMS;
+    BoolParameter* autoKeyLoopFade;
     EnumParameter* autoKeyMode;
     
     // --- New RubberBand Parameters ---
@@ -126,12 +127,14 @@ public:
         int oldFadeRemaining = 0;
         float oldFadeStartGain = 0.0f;
 
+
         AudioSampleBuffer buffer;
 
         //offline pitching
         double shifting = 0;
         int fadeNumSamples = 0;
         int autoKeyAlgorithm = 0;
+        bool loopFadeEnabled = false;
         
         // --- RubberBand Offline Params ---
         bool optFormants = false;
@@ -148,7 +151,7 @@ public:
         std::unique_ptr<RubberBand::RubberBandStretcher> pitcher;
 
         void setAutoKey(SamplerNote* remoteNote, double shift = 0);
-        void computeAutoKey(SamplerNote* remoteNote, double shift, int fadeSamples, int algorithm, bool formants, int transients, int pitchMode, int windowSize);
+        void computeAutoKey(SamplerNote* remoteNote, double shift, int fadeSamples, int algorithm, bool formants, int transients, int pitchMode, int windowSize, bool shouldLoopFade);
 
         void run();
 

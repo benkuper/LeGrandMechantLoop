@@ -55,6 +55,8 @@ SamplerNode::SamplerNode(var params) :
     
     autoKeyLiveMode = controlsCC.addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
     autoKeyFadeTimeMS = controlsCC.addIntParameter("Auto Key Fade", "Fade for anticlick when repitching auto keys, in milliseconds", 50);
+
+    autoKeyLoopFade = controlsCC.addBoolParameter("Auto Key Loop Fade", "If checked, generated auto-key samples are shortened and overlap-blended so the loop start and end match more cleanly.", false);
     autoKeyMode = controlsCC.addEnumParameter("Auto Key Algorithm", "Algorithm used to pitch-shift when computing auto keys.\nResample: clean, no wobble, slight formant shift.\nRubberBand: phase vocoder, preserves formants, may wobble on tonal sounds.");
     autoKeyMode->addOption("RubberBand", RUBBERBAND)->addOption("Resample", RESAMPLE);
 
@@ -209,6 +211,7 @@ void SamplerNode::computeAutoKeys()
     int transients = rbTransients->getValueDataAsEnum<int>();
     int pitchMode = rbPitchMode->getValueDataAsEnum<int>();
     int windowSize = rbWindowSize->getValueDataAsEnum<int>();
+    bool shouldLoopFade = autoKeyLoopFade->boolValue();
 
     for (int i = startKey; i <= endKey; i++)
     {
@@ -239,7 +242,7 @@ void SamplerNode::computeAutoKeys()
         if (closestNote != -1)
         {
             double shift = MidiMessage::getMidiNoteInHertz(i) / MidiMessage::getMidiNoteInHertz(closestNote);
-            n->computeAutoKey(samplerNotes[closestNote], shift, getFadeNumSamples(autoKeyFadeTimeMS->intValue()), autoKeyMode->getValueDataAsEnum<AutoKeyAlgorithm>(), formants, transients, pitchMode, windowSize);
+            n->computeAutoKey(samplerNotes[closestNote], shift, getFadeNumSamples(autoKeyFadeTimeMS->intValue()), autoKeyMode->getValueDataAsEnum<AutoKeyAlgorithm>(), formants, transients, pitchMode, windowSize, shouldLoopFade);
         }
     }
 }
@@ -1077,7 +1080,7 @@ void SamplerNode::SamplerNote::setAutoKey(SamplerNote* remoteNote, double shift)
     rtPitchedBuffer.setSize(autoKeyFromNote->buffer.getNumChannels(), Transport::getInstance()->blockSize);
 }
 
-void SamplerNode::SamplerNote::computeAutoKey(SamplerNote* remoteNote, double shift, int fadeSamples, int algorithm, bool formants, int transients, int pitchMode, int windowSize)
+void SamplerNode::SamplerNote::computeAutoKey(SamplerNote* remoteNote, double shift, int fadeSamples, int algorithm, bool formants, int transients, int pitchMode, int windowSize, bool shouldLoopFade)
 {
     shifting = shift;
     fadeNumSamples = fadeSamples;
@@ -1088,6 +1091,7 @@ void SamplerNode::SamplerNote::computeAutoKey(SamplerNote* remoteNote, double sh
     optTransients = transients;
     optPitchMode = pitchMode;
     optWindow = windowSize;
+    loopFadeEnabled = shouldLoopFade;
     
     startThread();
 }
@@ -1166,8 +1170,8 @@ void SamplerNode::SamplerNote::run()
         rubberBand.setPitchScale(safeShift);
         rubberBand.setTimeRatio(1.0);
 
-        // Append a short continuation from the head so the processed tail can
-        // crossfade against future audio instead of RubberBand's startup frames.
+        // The render can either settle into silence or include post-roll from
+        // the start so the generated note can be overlap-looped afterward.
         int minAntiClick = (int)(Transport::getInstance()->sampleRate * 0.005);
         const int loopFadeSamples = jmin(jmax(0, numSamples - 1), jmax(fadeNumSamples, minAntiClick));
         const int paddedInputSamples = numSamples + loopFadeSamples;
@@ -1176,13 +1180,19 @@ void SamplerNode::SamplerNote::run()
         paddedSource.clear();
         for (int ch = 0; ch < numChannels; ++ch)
         {
-            // Copy main body first.
             paddedSource.copyFrom(ch, 0, sourceCopy, ch, 0, numSamples);
 
-            // Copy the beginning again as post-roll so the processed end has
-            // real continuation to fade into.
             if (loopFadeSamples > 0)
-                paddedSource.copyFrom(ch, numSamples, sourceCopy, ch, 0, loopFadeSamples);
+            {
+                if (loopFadeEnabled)
+                {
+                    paddedSource.copyFrom(ch, numSamples, sourceCopy, ch, 0, loopFadeSamples);
+                }
+                else
+                {
+                    paddedSource.applyGainRamp(ch, numSamples - loopFadeSamples, loopFadeSamples, 1.0f, 0.0f);
+                }
+            }
         }
 
         rubberBand.setExpectedInputDuration((size_t)paddedInputSamples);
@@ -1225,22 +1235,40 @@ void SamplerNode::SamplerNote::run()
             }
         }
 
-        // 6. Copy the main body to pitchedFull and blend the end into the
-        // processed continuation.
+        // 6. Copy the requested note body. Loop overlap is applied afterward so
+        // both algorithms share the same seam treatment.
         for (int ch = 0; ch < numChannels; ++ch)
         {
             const int availableMainSamples = jmin(numSamples, collected);
             if (availableMainSamples > 0)
                 pitchedFull.copyFrom(ch, 0, fullOutput, ch, 0, availableMainSamples);
+        }
+    }
 
-            const int availableContinuation = jmax(0, collected - numSamples);
-            const int crossfadeSamples = jmin(loopFadeSamples, availableContinuation);
-            if (crossfadeSamples > 0)
+    if (loopFadeEnabled)
+    {
+        const int crossfadeSamples = jmin(jmax(0, pitchedFull.getNumSamples() - 1), fadeNumSamples);
+        if (crossfadeSamples > 0)
+        {
+            const int loopedNumSamples = pitchedFull.getNumSamples() - crossfadeSamples;
+            AudioBuffer<float> loopedBuffer(numChannels, loopedNumSamples);
+
+            for (int ch = 0; ch < numChannels; ++ch)
             {
-                int bufferStartSample = numSamples - crossfadeSamples;
-                pitchedFull.applyGainRamp(ch, bufferStartSample, crossfadeSamples, 1.0f, 0.0f);
-                pitchedFull.addFromWithRamp(ch, bufferStartSample, fullOutput.getReadPointer(ch, numSamples), crossfadeSamples, 0.0f, 1.0f);
+                loopedBuffer.copyFrom(ch, 0, pitchedFull, ch, 0, loopedNumSamples);
+
+                for (int i = 0; i < crossfadeSamples; ++i)
+                {
+                    const float alpha = crossfadeSamples == 1 ? 1.0f : (float)i / (float)(crossfadeSamples - 1);
+                    const float tailGain = std::cos(alpha * MathConstants<float>::halfPi);
+                    const float headGain = std::sin(alpha * MathConstants<float>::halfPi);
+                    const float tailSample = pitchedFull.getSample(ch, loopedNumSamples + i);
+                    const float headSample = pitchedFull.getSample(ch, i);
+                    loopedBuffer.setSample(ch, i, tailSample * tailGain + headSample * headGain);
+                }
             }
+
+            pitchedFull.makeCopyOf(loopedBuffer);
         }
     }
 
