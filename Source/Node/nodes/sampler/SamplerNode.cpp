@@ -37,6 +37,8 @@ SamplerNode::SamplerNode(var params) :
     hitMode = playCC.addEnumParameter("Hit Mode", "How playing a sample is handled.\nPiano is normal playing, releasing a key stops the sample.\nHit is starting the sample but releasing doesn't affect (only works in One Shot play mode) Full will not take in account playing again the note if the sample is still playing. Reset will allow to replay from start.\nToggle is alternating key presses to start/stop instead of using key release");
     hitMode->addOption("Piano", PIANO)->addOption("Hit (Full Sample)", HIT_FULL)->addOption("Hit (Reset)", HIT_RESET)->addOption("Toggle", TOGGLE);
 
+    oneShotFadeTimeMS = playCC.addIntParameter("One Shot Fade MS", "Fade applied to the end of a hit/one shot sample (ms)", 10, 0, 1000);
+
     autoKeyLiveMode = playCC.addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
     autoKeyFadeTimeMS = playCC.addIntParameter("Auto Key Fade", "Fade for anticlick when repitching auto keys, in milliseconds", 50);
     autoKeyMode = playCC.addEnumParameter("Auto Key Algorithm", "Algorithm used to pitch-shift when computing auto keys.\nResample: clean, no wobble, slight formant shift.\nRubberBand: phase vocoder, preserves formants, may wobble on tonal sounds.");
@@ -49,7 +51,7 @@ SamplerNode::SamplerNode(var params) :
     rbPitchMode->addOption("High Quality", RB_PITCH_HQ)->addOption("High Consistency", RB_PITCH_CONSISTENT);
     
     rbTransients = playCC.addEnumParameter("RB Transients", "Transient handling");
-    rbTransients->addOption("Crisp", RB_TRANS_CRISP)->addOption("Mixed", RB_TRANS_MIXED)->addOption("Smooth", RB_TRANS_SMOOTH);
+    rbTransients->addOption("Crisp", RB_TRANS_CRISP)->addOption("Mixed", RB_TRANS_SMOOTH)->addOption("Smooth", RB_TRANS_SMOOTH);
     
     rbWindowSize = playCC.addEnumParameter("RB Window", "FFT Window Size");
     rbWindowSize->addOption("Standard", RB_WIN_STANDARD)->addOption("Short", RB_WIN_SHORT)->addOption("Long", RB_WIN_LONG);
@@ -936,12 +938,23 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
                     if (pm == HIT_ONESHOT || s->isProxyNote())
                     {
                         if (firstPart > 0)
-                            tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
-                        
-                        if (secondPart > 0 && firstPart > 0)
                         {
-                            const int fadeLen = jmin(64, firstPart);
-                            tmpNoteBuffer.applyGainRamp(j, firstPart - fadeLen, fadeLen, 1.0f, 0.0f);
+                            tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
+                            
+                            int fadeSamples = (int)(AudioManager::getInstance()->currentSampleRate * oneShotFadeTimeMS->intValue() / 1000.0f);
+                            if (fadeSamples > 0)
+                            {
+                                int fadeStartSample = jmax(0, targetBuffer->getNumSamples() - fadeSamples);
+                                float startGain = targetReadSample < fadeStartSample ? 1.0f : jmax(0.0f, 1.0f - (targetReadSample - fadeStartSample) / (float)fadeSamples);
+                                float endGain = (targetReadSample + firstPart) < fadeStartSample ? 1.0f : jmax(0.0f, 1.0f - (targetReadSample + firstPart - fadeStartSample) / (float)fadeSamples);
+                                
+                                tmpNoteBuffer.applyGainRamp(j, 0, firstPart, startGain, endGain);
+                            }
+                            else if (secondPart > 0)
+                            {
+                                const int fadeLen = jmin(64, firstPart);
+                                tmpNoteBuffer.applyGainRamp(j, firstPart - fadeLen, fadeLen, 1.0f, 0.0f);
+                            }
                         }
                     }
                     else

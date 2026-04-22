@@ -106,7 +106,7 @@ NodeConnection* NodeConnectionManager::addItemFromData(var data, bool addToUndo)
 Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool addToUndo)
 {
 	Array<NodeConnection*> itemsToAdd;
-
+       
 	for (int i = 0; i < data.size(); i++)
 	{
 		NodeConnection::ConnectionType t = (NodeConnection::ConnectionType)(int)data[i].getProperty("connectionType", NodeConnection::AUDIO);

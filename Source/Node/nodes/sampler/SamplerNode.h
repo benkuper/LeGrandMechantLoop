@@ -33,6 +33,7 @@ public:
     BoolParameter* monitor;
     EnumParameter* playMode;
     EnumParameter* hitMode;
+    IntParameter* oneShotFadeTimeMS;
     BoolParameter* autoKeyLiveMode;
     IntParameter* autoKeyFadeTimeMS;
     EnumParameter* autoKeyMode;
