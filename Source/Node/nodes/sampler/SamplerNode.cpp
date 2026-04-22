@@ -39,23 +39,7 @@ SamplerNode::SamplerNode(var params) :
 
     oneShotFadeTimeMS = playCC.addIntParameter("One Shot Fade MS", "Fade applied to the end of a hit/one shot sample (ms)", 10, 0, 1000);
 
-    autoKeyLiveMode = playCC.addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
-    autoKeyFadeTimeMS = playCC.addIntParameter("Auto Key Fade", "Fade for anticlick when repitching auto keys, in milliseconds", 50);
-    autoKeyMode = playCC.addEnumParameter("Auto Key Algorithm", "Algorithm used to pitch-shift when computing auto keys.\nResample: clean, no wobble, slight formant shift.\nRubberBand: phase vocoder, preserves formants, may wobble on tonal sounds.");
-    autoKeyMode->addOption("Resample", RESAMPLE)->addOption("RubberBand", RUBBERBAND);
-
-    // --- New RubberBand Tweakable Parameters ---
-    rbPreserveFormants = playCC.addBoolParameter("RB Formants", "Preserve Formants (RubberBand)", false);
     
-    rbPitchMode = playCC.addEnumParameter("RB Pitch Mode", "Pitch shifting algorithm");
-    rbPitchMode->addOption("High Quality", RB_PITCH_HQ)->addOption("High Consistency", RB_PITCH_CONSISTENT);
-    
-    rbTransients = playCC.addEnumParameter("RB Transients", "Transient handling");
-    rbTransients->addOption("Crisp", RB_TRANS_CRISP)->addOption("Mixed", RB_TRANS_SMOOTH)->addOption("Smooth", RB_TRANS_SMOOTH);
-    
-    rbWindowSize = playCC.addEnumParameter("RB Window", "FFT Window Size");
-    rbWindowSize->addOption("Standard", RB_WIN_STANDARD)->addOption("Short", RB_WIN_SHORT)->addOption("Long", RB_WIN_LONG);
-
     addChildControllableContainer(&playCC, false, 0);
 
 
@@ -68,8 +52,27 @@ SamplerNode::SamplerNode(var params) :
 
     startAutoKey = controlsCC.addIntParameter("Start Auto Key", "The pitch to start auto key computation from", 0, 0, 127);
     endAutoKey = controlsCC.addIntParameter("End Auto Key", "The pitch to end auto key computation from", 127, 0, 127);
-    computeAutoKeysTrigger = controlsCC.addTrigger("Compute Auto Keys", "If checked, the auto keys will be computed from the recorded notes", true);
+    
+    autoKeyLiveMode = controlsCC.addBoolParameter("Auto Key", "If checked, hitting an unrecorded note will play it repitched from the closest found", false);
+    autoKeyFadeTimeMS = controlsCC.addIntParameter("Auto Key Fade", "Fade for anticlick when repitching auto keys, in milliseconds", 50);
+    autoKeyMode = controlsCC.addEnumParameter("Auto Key Algorithm", "Algorithm used to pitch-shift when computing auto keys.\nResample: clean, no wobble, slight formant shift.\nRubberBand: phase vocoder, preserves formants, may wobble on tonal sounds.");
+    autoKeyMode->addOption("RubberBand", RUBBERBAND)->addOption("Resample", RESAMPLE);
 
+    // --- New RubberBand Tweakable Parameters ---
+    rbPreserveFormants = controlsCC.addBoolParameter("RB Formants", "Preserve Formants (RubberBand)", false);
+    
+    rbPitchMode = controlsCC.addEnumParameter("RB Pitch Mode", "Pitch shifting algorithm");
+    rbPitchMode->addOption("High Quality", RB_PITCH_HQ)->addOption("High Consistency", RB_PITCH_CONSISTENT);
+    
+    rbTransients = controlsCC.addEnumParameter("RB Transients", "Transient handling");
+    rbTransients->addOption("Crisp", RB_TRANS_CRISP)->addOption("Mixed", RB_TRANS_SMOOTH)->addOption("Smooth", RB_TRANS_SMOOTH);
+    
+    rbWindowSize = controlsCC.addEnumParameter("RB Window", "FFT Window Size");
+    rbWindowSize->addOption("Standard", RB_WIN_STANDARD)->addOption("Short", RB_WIN_SHORT)->addOption("Long", RB_WIN_LONG);
+
+    computeAutoKeysTrigger = controlsCC.addTrigger("Compute Auto Keys", "If checked, the auto keys will be computed from the recorded notes", true);
+    
+    
     addChildControllableContainer(&controlsCC, false, 1);
 
     fadeTimeMS = recordCC.addIntParameter("Fade Time", "Time to fade between start and end of recording, in milliseconds", 20);
@@ -511,10 +514,6 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
             {
                 if (hm == HIT_RESET)
                 {
-                    sn->jumpGhostSample = sn->playingSample;
-                    sn->jumpGhostGain = sn->adsr.getOutput() * sn->velocity;
-                    sn->jumpGhostFadeTotal = jmax(1, (int)(AudioManager::getInstance()->currentSampleRate * 0.02f));
-                    sn->jumpGhostFadeRemaining = sn->jumpGhostFadeTotal;
                     sn->adsr.reset();
                     sn->playingSample = 0;
                     sn->rtPitchReadSample = 0;
@@ -525,7 +524,6 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
                 double shift = MidiMessage::getMidiNoteInHertz(midiNoteNumber) / MidiMessage::getMidiNoteInHertz(closestNote);
                 samplerNotes[midiNoteNumber]->setAutoKey(samplerNotes[closestNote], shift);
 
-                sn->jumpGhostGain = sn->adsr.getOutput() * sn->velocity;
                 sn->adsr.reset();
                 sn->velocity = velocity;
                 sn->adsr.gate(1);
@@ -551,10 +549,6 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
         {
             if (hm == HIT_RESET)
             {
-                sn->jumpGhostSample = sn->playingSample;
-                sn->jumpGhostGain = sn->adsr.getOutput() * sn->velocity;
-                sn->jumpGhostFadeTotal = jmax(1, (int)(AudioManager::getInstance()->currentSampleRate * 0.02f));
-                sn->jumpGhostFadeRemaining = sn->jumpGhostFadeTotal;
                 sn->adsr.reset();
                 sn->playingSample = 0;
             }
@@ -563,16 +557,18 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
         {
             if (pm == HIT_LOOP || pm == HIT_ONESHOT)
             {
-                if (sn->adsr.getState() != CurvedADSR::env_idle)
+                // CLEAN RETRIGGER: Safely hand off the currently playing tail
+                if (!sn->isProxyNote() && sn->playingSample > 0 && !sn->oneShotted)
                 {
-                    sn->jumpGhostSample = sn->playingSample;
-                    sn->jumpGhostGain = sn->adsr.getOutput() * sn->velocity;
-                    sn->jumpGhostFadeTotal = jmax(1, (int)(AudioManager::getInstance()->currentSampleRate * 0.02f));
-                    sn->jumpGhostFadeRemaining = sn->jumpGhostFadeTotal;
+                    sn->oldPlayingSample = sn->playingSample;
+                    sn->oldFadeRemaining = (int)(AudioManager::getInstance()->currentSampleRate * 0.01f); // 10ms seamless crossfade
+                    sn->oldFadeTotal = sn->oldFadeRemaining;
+                    sn->oldFadeStartGain = sn->velocity * (float)sn->adsr.getOutput();
                 }
-                sn->adsr.reset();
+
                 sn->playingSample = 0;
                 sn->oneShotted = false;
+                sn->adsr.reset();
             }
 
             if (sn->isProxyNote())
@@ -871,160 +867,158 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
                 s->setAutoKey(nullptr);
                 s->state->setValueWithData(EMPTY);
             }
-
             continue;
         }
 
 
-        if (pm != HIT_ONESHOT || !s->oneShotted)
+        // ====================================================================================
+        // CLEAN PLAYBACK ENGINE
+        // ====================================================================================
+
+        // 1. Process Retrigger Tail (Smoothly fade out the old sound directly to output)
+        if (!s->isProxyNote() && s->oldFadeRemaining > 0 && s->oldPlayingSample >= 0)
         {
-            AudioSampleBuffer* targetBuffer = &s->buffer;
-            int targetReadSample = s->playingSample;
+            int availableInSample = s->buffer.getNumSamples() - s->oldPlayingSample;
+            int processLen = jmin(blockSize, jmin(s->oldFadeRemaining, availableInSample));
 
-            if (s->isProxyNote())
+            if (processLen > 0)
             {
-                AudioBuffer<float> tmpBuffer(s->autoKeyFromNote->buffer.getNumChannels(), blockSize);
-                auto readPointers = tmpBuffer.getArrayOfReadPointers();
+                float startGain = s->oldFadeStartGain * ((float)s->oldFadeRemaining / s->oldFadeTotal);
+                float endGain   = s->oldFadeStartGain * ((float)(s->oldFadeRemaining - processLen) / s->oldFadeTotal);
 
-                GenericScopedLock pLock(s->pitcherLock);
-                while (s->pitcher->available() < blockSize)
+                for (int j = 0; j < buffer.getNumChannels(); j++)
                 {
-                    const int sourceNumSamples = s->autoKeyFromNote->buffer.getNumSamples();
-                    for (int ch = 0; ch < buffer.getNumChannels(); ch++)
-                    {
-                        const int firstPart = jmin(blockSize, sourceNumSamples - s->rtPitchReadSample);
-                        tmpBuffer.copyFrom(ch, 0, s->autoKeyFromNote->buffer, ch, s->rtPitchReadSample, firstPart);
-                        if (firstPart < blockSize)
-                        {
-                            tmpBuffer.copyFrom(ch, firstPart, s->autoKeyFromNote->buffer, ch, 0, blockSize - firstPart);
-                        }
-                    }
-
-                    s->pitcher->process(readPointers, tmpBuffer.getNumSamples(), false);
-                    s->rtPitchReadSample = (s->rtPitchReadSample + blockSize) % sourceNumSamples;
-
-                    if (pm == HIT_ONESHOT && s->playingSample + blockSize >= sourceNumSamples)
-                    {
-                        s->oneShotted = true;
-                        s->playingSample = 0;
-                        s->state->setValueWithData(s->hasContent() ? NoteState::FILLED : NoteState::EMPTY);
-                        break;
-                    }
+                    int ch = j % s->buffer.getNumChannels();
+                    buffer.addFromWithRamp(j, 0, s->buffer.getReadPointer(ch, s->oldPlayingSample), processLen, startGain, endGain);
                 }
-
-                s->pitcher->retrieve(s->rtPitchedBuffer.getArrayOfWritePointers(), s->rtPitchedBuffer.getNumSamples());
-
-                targetBuffer = &s->rtPitchedBuffer;
-                targetReadSample = 0;
-            }
-
-            // --- 1. NORMAL PROCESSING ---
-            if (pm == HIT_ONESHOT && s->oneShotted)
-            {
-                // Process release tail silently so the ADSR finishes correctly
-                tmpNoteBuffer.clear();
-                s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
+                s->oldPlayingSample += processLen;
+                s->oldFadeRemaining -= processLen;
+                if (s->oldFadeRemaining <= 0) s->oldFadeStartGain = 0.0f;
             }
             else
             {
-                const int bufNumSamples = targetBuffer->getNumSamples();
-                const int firstPart = jmax(0, jmin(blockSize, bufNumSamples - targetReadSample));
-                const int secondPart = blockSize - firstPart;
-                
-                for (int j = 0; j < buffer.getNumChannels(); j++)
+                s->oldFadeRemaining = 0; // Tail has safely finished fading
+                s->oldFadeStartGain = 0.0f;
+            }
+        }
+
+        // 2. Process Main Playhead
+        if (pm == HIT_ONESHOT && s->oneShotted)
+        {
+            // The sample is finished playing, but the ADSR release phase is still running to clear silence.
+            tmpNoteBuffer.clear();
+            s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
+            for (int j = 0; j < buffer.getNumChannels(); j++)
+                buffer.addFrom(j, 0, tmpNoteBuffer.getReadPointer(j), blockSize, s->velocity);
+            continue;
+        }
+
+        AudioSampleBuffer* targetBuffer = &s->buffer;
+        int targetReadSample = s->playingSample;
+
+        // Process real-time RubberBand Proxy if needed
+        if (s->isProxyNote())
+        {
+            AudioBuffer<float> tmpBuffer(s->autoKeyFromNote->buffer.getNumChannels(), blockSize);
+            auto readPointers = tmpBuffer.getArrayOfReadPointers();
+
+            GenericScopedLock pLock(s->pitcherLock);
+            while (s->pitcher->available() < blockSize)
+            {
+                const int sourceNumSamples = s->autoKeyFromNote->buffer.getNumSamples();
+                for (int ch = 0; ch < buffer.getNumChannels(); ch++)
                 {
-                    tmpNoteBuffer.clear(j, 0, blockSize);
+                    const int firstPart = jmin(blockSize, sourceNumSamples - s->rtPitchReadSample);
+                    tmpBuffer.copyFrom(ch, 0, s->autoKeyFromNote->buffer, ch, s->rtPitchReadSample, firstPart);
+                    if (firstPart < blockSize)
+                        tmpBuffer.copyFrom(ch, firstPart, s->autoKeyFromNote->buffer, ch, 0, blockSize - firstPart);
+                }
+
+                s->pitcher->process(readPointers, tmpBuffer.getNumSamples(), false);
+                s->rtPitchReadSample = (s->rtPitchReadSample + blockSize) % sourceNumSamples;
+
+                if (pm == HIT_ONESHOT && s->playingSample + blockSize >= sourceNumSamples)
+                {
+                    s->oneShotted = true;
+                    s->playingSample = 0;
+                    s->state->setValueWithData(s->hasContent() ? NoteState::FILLED : NoteState::EMPTY);
+                    break;
+                }
+            }
+            s->pitcher->retrieve(s->rtPitchedBuffer.getArrayOfWritePointers(), s->rtPitchedBuffer.getNumSamples());
+            targetBuffer = &s->rtPitchedBuffer;
+            targetReadSample = 0;
+        }
+
+        const int bufNumSamples = targetBuffer->getNumSamples();
+        const int firstPart = jmax(0, jmin(blockSize, bufNumSamples - targetReadSample));
+        const int secondPart = blockSize - firstPart;
+
+        for (int j = 0; j < buffer.getNumChannels(); j++)
+        {
+            tmpNoteBuffer.clear(j, 0, blockSize);
+            int ch = j % targetBuffer->getNumChannels();
+
+            if (pm == HIT_ONESHOT || s->isProxyNote())
+            {
+                if (firstPart > 0)
+                {
+                    tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, ch, targetReadSample, firstPart);
+
+                    // End-of-Sample Anti-Click Ramp (Pure Buffer Math)
+                    int fadeSamples = (int)(AudioManager::getInstance()->currentSampleRate * oneShotFadeTimeMS->intValue() / 1000.0f);
+                    if (fadeSamples <= 0) fadeSamples = 64; // Enforce a 1.5ms minimum physical fade to prevent clicking
                     
-                    if (pm == HIT_ONESHOT || s->isProxyNote())
+                    int fadeStartSample = bufNumSamples - fadeSamples;
+                    
+                    // Are we currently reading inside the end-fade zone?
+                    if (targetReadSample + firstPart > fadeStartSample)
                     {
-                        if (firstPart > 0)
-                        {
-                            tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
-                            
-                            int fadeSamples = (int)(AudioManager::getInstance()->currentSampleRate * oneShotFadeTimeMS->intValue() / 1000.0f);
-                            if (fadeSamples > 0)
-                            {
-                                int fadeStartSample = jmax(0, targetBuffer->getNumSamples() - fadeSamples);
-                                float startGain = targetReadSample < fadeStartSample ? 1.0f : jmax(0.0f, 1.0f - (targetReadSample - fadeStartSample) / (float)fadeSamples);
-                                float endGain = (targetReadSample + firstPart) < fadeStartSample ? 1.0f : jmax(0.0f, 1.0f - (targetReadSample + firstPart - fadeStartSample) / (float)fadeSamples);
-                                
-                                tmpNoteBuffer.applyGainRamp(j, 0, firstPart, startGain, endGain);
-                            }
-                            else if (secondPart > 0)
-                            {
-                                const int fadeLen = jmin(64, firstPart);
-                                tmpNoteBuffer.applyGainRamp(j, firstPart - fadeLen, fadeLen, 1.0f, 0.0f);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (firstPart > 0)
-                            tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, j, targetReadSample, firstPart);
+                        int startLocal = jmax(0, fadeStartSample - targetReadSample);
+                        int length = firstPart - startLocal;
                         
-                        if (secondPart > 0)
-                            tmpNoteBuffer.copyFrom(j, firstPart, *targetBuffer, j, 0, secondPart);
-                    }
-                }
-
-                s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
-                for (int j = 0; j < buffer.getNumChannels(); j++)
-                {
-                    buffer.addFromWithRamp(j, 0, tmpNoteBuffer.getReadPointer(j), blockSize, s->prevVelocity, s->velocity);
-                }
-
-                s->prevVelocity = s->velocity;
-                s->playingSample += blockSize;
-
-                int numSamplesToCheck = s->isProxyNote() ? s->autoKeyFromNote->buffer.getNumSamples()
-                                                         : targetBuffer->getNumSamples();
-                
-                if (s->playingSample >= numSamplesToCheck)
-                {
-                    if (pm == HIT_ONESHOT || s->isProxyNote())
-                    {
-                        s->oneShotted = true;
-                        s->adsr.gate(0);
-                        s->playingSample = 0;
-                    }
-                    else
-                    {
-                        s->playingSample %= numSamplesToCheck;
+                        float startGain = 1.0f - ((float)jmax(0, targetReadSample + startLocal - fadeStartSample) / fadeSamples);
+                        float endGain   = 1.0f - ((float)(targetReadSample + firstPart - fadeStartSample) / fadeSamples);
+                        
+                        tmpNoteBuffer.applyGainRamp(j, startLocal, length, jmax(0.0f, startGain), jmax(0.0f, endGain));
                     }
                 }
             }
-
-            // --- 2. INDEPENDENT GHOST FADE LOGIC ---
-            // Process the fading tail directly into the main buffer (bypassing the new velocity ramp)
-            if (!s->isProxyNote() && s->jumpGhostSample != -1 && s->jumpGhostFadeRemaining > 0)
+            else // LOOP MODE
             {
-                const int bufNumSamples = s->buffer.getNumSamples();
-                const int ghostFirstPart = jmax(0, jmin(blockSize, bufNumSamples - s->jumpGhostSample));
-                int processSamples = jmin(ghostFirstPart, s->jumpGhostFadeRemaining);
+                if (firstPart > 0) tmpNoteBuffer.copyFrom(j, 0, *targetBuffer, ch, targetReadSample, firstPart);
+                if (secondPart > 0) tmpNoteBuffer.copyFrom(j, firstPart, *targetBuffer, ch, 0, secondPart);
+            }
 
-                if (processSamples > 0)
-                {
-                    float gainStart = s->jumpGhostGain * ((float)s->jumpGhostFadeRemaining / s->jumpGhostFadeTotal);
-                    float gainEnd   = s->jumpGhostGain * ((float)(s->jumpGhostFadeRemaining - processSamples) / s->jumpGhostFadeTotal);
+            // Start-of-Sample Anti-Click Ramp (Pure Buffer Math)
+            if (targetReadSample == 0 && firstPart > 0)
+            {
+                int rampLen = jmin(firstPart, (int)(AudioManager::getInstance()->currentSampleRate * 0.001f)); // 1ms
+                if (rampLen > 0) tmpNoteBuffer.applyGainRamp(j, 0, rampLen, 0.0f, 1.0f);
+            }
+        }
 
-                    // Prevent click if the sample intrinsically ends before the 20ms fade finishes
-                    if (s->jumpGhostSample + processSamples >= bufNumSamples)
-                        gainEnd = 0.0f;
+        // Apply ADSR and Add to Master Output
+        s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
+        for (int j = 0; j < buffer.getNumChannels(); j++)
+        {
+            buffer.addFrom(j, 0, tmpNoteBuffer.getReadPointer(j), blockSize, s->velocity);
+        }
 
-                    for (int j = 0; j < buffer.getNumChannels(); j++)
-                    {
-                        buffer.addFromWithRamp(j, 0, s->buffer.getReadPointer(j, s->jumpGhostSample), processSamples, gainStart, gainEnd);
-                    }
+        // Advance Playhead
+        s->playingSample += blockSize;
 
-                    s->jumpGhostSample += processSamples;
-                    s->jumpGhostFadeRemaining -= processSamples;
-                }
-
-                // Clean up ghost when fade completes or sample ends
-                if (s->jumpGhostFadeRemaining <= 0 || s->jumpGhostSample >= bufNumSamples)
-                {
-                    s->jumpGhostSample = -1;
-                }
+        if (s->playingSample >= bufNumSamples)
+        {
+            if (pm == HIT_ONESHOT || s->isProxyNote())
+            {
+                s->oneShotted = true;
+                s->adsr.gate(0);
+                s->playingSample = 0;
+            }
+            else
+            {
+                s->playingSample %= bufNumSamples; // Loop back
             }
         }
     }
@@ -1165,22 +1159,19 @@ void SamplerNode::SamplerNote::run()
         rubberBand.setPitchScale(safeShift);
         rubberBand.setTimeRatio(1.0);
 
-        // 2. The Safety Pad (Stomp Killer)
-        const int padSamples = (int)(Transport::getInstance()->sampleRate * 0.100);
-        const int paddedInputSamples = numSamples + padSamples;
+        // 2. The Pre-Roll Pad (tail of loop prepended for continuity)
+        int minAntiClick = (int)(Transport::getInstance()->sampleRate * 0.005);
+        const int preRollSamples = jmin(numSamples, jmax(fadeNumSamples, minAntiClick));
+        const int paddedInputSamples = numSamples + preRollSamples;
         
         AudioBuffer<float> paddedSource(numChannels, paddedInputSamples);
         paddedSource.clear();
         for (int ch = 0; ch < numChannels; ++ch)
         {
-            paddedSource.copyFrom(ch, 0, sourceCopy, ch, 0, numSamples);
-        }
-
-        const int preFade = jmin((int)(Transport::getInstance()->sampleRate * 0.010), numSamples);
-        if (preFade > 0)
-        {
-            for (int ch = 0; ch < numChannels; ++ch)
-                paddedSource.applyGainRamp(ch, numSamples - preFade, preFade, 1.0f, 0.0f);
+            // Copy tail of source as pre-roll
+            paddedSource.copyFrom(ch, 0, sourceCopy, ch, numSamples - preRollSamples, preRollSamples);
+            // Copy main body
+            paddedSource.copyFrom(ch, preRollSamples, sourceCopy, ch, 0, numSamples);
         }
 
         rubberBand.setExpectedInputDuration((size_t)paddedInputSamples);
@@ -1190,23 +1181,24 @@ void SamplerNode::SamplerNote::run()
         rubberBand.study(readPointers, (size_t)paddedInputSamples, true);
         rubberBand.process(readPointers, (size_t)paddedInputSamples, true);
 
-        // 4. Retrieve exactly numSamples and ignore the rest
+        // 4. Retrieve exactly paddedInputSamples and ignore the rest
         int collected = 0;
         const int chunkSize = 8192;
         AudioBuffer<float> fetchBuffer(numChannels, chunkSize);
+        AudioBuffer<float> fullOutput(numChannels, paddedInputSamples);
 
-        while (collected < numSamples && rubberBand.available() > 0)
+        while (collected < paddedInputSamples && rubberBand.available() > 0)
         {
-            int avail = rubberBand.available();
+            int avail = (int)rubberBand.available();
             int toFetch = jmin(avail, chunkSize);
-            int retrieved = rubberBand.retrieve(fetchBuffer.getArrayOfWritePointers(), (size_t)toFetch);
+            int retrieved = (int)rubberBand.retrieve(fetchBuffer.getArrayOfWritePointers(), (size_t)toFetch);
             
             if (retrieved > 0)
             {
-                int actualToKeep = jmin(retrieved, numSamples - collected);
+                int actualToKeep = jmin(retrieved, paddedInputSamples - collected);
                 for (int ch = 0; ch < numChannels; ++ch)
                 {
-                    pitchedFull.copyFrom(ch, collected, fetchBuffer, ch, 0, actualToKeep);
+                    fullOutput.copyFrom(ch, collected, fetchBuffer, ch, 0, actualToKeep);
                 }
                 collected += actualToKeep;
             }
@@ -1214,22 +1206,23 @@ void SamplerNode::SamplerNote::run()
         }
 
         // 5. Fill any remaining tiny gap with absolute silence
-        if (collected < numSamples)
+        if (collected < paddedInputSamples)
         {
             for (int ch = 0; ch < numChannels; ++ch)
             {
-                pitchedFull.clear(ch, collected, numSamples - collected);
+                fullOutput.clear(ch, collected, paddedInputSamples - collected);
             }
         }
 
-        // 6. Hard tail fade to guarantee the speaker rests at zero (5ms)
-        const int tailFade = jmin((int)(Transport::getInstance()->sampleRate * 0.005), numSamples);
-        if (tailFade > 1)
+        // 6. Copy the main body to pitchedFull and apply crossfade
+        for (int ch = 0; ch < numChannels; ++ch)
         {
-            for (int ch = 0; ch < numChannels; ++ch)
-            {
-                pitchedFull.applyGainRamp(ch, numSamples - tailFade, tailFade, 1.0f, 0.0f);
-            }
+            pitchedFull.copyFrom(ch, 0, fullOutput, ch, preRollSamples, numSamples);
+            
+            // Crossfade at the end using the main loop end as fade-out and the pre-roll as fade-in
+            int bufferStartSample = numSamples - preRollSamples;
+            pitchedFull.applyGainRamp(ch, bufferStartSample, preRollSamples, 1.0f, 0.0f);
+            pitchedFull.addFromWithRamp(ch, bufferStartSample, fullOutput.getReadPointer(ch, 0), preRollSamples, 0.0f, 1.0f);
         }
     }
 
@@ -1245,10 +1238,10 @@ void SamplerNode::SamplerNote::reset()
 {
     adsr.gate(0);
     setAutoKey(nullptr);
-    jumpGhostSample = -1;
-    jumpGhostGain = 0.0f;
-    jumpGhostFadeTotal = 0;
-    jumpGhostFadeRemaining = 0;
+    oldPlayingSample = -1;
+    oldFadeTotal = 0;
+    oldFadeRemaining = 0;
+    oldFadeStartGain = 0.0f;
     playingSample = 0;
     oneShotted = false;
     state->setValueWithData(hasContent() ? NoteState::FILLED : NoteState::EMPTY);

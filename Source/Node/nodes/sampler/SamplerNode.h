@@ -113,15 +113,17 @@ public:
         SamplerNote();
         ~SamplerNote();
         EnumParameter* state;
+        
         int playingSample = 0;
-        int jumpGhostSample = -1;
-        float jumpGhostGain = 0.0f;
-        int jumpGhostFadeTotal = 0;      // ADD THIS
-        int jumpGhostFadeRemaining = 0;  // ADD THIS
-        float prevVelocity = 0;
         float velocity = 0;
         CurvedADSR adsr;
         bool oneShotted = false;
+
+        // Clean Retrigger Variables
+        int oldPlayingSample = -1;
+        int oldFadeTotal = 0;
+        int oldFadeRemaining = 0;
+        float oldFadeStartGain = 0.0f;
 
         AudioSampleBuffer buffer;
 
@@ -190,7 +192,6 @@ public:
 
     void prepareToPlay(double sampleRate, int maximumExpectedSamplesPerBlock) override;
     void processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
-    //void processBlockBypassed(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) override;
 
 
     DECLARE_TYPE("Sampler");
