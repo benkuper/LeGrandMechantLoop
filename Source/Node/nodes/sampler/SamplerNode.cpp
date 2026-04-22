@@ -558,7 +558,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
             if (pm == HIT_LOOP || pm == HIT_ONESHOT)
             {
                 // CLEAN RETRIGGER: Safely hand off the currently playing tail
-                if (!sn->isProxyNote() && sn->playingSample > 0 && !sn->oneShotted)
+                if (attack->floatValue() > 0.0f && !sn->isProxyNote() && sn->playingSample > 0 && !sn->oneShotted)
                 {
                     sn->oldPlayingSample = sn->playingSample;
                     sn->oldFadeRemaining = (int)(AudioManager::getInstance()->currentSampleRate * 0.01f); // 10ms seamless crossfade
@@ -991,7 +991,7 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
             }
 
             // Start-of-Sample Anti-Click Ramp (Pure Buffer Math)
-            if (targetReadSample == 0 && firstPart > 0)
+            if (attack->floatValue() > 0.0f && targetReadSample == 0 && firstPart > 0)
             {
                 int rampLen = jmin(firstPart, (int)(AudioManager::getInstance()->currentSampleRate * 0.001f)); // 1ms
                 if (rampLen > 0) tmpNoteBuffer.applyGainRamp(j, 0, rampLen, 0.0f, 1.0f);
