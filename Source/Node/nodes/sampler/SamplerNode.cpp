@@ -517,6 +517,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
                     sn->adsr.reset();
                     sn->playingSample = 0;
                     sn->rtPitchReadSample = 0;
+                    sn->applyStartRamp = true;
                 }
             }
             else
@@ -525,6 +526,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
                 samplerNotes[midiNoteNumber]->setAutoKey(samplerNotes[closestNote], shift);
 
                 sn->adsr.reset();
+                sn->applyStartRamp = true;
                 sn->velocity = velocity;
                 sn->adsr.gate(1);
                 lastPlayedNote = midiNoteNumber;
@@ -551,6 +553,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
             {
                 sn->adsr.reset();
                 sn->playingSample = 0;
+                sn->applyStartRamp = true;
             }
         }
         else
@@ -568,6 +571,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
 
                 sn->playingSample = 0;
                 sn->oneShotted = false;
+                sn->applyStartRamp = true;
                 sn->adsr.reset();
             }
 
@@ -578,6 +582,7 @@ void SamplerNode::handleNoteOn(MidiKeyboardState* source, int midiChannel, int m
             }
 
             sn->velocity = velocity;
+            sn->applyStartRamp = sn->applyStartRamp || sn->playingSample == 0;
             sn->adsr.gate(1);
             lastPlayedNote = midiNoteNumber;
             sn->state->setValueWithData(PLAYING);
@@ -991,12 +996,14 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
             }
 
             // Start-of-Sample Anti-Click Ramp (Pure Buffer Math)
-            if (attack->floatValue() > 0.0f && targetReadSample == 0 && firstPart > 0)
+            if (s->applyStartRamp && attack->floatValue() > 0.0f && targetReadSample == 0 && firstPart > 0)
             {
                 int rampLen = jmin(firstPart, (int)(AudioManager::getInstance()->currentSampleRate * 0.001f)); // 1ms
                 if (rampLen > 0) tmpNoteBuffer.applyGainRamp(j, 0, rampLen, 0.0f, 1.0f);
             }
         }
+
+        s->applyStartRamp = false;
 
         // Apply ADSR and Add to Master Output
         s->adsr.applyEnvelopeToBuffer(tmpNoteBuffer, 0, blockSize);
@@ -1255,5 +1262,6 @@ void SamplerNode::SamplerNote::reset()
     oldFadeStartGain = 0.0f;
     playingSample = 0;
     oneShotted = false;
+    applyStartRamp = false;
     state->setValueWithData(hasContent() ? NoteState::FILLED : NoteState::EMPTY);
 }

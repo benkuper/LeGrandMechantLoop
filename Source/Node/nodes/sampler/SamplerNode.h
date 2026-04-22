@@ -118,6 +118,7 @@ public:
         float velocity = 0;
         CurvedADSR adsr;
         bool oneShotted = false;
+        bool applyStartRamp = false;
 
         // Clean Retrigger Variables
         int oldPlayingSample = -1;
