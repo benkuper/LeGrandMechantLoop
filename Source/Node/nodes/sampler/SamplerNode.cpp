@@ -1131,16 +1131,55 @@ void SamplerNode::SamplerNote::run()
 
     if (autoKeyAlgorithm == SamplerNode::RESAMPLE)
     {
-        const int srcNeeded = jmax(numSamples + 16, (int)(numSamples * safeShift) + 16);
+        const int outSamples = (int)(numSamples / safeShift);
+        
+        const int loopFadeSamples = loopFadeEnabled
+            ? jmin(jmax(0, numSamples - 1), fadeNumSamples)
+            : 0;
+            
+        const int paddedInputSamples = numSamples + loopFadeSamples;
+        const int outLoopFadeSamples = (int)(loopFadeSamples / safeShift);
+        const int totalOutSamples = outSamples + outLoopFadeSamples;
+
+        // Provide enough source samples plus interpolation margin
+        const int srcNeeded = paddedInputSamples + 16;
         AudioBuffer<float> extSrc(numChannels, srcNeeded);
+        extSrc.clear();
         for (int ch = 0; ch < numChannels; ++ch)
-            for (int i = 0; i < srcNeeded; ++i)
-                extSrc.setSample(ch, i, i < numSamples ? sourceCopy.getSample(ch, i) : 0.0f);
+        {
+            for (int i = 0; i < numSamples; ++i)
+                extSrc.setSample(ch, i, sourceCopy.getSample(ch, i));
+            if (loopFadeEnabled && loopFadeSamples > 0)
+                for (int i = 0; i < loopFadeSamples; ++i)
+                    extSrc.setSample(ch, numSamples + i, sourceCopy.getSample(ch, i));
+        }
+
+        pitchedFull.setSize(numChannels, outSamples);
+        pitchedFull.clear();
+        
+        AudioBuffer<float> totalOutput(numChannels, totalOutSamples);
+        totalOutput.clear();
 
         for (int ch = 0; ch < numChannels; ++ch)
         {
             CatmullRomInterpolator resampler;
-            resampler.process(safeShift, extSrc.getReadPointer(ch), pitchedFull.getWritePointer(ch), numSamples);
+            resampler.process(safeShift, extSrc.getReadPointer(ch), totalOutput.getWritePointer(ch), totalOutSamples);
+        }
+        
+        for (int ch = 0; ch < numChannels; ++ch)
+        {
+            pitchedFull.copyFrom(ch, 0, totalOutput, ch, 0, outSamples);
+        }
+        
+        renderedNumSamples = outSamples;
+
+        if (loopFadeEnabled && outLoopFadeSamples > 0)
+        {
+            loopContinuation.setSize(numChannels, outLoopFadeSamples);
+            for (int ch = 0; ch < numChannels; ++ch)
+            {
+                loopContinuation.copyFrom(ch, 0, totalOutput, ch, outSamples, outLoopFadeSamples);
+            }
         }
     }
     else
