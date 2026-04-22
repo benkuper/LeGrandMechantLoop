@@ -1126,6 +1126,8 @@ void SamplerNode::SamplerNote::run()
 
     AudioBuffer<float> pitchedFull(numChannels, numSamples);
     pitchedFull.clear();
+    AudioBuffer<float> loopContinuation(numChannels, 0);
+    int renderedNumSamples = numSamples;
 
     if (autoKeyAlgorithm == SamplerNode::RESAMPLE)
     {
@@ -1170,10 +1172,11 @@ void SamplerNode::SamplerNote::run()
         rubberBand.setPitchScale(safeShift);
         rubberBand.setTimeRatio(1.0);
 
-        // The render can either settle into silence or include post-roll from
-        // the start so the generated note can be overlap-looped afterward.
-        int minAntiClick = (int)(Transport::getInstance()->sampleRate * 0.005);
-        const int loopFadeSamples = jmin(jmax(0, numSamples - 1), jmax(fadeNumSamples, minAntiClick));
+        // In loop-fade mode we append a short post-roll from the start so the
+        // rendered note contains the material needed to close the loop seam.
+        const int loopFadeSamples = loopFadeEnabled
+            ? jmin(jmax(0, numSamples - 1), fadeNumSamples)
+            : 0;
         const int paddedInputSamples = numSamples + loopFadeSamples;
 
         AudioBuffer<float> paddedSource(numChannels, paddedInputSamples);
@@ -1182,16 +1185,9 @@ void SamplerNode::SamplerNote::run()
         {
             paddedSource.copyFrom(ch, 0, sourceCopy, ch, 0, numSamples);
 
-            if (loopFadeSamples > 0)
+            if (loopFadeEnabled && loopFadeSamples > 0)
             {
-                if (loopFadeEnabled)
-                {
-                    paddedSource.copyFrom(ch, numSamples, sourceCopy, ch, 0, loopFadeSamples);
-                }
-                else
-                {
-                    paddedSource.applyGainRamp(ch, numSamples - loopFadeSamples, loopFadeSamples, 1.0f, 0.0f);
-                }
+                paddedSource.copyFrom(ch, numSamples, sourceCopy, ch, 0, loopFadeSamples);
             }
         }
 
@@ -1243,33 +1239,59 @@ void SamplerNode::SamplerNote::run()
             if (availableMainSamples > 0)
                 pitchedFull.copyFrom(ch, 0, fullOutput, ch, 0, availableMainSamples);
         }
+
+        renderedNumSamples = jmax(0, jmin(numSamples, collected));
+
+        if (loopFadeEnabled && loopFadeSamples > 0)
+        {
+            const int availableContinuation = jmin(loopFadeSamples, jmax(0, collected - renderedNumSamples));
+            if (availableContinuation > 0)
+            {
+                loopContinuation.setSize(numChannels, availableContinuation);
+                for (int ch = 0; ch < numChannels; ++ch)
+                    loopContinuation.copyFrom(ch, 0, fullOutput, ch, renderedNumSamples, availableContinuation);
+            }
+        }
     }
 
     if (loopFadeEnabled)
     {
-        const int crossfadeSamples = jmin(jmax(0, pitchedFull.getNumSamples() - 1), fadeNumSamples);
+        const int crossfadeSamples = jmin(jmax(0, renderedNumSamples / 2), fadeNumSamples);
         if (crossfadeSamples > 0)
         {
-            const int loopedNumSamples = pitchedFull.getNumSamples() - crossfadeSamples;
+            const int loopedNumSamples = renderedNumSamples - crossfadeSamples;
             AudioBuffer<float> loopedBuffer(numChannels, loopedNumSamples);
+            loopedBuffer.clear();
+            const int bodySamples = jmax(0, loopedNumSamples - crossfadeSamples);
 
             for (int ch = 0; ch < numChannels; ++ch)
             {
-                loopedBuffer.copyFrom(ch, 0, pitchedFull, ch, 0, loopedNumSamples);
+                if (bodySamples > 0)
+                    loopedBuffer.copyFrom(ch, 0, pitchedFull, ch, crossfadeSamples, bodySamples);
 
                 for (int i = 0; i < crossfadeSamples; ++i)
                 {
                     const float alpha = crossfadeSamples == 1 ? 1.0f : (float)i / (float)(crossfadeSamples - 1);
                     const float tailGain = std::cos(alpha * MathConstants<float>::halfPi);
                     const float headGain = std::sin(alpha * MathConstants<float>::halfPi);
-                    const float tailSample = pitchedFull.getSample(ch, loopedNumSamples + i);
-                    const float headSample = pitchedFull.getSample(ch, i);
-                    loopedBuffer.setSample(ch, i, tailSample * tailGain + headSample * headGain);
+                    const float tailSample = loopContinuation.getNumSamples() > i
+                        ? loopContinuation.getSample(ch, i)
+                        : pitchedFull.getSample(ch, i);
+                    const float headSample = pitchedFull.getSample(ch, loopedNumSamples + i);
+                    loopedBuffer.setSample(ch, bodySamples + i, headSample * tailGain + tailSample * headGain);
                 }
             }
 
             pitchedFull.makeCopyOf(loopedBuffer);
+            renderedNumSamples = loopedNumSamples;
         }
+    }
+    else if (renderedNumSamples > 0 && renderedNumSamples < pitchedFull.getNumSamples())
+    {
+        AudioBuffer<float> trimmedBuffer(numChannels, renderedNumSamples);
+        trimmedBuffer.makeCopyOf(pitchedFull, true);
+        trimmedBuffer.setSize(numChannels, renderedNumSamples, true, false, true);
+        pitchedFull.makeCopyOf(trimmedBuffer);
     }
 
     // Replace the buffer
