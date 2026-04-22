@@ -1159,19 +1159,23 @@ void SamplerNode::SamplerNote::run()
         rubberBand.setPitchScale(safeShift);
         rubberBand.setTimeRatio(1.0);
 
-        // 2. The Pre-Roll Pad (tail of loop prepended for continuity)
+        // Append a short continuation from the head so the processed tail can
+        // crossfade against future audio instead of RubberBand's startup frames.
         int minAntiClick = (int)(Transport::getInstance()->sampleRate * 0.005);
-        const int preRollSamples = jmin(numSamples, jmax(fadeNumSamples, minAntiClick));
-        const int paddedInputSamples = numSamples + preRollSamples;
-        
+        const int loopFadeSamples = jmin(jmax(0, numSamples - 1), jmax(fadeNumSamples, minAntiClick));
+        const int paddedInputSamples = numSamples + loopFadeSamples;
+
         AudioBuffer<float> paddedSource(numChannels, paddedInputSamples);
         paddedSource.clear();
         for (int ch = 0; ch < numChannels; ++ch)
         {
-            // Copy tail of source as pre-roll
-            paddedSource.copyFrom(ch, 0, sourceCopy, ch, numSamples - preRollSamples, preRollSamples);
-            // Copy main body
-            paddedSource.copyFrom(ch, preRollSamples, sourceCopy, ch, 0, numSamples);
+            // Copy main body first.
+            paddedSource.copyFrom(ch, 0, sourceCopy, ch, 0, numSamples);
+
+            // Copy the beginning again as post-roll so the processed end has
+            // real continuation to fade into.
+            if (loopFadeSamples > 0)
+                paddedSource.copyFrom(ch, numSamples, sourceCopy, ch, 0, loopFadeSamples);
         }
 
         rubberBand.setExpectedInputDuration((size_t)paddedInputSamples);
@@ -1214,15 +1218,22 @@ void SamplerNode::SamplerNote::run()
             }
         }
 
-        // 6. Copy the main body to pitchedFull and apply crossfade
+        // 6. Copy the main body to pitchedFull and blend the end into the
+        // processed continuation.
         for (int ch = 0; ch < numChannels; ++ch)
         {
-            pitchedFull.copyFrom(ch, 0, fullOutput, ch, preRollSamples, numSamples);
-            
-            // Crossfade at the end using the main loop end as fade-out and the pre-roll as fade-in
-            int bufferStartSample = numSamples - preRollSamples;
-            pitchedFull.applyGainRamp(ch, bufferStartSample, preRollSamples, 1.0f, 0.0f);
-            pitchedFull.addFromWithRamp(ch, bufferStartSample, fullOutput.getReadPointer(ch, 0), preRollSamples, 0.0f, 1.0f);
+            const int availableMainSamples = jmin(numSamples, collected);
+            if (availableMainSamples > 0)
+                pitchedFull.copyFrom(ch, 0, fullOutput, ch, 0, availableMainSamples);
+
+            const int availableContinuation = jmax(0, collected - numSamples);
+            const int crossfadeSamples = jmin(loopFadeSamples, availableContinuation);
+            if (crossfadeSamples > 0)
+            {
+                int bufferStartSample = numSamples - crossfadeSamples;
+                pitchedFull.applyGainRamp(ch, bufferStartSample, crossfadeSamples, 1.0f, 0.0f);
+                pitchedFull.addFromWithRamp(ch, bufferStartSample, fullOutput.getReadPointer(ch, numSamples), crossfadeSamples, 0.0f, 1.0f);
+            }
         }
     }
 
