@@ -80,11 +80,20 @@ void AudioLooperNode::updateRetroRingBuffer()
 		return;
 	}
 
-	int maxNum = jmax(jmax(retroRecCount->intValue(), retroDoubleRecCount->intValue()), retroTripleRecCount->intValue());
-	int numBeats = maxNum * getRetroBeatMultiplier();
+    int maxNum = retroRecCount->intValue();
+    if(retroDoubleRecCount->enabled) maxNum =  jmax(maxNum, retroDoubleRecCount->intValue());
+    if(retroTripleRecCount->enabled) maxNum =  jmax(maxNum, retroTripleRecCount->intValue());
+    if(retroRecFixedMaxBuffer->enabled) maxNum = jmax(maxNum, retroRecFixedMaxBuffer->intValue());
+    
+    int divider =  retroRecBeatDivider->enabled ? retroRecBeatDivider->intValue() : 1;
+    int numBeats = maxNum * getRetroBeatMultiplier() / divider;
 
-	int numSamples = Transport::getInstance()->getSamplesForBeat(numBeats) + getFadeNumSamples();
-	retroRingBuffer.reset(new RingBuffer<float>(numChannelsPerTrack->intValue(), numSamples));
+	int targetSamples = Transport::getInstance()->getSamplesForBeat(numBeats) + getFadeNumSamples();
+    int targetChannels = numChannelsPerTrack->intValue();
+    
+    if(retroRingBuffer != nullptr && retroRingBuffer->numChannels == targetChannels && retroRingBuffer->bufferSize == targetSamples) return; //no need to update
+    
+	retroRingBuffer.reset(new RingBuffer<float>(targetChannels, targetSamples));
 }
 
 

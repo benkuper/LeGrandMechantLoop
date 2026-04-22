@@ -66,6 +66,8 @@ public:
 	IntParameter* retroRecCount;
 	IntParameter* retroDoubleRecCount;
 	IntParameter* retroTripleRecCount;
+    IntParameter* retroRecFixedMaxBuffer;
+    IntParameter* retroRecBeatDivider;
 
 	ControllableContainer controlsCC;
 	BoolParameter* excludeFromGlobalControl;

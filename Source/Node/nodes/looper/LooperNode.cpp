@@ -54,11 +54,20 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 
 	retroRecMode = recordCC.addEnumParameter("Retro Rec Mode", "This decides what is the unit to use to do when hitting the Retro Rec trigger.");
 	retroRecMode->addOption("None", RETRO_NONE)->addOption("First Loop", RETRO_FIRSTLOOP)->addOption("Bar", RETRO_BAR)->addOption("Beat", RETRO_BEAT);
-
+    retroRecMode->setValueWithData(RETRO_FIRSTLOOP);
+    
 	retroRecCount = recordCC.addIntParameter("Retro Rec Count", "Number of bars or beats to record when using the Retro Rec trigger", 1, 1);
 	retroDoubleRecCount = recordCC.addIntParameter("Retro Double Rec Count", "Number of bars or beats to record when hitting the Retro Rec trigger twice before it stores it", 2, 1);
+    retroDoubleRecCount->canBeDisabledByUser = true;
 	retroTripleRecCount = recordCC.addIntParameter("Retro Triple Rec Count", "Number of bars or beats to record when hitting the Retro Rec trigger three times before it stores it", 4, 1);
-
+    retroTripleRecCount->canBeDisabledByUser = true;
+    
+    retroRecFixedMaxBuffer = recordCC.addIntParameter("Retro Rec Fixed Max Buffer", "This allows to set a fixed max buffer for retro recording instead of the default behaviour of using auto detected max buffer from rec counts", 16, 1, 64, false);
+    retroRecFixedMaxBuffer->canBeDisabledByUser = true;
+    
+    retroRecBeatDivider = recordCC.addIntParameter("Retro Rec Beat Divider", "This allows to set a beat divider for the retro recording length, so you can for example record the last 4 bars but divided by 4 to get the last bar", 1, 1, 16, false);
+    retroRecBeatDivider->canBeDisabledByUser = true;
+    
 	monitorMode = recordCC.addEnumParameter("Monitor Mode", "How to monitor");
 	monitorMode->addOption("Always", ALWAYS)->addOption("Armed track", ARMED_TRACK)->addOption("When recording", RECORDING_ONLY)->addOption("Off", OFF);
 
@@ -549,8 +558,14 @@ int LooperNode::getRetroBeatMultiplier() const
 
 int LooperNode::getRetroNumBeats(int retroCount)
 {
-	int num = retroCount == 1 ? retroRecCount->intValue() : (retroCount == 2 ? retroDoubleRecCount->intValue() : retroTripleRecCount->intValue());
-	return num * getRetroBeatMultiplier();
+    int num = retroRecCount->intValue();
+    if(retroCount == 2 && retroDoubleRecCount->enabled) num = retroDoubleRecCount->intValue();
+    if(retroCount >= 3 && retroTripleRecCount->enabled) num = retroTripleRecCount->intValue();
+    int targetNumBeats = num * getRetroBeatMultiplier();
+    
+    if(retroRecBeatDivider->enabled) targetNumBeats /= retroRecBeatDivider->intValue();
+    
+    return targetNumBeats;
 }
 
 
