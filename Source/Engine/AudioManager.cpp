@@ -489,31 +489,15 @@ void AudioManager::applyPreferredConfigurationIfAvailable()
 
 	isApplyingManagedChange = true;
 
-
-
-	if (lastUserState != nullptr)
-
-	{
-
-		loadAudioConfig();
-
-	}
-
-	else
-
-	{
-
-		if (preferredDeviceType.isNotEmpty() && am.getCurrentAudioDeviceType() != preferredDeviceType) am.setCurrentAudioDeviceType(preferredDeviceType, false);
+	if (preferredDeviceType.isNotEmpty() && am.getCurrentAudioDeviceType() != preferredDeviceType) am.setCurrentAudioDeviceType(preferredDeviceType, true);
 
 
 
-		const String error = am.setAudioDeviceSetup(preferredSetup, false);
+	const String error = am.setAudioDeviceSetup(preferredSetup, false);
 
-		if (error.isNotEmpty()) setWarningMessage("Could not restore preferred audio settings: " + error, "device");
+	if (error.isNotEmpty()) setWarningMessage("Could not restore preferred audio settings: " + error, "device");
 
-		else clearWarning("device");
-
-	}
+	else clearWarning("device");
 
 
 
@@ -756,36 +740,6 @@ void AudioManager::changeListenerCallback(ChangeBroadcaster* source)
 
 
 		capturePreferredConfiguration();
-
-		updateGraph();
-
-		return;
-
-	}
-
-
-
-	if (hasPreferredSetup && !isSetupMatchingPreferred(currentSetup, currentDeviceType))
-
-	{
-
-		if (isPreferredConfigurationAvailable())
-
-		{
-
-			applyPreferredConfigurationIfAvailable();
-
-		}
-
-		else if (hasActiveOutputDevice())
-
-		{
-
-			disableAudioDeviceTemporarily();
-
-		}
-
-
 
 		updateGraph();
 
