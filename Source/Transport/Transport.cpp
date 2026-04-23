@@ -26,7 +26,9 @@ Transport::Transport() :
     transportWasStartedFromNode(false),
 	timeAtStart(0)
 #if USE_ABLETONLINK
-	, checkLinkOnNextAudioCallback(false)
+	, checkLinkOnNextAudioCallback(false),
+	ignoreLinkTempoPublish(false),
+	ignoreLinkStartStopPublish(false)
 #endif
 {
 
@@ -121,6 +123,10 @@ void Transport::play(bool startTempoSet, bool playFromStart)
 
 		isCurrentlyPlaying->setValue(true);
 		transportListeners.call(&TransportListener::playStateChanged, isCurrentlyPlaying->boolValue(), playFromStart);
+
+#if USE_ABLETONLINK
+		publishTempoToLink(playFromStart && resetLinkTimeOnPlay->boolValue(), 0, beatsPerBar->intValue());
+#endif
 	}
 	else setTempoSampleCount = 0;
 }
@@ -197,13 +203,9 @@ void Transport::finishSetTempo(bool startPlaying)
 
 	if (startPlaying) playTrigger->trigger();
 
-	if (link != nullptr && useAbletonLink->boolValue() && resetLinkTimeOnPlay->boolValue() && link->numPeers() > 0)
-	{
-		auto session = link->captureAppSessionState();
-		session.forceBeatAtTime(0, link->clock().micros(), targetNumBeats);
-		session.setTempo(bpm->doubleValue(), link->clock().micros());
-		link->commitAppSessionState(session);
-	}
+#if USE_ABLETONLINK
+	publishTempoToLink(startPlaying && resetLinkTimeOnPlay->boolValue(), 0, targetNumBeats);
+#endif
 }
 
 void Transport::setCurrentTime(int samples)
@@ -271,7 +273,7 @@ void Transport::onContainerParameterChanged(Parameter* p)
 		transportListeners.call(&TransportListener::playStateChanged, isCurrentlyPlaying->boolValue(), false);
 
 #if USE_ABLETONLINK
-		if (linkSyncStartStop->boolValue() && link != nullptr)
+		if (!ignoreLinkStartStopPublish.load() && linkSyncStartStop->boolValue() && link != nullptr)
 		{
 			auto session = link->captureAppSessionState();
 			session.setIsPlaying(isCurrentlyPlaying->boolValue(), link->clock().micros());
@@ -293,7 +295,7 @@ void Transport::onContainerParameterChanged(Parameter* p)
 	else if (p == bpm)
 	{
 		//LOG("BPM Changed " << bpm->floatValue());
-		if (!settingBPMFromTransport)
+		if (!settingBPMFromTransport && sampleRate > 0 && blockSize > 0)
 		{
 			double barRel = curBar->intValue() + (getRelativeBarSamples() * 1.0 / getBarNumSamples()); //before set new samplesPerBeat
 
@@ -302,18 +304,14 @@ void Transport::onContainerParameterChanged(Parameter* p)
 
 			timeInSamples = getBlockPerfectNumSamples(getBarNumSamples() * barRel); //after set new samplesPerBeat
 		}
-		else
-		{
 
 #if USE_ABLETONLINK
-			if (link != nullptr)
-			{
-				auto session = link->captureAppSessionState();
-				session.setTempo(bpm->floatValue(), link->clock().micros());
-				link->commitAudioSessionState(session);
-			}
-#endif
+		if (!ignoreLinkTempoPublish.load())
+		{
+			publishTempoToLink();
 		}
+#endif
+
 		transportListeners.call(&TransportListener::bpmChanged);
 	}
 
@@ -494,6 +492,57 @@ int Transport::getTotalBeatCount() const
 	return curBar->intValue() * beatsPerBar->intValue() + curBeat->intValue();
 }
 
+#if USE_ABLETONLINK
+void Transport::publishTempoToLink(bool resetBeat, double beat, double quantum)
+{
+	if (link == nullptr || !useAbletonLink->boolValue() || !link->isEnabled()) return;
+
+	const auto time = link->clock().micros();
+	auto session = link->captureAppSessionState();
+	session.setTempo(bpm->doubleValue(), time);
+
+	if (resetBeat)
+	{
+		session.forceBeatAtTime(beat, time, quantum > 0 ? quantum : beatsPerBar->intValue());
+	}
+
+	link->commitAppSessionState(session);
+}
+
+void Transport::syncToLinkSessionState(bool syncPlayState)
+{
+	if (link == nullptr || !useAbletonLink->boolValue() || !link->isEnabled() || link->numPeers() == 0) return;
+
+	const auto time = link->clock().micros();
+	const auto session = link->captureAppSessionState();
+
+	ignoreLinkTempoPublish.store(true);
+	bpm->setValue(session.tempo());
+	ignoreLinkTempoPublish.store(false);
+
+	if (sampleRate > 0 && blockSize > 0 && numSamplesPerBeat > 0)
+	{
+		const int bPerBar = beatsPerBar->intValue();
+		const auto beat = session.beatAtTime(time, bPerBar);
+		const auto phase = session.phaseAtTime(time, bPerBar);
+
+		const int targetBeat = floor(phase);
+		const int targetBar = floor(beat / bPerBar);
+		const double beatProg = fmod(phase, 1);
+		const double barProgress = (targetBeat + beatProg) / bPerBar;
+		const int64 linkSample = static_cast<int64>((targetBar + barProgress) * getBarNumSamples());
+		setCurrentTime(static_cast<int>(linkSample));
+	}
+
+	if (syncPlayState && linkSyncStartStop->boolValue())
+	{
+		ignoreLinkStartStopPublish.store(true);
+		isCurrentlyPlaying->setValue(session.isPlaying());
+		ignoreLinkStartStopPublish.store(false);
+	}
+}
+#endif
+
 void Transport::setupAbletonLink()
 {
 #if USE_ABLETONLINK
@@ -503,22 +552,27 @@ void Transport::setupAbletonLink()
 
 		link->setTempoCallback([this](const double p) {
 			DBG("received bpm " << (double)p << " <> " << (double)bpm->value << " / " << (int)(p == (double)bpm->value));
+			ignoreLinkTempoPublish.store(true);
 			bpm->setValue(p);
+			ignoreLinkTempoPublish.store(false);
 			});
 
-		link->setNumPeersCallback([this](const int p) {
-			numLinkClients->setValue(p);
+		link->setNumPeersCallback([this](const std::size_t p) {
+			numLinkClients->setValue(static_cast<int>(p));
+			if (p > 0) syncToLinkSessionState();
 			});
 
 		link->setStartStopCallback([this](const int p) {
+			ignoreUnused(p);
 			if (!linkSyncStartStop->boolValue()) return;
-			if (p == 0) stop();
-			else if (p == 1 || p == 2) play();
+			syncToLinkSessionState();
 			});
 
 
 		link->enableStartStopSync(linkSyncStartStop->boolValue());
 		link->enable(true);
+		numLinkClients->setValue(static_cast<int>(link->numPeers()));
+		syncToLinkSessionState();
 
 		jassert(link->isEnabled());
 
@@ -528,6 +582,7 @@ void Transport::setupAbletonLink()
 	else
 	{
 		link.reset();
+		numLinkClients->setValue(0);
 		LOG("Ableton Link is now disabled");
 
 	}

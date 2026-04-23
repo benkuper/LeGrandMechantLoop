@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <atomic>
+
 #include "JuceHeader.h"
 
 #if USE_ABLETONLINK
@@ -84,6 +86,8 @@ public:
 #if USE_ABLETONLINK
 	std::unique_ptr<ableton::Link> link;
 	bool checkLinkOnNextAudioCallback;
+	std::atomic<bool> ignoreLinkTempoPublish;
+	std::atomic<bool> ignoreLinkStartStopPublish;
 #endif
 
 	void clear() override; // override here to avoid deleting parameters
@@ -138,6 +142,11 @@ public:
 	int getTotalBeatCount() const;
 
 	void setupAbletonLink();
+
+#if USE_ABLETONLINK
+	void publishTempoToLink(bool resetBeat = false, double beat = 0, double quantum = 0);
+	void syncToLinkSessionState(bool syncPlayState = true);
+#endif
 
 	// Inherited via AudioIODeviceCallback
 
