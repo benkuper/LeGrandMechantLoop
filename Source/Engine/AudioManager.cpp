@@ -675,9 +675,11 @@ void AudioManager::audioDeviceListChanged()
 
 	if (isApplyingManagedChange) return;
 
+	if (!hasPreferredSetup || isCurrentSetupMatchingPreferred()) return;
 
+	if (isPreferredConfigurationAvailable()) applyPreferredConfigurationIfAvailable();
 
-	if (hasPreferredSetup && !isCurrentSetupMatchingPreferred() && isPreferredConfigurationAvailable()) applyPreferredConfigurationIfAvailable();
+	else disableAudioDeviceTemporarily();
 
 }
 
@@ -981,9 +983,9 @@ void AudioManager::loadJSONDataInternal(var data)
 
 	loadAudioConfig(audioSetup);
 
+	if (hasPreferredSetup && !isPreferredConfigurationAvailable()) disableAudioDeviceTemporarily();
 
-
-	if (!hasPreferredSetup && am.getCurrentAudioDevice() != nullptr) capturePreferredConfiguration();
+	else if (!hasPreferredSetup && am.getCurrentAudioDevice() != nullptr) capturePreferredConfiguration();
 
 
 
