@@ -62,7 +62,7 @@ LooperNode::LooperNode(StringRef name, var params, LooperType looperType) :
 	retroTripleRecCount = recordCC.addIntParameter("Retro Triple Rec Count", "Number of bars or beats to record when hitting the Retro Rec trigger three times before it stores it", 4, 1);
     retroTripleRecCount->canBeDisabledByUser = true;
     
-    retroRecFixedMaxBuffer = recordCC.addIntParameter("Retro Rec Fixed Max Buffer", "This allows to set a fixed max buffer for retro recording instead of the default behaviour of using auto detected max buffer from rec counts", 16, 1, 64, false);
+    retroRecFixedMaxBuffer = recordCC.addIntParameter("Retro Rec Max Beats Buffer", "This allows to set a fixed number of beats as buffer for retro recording instead of the default behaviour of using auto detected max buffer from rec counts", 32, 1, 512, false);
     retroRecFixedMaxBuffer->canBeDisabledByUser = true;
     
     retroRecBeatDivider = recordCC.addIntParameter("Retro Rec Beat Divider", "This allows to set a beat divider for the retro recording length, so you can for example record the last 4 bars but divided by 4 to get the last bar", 1, 1, 16, false);

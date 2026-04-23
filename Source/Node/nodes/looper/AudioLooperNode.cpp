@@ -83,10 +83,11 @@ void AudioLooperNode::updateRetroRingBuffer()
     int maxNum = retroRecCount->intValue();
     if(retroDoubleRecCount->enabled) maxNum =  jmax(maxNum, retroDoubleRecCount->intValue());
     if(retroTripleRecCount->enabled) maxNum =  jmax(maxNum, retroTripleRecCount->intValue());
-    if(retroRecFixedMaxBuffer->enabled) maxNum = jmax(maxNum, retroRecFixedMaxBuffer->intValue());
     
     int divider =  retroRecBeatDivider->enabled ? retroRecBeatDivider->intValue() : 1;
     int numBeats = maxNum * getRetroBeatMultiplier() / divider;
+    
+    if(retroRecFixedMaxBuffer->enabled) numBeats = jmax(numBeats, retroRecFixedMaxBuffer->intValue());
 
 	int targetSamples = Transport::getInstance()->getSamplesForBeat(numBeats) + getFadeNumSamples();
     int targetChannels = numChannelsPerTrack->intValue();
