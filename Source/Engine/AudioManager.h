@@ -50,7 +50,9 @@ class AudioManager :
 
 	public ChangeListener,
 
-	public EngineListener
+	public EngineListener,
+
+	public Timer
 
 {
 
@@ -99,6 +101,8 @@ public:
 	bool isApplyingManagedChange;
 
 	String targetDeviceName;
+
+	String lastAvailableDeviceSignature;
 
 
 
@@ -163,6 +167,8 @@ public:
 	virtual void audioDeviceListChanged() override;
 
 	virtual void changeListenerCallback(ChangeBroadcaster* source) override;
+
+	void timerCallback() override;
 
 
 
@@ -231,6 +237,12 @@ public:
 	void applyPreferredConfigurationIfAvailable();
 
 	void disableAudioDeviceTemporarily();
+
+	void checkRecoveryState(const String& reason, bool shouldLog);
+
+	String buildAvailableDeviceSignature();
+
+	String describeSetup(const AudioDeviceManager::AudioDeviceSetup& setup) const;
 
 	static bool areXmlStatesEquivalent(const XmlElement* first, const XmlElement* second);
 

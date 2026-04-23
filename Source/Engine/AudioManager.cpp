@@ -99,6 +99,12 @@ AudioManager::AudioManager() :
 
 	capturePreferredConfiguration();
 
+	lastAvailableDeviceSignature = buildAvailableDeviceSignature();
+
+	LOG("Audio inventory at startup: " << lastAvailableDeviceSignature);
+
+	startTimer(1000);
+
 
 
 	for (auto& d : am.getAvailableDeviceTypes()) d->addListener(this);
@@ -174,6 +180,8 @@ AudioManager::~AudioManager()
 	am.removeAudioCallback(this);
 
 	am.removeChangeListener(this);
+
+	stopTimer();
 
 }
 
@@ -479,6 +487,110 @@ bool AudioManager::hasActiveOutputDevice() const
 
 
 
+String AudioManager::describeSetup(const AudioDeviceManager::AudioDeviceSetup& setup) const
+
+{
+
+	return "type=" + (am.getCurrentAudioDeviceType().isNotEmpty() ? am.getCurrentAudioDeviceType() : "<none>")
+
+		+ ", in=" + (setup.inputDeviceName.isNotEmpty() ? setup.inputDeviceName : "<none>")
+
+		+ ", out=" + (setup.outputDeviceName.isNotEmpty() ? setup.outputDeviceName : "<none>")
+
+		+ ", sr=" + String(setup.sampleRate)
+
+		+ ", bs=" + String(setup.bufferSize)
+
+		+ ", inCh=" + String(setup.inputChannels.countNumberOfSetBits())
+
+		+ ", outCh=" + String(setup.outputChannels.countNumberOfSetBits());
+
+}
+
+
+
+String AudioManager::buildAvailableDeviceSignature()
+
+{
+
+	StringArray inventoryEntries;
+
+	for (auto& deviceType : am.getAvailableDeviceTypes())
+
+	{
+
+		inventoryEntries.add(deviceType->getTypeName() + ":in[" + deviceType->getDeviceNames(true).joinIntoString(",")
+
+			+ "] out[" + deviceType->getDeviceNames(false).joinIntoString(",") + "]");
+
+	}
+
+
+
+	return inventoryEntries.joinIntoString(" | ");
+
+}
+
+
+
+void AudioManager::checkRecoveryState(const String& reason, bool shouldLog)
+
+{
+
+	if (!hasPreferredSetup)
+
+	{
+
+		if (shouldLog) LOG("Audio recovery check (" << reason << "): no preferred setup stored");
+
+		return;
+
+	}
+
+
+
+	const AudioDeviceManager::AudioDeviceSetup currentSetup(am.getAudioDeviceSetup());
+
+	const bool matchesPreferred = isSetupMatchingPreferred(currentSetup, am.getCurrentAudioDeviceType());
+
+	const bool preferredAvailable = isPreferredConfigurationAvailable();
+
+
+
+	if (shouldLog)
+
+	{
+
+		LOG("Audio recovery check (" << reason << "): current={" << describeSetup(currentSetup)
+
+			<< "} preferred={type=" << (preferredDeviceType.isNotEmpty() ? preferredDeviceType : "<none>")
+
+			<< ", in=" << (preferredSetup.inputDeviceName.isNotEmpty() ? preferredSetup.inputDeviceName : "<none>")
+
+			<< ", out=" << (preferredSetup.outputDeviceName.isNotEmpty() ? preferredSetup.outputDeviceName : "<none>")
+
+			<< ", sr=" << preferredSetup.sampleRate
+
+			<< ", bs=" << preferredSetup.bufferSize
+
+			<< "} preferredAvailable=" << String((int)preferredAvailable)
+
+			<< " matchesPreferred=" << String((int)matchesPreferred));
+
+	}
+
+
+
+	if (matchesPreferred) return;
+
+	if (preferredAvailable) applyPreferredConfigurationIfAvailable();
+
+	else disableAudioDeviceTemporarily();
+
+}
+
+
+
 void AudioManager::applyPreferredConfigurationIfAvailable()
 
 {
@@ -489,6 +601,16 @@ void AudioManager::applyPreferredConfigurationIfAvailable()
 
 	isApplyingManagedChange = true;
 
+	LOG("Audio recovery: attempting restore to preferred setup {type=" << (preferredDeviceType.isNotEmpty() ? preferredDeviceType : "<none>")
+
+		<< ", in=" << (preferredSetup.inputDeviceName.isNotEmpty() ? preferredSetup.inputDeviceName : "<none>")
+
+		<< ", out=" << (preferredSetup.outputDeviceName.isNotEmpty() ? preferredSetup.outputDeviceName : "<none>")
+
+		<< ", sr=" << preferredSetup.sampleRate
+
+		<< ", bs=" << preferredSetup.bufferSize << "}");
+
 	if (preferredDeviceType.isNotEmpty() && am.getCurrentAudioDeviceType() != preferredDeviceType) am.setCurrentAudioDeviceType(preferredDeviceType, true);
 
 
@@ -497,7 +619,15 @@ void AudioManager::applyPreferredConfigurationIfAvailable()
 
 	if (error.isNotEmpty()) setWarningMessage("Could not restore preferred audio settings: " + error, "device");
 
-	else clearWarning("device");
+	else
+
+	{
+
+		clearWarning("device");
+
+		LOG("Audio recovery: restore applied successfully");
+
+	}
 
 
 
@@ -519,6 +649,8 @@ void AudioManager::disableAudioDeviceTemporarily()
 
 	isApplyingManagedChange = true;
 
+	LOG("Audio recovery: disabling audio device to None for both input and output");
+
 	const String error = am.setAudioDeviceSetup(disabledSetup, false);
 
 	isApplyingManagedChange = false;
@@ -526,6 +658,8 @@ void AudioManager::disableAudioDeviceTemporarily()
 
 
 	if (error.isNotEmpty()) setWarningMessage("Could not disable audio device: " + error, "device");
+
+	else LOG("Audio recovery: audio device disabled");
 
 }
 
@@ -659,11 +793,45 @@ void AudioManager::audioDeviceListChanged()
 
 	if (isApplyingManagedChange) return;
 
-	if (!hasPreferredSetup || isCurrentSetupMatchingPreferred()) return;
+	const String newInventorySignature = buildAvailableDeviceSignature();
 
-	if (isPreferredConfigurationAvailable()) applyPreferredConfigurationIfAvailable();
+	if (newInventorySignature != lastAvailableDeviceSignature)
 
-	else disableAudioDeviceTemporarily();
+	{
+
+		LOG("Audio inventory changed (listener): " << newInventorySignature);
+
+		lastAvailableDeviceSignature = newInventorySignature;
+
+	}
+
+	checkRecoveryState("deviceListChanged", true);
+
+}
+
+
+
+void AudioManager::timerCallback()
+
+{
+
+	const String newInventorySignature = buildAvailableDeviceSignature();
+
+	const bool inventoryChanged = newInventorySignature != lastAvailableDeviceSignature;
+
+	if (inventoryChanged)
+
+	{
+
+		LOG("Audio inventory changed (poll): " << newInventorySignature);
+
+		lastAvailableDeviceSignature = newInventorySignature;
+
+	}
+
+
+
+	if (hasPreferredSetup && !isCurrentSetupMatchingPreferred()) checkRecoveryState(inventoryChanged ? "pollInventoryChanged" : "pollRecovery", inventoryChanged);
 
 }
 
@@ -740,6 +908,8 @@ void AudioManager::changeListenerCallback(ChangeBroadcaster* source)
 
 
 		capturePreferredConfiguration();
+
+		LOG("Audio preference updated from manual selection: " << describeSetup(am.getAudioDeviceSetup()));
 
 		updateGraph();
 
