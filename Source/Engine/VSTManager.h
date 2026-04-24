@@ -82,6 +82,8 @@ public:
 
 	var getJSONDataInternal() override;
 	void loadJSONDataInternal(var data) override;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(VSTPluginParameter);
 };
 
 class DescriptionSorter
