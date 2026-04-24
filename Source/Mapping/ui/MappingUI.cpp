@@ -55,8 +55,19 @@ void MappingUI::updateOutUI()
 
 void MappingUI::updateValueUI()
 {
+    
+    
     if (valueUI != nullptr)
     {
+        if (GenericMapping* m = dynamic_cast<GenericMapping*>(item))
+        {
+            if (m->source != nullptr && valueUI->controllable == m->source) return;
+        }
+        else if (MacroMapping* m = dynamic_cast<MacroMapping*>(item))
+        {
+            if(m->sourceParam != nullptr && valueUI->controllable == m->sourceParam) return;
+        }
+        
         removeChildComponent(valueUI.get());
     }
 
