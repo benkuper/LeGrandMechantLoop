@@ -50,6 +50,11 @@ SamplerNode::SamplerNode(var params) :
     clearLastRecordedTrigger = controlsCC.addTrigger("Clear", "Clear Last recorded or played note");
     clearAllNotesTrigger = controlsCC.addTrigger("Clear All Notes", "Clear all recorded notes");
 
+    revertLastMode = controlsCC.addEnumParameter("Revert Last Mode", "The way to revert when revert last is triggered");
+    revertLastMode->addOption("Last Played", LAST_PLAYED)->addOption("Last Recorded", LAST_RECORDED);
+
+    revertLastRecordedTrigger = controlsCC.addTrigger("Revert", "Revert Last recorded or played note");
+
     startAutoKey = controlsCC.addIntParameter("Start Auto Key", "The pitch to start auto key computation from", 0, 0, 127);
     endAutoKey = controlsCC.addIntParameter("End Auto Key", "The pitch to end auto key computation from", 127, 0, 127);
     
@@ -171,6 +176,19 @@ void SamplerNode::clearNote(int note)
     samplerNotes[note]->buffer.setSize(0, 0);
     samplerNotes[note]->state->setValueWithData(EMPTY);
 
+}
+
+void SamplerNode::revertNote(int note)
+{
+    if (note == -1 || note >= samplerNotes.size()) return;
+    ScopedSuspender sp(processor);
+    auto* sn = samplerNotes[note];
+    if (sn->state->getValueDataAsEnum<NoteState>() != FILLED) return;
+
+    for (int i = 0; i < sn->buffer.getNumChannels(); i++)
+    {
+        sn->buffer.reverse(i, 0, sn->buffer.getNumSamples());
+    }
 }
 
 void SamplerNode::clearAllNotes()
@@ -442,6 +460,17 @@ void SamplerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc
     else if (c == clearAllNotesTrigger)
     {
         clearAllNotes();
+    }
+    else if (c == revertLastRecordedTrigger)
+    {
+        if (revertLastMode->getValueDataAsEnum<ClearMode>() == LAST_RECORDED)
+        {
+            revertNote(lastRecordedNote);
+        }
+        else
+        {
+            revertNote(lastPlayedNote);
+        }
     }
     else if (c == loadBankTrigger)
     {

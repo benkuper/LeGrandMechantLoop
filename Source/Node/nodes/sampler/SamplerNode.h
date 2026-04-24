@@ -51,6 +51,8 @@ public:
     EnumParameter* clearLastMode;
     Trigger* clearLastRecordedTrigger;
     Trigger* clearAllNotesTrigger;
+    EnumParameter* revertLastMode;
+    Trigger* revertLastRecordedTrigger;
     IntParameter* startAutoKey;
     IntParameter* endAutoKey;
     Trigger* computeAutoKeysTrigger;
@@ -163,6 +165,7 @@ public:
 
     OwnedArray<SamplerNote> samplerNotes;
 
+    void revertNote(int note);
     void clearNote(int note);
     void clearAllNotes();
     void resetAllNotes();
