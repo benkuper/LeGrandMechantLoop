@@ -15,10 +15,27 @@ AudioLooperTrack::AudioLooperTrack(AudioLooperNode* looper, int index, int numCh
 	audioLooper(looper),
 	numChannels(numChannels),
 	rtStretchBuffer(numChannels, Transport::getInstance()->blockSize),
+	stretchInputBuffer(numChannels, Transport::getInstance()->blockSize),
+	stretchScratchBuffer(numChannels, Transport::getInstance()->blockSize),
 	antiClickFadeBeforeClear(true), //needs that otherwise first clear doesn't work
 	antiClickFadeBeforeStop(false),
-	antiClickFadeBeforePause(false)
+	antiClickFadeBeforePause(false),
+	stretchInputSample(0),
+	stretchPadRemaining(0),
+	stretchDelayRemaining(0)
 {
+	reverted = addBoolParameter("Reverted", "Play this track backwards.", false);
+	rbPreserveFormants = addBoolParameter("RB Formants", "Preserve formants while time-stretching.", true);
+	rbSmoothing = addBoolParameter("RB Smoothing", "Enable Rubber Band smoothing for live tempo changes.", true);
+
+	rbEngine = addEnumParameter("RB Engine", "Rubber Band realtime engine.");
+	rbEngine->addOption("Finer", RB_ENGINE_FINER)->addOption("Faster", RB_ENGINE_FASTER);
+
+	rbTransients = addEnumParameter("RB Transients", "Transient handling for the faster realtime engine.");
+	rbTransients->addOption("Crisp", RB_TRANS_CRISP)->addOption("Mixed", RB_TRANS_MIXED)->addOption("Smooth", RB_TRANS_SMOOTH);
+
+	rbWindowSize = addEnumParameter("RB Window", "Rubber Band window size.");
+	rbWindowSize->addOption("Short", RB_WIN_SHORT)->addOption("Standard", RB_WIN_STANDARD)->addOption("Long", RB_WIN_LONG);
 }
 
 AudioLooperTrack::~AudioLooperTrack()
@@ -39,6 +56,174 @@ void AudioLooperTrack::updateBufferSize(int newSize)
 	buffer.setSize(numChannels, newSize, true, true);
 }
 
+void AudioLooperTrack::resetStretchState(bool clearStretcher)
+{
+	stretchInputSample = 0;
+	stretchPadRemaining = 0;
+	stretchDelayRemaining = 0;
+	rtStretchBuffer.clear();
+	stretchedBuffer.clear();
+	stretchInputBuffer.clear();
+	stretchScratchBuffer.clear();
+
+	if (clearStretcher)
+	{
+		stretcher.reset();
+	}
+	else if (stretcher != nullptr)
+	{
+		stretcher->reset();
+	}
+}
+
+void AudioLooperTrack::rebuildStretcher()
+{
+	if (stretch == 1 || numChannels <= 0 || bufferNumSamples <= 0)
+	{
+		resetStretchState(true);
+		return;
+	}
+
+	int rbOptions = RubberBand::RubberBandStretcher::OptionProcessRealTime
+		| RubberBand::RubberBandStretcher::OptionChannelsTogether;
+
+	if (rbEngine->getValueDataAsEnum<RBEngine>() == RB_ENGINE_FINER) rbOptions |= RubberBand::RubberBandStretcher::OptionEngineFiner;
+	if (rbPreserveFormants->boolValue()) rbOptions |= RubberBand::RubberBandStretcher::OptionFormantPreserved;
+	if (rbSmoothing->boolValue()) rbOptions |= RubberBand::RubberBandStretcher::OptionSmoothingOn;
+
+	switch (rbTransients->getValueDataAsEnum<RBTransients>())
+	{
+	case RB_TRANS_MIXED: rbOptions |= RubberBand::RubberBandStretcher::OptionTransientsMixed; break;
+	case RB_TRANS_SMOOTH: rbOptions |= RubberBand::RubberBandStretcher::OptionTransientsSmooth; break;
+	default: break;
+	}
+
+	switch (rbWindowSize->getValueDataAsEnum<RBWindow>())
+	{
+	case RB_WIN_SHORT: rbOptions |= RubberBand::RubberBandStretcher::OptionWindowShort; break;
+	case RB_WIN_LONG: rbOptions |= RubberBand::RubberBandStretcher::OptionWindowLong; break;
+	default: break;
+	}
+
+	stretcher.reset(new RubberBand::RubberBandStretcher(looper->processor->getSampleRate(), numChannels, rbOptions));
+
+	const int maxProcessSize = jmax(looper->processor->getBlockSize(), 1);
+	stretcher->setMaxProcessSize((size_t)maxProcessSize);
+	stretcher->setTimeRatio(stretch);
+
+	rtStretchBuffer.setSize(numChannels, maxProcessSize, false, false, true);
+	stretchInputBuffer.setSize(numChannels, maxProcessSize, false, false, true);
+	stretchScratchBuffer.setSize(numChannels, maxProcessSize, false, false, true);
+
+	stretchInputSample = 0;
+	stretchPadRemaining = (int)stretcher->getPreferredStartPad();
+	stretchDelayRemaining = (int)stretcher->getStartDelay();
+}
+
+void AudioLooperTrack::fillCircularBuffer(AudioBuffer<float>& destBuffer, int destStartSample, const AudioBuffer<float>& sourceBuffer, int sourceStartSample, int numSamples) const
+{
+	const int sourceNumSamples = sourceBuffer.getNumSamples();
+	if (numSamples <= 0 || sourceNumSamples <= 0) return;
+
+	int writeOffset = destStartSample;
+	int readOffset = sourceStartSample % sourceNumSamples;
+	if (readOffset < 0) readOffset += sourceNumSamples;
+	int remaining = numSamples;
+
+	while (remaining > 0)
+	{
+		const int chunkSize = jmin(remaining, sourceNumSamples - readOffset);
+
+		for (int channel = 0; channel < numChannels; ++channel)
+		{
+			destBuffer.copyFrom(channel, writeOffset, sourceBuffer, channel, readOffset, chunkSize);
+		}
+
+		writeOffset += chunkSize;
+		remaining -= chunkSize;
+		readOffset = 0;
+	}
+}
+
+bool AudioLooperTrack::renderStretchedBlock(const AudioBuffer<float>& sourceBuffer, int blockSize)
+{
+	if (stretcher == nullptr || sourceBuffer.getNumSamples() == 0 || blockSize <= 0)
+	{
+		return false;
+	}
+
+	rtStretchBuffer.setSize(numChannels, blockSize, false, false, true);
+	rtStretchBuffer.clear();
+
+	if (stretchInputBuffer.getNumSamples() < blockSize) stretchInputBuffer.setSize(numChannels, blockSize, false, false, true);
+	if (stretchScratchBuffer.getNumSamples() < blockSize) stretchScratchBuffer.setSize(numChannels, blockSize, false, false, true);
+
+	const int sourceNumSamples = sourceBuffer.getNumSamples();
+	int renderedSamples = 0;
+	int guard = 0;
+
+	while (renderedSamples < blockSize && guard++ < 64)
+	{
+		while (stretchDelayRemaining > 0 && stretcher->available() > 0)
+		{
+			const int chunkSize = jmin<int>(jmin<int>((int)stretcher->available(), stretchDelayRemaining), stretchScratchBuffer.getNumSamples());
+			if (chunkSize <= 0) break;
+
+			HeapBlock<float*> discardPointers(numChannels);
+			for (int channel = 0; channel < numChannels; ++channel) discardPointers[channel] = stretchScratchBuffer.getWritePointer(channel);
+
+			const int retrieved = (int)stretcher->retrieve(discardPointers.get(), (size_t)chunkSize);
+			if (retrieved <= 0) break;
+
+			stretchDelayRemaining -= retrieved;
+		}
+
+		if (stretchDelayRemaining == 0 && stretcher->available() > 0)
+		{
+			const int chunkSize = jmin<int>((int)stretcher->available(), blockSize - renderedSamples);
+			if (chunkSize > 0)
+			{
+				HeapBlock<float*> renderPointers(numChannels);
+				for (int channel = 0; channel < numChannels; ++channel) renderPointers[channel] = rtStretchBuffer.getWritePointer(channel, renderedSamples);
+
+				const int retrieved = (int)stretcher->retrieve(renderPointers.get(), (size_t)chunkSize);
+				if (retrieved > 0)
+				{
+					renderedSamples += retrieved;
+					continue;
+				}
+			}
+		}
+
+		int requiredSamples = jmax<int>((int)stretcher->getSamplesRequired(), 1);
+		requiredSamples = jmin(requiredSamples, stretchInputBuffer.getNumSamples());
+
+		stretchInputBuffer.clear();
+
+		int writeOffset = 0;
+		if (stretchPadRemaining > 0)
+		{
+			const int padSamples = jmin(requiredSamples, stretchPadRemaining);
+			writeOffset += padSamples;
+			stretchPadRemaining -= padSamples;
+		}
+
+		const int sourceSamplesToWrite = requiredSamples - writeOffset;
+		if (sourceSamplesToWrite > 0)
+		{
+			fillCircularBuffer(stretchInputBuffer, writeOffset, sourceBuffer, stretchInputSample, sourceSamplesToWrite);
+			stretchInputSample = (stretchInputSample + sourceSamplesToWrite) % sourceNumSamples;
+		}
+
+		HeapBlock<const float*> readPointers(numChannels);
+		for (int channel = 0; channel < numChannels; ++channel) readPointers[channel] = stretchInputBuffer.getReadPointer(channel);
+
+		stretcher->process(readPointers.get(), (size_t)requiredSamples, false);
+	}
+
+	return renderedSamples == blockSize;
+}
+
 void AudioLooperTrack::updateStretch(bool force)
 {
 	LooperTrack::updateStretch(force);
@@ -47,30 +232,44 @@ void AudioLooperTrack::updateStretch(bool force)
 
 	if (bpmAtRecord == 0 || (!isPlaying(true) && !force) || stretch == 1)
 	{
-		stretchedBuffer.clear();
-		stretcher.reset();
+		stretchSample = -1;
+		resetStretchState(true);
 		return;
 	}
 
-	if (stretcher == nullptr)
+	stretchSample = -2;
+	jumpGhostSample = -1;
+	stretchedBuffer.clear();
+
+	if (stretcher == nullptr) rebuildStretcher();
+	else stretcher->setTimeRatio(stretch);
+}
+
+void AudioLooperTrack::updateReverted()
+{
+	if (bufferNumSamples <= 0)
 	{
-		stretcher.reset(new RubberBand::RubberBandStretcher(looper->processor->getSampleRate(), numChannels,
-			RubberBand::RubberBandStretcher::OptionProcessRealTime
-			| RubberBand::RubberBandStretcher::OptionStretchPrecise
-			| RubberBand::RubberBandStretcher::OptionFormantPreserved
-			| RubberBand::RubberBandStretcher::OptionWindowStandard
-			| RubberBand::RubberBandStretcher::OptionTransientsCrisp
-			| RubberBand::RubberBandStretcher::OptionChannelsTogether
-		));
-		stretcher->setMaxProcessSize(looper->processor->getBlockSize());
-	}
-	else
-	{
-		//stretcher->reset();
+		revertedBuffer.clear();
+		return;
 	}
 
-	stretcher->setTimeRatio(stretch);
-	stretchedBuffer.setSize(numChannels, stretchedNumSamples);
+	revertedBuffer.setSize(numChannels, bufferNumSamples, false, true);
+
+	for (int channel = 0; channel < numChannels; channel++)
+	{
+		const float* source = buffer.getReadPointer(channel);
+		float* dest = revertedBuffer.getWritePointer(channel);
+
+		for (int sample = 0; sample < bufferNumSamples; sample++)
+		{
+			dest[sample] = source[bufferNumSamples - 1 - sample];
+		}
+	}
+
+	if (stretch != 1)
+	{
+		rebuildStretcher();
+	}
 }
 
 void AudioLooperTrack::stopPlaying()
@@ -78,6 +277,7 @@ void AudioLooperTrack::stopPlaying()
 	if (antiClickFadeBeforeStop)
 	{
 		LooperTrack::stopPlaying();
+		resetStretchState(true);
 	}
 	else
 	{
@@ -89,6 +289,8 @@ void AudioLooperTrack::stopPlaying()
 void AudioLooperTrack::clearBuffer(bool setIdle)
 {
 	buffer.clear();
+	revertedBuffer.clear();
+	resetStretchState(true);
 	LooperTrack::clearBuffer(setIdle);
 }
 
@@ -166,6 +368,7 @@ void AudioLooperTrack::finishRecordingAndPlayInternal()
 	}
 
 	stretch = 1; // reset stretch
+	updateReverted();
 
 }
 
@@ -202,6 +405,7 @@ void AudioLooperTrack::retroRecAndPlayInternal()
 	}
 
 	stretch = 1; // reset stretch
+	updateReverted();
 }
 
 void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer<float>& outputBuffer, int numMainChannels, bool outputIfRecording)
@@ -260,6 +464,11 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		}
 	}
 
+	if (reverted->boolValue() && (firstPlayAfterRecord || revertedBuffer.getNumSamples() != bufferNumSamples))
+	{
+		updateReverted();
+	}
+
 	bool isReallyPlaying = isPlaying(false);
 	//bool forceForPauseAntiClick = isReallyPlaying && !transportIsPlaying && antiClickFadeBeforePause;
 
@@ -284,14 +493,15 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 		}
 	}
 
-	AudioBuffer<float>* targetBuffer = &buffer;
-	int totalSamples = bufferNumSamples;
-
-	if (stretch != 1 && stretchSample == -2)
+	AudioBuffer<float>* sourceBuffer = &buffer;
+	if (reverted->boolValue() && revertedBuffer.getNumSamples() == bufferNumSamples)
 	{
-		targetBuffer = &stretchedBuffer;
-		totalSamples = stretchedNumSamples;
+		sourceBuffer = &revertedBuffer;
 	}
+
+	const bool useRealtimeStretch = stretch != 0 && stretch != 1 && stretcher != nullptr;
+	AudioBuffer<float>* targetBuffer = sourceBuffer;
+	int totalSamples = useRealtimeStretch ? stretchedNumSamples : bufferNumSamples;
 
 	if ((outputToMainTrack || outputToSeparateTrack) && (curSample < totalSamples))
 	{
@@ -334,7 +544,7 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 
 
 
-		if (jumpGhostSample > 0 && jumpGhostSample + blockSize < totalSamples)
+		if (!useRealtimeStretch && jumpGhostSample > 0 && jumpGhostSample + blockSize < totalSamples)
 		{
 			firstPlayAfterStop = false;
 
@@ -357,52 +567,12 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 			jumpGhostSample = -1;
 		}
 
-
-
 		int targetSample = curSample;
-		if (stretch != 0 && stretch != 1 && stretcher != nullptr)
+		if (useRealtimeStretch)
 		{
-			if (stretchSample == -2) //use stretchedBuffer instead of calculating
-			{
-				targetBuffer = &stretchedBuffer;
-			}
-			else
-			{
-				if (stretchSample == 0 && curSample == 0) //set from handleNewBeat in LooperTrack
-				{
-					DBG("Start storing stretched here " << curSample << "/" << Transport::getInstance()->getRelativeBarSamples());
-					stretcher->reset();
-				}
-
-				rtStretchBuffer.clear();
-				rtStretchBuffer.setSize(numChannels, blockSize);
-				AudioBuffer<float> tmpBuffer(buffer.getNumChannels(), blockSize);
-				auto readPointers = tmpBuffer.getArrayOfReadPointers();
-
-				while (stretcher->available() < blockSize)
-				{
-					for (int i = 0; i < numChannels; i++) tmpBuffer.copyFrom(i, 0, buffer.getReadPointer(i, curSample), blockSize);
-
-					stretcher->process(readPointers, tmpBuffer.getNumSamples(), false);
-
-					curSample += blockSize;
-					if (curSample >= buffer.getNumSamples()) curSample = 0;
-				}
-
-				stretcher->retrieve(rtStretchBuffer.getArrayOfWritePointers(), rtStretchBuffer.getNumSamples());
-
-				if (stretchSample >= 0)
-				{
-					for (int i = 0; i < numChannels; i++) stretchedBuffer.copyFrom(i, stretchSample, rtStretchBuffer, i, 0, rtStretchBuffer.getNumSamples());
-
-					stretchSample += rtStretchBuffer.getNumSamples();
-
-					if (stretchSample >= stretchedNumSamples) stretchSample = -2; //if a full loop is written, set -2 to start using the stored buffer
-				}
-
-				targetBuffer = &rtStretchBuffer;
-				targetSample = 0;
-			}
+			renderStretchedBlock(*sourceBuffer, blockSize);
+			targetBuffer = &rtStretchBuffer;
+			targetSample = 0;
 		}
 
 		//DBG("Play here " << targetSample << ",prevGain " << prevGain << " / " << (int)antiClickFadeBeforePause);
@@ -462,6 +632,20 @@ void AudioLooperTrack::processBlock(AudioBuffer<float>& inputBuffer, AudioBuffer
 	else
 	{
 		processTrack(blockSize, false);// forceForPauseAntiClick);
+	}
+}
+
+void AudioLooperTrack::onContainerParameterChanged(Parameter* p)
+{
+	LooperTrack::onContainerParameterChanged(p);
+
+	if (p == reverted)
+	{
+		updateReverted();
+	}
+	else if (p == rbPreserveFormants || p == rbSmoothing || p == rbEngine || p == rbTransients || p == rbWindowSize)
+	{
+		if (stretch != 1) rebuildStretcher();
 	}
 }
 
@@ -576,6 +760,7 @@ void AudioLooperTrack::loadSampleFile(File dir)
 
 	curSample = 0;
 	bufferNumSamples = buffer.getNumSamples();
+	updateReverted();
 
 	trackState->setValueWithData(TrackState::STOPPED);
 	updateStretch(true);

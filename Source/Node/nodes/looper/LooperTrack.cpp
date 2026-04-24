@@ -525,7 +525,7 @@ void LooperTrack::updateStretch(bool force)
 	if (!isPlaying(true) && !force) return;
 
 	double bpm = Transport::getInstance()->bpm->floatValue();
-	if (numBeats > 0) stretch = bufferNumSamples * 1.0 / (Transport::getInstance()->getSamplesForBeat(numBeats));
+    if (numBeats > 0) stretch = (Transport::getInstance()->getSamplesForBeat(numBeats)) * 1.0 / bufferNumSamples ;
 	else stretch = bpmAtRecord / bpm;
 
 	if (stretch == 0) {
