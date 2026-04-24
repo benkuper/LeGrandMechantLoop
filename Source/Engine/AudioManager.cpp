@@ -20,6 +20,8 @@
 
 #include "ui/AudioManagerEditor.h"
 
+#include "LGMLSettings.h"
+
 #include "Transport/Transport.h"
 
 
@@ -32,6 +34,14 @@ namespace
 	constexpr int preferredBufferSize = 128;
 
 	constexpr int preferredNumOutputChannels = 2;
+
+	bool shouldLogAudioDeviceActivity()
+	{
+		if (auto* settings = LGMLSettings::getInstanceWithoutCreating())
+			return settings->logAudioDeviceActivity != nullptr && settings->logAudioDeviceActivity->boolValue();
+
+		return false;
+	}
 
 }
 
@@ -49,7 +59,11 @@ AudioManager::AudioManager() :
 
 	hasPreferredSetup(false),
 
-	isApplyingManagedChange(false)
+	isApplyingManagedChange(false),
+
+	pendingManualChangeFromUI(false),
+
+	lastManualChangeFromUIMs(0)
 
 	//;isSettingUp(false)
 
@@ -101,7 +115,7 @@ AudioManager::AudioManager() :
 
 	lastAvailableDeviceSignature = buildAvailableDeviceSignature();
 
-	LOG("Audio inventory at startup: " << lastAvailableDeviceSignature);
+	if (shouldLogAudioDeviceActivity()) LOG("Audio inventory at startup: " << lastAvailableDeviceSignature);
 
 	startTimer(1000);
 
@@ -487,6 +501,38 @@ bool AudioManager::hasActiveOutputDevice() const
 
 
 
+void AudioManager::markNextAudioChangeAsManualFromUI()
+
+{
+
+	pendingManualChangeFromUI = true;
+
+	lastManualChangeFromUIMs = Time::getMillisecondCounter();
+
+	if (shouldLogAudioDeviceActivity()) LOG("Audio UI interaction detected: the next audio setup change can be stored as preferred");
+
+}
+
+
+
+bool AudioManager::consumePendingManualChangeFromUI()
+
+{
+
+	if (!pendingManualChangeFromUI) return false;
+
+
+
+	pendingManualChangeFromUI = false;
+
+
+
+	return Time::getMillisecondCounter() - lastManualChangeFromUIMs <= 2000;
+
+}
+
+
+
 String AudioManager::describeSetup(const AudioDeviceManager::AudioDeviceSetup& setup) const
 
 {
@@ -541,7 +587,7 @@ void AudioManager::checkRecoveryState(const String& reason, bool shouldLog)
 
 	{
 
-		if (shouldLog) LOG("Audio recovery check (" << reason << "): no preferred setup stored");
+		if (shouldLog && shouldLogAudioDeviceActivity()) LOG("Audio recovery check (" << reason << "): no preferred setup stored");
 
 		return;
 
@@ -557,7 +603,7 @@ void AudioManager::checkRecoveryState(const String& reason, bool shouldLog)
 
 
 
-	if (shouldLog)
+	if (shouldLog && shouldLogAudioDeviceActivity())
 
 	{
 
@@ -601,7 +647,7 @@ void AudioManager::applyPreferredConfigurationIfAvailable()
 
 	isApplyingManagedChange = true;
 
-	LOG("Audio recovery: attempting restore to preferred setup {type=" << (preferredDeviceType.isNotEmpty() ? preferredDeviceType : "<none>")
+	if (shouldLogAudioDeviceActivity()) LOG("Audio recovery: attempting restore to preferred setup {type=" << (preferredDeviceType.isNotEmpty() ? preferredDeviceType : "<none>")
 
 		<< ", in=" << (preferredSetup.inputDeviceName.isNotEmpty() ? preferredSetup.inputDeviceName : "<none>")
 
@@ -625,7 +671,7 @@ void AudioManager::applyPreferredConfigurationIfAvailable()
 
 		clearWarning("device");
 
-		LOG("Audio recovery: restore applied successfully");
+			if (shouldLogAudioDeviceActivity()) LOG("Audio recovery: restore applied successfully");
 
 	}
 
@@ -649,7 +695,7 @@ void AudioManager::disableAudioDeviceTemporarily()
 
 	isApplyingManagedChange = true;
 
-	LOG("Audio recovery: disabling audio device to None for both input and output");
+	if (shouldLogAudioDeviceActivity()) LOG("Audio recovery: disabling audio device to None for both input and output");
 
 	const String error = am.setAudioDeviceSetup(disabledSetup, false);
 
@@ -659,7 +705,7 @@ void AudioManager::disableAudioDeviceTemporarily()
 
 	if (error.isNotEmpty()) setWarningMessage("Could not disable audio device: " + error, "device");
 
-	else LOG("Audio recovery: audio device disabled");
+	else if (shouldLogAudioDeviceActivity()) LOG("Audio recovery: audio device disabled");
 
 }
 
@@ -799,7 +845,7 @@ void AudioManager::audioDeviceListChanged()
 
 	{
 
-		LOG("Audio inventory changed (listener): " << newInventorySignature);
+			if (shouldLogAudioDeviceActivity()) LOG("Audio inventory changed (listener): " << newInventorySignature);
 
 		lastAvailableDeviceSignature = newInventorySignature;
 
@@ -823,7 +869,7 @@ void AudioManager::timerCallback()
 
 	{
 
-		LOG("Audio inventory changed (poll): " << newInventorySignature);
+			if (shouldLogAudioDeviceActivity()) LOG("Audio inventory changed (poll): " << newInventorySignature);
 
 		lastAvailableDeviceSignature = newInventorySignature;
 
@@ -865,6 +911,8 @@ void AudioManager::changeListenerCallback(ChangeBroadcaster* source)
 
 	const bool preferredStateChanged = !areXmlStatesEquivalent(lastUserState.get(), newState.get());
 
+	const bool manualChangeFromUI = consumePendingManualChangeFromUI();
+
 	const bool deviceSelectionChanged = !hasPreferredSetup
 
 		|| currentDeviceType != preferredDeviceType
@@ -878,6 +926,18 @@ void AudioManager::changeListenerCallback(ChangeBroadcaster* source)
 	if (preferredStateChanged)
 
 	{
+
+		if (!manualChangeFromUI)
+
+		{
+
+				if (shouldLogAudioDeviceActivity()) LOG("Audio setup changed without UI interaction, keeping preferred configuration unchanged: " << describeSetup(currentSetup));
+
+			updateGraph();
+
+			return;
+
+		}
 
 		if (deviceSelectionChanged)
 
@@ -909,7 +969,7 @@ void AudioManager::changeListenerCallback(ChangeBroadcaster* source)
 
 		capturePreferredConfiguration();
 
-		LOG("Audio preference updated from manual selection: " << describeSetup(am.getAudioDeviceSetup()));
+		if (shouldLogAudioDeviceActivity()) LOG("Audio preference updated from manual selection: " << describeSetup(am.getAudioDeviceSetup()));
 
 		updateGraph();
 

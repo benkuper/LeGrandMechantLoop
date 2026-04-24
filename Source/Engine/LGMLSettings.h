@@ -19,6 +19,7 @@ public:
 
     BoolParameter* animateConnectionIntensity;
     BoolParameter* autoLearnOnCreateMapping;
+    BoolParameter* logAudioDeviceActivity;
 
     LGMLSettings();
     ~LGMLSettings();

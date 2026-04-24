@@ -100,6 +100,10 @@ public:
 
 	bool isApplyingManagedChange;
 
+	bool pendingManualChangeFromUI;
+
+	uint32 lastManualChangeFromUIMs;
+
 	String targetDeviceName;
 
 	String lastAvailableDeviceSignature;
@@ -170,6 +174,8 @@ public:
 
 	void timerCallback() override;
 
+	void markNextAudioChangeAsManualFromUI();
+
 
 
 	StringArray getInputChannelNames() const;
@@ -239,6 +245,8 @@ public:
 	void disableAudioDeviceTemporarily();
 
 	void checkRecoveryState(const String& reason, bool shouldLog);
+
+	bool consumePendingManualChangeFromUI();
 
 	String buildAvailableDeviceSignature();
 

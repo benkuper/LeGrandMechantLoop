@@ -23,4 +23,5 @@ public:
 
 	void setCollapsed(bool value, bool force = false, bool animate = true, bool doNotRebuild = false) override;
 	void resizedInternalContent(Rectangle<int>& r) override;
+	void mouseDown(const MouseEvent& e) override;
 };

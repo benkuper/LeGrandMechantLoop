@@ -17,6 +17,7 @@ LGMLSettings::LGMLSettings() :
 {
     animateConnectionIntensity = addBoolParameter("Animate Connections Intensity", "If checked, this will animate the connection wires in the Node View", true);
     autoLearnOnCreateMapping = addBoolParameter("Auto Learn On Create Mapping", "If checked, this will automatically activate learn of a mapping when creating it", true);
+    logAudioDeviceActivity = addBoolParameter("Log Audio Device Activity", "If checked, audio device inventory, recovery, and manual-selection activity will be logged", false);
 }
 
 LGMLSettings::~LGMLSettings()
