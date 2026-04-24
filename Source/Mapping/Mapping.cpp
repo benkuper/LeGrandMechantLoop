@@ -439,7 +439,7 @@ void MIDIMapping::sendFeedback()
 	MIDIType mt = type->getValueDataAsEnum<MIDIType>();
 
 	float val = ((Parameter*)dest.get())->floatValue();
-	float destVal = jmap(val, outputRange->x, outputRange->y, inputRange->x, inputRange->y);
+	float destVal = outputRange->x == outputRange->y ? outputRange->x :  jmap(val, outputRange->x, outputRange->y, inputRange->x, inputRange->y);
 	float minVal = jmin(inputRange->x, inputRange->y);
 	float maxVal = jmax(inputRange->x, inputRange->y);
 	destVal = jlimit(minVal, maxVal, destVal);
