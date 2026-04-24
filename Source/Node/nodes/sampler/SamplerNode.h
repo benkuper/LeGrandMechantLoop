@@ -39,6 +39,14 @@ public:
     BoolParameter* autoKeyLoopFade;
     EnumParameter* autoKeyMode;
     
+    // --- Trigger Action ---
+    IntParameter* playNoteNumber;
+    Trigger* playNoteTrigger;
+    IntParameter* playNoteTimeMS;
+
+    Array<std::pair<int, int>> scheduledNoteOffs; // Note number, remaining samples
+    SpinLock scheduledNoteOffsLock;
+
     // --- New RubberBand Parameters ---
     BoolParameter* rbPreserveFormants;
     EnumParameter* rbPitchMode;
@@ -165,8 +173,8 @@ public:
 
     OwnedArray<SamplerNote> samplerNotes;
 
-    void revertNote(int note);
     void clearNote(int note);
+    void revertNote(int note);
     void clearAllNotes();
     void resetAllNotes();
 

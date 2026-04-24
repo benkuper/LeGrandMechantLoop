@@ -39,6 +39,10 @@ SamplerNode::SamplerNode(var params) :
 
     oneShotFadeTimeMS = playCC.addIntParameter("One Shot Fade MS", "Fade applied to the end of a hit/one shot sample (ms)", 10, 0, 1000);
 
+    playNoteNumber = playCC.addIntParameter("Play Note", "Choose note to trigger", 60, 0, 127);
+    playNoteTimeMS = playCC.addIntParameter("Play Note Time", "Duration (ms) before it sends a note off automatically. 0 means infinite until manually stopped.", 500, 0, 10000);
+    playNoteTrigger = playCC.addTrigger("Trigger Note", "Trigger the chosen note");
+
     
     addChildControllableContainer(&playCC, false, 0);
 
@@ -488,6 +492,33 @@ void SamplerNode::onControllableFeedbackUpdateInternal(ControllableContainer* cc
     {
         computeAutoKeys();
     }
+    else if (c == playNoteTrigger)
+    {
+        int note = playNoteNumber->intValue();
+        handleNoteOn(&keyboardState, 1, note, 1.0f);
+        
+        int durationMS = playNoteTimeMS->intValue();
+        if (durationMS > 0)
+        {
+            GenericScopedLock<SpinLock> lock(scheduledNoteOffsLock);
+            int samples = durationMS * processor->getSampleRate() / 1000;
+            // check if already scheduling this note off
+            bool found = false;
+            for (auto& sn : scheduledNoteOffs)
+            {
+                if (sn.first == note)
+                {
+                    sn.second = samples; // update duration
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                scheduledNoteOffs.add({note, samples});
+            }
+        }
+    }
 }
 
 void SamplerNode::controllableStateChanged(Controllable* c)
@@ -829,6 +860,23 @@ void SamplerNode::processBlockInternal(AudioBuffer<float>& buffer, MidiBuffer& m
     if (fadeTimeMS->intValue() > 0) ringBuffer->writeSamples(buffer, 0, jmin(buffer.getNumSamples(), ringBuffer->bufferSize));
 
     int blockSize = buffer.getNumSamples();
+
+    {
+        GenericScopedTryLock<SpinLock> lock(scheduledNoteOffsLock);
+        if (lock.isLocked() && scheduledNoteOffs.size() > 0)
+        {
+            for (int i = scheduledNoteOffs.size() - 1; i >= 0; i--)
+            {
+                scheduledNoteOffs.getReference(i).second -= blockSize;
+                if (scheduledNoteOffs.getReference(i).second <= 0)
+                {
+                    int note = scheduledNoteOffs.getReference(i).first;
+                    handleNoteOff(&keyboardState, 1, note, 1.0f);
+                    scheduledNoteOffs.remove(i);
+                }
+            }
+        }
+    }
 
     if (isRecording->boolValue())
     {
