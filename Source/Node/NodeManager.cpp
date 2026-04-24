@@ -392,7 +392,7 @@ void NodeManager::loadCurrentPreset()
 
     var pData = presetEnum->getValue();
     var data = pData.isVoid()? var(new DynamicObject()) : presets.getProperty(pData.toString(), var());
-    connectionManager->loadJSONData(data);
+    connectionManager->loadPresetData(data);
 }
 
 bool NodeManager::handleRemoteControlData(const OSCMessage& msg, const String& clientId)

@@ -13,7 +13,8 @@
 
 NodeConnectionManager::NodeConnectionManager(NodeManager* nodeManager) :
 	Manager("Connections"),
-	nodeManager(nodeManager)
+	nodeManager(nodeManager),
+	preservePermanentConnectionsOnNextLoad(false)
 {
 	hideInEditor = true;
 	userCanAddItemsManually = false;
@@ -115,10 +116,15 @@ Array<NodeConnection*> NodeConnectionManager::addItemsFromData(var data, bool ad
 	return addItems(itemsToAdd, data, addToUndo);
 }
 
+void NodeConnectionManager::loadPresetData(var data)
+{
+	ScopedValueSetter<bool> loadPresetSetter(preservePermanentConnectionsOnNextLoad, true);
+	loadJSONData(data);
+}
 
 void NodeConnectionManager::loadJSONDataInternal(var data)
 {
-	if (Engine::mainEngine->isLoadingFile)
+	if (!preservePermanentConnectionsOnNextLoad)
 	{
 		Manager::loadJSONDataInternal(data);
 		return;

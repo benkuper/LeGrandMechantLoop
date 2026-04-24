@@ -20,6 +20,7 @@ public:
     ~NodeConnectionManager();
 
     NodeManager* nodeManager;
+    bool preservePermanentConnectionsOnNextLoad;
 
     NodeConnection* createConnectionForType(NodeConnection::ConnectionType t);
 
@@ -35,6 +36,7 @@ public:
     NodeConnection* addItemFromData(var data, bool addToUndo = true) override;
     Array<NodeConnection*> addItemsFromData(var data, bool addToUndo = true) override;
 
+    void loadPresetData(var data);
     void loadJSONDataInternal(var data) override;
     void afterLoadJSONDataInternal() override;
 };
