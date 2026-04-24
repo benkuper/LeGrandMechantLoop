@@ -111,7 +111,7 @@ Node::Node(StringRef name, var params, bool hasAudioInput, bool hasAudioOutput, 
         logIncomingMidi = midiCC->addBoolParameter("Log Incoming messages", "This will log incoming messages (only working on the device directly connected, not incoming connection from other nodes", false);
         channelFilterCC.reset(new ControllableContainer("Channel Filter"));
         midiChannels.ensureStorageAllocated(16);
-        for (int i = 1; i <= 16; i++) midiChannels.set(i, channelFilterCC->addBoolParameter(String(i), "If checked, this node will accept messages from this channel", true));
+        for (int i = 1; i <= 16; i++) midiChannels.add(channelFilterCC->addBoolParameter(String(i), "If checked, this node will accept messages from this channel", true));
         channelFilterCC->editorIsCollapsed = true;
         midiCC->addChildControllableContainer(channelFilterCC.get());
 
@@ -583,7 +583,18 @@ void Node::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
     if (clearAudioBufferIfNoConnections && inAudioConnections.isEmpty()) buffer.clear();
 
     //MIDI
-    if (hasMIDIInput) midiCollector.removeNextBlockOfMessages(midiMessages, buffer.getNumSamples());
+    if (hasMIDIInput)
+    {
+        MidiBuffer filteredBuffer;
+        for (const auto& m : midiMessages)
+        {
+            const auto message = m.getMessage();
+            if (message.getChannel() > 0 && !midiChannels[message.getChannel() - 1]->boolValue()) continue;
+            midiCollector.addMessageToQueue(message);
+        }
+        midiCollector.removeNextBlockOfMessages(filteredBuffer, buffer.getNumSamples());
+        midiMessages.swapWith(filteredBuffer);
+    }
 
     bool isEnabled = enabled->boolValue();
     bool antiClickFinished = bypassAntiClickCount == (isEnabled ? anticlickBlocks : 0);
