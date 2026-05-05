@@ -148,7 +148,7 @@ jobs:
           action: build
           arch: ${{ matrix.arch }}
           configuration: ${{ matrix.config }}
-          use-xcpretty: true
+          use-xcpretty: false
 
       - name: Create Package
         id: create_package
