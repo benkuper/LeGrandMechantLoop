@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="SFn4rn" name="LGML" projectType="guiapp" jucerFormatVersion="1"
               projectLineFeed="&#10;" headerPath="../../Source&#10;../../External/asio&#10;../../External/asiodriver&#10;../../External/servus/include&#10;../../External/dnssd/include&#10;../../External/vst2&#10;../../External/serial/include&#10;../../External/rubberband/include&#10;../../External/abletonlink/include"
-              defines="VST_LOGGING=0&#10;OSC_REMOTE_CONTROL_PORT=44000" version="1.1.0b9"
+              defines="VST_LOGGING=0&#10;OSC_REMOTE_CONTROL_PORT=44000" version="1.1.0"
               cppLanguageStandard="17" companyName="Ben Kuper" companyCopyright="Ben Kuper"
               bundleIdentifier="benkuper.LGML" companyWebsite="https://benjamin.kuperberg.fr/lgml">
   <MAINGROUP id="xIhitl" name="LGML">
@@ -740,17 +740,17 @@
                        binaryPath="Binaries" alwaysGenerateDebugSymbols="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_audio_basics" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_devices" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_formats" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_processors" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_processors_headless" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
-        <MODULEPATH id="juce_audio_utils" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_audio_basics"/>
+        <MODULEPATH id="juce_audio_devices"/>
+        <MODULEPATH id="juce_audio_formats"/>
+        <MODULEPATH id="juce_audio_processors"/>
+        <MODULEPATH id="juce_audio_processors_headless"/>
+        <MODULEPATH id="juce_audio_utils"/>
         <MODULEPATH id="juce_core" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
         <MODULEPATH id="juce_cryptography" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
         <MODULEPATH id="juce_data_structures" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
         <MODULEPATH id="juce_dsp" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
-        <MODULEPATH id="juce_events" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
+        <MODULEPATH id="juce_events"/>
         <MODULEPATH id="juce_graphics" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
         <MODULEPATH id="juce_gui_basics" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>
         <MODULEPATH id="juce_gui_extra" path="C:\Users\bkupe\Documents\Projects\JUCE\modules"/>

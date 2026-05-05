@@ -35,14 +35,3 @@ runs:
           echo "dep=release" >> $GITHUB_OUTPUT
         fi
       shell: bash
-      
-    - name: Set JUCE branch
-      run: |
-        if [[ "${{ github.ref }}" == "refs/heads/juce8" || $GITHUB_REF == *"refs/tags/"*  ]]
-        then
-          echo "Using JUCE 8 branch"
-          echo "juce-branch=juce8_local" >> $GITHUB_ENV
-        else
-          echo "juce-branch=develop-local" >> $GITHUB_ENV
-        fi
-      shell: bash

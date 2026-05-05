@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: benkuper/JUCE
-          ref:  ${{ env.juce-branch }}
+          ref:  juce8_local
           path: JUCE
 
       - name: Add msbuild to PATH
