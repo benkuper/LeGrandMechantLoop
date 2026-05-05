@@ -124,7 +124,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: benkuper/JUCE
-          ref:  ${{ env.juce-branch }}
+          ref:  juce8_local
           path: JUCE
 
       - name: Download Packages 
@@ -188,7 +188,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: benkuper/JUCE
-          ref:  ${{ env.juce-branch }}
+          ref:  juce8_local
           path: JUCE
 
       - name: Installing dependencies
@@ -303,7 +303,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: benkuper/JUCE
-          ref: ${{ env.juce-branch }}
+          ref: juce8_local
           path: JUCE
       - name: Setup Multi-Arch Apt
         run: |
